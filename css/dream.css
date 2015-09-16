@@ -336,10 +336,49 @@ input[type="text"],input[type="password"]{
 
 .card .content{
   width: 200%;
+  position: relative;
+  left: 0;
+  transition: left 2s;
+  -webkit-transition: left 2s;
+  -o-transition: left 2s;
+  -moz-transition: left 2s;
 }
 
 .card .content li{
   float: left;
   width: 50%;
   list-style-type: none;
+  
+}
+
+.card .content:hover{
+  left: -100%;
+}
+
+.listbox{
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  padding: 8px;
+  background-color: #f4f4f4;
+  list-style-type: none;
+}
+
+.listbox li{
+  line-height: 40px;
+  width: 100%;
+  border-bottom: 1px solid #767676;
+  float: left;
+}
+
+.listbox li:hover{
+  background-color: #e84;
+}
+
+.listbox .long{
+  overflow: hidden;
+}
+
+.listbox .short{
+  text-align: right;
 }

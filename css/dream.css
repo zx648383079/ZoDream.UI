@@ -42,7 +42,7 @@
   padding: 0;
 }
 
-.nav ul li:hover{
+.nav ul li:hover,.nav ul .active{
   border-bottom: 2px solid #0078d7;
   background-color: transparent;
 }
@@ -102,7 +102,7 @@
 
 }
 
-.menu li:hover{
+.menu li:hover,.menu .active{
   background-color:#e62;
 }
 
@@ -269,4 +269,77 @@ input[type="text"],input[type="password"]{
   border: 1px solid #c8c8c8;
   padding: 6px 10px 8px 10px;
   box-sizing: border-box;
+}
+
+.panel{
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  padding: 8px;
+  width: 100%
+}
+
+.panel .head{
+  font-weight: 700;
+  border-bottom: 1px solid #767676;
+}
+
+.panel .body{
+  padding: 8px 0;
+  min-height: 200px;
+}
+
+.panel .foot{
+  font-weight: 700;
+  border-top: 1px solid #767676;
+}
+
+.info{
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 0 8px 20%;
+}
+
+.card{
+  width: 100%;
+  overflow: hidden;
+}
+
+.card .list{
+  list-style-type: none;
+  display: block;
+  border-bottom: 1px solid #767676;
+  position: relative;
+}
+
+.card .list li{
+  display: inline;
+  line-height: 30px;
+}
+
+.card .list .active:after{
+  box-sizing: border-box;
+  -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+          transform: rotate(45deg);
+  content: '';
+  width: 10px;
+  height: 10px;
+  border: 1px solid #c8c8c8;
+  background-color: #ffffff;
+  position: absolute;
+  border-right: none;
+  border-bottom: none;
+  top: 25px;
+  left: 13px;
+}
+
+.card .content{
+  width: 200%;
+}
+
+.card .content li{
+  float: left;
+  width: 50%;
+  list-style-type: none;
 }

@@ -382,3 +382,47 @@ input[type="text"],input[type="password"]{
 .listbox .short{
   text-align: right;
 }
+
+.pager{
+  line-height: 30px;
+}
+
+.pager a,.pager span{
+  float: left;
+  min-width: 30px;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 0px 8px;
+  margin-right: 8px;
+  border: 1px solid #767676;
+}
+
+.pager span{
+  font-weight: 700;
+  border-color: transparent;
+}
+
+.pager a:hover{
+  border: 1px solid #0078d7;
+}
+
+.fail{
+  color: #a94442;
+}
+
+.success{
+  color: #3c763d;
+}
+
+.circle{
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+}
+
+.footer{
+  background-color: #f4f4f4;
+  min-height: 40px;
+  margin-top: 10px;
+  text-align: center;
+}

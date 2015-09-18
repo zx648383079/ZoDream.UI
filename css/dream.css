@@ -303,6 +303,19 @@ input[type="text"],input[type="password"]{
 .card{
   width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #0078d7;
+  box-shadow: 10px 10px 5px #888888;
+}
+
+.card .personal{
+  height: 80px;
+}
+
+.card .personal img{
+  float: left;
+  margin-right: 8px;
 }
 
 .card .list{

@@ -14,6 +14,7 @@ jQuery(document).ready(function($){
 var zodream = function(name) {
 	this.elements = [];
 	this.init(name);
+	window.zodream = this;
 	return this;
 };
 

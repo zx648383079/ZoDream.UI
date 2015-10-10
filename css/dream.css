@@ -2,73 +2,7 @@
   margin: 0px;
   padding: 0px;
 }
-@media (min-width:480px){
-.nav{
-  color: #333333;
-  font-size: 14px;
-  font-weight: normal;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  box-shadow: none;
-  background-color: #f4f4f4;
-  height: 40px;
-  padding: 0 10px;
-  width: 100%;
-  outline: 1px solid transparent;
-}
-.nav .brand{
-  float: left;
-  margin: 0 7px;
-  line-height: 40px;
-}
 
-.nav ul{
-    display: block;
-    list-style: none;
-    margin: 0 7px 0 0;
-    padding: 0;
-}
-.nav ul li{
-  box-sizing: border-box;
-  display: block;
-  height: 40px;
-  line-height: 40px;
-  font-size: 17px;
-  padding-left: 20px;
-  position: relative;
-  float: left;
-  margin-right: 20px;
-  font-size: 14px;
-  padding: 0;
-}
-
-.nav ul li:hover,.nav ul .active{
-  border-bottom: 2px solid #0078d7;
-  background-color: transparent;
-}
-
-.nav a{
-  color: #333;
-}
-
-.nav ul li.right{
-  float: right;
-}
-
-.container{
-  padding: 0 8px;
-}
-
-.short{
-  width: 38.2%;
-}
-
-.long{
-  width: 61.8%;
-}
-
-}
 .container{
   margin: 0px;
   padding: 0px;
@@ -454,8 +388,100 @@ input[type="text"],input[type="password"]{
   text-align: center;
 }
 
-@media (max-width:479px){
-  
+.dateLine {
+  position: relative;
+  padding: 2em 0;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+.dateLine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 38px;
+  height: 100%;
+  width: 4px;
+  background: #d7e4ed;
+}
+
+.dateThing,.dateYear{
+  position: relative;
+  margin: 2em 0;
+}
+.dateThing {
+  margin-left: 20px;
+}
+.dateThing:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.dateYear:first-child {
+  margin-top: 0;
+}
+.dateThing:last-child {
+  margin-bottom: 0;
+}
+
+.dateThing .date,.dateYear .date{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background-color: #c8c8c8;
+  line-height: 40px;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px white, inset 0 2px 0 rgba(0, 0, 0, 0.08), 0 3px 0 4px rgba(0, 0, 0, 0.05);
+}
+.dateThing .msg {
+  position: relative;
+  margin-left: 60px;
+  background: white;
+  border-radius: 0.25em;
+  padding: 1em;
+  box-shadow: 0 3px 0 #d7e4ed;
+}
+.dateThing .msg:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.dateThing .msg h2 {
+  color: #303e49;
+}
+.dateThing .msg p{
+  font-size: 13px;
+  font-size: 0.8125rem;
+}
+.dateThing .msg p {
+  margin: 1em 0;
+  line-height: 1.6;
+}
+.dateThing .msg::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 100%;
+  height: 0;
+  width: 0;
+  border: 7px solid transparent;
+  border-right: 7px solid #a94442;
+}
+.dateYear {
+  height: 80px;
+}
+.dateYear .date {
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  background-color: red;
+  color: white;
+}
+
+@media only screen and (max-width:479px){ 
 .nav{
   background-color: #f4f4f4;
 }
@@ -501,4 +527,141 @@ input[type="text"],input[type="password"]{
   width: 100%;
 }
 
+}
+@media only screen and (min-width:480px){
+.nav{
+  color: #333333;
+  font-size: 14px;
+  font-weight: normal;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  background-color: #f4f4f4;
+  height: 40px;
+  padding: 0 10px;
+  width: 100%;
+  outline: 1px solid transparent;
+}
+.nav .brand{
+  float: left;
+  margin: 0 7px;
+  line-height: 40px;
+}
+
+.nav ul{
+    display: block;
+    list-style: none;
+    margin: 0 7px 0 0;
+    padding: 0;
+}
+.nav ul li{
+  box-sizing: border-box;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  font-size: 17px;
+  padding-left: 20px;
+  position: relative;
+  float: left;
+  margin-right: 20px;
+  font-size: 14px;
+  padding: 0;
+}
+
+.nav ul li:hover,.nav ul .active{
+  border-bottom: 2px solid #0078d7;
+  background-color: transparent;
+}
+
+.nav a{
+  color: #333;
+}
+
+.nav ul li.right{
+  float: right;
+}
+
+.container{
+  padding: 0 8px;
+}
+.container-fixed{
+  width: 100%;
+  padding:0 8px;
+  margin: 0 auto;
+}
+
+.short{
+  width: 38.2%;
+}
+
+.long{
+  width: 61.8%;
+}
+.dateLine {
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+.dateLine::before {
+  left: 50%;
+  margin-left: -2px;
+}
+.dateThing {
+  margin: 4em 0;
+}
+.dateThing:first-child {
+  margin-top: 0;
+}
+.dateThing:last-child {
+  margin-bottom: 0;
+}
+.dateThing .date {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  font-size: 50px;
+  left: 50%;
+  margin-left: -30px;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+.dateYear .date {
+  left: 50%;
+  margin-left: -40px;
+}
+.dateThing .msg {
+  margin-left: 0px;
+  padding: 1.2em;
+  width: 40%;
+  text-align: right
+}
+.dateThing .msg::before {
+  top: 24px;
+  left: 100%;
+  border-color: transparent;
+  border-left-color: #a94442;
+}
+.dateThing:nth-child(odd) .msg {
+  float: right;
+  text-align: left;
+}
+.dateThing:nth-child(odd) .msg::before {
+  top: 24px;
+  left: auto;
+  right: 100%;
+  border-color: transparent;
+  border-right-color: #a94442;
+}
+}
+@media (min-width:480px) and  (max-width:780px) {
+.dateThing .msg {
+  padding: 1em;
+  width: 35%;
+}
+}
+
+@media (min-width:976px){
+.container-fixed{
+  width: 960px;
+}
 }

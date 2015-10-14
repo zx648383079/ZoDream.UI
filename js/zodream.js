@@ -463,7 +463,7 @@ var Helper = {
 		window.location.reload();
 	},
 	htmlTo: function(data) {
-		return data.replace(/(&nbsp;)/g, " ").replace(/\<br\>/g, "\r\n");
+		return data.replace(/(&nbsp;)/g, " ").replace(/(\<br\>)/g, "\r\n");
 	},
 	toHtml: function(data) {
 		return data.replace(/[ ]/g, "&nbsp;").replace(/\n|\r|(\r\n)|(\u0085)|(\u2028)|(\u2029)/g, "<br>");

@@ -1,0 +1,81 @@
+.soForm{
+	line-height:200px;
+	text-align:center;
+}
+.soForm input{
+	width:60%;
+}
+.soForm2 input{
+	width:60%;
+	margin-left: 10%;
+}
+ul.listbox li{
+	margin-bottom: 8px;
+}
+li.panel .body{
+	min-height: 50px;
+}
+
+.img img{
+	width: 200px;
+	height: 200px;
+	float: left;
+	margin: 8px;
+	position: static;
+	z-index: 10;
+	transition: transform 1s;
+	-webkit-transition: -webkit-transform 1s;
+	-o-transition: -o-transform 1s;
+	-moz-transition: -moz-transform 1s;
+}
+
+.img img:hover{
+	z-index: 20;
+	transform: scale(1.5,1.5);
+	-ms-transform: scale(1.5,1.5);		/* IE 9 */
+	-webkit-transform: scale(1.5,1.5);	/* Safari and Chrome */
+	-o-transform: scale(1.5,1.5);		/* Opera */
+	-moz-transform: scale(1.5,1.5);		/* Firefox */
+}
+.method{
+	width: 80%;
+	margin: 0 auto;
+	min-height: 400px;
+}
+
+.minText{
+	border: none !important;
+	border-bottom: 1px solid #c8c8c8 !important;
+	width: 10% !important;
+	display: none;
+}
+
+.short.fixed{
+	border: 1px solid #666;
+	border-radius: 5px;
+	min-height: 100px;
+	padding: 8px 8px;
+}
+.short.fixed>ul{
+	margin-top: 8px;
+	overflow: hidden;
+}
+
+.short.fixed li{
+	line-height: 30px;
+	list-style-type: none;
+	padding-left: 8px;
+}
+
+.short.fixed li:hover{
+	background-color: #f4f4f4;
+}
+.short.fixed li ul{
+	margin-left: 20px;
+}
+
+@media (min-height:550px){
+.center form{
+	margin-top: 200px;
+}
+}

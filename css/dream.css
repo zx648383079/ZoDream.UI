@@ -532,6 +532,50 @@ option{
   color: white;
 }
 
+.editbox{
+  border-radius: 20px;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+.editbox .tool{
+  text-align: right;
+}
+
+.editbox>ul{
+  border-top: 1px solid #767676;
+}
+
+.editbox li{
+  list-style-type: none;
+  line-height: 30px;
+  margin: 2px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid #767676;
+  background-color: #f4f4f4;
+}
+
+.editbox li .more{
+  float: right;
+  width: 30px;
+  font-size: 20px;
+  height: 30px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-color: #c8c8c8;
+  text-align: center;
+}
+
+.editbox li li{
+  margin-left: 20px;
+}
+
+.editbox li ul{
+  display: none;
+}
+
 @media only screen and (max-width:479px){ 
 .nav{
   background-color: #f4f4f4;
@@ -635,11 +679,13 @@ option{
 
 .container{
   padding: 0 8px;
+  overflow:hidden;
 }
 .container-fixed{
   width: 100%;
   padding:0 8px;
   margin: 0 auto;
+  overflow:hidden;
 }
 
 .short{

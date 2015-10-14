@@ -85,6 +85,22 @@ zodream.prototype = {
 		};
 		return classElements;
 	},
+	parent: function() {
+		return this.elements[0].parentNode;
+	},
+	children: function() {
+		return this.elements[0].childNodes;	
+	},
+	previous: function() {
+		return this.elements[0].previousSbiling;	
+	},
+	next: function() {
+		var next = this.elements[0].nextSbiling;
+		if(next == undefined || next.nodeType != 1) {
+			 next = (this.elements[0]).nextSibling.nextSibling;
+		}
+		return next;
+	},
 	attr: function(name) {
 		if(arguments[1] === undefined) {
 			return this.elements[0].getAttribute(name);
@@ -112,7 +128,12 @@ zodream.prototype = {
 	},
 	css: function(name) {
 		if(arguments[1] === undefined) {
-			return this.elements[0].style[name];
+			var value = this.elements[0].style[name]; 
+			if(!value) {
+				var temp = this.elements[0].currentStyle || document.defaultView.getComputedStyle(this.elements[0], null);
+				value = temp[name];
+			}
+			return value;
 		}else {
 			this.forE(function(e, i , name, value) {
 				e.style[name] = value;
@@ -124,6 +145,13 @@ zodream.prototype = {
 	},
 	hide: function() {
 		this.css("display", "none");		
+	},
+	toggle: function() {
+		if(this.css("display") == "none") {
+			this.show();
+		}else {
+			this.hide();
+		}
 	},
 	html: function() {
 		if(arguments[0] === undefined) {
@@ -491,9 +519,10 @@ var Z = function() {
 　　　　}
 　　　　return val;
 	}
-	
-	if(arguments[0]) {
+	if(arguments[0] && typeof arguments[0] == "string") {
 		this.name = this.getName(arguments[0]);
+	}else {
+		return new zodream(arguments[0]);
 	}
 	if(!this.elements) {
 		this.elements = {};		

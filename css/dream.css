@@ -554,7 +554,7 @@ option{
   overflow: hidden;
   border-radius: 5px;
   border: 1px solid #767676;
-  background-color: #f4f4f4;
+  background-color: transparent;
 }
 
 .editbox li .more{

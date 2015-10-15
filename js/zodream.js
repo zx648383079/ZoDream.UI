@@ -10,7 +10,7 @@ zodream.ready = function() {
 		case "string":
 			zodream.name = zodream.getName(arguments[0]);
 		case "undefined":
-			if( !zodream.elements[zodream.name] )
+			if( !zodream.elements[zodream.name] || arguments[1] === true)
 			{
 				zodream.elements[ zodream.name ] = new zodream.fn(arguments[0], zodream);
 			}
@@ -65,17 +65,43 @@ zodream.fn.prototype = {
 		return this.elements[0].parentNode;
 	},
 	children: function() {
-		return this.elements[0].childNodes;	
+		var args = Array();
+		var child = this.elements[0].childNodes;	
+		for( var i = 0 , len = child.length ; i < len ; i++){
+			if(child[i].nodeName != "#text" || /\s/.test(child[i].nodeValue))
+			{
+				args.push(child[i]);
+			}
+		}
+		return args;
 	},
-	previous: function() {
-		return this.elements[0].previousSbiling;	
+	prev: function() {
+		var obj = this.elements[0].previousSibling;
+		while(obj != null && obj.id == undefined){
+			obj = obj.previousSibling;
+			if(obj == null){
+				break;
+			}
+		}
+		return obj;
 	},
 	next: function() {
-		var next = this.elements[0].nextSbiling;
-		if(next == undefined || next.nodeType != 1) {
-			 next = (this.elements[0]).nextSibling.nextSibling;
+		var obj = this.elements[0].nextSibling;
+		while(obj != null && obj.id == undefined){
+			obj = obj.nextSibling;
+			if(obj == null){
+				break;
+			}
 		}
-		return next;
+		return obj;
+	},
+	getSibling: function() {
+		var a = [];
+		var b = this.elements[0].parentNode.children;
+		for(var i =0 , len = b.length ; i< len; i++) {
+			if( b[i] !== this.elements[0] ) a.push( b[i] );
+		}
+		return a;	
 	},
 	getChildren: function(name) {
 		return this.forE(function(e) {
@@ -96,16 +122,19 @@ zodream.fn.prototype = {
 				}
 				e[name] = value;
 			}, name , arguments[1]);
+			return this;
 		}
 	},
 	addClass: function(className) {
 		this.forE(function(e, i , value) {
 			e.className += " " + value;
 		}, className);
+		return this;
 	},
 	removeClass: function(className) {
 		var classNames = this.attr('class');
 		this.attr('class', classNames.replace(className, ""));
+		return this;
 	},
 	css: function(name) {
 		if(arguments[1] === undefined) {
@@ -120,13 +149,16 @@ zodream.fn.prototype = {
 			this.forE(function(e, i , name, value) {
 				e.style[name] = value;
 			}, name , arguments[1]);
+			return this;
 		}
 	},
 	show: function() {
 		this.css("display", "block");
+		return this;
 	},
 	hide: function() {
-		this.css("display", "none");		
+		this.css("display", "none");
+		return this;	
 	},
 	toggle: function() {
 		if(this.css("display") == "none") {
@@ -134,6 +166,7 @@ zodream.fn.prototype = {
 		}else {
 			this.hide();
 		}
+		return this;
 	},
 	html: function() {
 		if(arguments[0] === undefined) {
@@ -142,6 +175,7 @@ zodream.fn.prototype = {
 			this.forE(function(e, i , value) {
 				e.innerHTML = value;
 			}, arguments[0]);
+			return this;
 		}
 	},
 	val: function() {
@@ -151,6 +185,7 @@ zodream.fn.prototype = {
 			this.forE(function(e, i , value) {
 				e.value = value;
 			}, arguments[0]);
+			return this;
 		}
 	},
 	getForm: function() {
@@ -160,7 +195,7 @@ zodream.fn.prototype = {
 			var element = elements[i];
 			if(element.required && element.value == "") {
 				element.style.border = "1px solid red";
-				return false;
+				return;
 			};
 			switch (element.type.toLowerCase()) {    
 				case 'submit':
@@ -209,6 +244,7 @@ zodream.fn.prototype = {
 					break;
 			}
 		}
+		return this;
 	},
 	forE: function(func) {
 		var data = Array();
@@ -228,10 +264,22 @@ zodream.fn.prototype = {
 	},
 	addChild: function() {
 		for (var i = 0,len = arguments.length; i < len; i++) {
-			this.forE(function(e, i , ele) {
-				e.appendChild(ele);
-			}, arguments[i]);
+			this.elements[0].appendChild(arguments[i]);
 		}
+		return this;
+	},
+	insertBefore: function(element) {
+		this.parents().insertBefore(element , this.elements[0]);
+		return this;
+	},
+	insertAfter: function( element ){
+		var parent = this.parents();
+		if(parent.lastChild == this.elements[0]){
+			parent.appendChild( element );
+		}else{
+			parent.insertBefore( element, this.next() );
+		}
+		return this;
 	},
 	removeChild: function() {
 		if(arguments[0]) {
@@ -245,11 +293,13 @@ zodream.fn.prototype = {
 				e.innerHTML = "";
 			});
 		}
+		return this;
 	},
 	removeSelf: function() {
 		this.forE(function(e) {
 			e.parentNode.removeChild(e);
 		});	
+		return this;
 	},
 	remove: function() {
 		for (var i = 0, len = arguments.length; i < len; i++) {
@@ -291,6 +341,7 @@ zodream.fn.prototype = {
 				}
 			}
 		}, event , func);
+		return this;
 	},
 	removeEvent: function(event, func) {
 		this.forE(function(e, i, event , func) {
@@ -302,6 +353,7 @@ zodream.fn.prototype = {
 				delete e["on" + event];
 			}
 		}, event , func);
+		return this;
 	},
 	clear: function() {
 		this.parent.remove();
@@ -326,11 +378,11 @@ zodream.extend({
 		var names = name.split(","),
 			elements = Array();
 		for (var i = 0, len = names.length; i < len; i++) {
-			Array.prototype.push.apply(elements, this.getNext( names[i], arguments[1] || window.document ) );
+			Array.prototype.push.apply(elements, this.getNextAll( names[i], arguments[1] || window.document ) );
 		};
 		return elements;
 	},
-	getNext: function(name) {
+	getNextAll: function(name) {
 		var names = name.split(" "),
 			element = [arguments[1] || window.document];
 		for (var i = 0, len = names.length; i < len; i++) {
@@ -342,6 +394,49 @@ zodream.extend({
 			element = eles;
 		};
 		return element;
+	},
+	getNext: function(name) {
+		var names = name.split(">"),
+			element = [arguments[1] || window.document];
+		for (var i = 0, len = names.length; i < len; i++) {
+			var eles = Array();
+			for (var j = 0,leng = element.length; j < leng; j++) {
+				var ele = element[j];
+				Array.prototype.push.apply(eles, this.getElements(ele.childNodes, names[i]) ); 
+			}
+			element = eles;
+		};
+		return element;
+	},
+	getElements: function(elements, tag) {
+		if(typeof tag != "string") {
+			return;
+		}
+		var args = Array();
+		for (var i = 0, len = elements.length; i < len; i++) {
+			var element = array[i];
+			switch (tag.charAt(0)) {
+				case '.':
+					if(element.getAttribute("class").indexOf(tag.slice(1)) >= 0) {
+						args.push(element);
+					}
+					break;
+				case '#':
+					if( element.getAttribute("id") === tag.slice(1)) {
+						args.push(element);
+					}
+					break;
+				case '@':
+					if( element.getAttribute("name") === tag.slice(1)) {
+						args.push(element);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		
+		return args;
 	},
 	getChild: function(name) {
 		var parent = arguments[1] || window.document;

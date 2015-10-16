@@ -46,13 +46,17 @@ zodream.fn.prototype = {
 	init: function(name) {
 		switch (typeof name) {
 			case "string":
-				this.elements = zodream.getMore( name , arguments[1] || window.document);
+				this.elements = zodream.getEelementsByTag( name , arguments[1] || window.document);
 				break;
 			case "undefined":
 				break;
 			case "object":
-				if(name instanceof Array) {
-					this.elements = name;
+				if(name instanceof Array || name instanceof HTMLCollection) {
+					if(name[0] instanceof HTMLCollection) {
+						this.elements = name[0];
+					}else{
+						this.elements = name;						
+					}
 				}else {
 					this.elements = [name];					
 				}
@@ -105,7 +109,7 @@ zodream.fn.prototype = {
 	},
 	getChildren: function(name) {
 		return this.forE(function(e) {
-			return zodream.getMore(name, e)
+			return zodream.getEelementsByTag(name, e)
 		});
 	},
 	attr: function(name) {
@@ -190,7 +194,7 @@ zodream.fn.prototype = {
 	},
 	getForm: function() {
 		var data = "",
-			elements = this.getMore('input,textarea', this.elements[0]);
+			elements = zodream.getEelementsByTag('input,textarea', this.elements[0]);
 		for (var i = 0, len = elements.length; i < len; i++) {
 			var element = elements[i];
 			if(element.required && element.value == "") {
@@ -204,10 +208,10 @@ zodream.fn.prototype = {
 				case 'password':    
 				case 'text':
 				case 'email':
-					data += "&" + element.name + "=" + Helper.encode(element.value);
+					data += "&" + element.name + "=" + zodream.encode(element.value);
 					break; 
 				case 'textarea':
-					data += "&" + element.name + "=" + Helper.encode( Helper.toHtml(element.value) );
+					data += "&" + element.name + "=" + zodream.encode( zodream.toHtml(element.value) );
 					break; 
 				case 'checkbox':    
 				case 'radio':
@@ -223,13 +227,13 @@ zodream.fn.prototype = {
 		return data;
 	},
 	clearForm: function() {
-		var elements = this.getMore('input,textarea', this.elements[0]);
+		var elements = zodream.getEelementsByTag('input,textarea', this.elements[0]);
 		for (var i = 0, len = elements.length; i < len; i++) {
 			var element = elements[i];
 			switch ( element.type.toLowerCase() ) {    
 				case 'submit':
-				case 'hidden':
 					break;  
+				case 'hidden':
 				case 'password':    
 				case 'text':
 				case 'email':
@@ -253,7 +257,7 @@ zodream.fn.prototype = {
 				var args = Array.prototype.slice.call(arguments, 1);
 				args.unshift( this.elements[i], i );
 				var returnData = func.apply( null, args);
-				if(returnData instanceof Array) {
+				if(returnData instanceof Array || returnData instanceof HTMLCollection) {
 					Array.prototype.push.apply(data , returnData);
 				}else {
 					data.push(returnData);
@@ -374,47 +378,66 @@ zodream.extend({
 　　　　}
 　　　　return val;
 	},
-	getMore: function(name) {
+	getEelementsByTag: function(name) {
+		var element = arguments[1] || window.document;
+		if(name.indexOf(",") > 0) {
+			return zodream._getMore(name, element);
+		}else if( name.indexOf(" ") > 0 ) {
+			return zodream._getNextAll(name , element);
+		}else if( name.indexOf(">") > 0) {
+			return zodream._getNext(name, element);
+		}else {
+			return zodream.getChild(name, element);
+		}
+	},
+	_getMore: function(name) {
 		var names = name.split(","),
-			elements = Array();
+			data = Array();
 		for (var i = 0, len = names.length; i < len; i++) {
-			Array.prototype.push.apply(elements, this.getNextAll( names[i], arguments[1] || window.document ) );
+			var args = this.getEelementsByTag( names[i], arguments[1] || window.document );
+			if(args instanceof Array || args instanceof HTMLCollection) {
+				Array.prototype.push.apply(data, args ); 			
+			}else if(typeof args == "object"){
+				data.push( args );
+			}
+		}
+		return data;
+	},
+	_getNextAll: function(name) {
+		return this._getElements(name, " " , arguments[1] || window.document , this.getEelementsByTag);
+	},
+	_getNext: function(name) {
+		return this._getElements(name, ">" , arguments[1] || window.document , this.getChildByTag);
+	},
+	_getElements: function(name, separator ,elements, func ) {
+		var names = name.split(separator);
+		if(!(elements instanceof Array)) {
+			elements = [elements];
+		}
+		for (var i = 0, len = names.length; i < len; i++) {
+			
+			var eles = Array();
+			for (var j = 0,leng = elements.length; j < leng; j++) {
+				var element = elements[j];
+				var args = func( names[i], element );
+				if(args instanceof Array || args instanceof HTMLCollection) {
+					Array.prototype.push.apply(eles, args ); 			
+				}else if(typeof args == "object"){
+					eles.push( args );
+				}
+			}
+			elements = eles;
 		};
 		return elements;
 	},
-	getNextAll: function(name) {
-		var names = name.split(" "),
-			element = [arguments[1] || window.document];
-		for (var i = 0, len = names.length; i < len; i++) {
-			var eles = Array();
-			for (var j = 0,leng = element.length; j < leng; j++) {
-				var ele = element[j];
-				Array.prototype.push.apply(eles, this.getChild(names[i], ele) ); 
-			}
-			element = eles;
-		};
-		return element;
-	},
-	getNext: function(name) {
-		var names = name.split(">"),
-			element = [arguments[1] || window.document];
-		for (var i = 0, len = names.length; i < len; i++) {
-			var eles = Array();
-			for (var j = 0,leng = element.length; j < leng; j++) {
-				var ele = element[j];
-				Array.prototype.push.apply(eles, this.getElements(ele.childNodes, names[i]) ); 
-			}
-			element = eles;
-		};
-		return element;
-	},
-	getElements: function(elements, tag) {
+	getChildByTag: function( tag , ele) {
 		if(typeof tag != "string") {
 			return;
 		}
-		var args = Array();
+		var args = Array(),
+			elements = ele.childNodes;
 		for (var i = 0, len = elements.length; i < len; i++) {
-			var element = array[i];
+			var element = elements[i];
 			switch (tag.charAt(0)) {
 				case '.':
 					if(element.getAttribute("class").indexOf(tag.slice(1)) >= 0) {
@@ -493,8 +516,8 @@ zodream.extend({
 			method: "GET",
 			url: '',
 			data: null,
-			success: null,
-			error: null,
+			success: function() {},
+			error: function() {},
 			async: true
 		},
 		settings: {},
@@ -523,19 +546,25 @@ zodream.extend({
 					//var text = decodeURI( this.http.responseText );
 					var data;
 					try {
-						data = Helper.parseJSON(this.http.responseText );
+						data = zodream.parseJSON(this.http.responseText );
 					} catch (error) {
 						data = this.http.responseText;
 					}
-					this.settings.success( data , this.http );
+					if(typeof this.settings.success == "function") {
+						this.settings.success( data , this.http );						
+					}
 				}else {
-					this.settings.error(this.http.responseText, this.http.status, this.http);
+					if(typeof this.settings.error == "function") {
+						this.settings.error(this.http.responseText, this.http.status, this.http);
+					}else if(typeof this.settings.success == "function") {
+						this.settings.success(this.http.responseText, this.http.status, this.http);						
+					}
 				}
 			}
 		},
-		get: function(url, func) {
+		get: function( url, func) {
 			var data;
-			if(arguments.length > 1)
+			if(typeof url == "string")
 			{
 				data = {
 					url: arguments[0],
@@ -548,7 +577,7 @@ zodream.extend({
 		},
 		post: function() {
 			var data;
-			if(arguments.length > 1)
+			if(typeof url == "string")
 			{
 				data = {
 					method: "POST",
@@ -583,6 +612,9 @@ zodream.extend({
 			}
 			return num;
 		}
+	},
+	url: function() {
+		return window.location.href;
 	},
 	forE: function(func) {
 		var data = Array();

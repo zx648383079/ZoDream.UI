@@ -532,21 +532,22 @@ option{
   color: white;
 }
 
-.editbox{
+.treebox{
   border-radius: 20px;
   padding: 10px;
   background-color: #f4f4f4;
 }
 
-.editbox .tool{
+.treebox .tool{
   text-align: right;
 }
 
-.editbox>ul{
+.treebox>ul{
   border-top: 1px solid #767676;
+  padding: 3px 20px;
 }
 
-.editbox li{
+.treebox li{
   list-style-type: none;
   line-height: 30px;
   margin: 2px;
@@ -557,7 +558,7 @@ option{
   background-color: transparent;
 }
 
-.editbox li .more{
+.treebox li .more{
   float: right;
   width: 30px;
   font-size: 20px;
@@ -568,11 +569,11 @@ option{
   text-align: center;
 }
 
-.editbox li li{
+.treebox li li{
   margin-left: 20px;
 }
 
-.editbox li ul{
+.treebox li ul{
   display: none;
 }
 

@@ -44,25 +44,7 @@ zodream.fn = function(name) {
 
 zodream.fn.prototype = {
 	init: function(name) {
-		switch (typeof name) {
-			case "string":
-				this.elements = zodream.getEelementsByTag( name , arguments[1] || window.document);
-				break;
-			case "undefined":
-				break;
-			case "object":
-				if(name instanceof Array || name instanceof HTMLCollection) {
-					if(name[0] instanceof HTMLCollection) {
-						this.elements = name[0];
-					}else{
-						this.elements = name;						
-					}
-				}else {
-					this.elements = [name];					
-				}
-				break;
-			default:
-				break;
+		
 		};
 	},
 	parents: function() {

@@ -4,7 +4,7 @@ module ZoDream {
 	}
 	
 	export class Main extends Base {
-		private _elements: HTMLDocument[];
+		private _elements: HTMLElement[];
 		
 		constructor(
 			name: any,
@@ -36,7 +36,7 @@ module ZoDream {
 		public getParent(index: number = 1) {
 			var child = this._elements[0];
 			for (var i = 0; i < index; i++) {
-				child = child.parentNode;
+				child = <HTMLElement>child.parentNode;
 			}
 			return child;
 		}
@@ -54,9 +54,9 @@ module ZoDream {
 		}
 		
 		public prev() {
-			var obj = this._elements[0].previousSibling;
+			var obj = <HTMLElement>this._elements[0].previousSibling;
 			while(obj != null && obj.id == undefined){
-				obj = obj.previousSibling;
+				obj = <HTMLElement>obj.previousSibling;
 				if(obj == null){
 					break;
 				}
@@ -65,9 +65,9 @@ module ZoDream {
 		}
 		
 		public next() {
-			var obj = this._elements[0].nextSibling;
+			var obj = <HTMLElement>this._elements[0].nextSibling;
 			while(obj != null && obj.id == undefined){
-				obj = obj.nextSibling;
+				obj = <HTMLElement>obj.nextSibling;
 				if(obj == null){
 					break;
 				}
@@ -79,18 +79,18 @@ module ZoDream {
 			var a = [];
 			var b = this._elements[0].parentNode.childNodes;
 			for(var i =0 , len = b.length ; i< len; i++) {
-				if( b[i] !== this._elements[0] ) a.push( b[i] );
-			}
+				if( b[i] !== this._elements[0] ) {
+					a.push( b[i] );					
+				}
+			};
 			return a;	
 		}
 		
-		public forE(func: Function) {
+		public forE(func: (element: any,i: number,...args: any[])=> any, ...args: any[] ): any{
 			var data = Array();
 			if(typeof func === "function") {
 				for (var i = 0, len = this._elements.length; i < len; i++) {
-					var args = Array.prototype.slice.call(arguments, 1);
-					args.unshift( this._elements[i], i );
-					var returnData = func.apply( null, args);
+					var returnData = func(this._elements[i], i, ...args);
 					if(returnData instanceof Array || returnData instanceof HTMLCollection) {
 						Array.prototype.push.apply(data , returnData);
 					}else {
@@ -99,6 +99,239 @@ module ZoDream {
 				};
 			}
 			return data;
+		}
+		
+		public getPosterity(arg: string) {
+			return this.forE(function(e) {
+				return Helper.getEelement(arg, e)
+			});
+		}
+		
+		public attr(arg?: string,val?: string): any {
+			if(val === undefined) {
+				return this._elements[0].getAttribute(arg);
+			}else {
+				this.forE(function(e, i , name, value) {
+					switch (name) {
+						case "class":
+							name += "Name";
+							break;
+						default:
+							break;
+					}
+					e[name] = value;
+				}, name , arguments[1]);
+				return this;
+			}
+		}
+		
+		public addClass(arg: string) {
+			this.forE(function(e, i , value) {
+				e.className += " " + value;
+			}, arg);
+			return this;
+		}
+		
+		public removeClass(arg: string) {
+			var classNames = this.attr('class');
+			this.attr('class', classNames.replace(arg, ""));
+			return this;
+		}
+		
+		public css(arg: string, val?: string) {
+			if(val === undefined) {
+				if(typeof this._elements[0] != "object") return;
+				var value = this._elements[0].style[arg]; 
+				if(!value) {
+					var temp = this._elements[0].currentStyle || document.defaultView.getComputedStyle(this._elements[0], null);
+					value = temp[arg];
+				}
+				return value;
+			}else {
+				this.forE(function(e, i , name, value) {
+					e.style[name] = value;
+				}, arg , val);
+				return this;
+			}
+		}
+		
+		public show() {
+			this.css("display", "block");
+			return this;
+		}
+		
+		public hide() {
+			this.css("display", "none");
+			return this;
+		}
+		
+		public toggle() {
+			if(this.css("display") == "none") {
+				this.show();
+			}else {
+				this.hide();
+			}
+			return this;
+		}
+		
+		public html(arg?: string): any {
+			if(arg === undefined) {
+				return this._elements[0].innerHTML;
+			}else {
+				this.forE(function(e, i , value) {
+					e.innerHTML = value;
+				}, arg);
+				return this;
+			}
+		}
+		
+		public val(arg?: string): any {
+			if(arg === undefined) {
+				return (<HTMLInputElement>this._elements[0]).value;
+			}else {
+				this.forE(function(e, i , value) {
+					e.value = value;
+				}, arg);
+				return this;
+			}
+		}
+		
+		public getForm() {
+			var data = new Object,
+				elements = Helper.getEelement('input,textarea', this._elements[0]);
+			for (var i = 0, len = elements.length; i < len; i++) {
+				var element = elements[i];
+				if(element.required && element.value == "") {
+					element.style.border = "1px solid red";
+					return;
+				};
+				switch (element.type.toLowerCase()) {    
+					case 'submit':
+						break;
+					case 'hidden':    
+					case 'password':    
+					case 'text':
+					case 'email':
+					case 'textarea':
+						data[element.name] = element.value;
+						break; 
+					case 'checkbox':    
+					case 'radio':
+						if( element.checked ) {
+							data[element.name] = element.value;
+						}
+						break;
+					default:
+						break;
+				} 
+			};
+			return data;
+		}
+		
+		public clearForm() {
+			var elements = Helper.getEelement('input,textarea', this._elements[0]);
+			for (var i = 0, len = elements.length; i < len; i++) {
+				var element = elements[i];
+				switch ( element.type.toLowerCase() ) {    
+					case 'submit':
+						break;  
+					case 'hidden':
+					case 'password':    
+					case 'text':
+					case 'email':
+					case 'textarea':
+						element.value = "";
+						break;
+					case 'checkbox':    
+					case 'radio':
+						element.checked = false;
+						break;
+					default:
+						break;
+				}
+			}
+			return this;
+		}
+		
+		public addChild(...args: any[]) {
+			for (var i = 0,len = arguments.length; i < len; i++) {
+				this._elements[0].appendChild(arguments[i]);
+			}
+			return this;
+		}
+		
+		public insertBefore(arg: any) {
+			this.getParent().insertBefore(arg , this._elements[0]);
+			return this;
+		}
+		
+		public insertAfter(arg: any) {
+			var parent = this.getParent();
+			if(parent.lastChild == this._elements[0]){
+				parent.appendChild( arg );
+			}else{
+				parent.insertBefore( arg, this.next() );
+			}
+			return this;
+		}
+		
+		public removeChild(...args: any[]) {
+			if(arguments[0]) {
+				for (var i = 0,len = arguments.length; i < len; i++) {
+					this.forE(function(e, i , ele) {
+						e.removeChild(ele);
+					}, arguments[i]);
+				}
+			}else {
+				this.forE(function(e) {
+					e.innerHTML = "";
+				});
+			}
+			return this;
+		}
+		
+		public removeSelf() {
+			this.forE(function(e) {
+				e.parentNode.removeChild(e);
+			});	
+			return this;
+		}
+		
+		public addEvent(event: string, func: Function, ...args: any[]) {
+			/*var func = fun;
+			if((...args).lenght > 0)
+			{
+				func = function(e)
+				{
+					fun.apply( this, arguments);  //继承监听函数,并传入参数以初始化;
+				}
+			};*/
+			
+			this.forE(function(e, i, event , func) {
+				if(e) {
+					if(e.attachEvent){
+						e.attachEvent('on' + event, func);
+					}else if(e.addEventListener){
+						e.addEventListener(event, func, false);
+					}else{
+						e["on" + event] = func;
+					}
+				}
+			}, event , func);
+			return this;
+		}
+		
+		public removeEvent(event: string, func: Function) {
+			this.forE(function(e, i, event , func) {
+				if (e.removeEventListener) {
+					e.removeEventListener(event, func, false);
+				} else if (e.detachEvent) {
+					e.detachEvent("on" + event, func);
+				}else {
+					delete e["on" + event];
+				}
+			}, event , func);
+			return this;
 		}
 	}
 	
@@ -128,7 +361,7 @@ module ZoDream {
 		}
 		
 		private _getHttp(): void {
-			if( window.ActiveXObject ) {
+			if( ActiveXObject ) {
 				try {  
 					this._http = new ActiveXObject("Msxml2.XMLHTTP");//IE高版本创建XMLHTTP  
 				}  
@@ -219,7 +452,7 @@ module ZoDream {
 		
 		public static getEelement(
 			name: string, 
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document) {
 			if(name.indexOf(",") > 0) {
 				return this._getBrother(name, parent);
 			}else if( name.indexOf(" ") > 0 ) {
@@ -233,7 +466,7 @@ module ZoDream {
 		
 		private static _getBrother(
 			name: string,
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document) {
 			var names = name.split(","),
 			data = Array();
 			for (var i = 0, len = names.length; i < len; i++) {
@@ -249,13 +482,13 @@ module ZoDream {
 		
 		private static _getPosterity(
 			name: string, 
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document) {
 			return this._getElements(name, " " , parent);
 		}
 		
 		private static _getChildren(
 			name: string, 
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document) {
 			return this._getElements(name, ">" , parent , this._getChildrenByName);
 		}
 		
@@ -290,7 +523,7 @@ module ZoDream {
 			var args = Array(),
 				elements = parent.childNodes;
 			for (var i = 0, len = elements.length; i < len; i++) {
-				var element = elements[i];
+				var element = <Element>elements[i];
 				switch (name.charAt(0)) {
 					case '.':
 						if(element.getAttribute("class").indexOf(name.slice(1)) >= 0) {
@@ -317,7 +550,7 @@ module ZoDream {
 		
 		public static getPosterityByNmae(
 			name: string,
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document): any {
 			switch (name.charAt(0)) {
 				case '.':
 					name = name.slice(1);
@@ -325,7 +558,7 @@ module ZoDream {
 					break;
 				case '#':
 					name = name.slice(1);
-					return parent.getElementById(name);
+					return (<HTMLDocument>parent).getElementById(name);
 					break;
 				case '@':
 					name = name.slice(1);
@@ -333,7 +566,7 @@ module ZoDream {
 					break;
 				case '$':
 					name = name.slice(1);
-					return new NodeListof<Element>( this._getPosterityByIndex( Number(name), parent) );
+					return  this._getPosterityByIndex( Number(name), parent);
 					break;
 				default:
 					return parent.getElementsByTagName(name);
@@ -343,7 +576,7 @@ module ZoDream {
 		
 		private static _getPosterityByIndex(
 			index: number,
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document): any {
 			var elements = parent.getElementsByTagName("*");
 			for (var i = 0, len = elements.length; i < len; i++) {
 				if(elements[i].nodeType == 1) {
@@ -358,7 +591,7 @@ module ZoDream {
 		
 		private static _getPosterityByClass(
 			name: string,
-			parent: HTMLDocument = window.document) {
+			parent: HTMLDocument | HTMLElement = window.document): any[] {
 			var elements = parent.getElementsByTagName("*"),
 				classElements = Array();
 			for (var i = 0, len = elements.length; i < len; i++) {
@@ -372,7 +605,7 @@ module ZoDream {
 			return classElements;
 		}
 		
-		public static clone(obj: any) {
+		public static clone(obj: any): any {
 			var o;  
 			switch(typeof obj){  
 				case 'undefined': 

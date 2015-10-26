@@ -298,14 +298,14 @@ module ZoDream {
 		}
 		
 		public addEvent(event: string, func: Function, ...args: any[]) {
-			/*var func = fun;
-			if((...args).lenght > 0)
+			var fun = func;
+			if(args.length > 0)
 			{
-				func = function(e)
+				fun = function(e)
 				{
-					fun.apply( this, arguments);  //继承监听函数,并传入参数以初始化;
+					func.apply( this, args );  //继承监听函数,并传入参数以初始化;
 				}
-			};*/
+			};
 			
 			this.forE(function(e, i, event , func) {
 				if(e) {

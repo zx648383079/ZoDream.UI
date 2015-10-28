@@ -1,0 +1,12 @@
+* {
+	padding: 0;
+	margin: 0;
+	background-color: #000;
+}
+
+#danmu {
+	width: 90%;
+	margin: 10px auto;
+	height: 500px;
+	border: 1px solid #f00;
+}

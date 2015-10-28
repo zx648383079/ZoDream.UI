@@ -5,7 +5,6 @@ module ZoDream {
 	
 	export class Main extends Base {
 		private _elements: HTMLElement[];
-		
 		constructor(
 			name: any,
 			parent: HTMLDocument = window.document) {
@@ -78,11 +77,11 @@ module ZoDream {
 		public getSibling() {
 			var a = [];
 			var b = this._elements[0].parentNode.childNodes;
-			for(var i =0 , len = b.length ; i< len; i++) {
+			for(var i =0 , len = b.length ; i < len; i++) {
 				if( b[i] !== this._elements[0] ) {
 					a.push( b[i] );					
 				}
-			};
+			}
 			return a;	
 		}
 		
@@ -107,7 +106,7 @@ module ZoDream {
 			});
 		}
 		
-		public attr(arg?: string,val?: string): any {
+		public attr(arg?: string, val?: string): any {
 			if(val === undefined) {
 				return this._elements[0].getAttribute(arg);
 			}else {
@@ -120,7 +119,7 @@ module ZoDream {
 							break;
 					}
 					e[name] = value;
-				}, name , arguments[1]);
+				}, arg , val);
 				return this;
 			}
 		}
@@ -254,9 +253,7 @@ module ZoDream {
 		}
 		
 		public addChild(...args: any[]) {
-			for (var i = 0,len = arguments.length; i < len; i++) {
-				this._elements[0].appendChild(arguments[i]);
-			}
+			this._elements[0].appendChild.call( this._elements[0] ,...args);
 			return this;
 		}
 		
@@ -275,13 +272,9 @@ module ZoDream {
 			return this;
 		}
 		
-		public removeChild(...args: any[]) {
-			if(arguments[0]) {
-				for (var i = 0,len = arguments.length; i < len; i++) {
-					this.forE(function(e, i , ele) {
-						e.removeChild(ele);
-					}, arguments[i]);
-				}
+		public removeChild(arg?: Node,...args: any[]) {
+			if( arg ) {
+				this._elements[0].removeChild.call( this._elements[0] , arg ,...args);
 			}else {
 				this.forE(function(e) {
 					e.innerHTML = "";

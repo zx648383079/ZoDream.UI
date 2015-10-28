@@ -1,672 +1,658 @@
-"use strict";
-
-var zodream = {};
-
-zodream.ready = function() {
-	if(!zodream.elements) {
-		zodream.elements = {};		
-	};
-	switch (typeof arguments[0]) {
-		case "string":
-			zodream.name = zodream.getName(arguments[0]);
-		case "undefined":
-			if( !zodream.elements[zodream.name] || arguments[1] === true)
-			{
-				zodream.elements[ zodream.name ] = new zodream.fn(arguments[0], zodream);
-			}
-			return zodream.elements[zodream.name];
-			break;
-		case "object":
-		default:
-			return new zodream.fn(arguments[0]);
-			break;
-	};
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-
-zodream.extend = function() {
-	for (var i = 0,len = arguments.length; i < len; i++) {
-		var arg = arguments[i];
-		if(typeof arg === "object") {
-			for (var key in arg) {
-				if (arg.hasOwnProperty(key)) {
-					this[key] = arg[key];
-				}
-			};
-		}
-	};
-};
-
-zodream.fn = function(name) {
-	this.elements = [];
-	this.parent = arguments[1] || null;
-	this.init(name);
-};
-
-zodream.fn.prototype = {
-	init: function(name) {
-		
-		};
-	},
-	parents: function() {
-		return this.elements[0].parentNode;
-	},
-	children: function() {
-		var args = Array();
-		var child = this.elements[0].childNodes;	
-		for( var i = 0 , len = child.length ; i < len ; i++){
-			if(child[i].nodeName != "#text" || /\s/.test(child[i].nodeValue))
-			{
-				args.push(child[i]);
-			}
-		}
-		return args;
-	},
-	prev: function() {
-		var obj = this.elements[0].previousSibling;
-		while(obj != null && obj.id == undefined){
-			obj = obj.previousSibling;
-			if(obj == null){
-				break;
-			}
-		}
-		return obj;
-	},
-	next: function() {
-		var obj = this.elements[0].nextSibling;
-		while(obj != null && obj.id == undefined){
-			obj = obj.nextSibling;
-			if(obj == null){
-				break;
-			}
-		}
-		return obj;
-	},
-	getSibling: function() {
-		var a = [];
-		var b = this.elements[0].parentNode.children;
-		for(var i =0 , len = b.length ; i< len; i++) {
-			if( b[i] !== this.elements[0] ) a.push( b[i] );
-		}
-		return a;	
-	},
-	getChildren: function(name) {
-		return this.forE(function(e) {
-			return zodream.getEelementsByTag(name, e)
-		});
-	},
-	attr: function(name) {
-		if(arguments[1] === undefined) {
-			return this.elements[0].getAttribute(name);
-		}else {
-			this.forE(function(e, i , name, value) {
-				switch (name) {
-					case "class":
-						name += "Name";
-						break;
-					default:
-						break;
-				}
-				e[name] = value;
-			}, name , arguments[1]);
-			return this;
-		}
-	},
-	addClass: function(className) {
-		this.forE(function(e, i , value) {
-			e.className += " " + value;
-		}, className);
-		return this;
-	},
-	removeClass: function(className) {
-		var classNames = this.attr('class');
-		this.attr('class', classNames.replace(className, ""));
-		return this;
-	},
-	css: function(name) {
-		if(arguments[1] === undefined) {
-			if(typeof this.elements[0] != "object") return;
-			var value = this.elements[0].style[name]; 
-			if(!value) {
-				var temp = this.elements[0].currentStyle || document.defaultView.getComputedStyle(this.elements[0], null);
-				value = temp[name];
-			}
-			return value;
-		}else {
-			this.forE(function(e, i , name, value) {
-				e.style[name] = value;
-			}, name , arguments[1]);
-			return this;
-		}
-	},
-	show: function() {
-		this.css("display", "block");
-		return this;
-	},
-	hide: function() {
-		this.css("display", "none");
-		return this;	
-	},
-	toggle: function() {
-		if(this.css("display") == "none") {
-			this.show();
-		}else {
-			this.hide();
-		}
-		return this;
-	},
-	html: function() {
-		if(arguments[0] === undefined) {
-			return this.elements[0].innerHTML;
-		}else {
-			this.forE(function(e, i , value) {
-				e.innerHTML = value;
-			}, arguments[0]);
-			return this;
-		}
-	},
-	val: function() {
-		if(arguments[0] === undefined) {
-			return this.elements[0].value;
-		}else {
-			this.forE(function(e, i , value) {
-				e.value = value;
-			}, arguments[0]);
-			return this;
-		}
-	},
-	getForm: function() {
-		var data = "",
-			elements = zodream.getEelementsByTag('input,textarea', this.elements[0]);
-		for (var i = 0, len = elements.length; i < len; i++) {
-			var element = elements[i];
-			if(element.required && element.value == "") {
-				element.style.border = "1px solid red";
-				return;
-			};
-			switch (element.type.toLowerCase()) {    
-				case 'submit':
-					break;
-				case 'hidden':    
-				case 'password':    
-				case 'text':
-				case 'email':
-					data += "&" + element.name + "=" + zodream.encode(element.value);
-					break; 
-				case 'textarea':
-					data += "&" + element.name + "=" + zodream.encode( zodream.toHtml(element.value) );
-					break; 
-				case 'checkbox':    
-				case 'radio':
-					if( element.checked ) {
-						data += "&" + element.name + "=" + element.value;
-					}
-					break;
-				default:
-					break;
-			} 
-		};
-		data = data.substr(1);
-		return data;
-	},
-	clearForm: function() {
-		var elements = zodream.getEelementsByTag('input,textarea', this.elements[0]);
-		for (var i = 0, len = elements.length; i < len; i++) {
-			var element = elements[i];
-			switch ( element.type.toLowerCase() ) {    
-				case 'submit':
-					break;  
-				case 'hidden':
-				case 'password':    
-				case 'text':
-				case 'email':
-				case 'textarea':
-					element.value = "";
-					break;
-				case 'checkbox':    
-				case 'radio':
-					element.checked = false;
-					break;
-				default:
-					break;
-			}
-		}
-		return this;
-	},
-	forE: function(func) {
-		var data = Array();
-		if(typeof func === "function") {
-			for (var i = 0, len = this.elements.length; i < len; i++) {
-				var args = Array.prototype.slice.call(arguments, 1);
-				args.unshift( this.elements[i], i );
-				var returnData = func.apply( null, args);
-				if(returnData instanceof Array || returnData instanceof HTMLCollection) {
-					Array.prototype.push.apply(data , returnData);
-				}else {
-					data.push(returnData);
-				}
-			};
-		}
-		return data;
-	},
-	addChild: function() {
-		for (var i = 0,len = arguments.length; i < len; i++) {
-			this.elements[0].appendChild(arguments[i]);
-		}
-		return this;
-	},
-	insertBefore: function(element) {
-		this.parents().insertBefore(element , this.elements[0]);
-		return this;
-	},
-	insertAfter: function( element ){
-		var parent = this.parents();
-		if(parent.lastChild == this.elements[0]){
-			parent.appendChild( element );
-		}else{
-			parent.insertBefore( element, this.next() );
-		}
-		return this;
-	},
-	removeChild: function() {
-		if(arguments[0]) {
-			for (var i = 0,len = arguments.length; i < len; i++) {
-				this.forE(function(e, i , ele) {
-					e.removeChild(ele);
-				}, arguments[i]);
-			}
-		}else {
-			this.forE(function(e) {
-				e.innerHTML = "";
-			});
-		}
-		return this;
-	},
-	removeSelf: function() {
-		this.forE(function(e) {
-			e.parentNode.removeChild(e);
-		});	
-		return this;
-	},
-	remove: function() {
-		for (var i = 0, len = arguments.length; i < len; i++) {
-			for (var j = 0; j < this.elements.length; j++) {
-				if(this.elements[j] == arguments[i])
-				{
-					this.elements.splice( j , 1);
-				}
-			};
-		};
-	},
-	removeAt: function() {
-		arguments.sort(this.desc);
-		for (var i = 0, len = arguments.length; i < len; i++) {
-			this.elements.splice( arguments[i] - i , 1);
-		}
-	},
-	addEvent: function() {
-		var args = Array.prototype.slice.call(arguments),
-			event = args.shift(),
-			fun = args.shift(),
-			func = fun;
-		if(args.lenght > 0)
-		{
-			func = function(e)
-			{
-				fun.apply( this, arguments);  //继承监听函数,并传入参数以初始化;
-			}
-		};
-		
-		this.forE(function(e, i, event , func) {
-			if(e) {
-				if(e.attachEvent){
-					e.attachEvent('on' + event, func);
-				}else if(e.addEventListener){
-					e.addEventListener(event, func, false);
-				}else{
-					e["on" + event] = func;
-				}
-			}
-		}, event , func);
-		return this;
-	},
-	removeEvent: function(event, func) {
-		this.forE(function(e, i, event , func) {
-			if (e.removeEventListener) {
-				e.removeEventListener(event, func, false);
-			} else if (e.detachEvent) {
-				e.detachEvent("on" + event, func);
-			}else {
-				delete e["on" + event];
-			}
-		}, event , func);
-		return this;
-	},
-	clear: function() {
-		this.parent.remove();
-	},
-	desc: function(a, b) {
-		return a>b?1:-1;
-	},
-	asc: function(a, b) {
-		return a<b?1:-1;
-	}
-};
-
-zodream.extend({
-	getName: function(tag) {
-		var val="";
-　　　　for(var i = 0; i < tag.length; i++){
-			val += tag.charCodeAt(i).toString(16);
-　　　　}
-　　　　return val;
-	},
-	getEelementsByTag: function(name) {
-		var element = arguments[1] || window.document;
-		if(name.indexOf(",") > 0) {
-			return zodream._getMore(name, element);
-		}else if( name.indexOf(" ") > 0 ) {
-			return zodream._getNextAll(name , element);
-		}else if( name.indexOf(">") > 0) {
-			return zodream._getNext(name, element);
-		}else {
-			return zodream.getChild(name, element);
-		}
-	},
-	_getMore: function(name) {
-		var names = name.split(","),
-			data = Array();
-		for (var i = 0, len = names.length; i < len; i++) {
-			var args = this.getEelementsByTag( names[i], arguments[1] || window.document );
-			if(args instanceof Array || args instanceof HTMLCollection) {
-				Array.prototype.push.apply(data, args ); 			
-			}else if(typeof args == "object"){
-				data.push( args );
-			}
-		}
-		return data;
-	},
-	_getNextAll: function(name) {
-		return this._getElements(name, " " , arguments[1] || window.document , this.getEelementsByTag);
-	},
-	_getNext: function(name) {
-		return this._getElements(name, ">" , arguments[1] || window.document , this.getChildByTag);
-	},
-	_getElements: function(name, separator ,elements, func ) {
-		var names = name.split(separator);
-		if(!(elements instanceof Array)) {
-			elements = [elements];
-		}
-		for (var i = 0, len = names.length; i < len; i++) {
-			
-			var eles = Array();
-			for (var j = 0,leng = elements.length; j < leng; j++) {
-				var element = elements[j];
-				var args = func( names[i], element );
-				if(args instanceof Array || args instanceof HTMLCollection) {
-					Array.prototype.push.apply(eles, args ); 			
-				}else if(typeof args == "object"){
-					eles.push( args );
-				}
-			}
-			elements = eles;
-		};
-		return elements;
-	},
-	getChildByTag: function( tag , ele) {
-		if(typeof tag != "string") {
-			return;
-		}
-		var args = Array(),
-			elements = ele.childNodes;
-		for (var i = 0, len = elements.length; i < len; i++) {
-			var element = elements[i];
-			switch (tag.charAt(0)) {
-				case '.':
-					if(element.getAttribute("class").indexOf(tag.slice(1)) >= 0) {
-						args.push(element);
-					}
-					break;
-				case '#':
-					if( element.getAttribute("id") === tag.slice(1)) {
-						args.push(element);
-					}
-					break;
-				case '@':
-					if( element.getAttribute("name") === tag.slice(1)) {
-						args.push(element);
-					}
-					break;
-				default:
-					break;
-			}
-		}
-		
-		return args;
-	},
-	getChild: function(name) {
-		var parent = arguments[1] || window.document;
-		switch (name.charAt(0)) {
-			case '.':
-				name = name.slice(1);
-				return this.getChildByClass(name, parent);
-				break;
-			case '#':
-				name = name.slice(1);
-				return [parent.getElementById(name)];
-				break;
-			case '@':
-				name = name.slice(1);
-				return window.document.getElementsByName(name);
-				break;
-			case '$':
-				name = name.slice(1);
-				return this.getChildByIndex( Number(name), parent);
-				break;
-			default:
-				return parent.getElementsByTagName(name);
-				break;
-		}
-	},
-	getChildByIndex: function(index) {
-		var parent = arguments[1] || window.document,
-			elements = parent.getElementsByTagName("*");
-		for (var i = 0, len = elements.length; i < len; i++) {
-			if(elements[i].nodeType == 1) {
-				index --;
-				if(index < 0) {
-					return elements[i];
-				}
-			}
-		}
-	},
-	getChildByClass: function(name) {
-		var parent = arguments[1] || window.document,
-			elements = parent.getElementsByTagName("*"),
-			classElements = Array();
-		for (var i = 0, len = elements.length; i < len; i++) {
-			var element = elements[i];
-			if(element.nodeType == 1) {
-				if(element.getAttribute("class") == name) {
-					classElements.push(element);
-				}				
-			}
-		};
-		return classElements;
-	},
-	ajax: {
-		default: {
-			method: "GET",
-			url: '',
-			data: null,
-			success: function() {},
-			error: function() {},
-			async: true
-		},
-		settings: {},
-		http: null,
-		getHttp: function() {
-			if(window.ActiveXObject) {
-				try {  
-					this.http = new ActiveXObject("Msxml2.XMLHTTP");//IE高版本创建XMLHTTP  
-				}  
-				catch(E) {
-					this.http = new ActiveXObject("Microsoft.XMLHTTP");//IE低版本创建XMLHTTP  
-				}  
-			}else {
-				this.http = new XMLHttpRequest();
-			}
-		},
-		request: function() {
-			this.http.open( this.settings.method , this.settings.url, this.settings.async);  
-			this.http.onreadystatechange = this.response.bind(this); 
-			this.http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			this.http.send( this.settings.data );  
-		},
-		response: function() {
-			if (this.http.readyState == 4) { 
-				if (this.http.status == 200) {  
-					//var text = decodeURI( this.http.responseText );
-					var data;
-					try {
-						data = zodream.parseJSON(this.http.responseText );
-					} catch (error) {
-						data = this.http.responseText;
-					}
-					if(typeof this.settings.success == "function") {
-						this.settings.success( data , this.http );						
-					}
-				}else {
-					if(typeof this.settings.error == "function") {
-						this.settings.error(this.http.responseText, this.http.status, this.http);
-					}else if(typeof this.settings.success == "function") {
-						this.settings.success(this.http.responseText, this.http.status, this.http);						
-					}
-				}
-			}
-		},
-		get: function( url, func) {
-			var data;
-			if(typeof url == "string")
-			{
-				data = {
-					url: arguments[0],
-					success: arguments[1],
-				};
-			}else {
-				data = arguments[0];
-			}
-			this.load(data);
-		},
-		post: function() {
-			var data;
-			if(typeof url == "string")
-			{
-				data = {
-					method: "POST",
-					url: arguments[0],
-					data: arguments[1],
-					success: arguments[2],
-				};
-			}else {
-				data = arguments[0];
-			}
-			if( data.data === false) return;
-			this.load(data);
-			
-		},
-		load: function( data ) {
-			zodream.extend.call( this.settings , this.default, data);
-			this.getHttp();
-			this.request();
-		}
-	},
-	date: {
-		getNowFormatDate: function() {
-			var date = new Date();
-			return date.getFullYear() + "-" + 
-					this.toFull(date.getMonth() + 1) + "-" + this.toFull(date.getDate())
-					+ " " + this.toFull(date.getHours()) + ":" + this.toFull(date.getMinutes())
-					+ ":" + this.toFull(date.getSeconds());
-		},
-		toFull: function ( num ) {
-			if (num >= 0 && num <= 9) {
-				num = "0" + num;
-			}
-			return num;
-		}
-	},
-	url: function() {
-		return window.location.href;
-	},
-	forE: function(func) {
-		var data = Array();
-		if(typeof func === "function") {
-			for (var i = 0, len = this.length; i < len; i++) {
-				var args = Array.prototype.slice.call(arguments, 1);
-				args.unshift( this[i], i );
-				data.push( func.apply( null, args) );
-			};
-		}
-		return data;
-	},
-	clone: function(obj) { 
-        var o;  
-		switch(typeof obj){  
-			case 'undefined': 
-				break;  
-			case 'string'   : 
-				o = obj + '';
-				break;  
-			case 'number'   : 
-				o = obj - 0;
-				break;  
-			case 'boolean'  : 
-				o = obj;
-				break;  
-			case 'object'   :  
-				if(obj === null){  
-					o = null;  
-				}else{  
-					if(obj instanceof Array){  
-						o = [];  
-						for(var i = 0, len = obj.length; i < len; i++){  
-							o.push(this.clone(obj[i]));  
-						}  
-					}else{  
-						o = {};  
-						for(var k in obj){  
-							o[k] = this.clone(obj[k]);  
-						}  
-					}  
-				}  
-				break;  
-			default:          
-				o = obj;
-				break;  
-		}  
-		return o; 
-	},
-	parseJSON: function( data ) {
-		return JSON.parse( data + "" );
-	},
-	refresh: function() {
-		window.location.reload();
-	},
-	htmlTo: function(data) {
-		return data.replace(/(&nbsp;)/g, " ").replace(/(\<br\>)/g, "\r\n");
-	},
-	toHtml: function(data) {
-		return data.replace(/[ ]/g, "&nbsp;").replace(/\n|\r|(\r\n)|(\u0085)|(\u2028)|(\u2029)/g, "<br>");
-	},
-	encode: function(data){  
-		return encodeURI(data).replace(/&/g, '%26').replace(/\+/g,'%2B').replace(/\s/g,'%20').replace(/#/g,'%23');  
-	}
-});
-
-
-
-(function() {
-	window.Z = function() {
-		return zodream.ready.apply(null, arguments);
-	};	
-})();
+var ZoDream;
+(function (ZoDream) {
+    var Base = (function () {
+        function Base() {
+        }
+        return Base;
+    })();
+    ZoDream.Base = Base;
+    var Main = (function (_super) {
+        __extends(Main, _super);
+        function Main(name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            _super.call(this);
+            switch (typeof name) {
+                case "string":
+                    this._elements = Helper.getEelement(name, parent);
+                    break;
+                case "undefined":
+                    break;
+                case "object":
+                    if (name instanceof Array || name instanceof HTMLCollection) {
+                        if (name[0] instanceof HTMLCollection) {
+                            this._elements = name[0];
+                        }
+                        else {
+                            this._elements = name;
+                        }
+                    }
+                    else {
+                        this._elements = [name];
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        Main.prototype.getParent = function (index) {
+            if (index === void 0) { index = 1; }
+            var child = this._elements[0];
+            for (var i = 0; i < index; i++) {
+                child = child.parentNode;
+            }
+            return child;
+        };
+        Main.prototype.getChildren = function () {
+            var args = Array();
+            var child = this._elements[0].childNodes;
+            for (var i = 0, len = child.length; i < len; i++) {
+                if (child[i].nodeName != "#text" || /\s/.test(child[i].nodeValue)) {
+                    args.push(child[i]);
+                }
+            }
+            return args;
+        };
+        Main.prototype.prev = function () {
+            var obj = this._elements[0].previousSibling;
+            while (obj != null && obj.id == undefined) {
+                obj = obj.previousSibling;
+                if (obj == null) {
+                    break;
+                }
+            }
+            return obj;
+        };
+        Main.prototype.next = function () {
+            var obj = this._elements[0].nextSibling;
+            while (obj != null && obj.id == undefined) {
+                obj = obj.nextSibling;
+                if (obj == null) {
+                    break;
+                }
+            }
+            return obj;
+        };
+        Main.prototype.getSibling = function () {
+            var a = [];
+            var b = this._elements[0].parentNode.childNodes;
+            for (var i = 0, len = b.length; i < len; i++) {
+                if (b[i] !== this._elements[0]) {
+                    a.push(b[i]);
+                }
+            }
+            return a;
+        };
+        Main.prototype.forE = function (func) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            var data = Array();
+            if (typeof func === "function") {
+                for (var i = 0, len = this._elements.length; i < len; i++) {
+                    var returnData = func.apply(void 0, [this._elements[i], i].concat(args));
+                    if (returnData instanceof Array || returnData instanceof HTMLCollection) {
+                        Array.prototype.push.apply(data, returnData);
+                    }
+                    else {
+                        data.push(returnData);
+                    }
+                }
+                ;
+            }
+            return data;
+        };
+        Main.prototype.getPosterity = function (arg) {
+            return this.forE(function (e) {
+                return Helper.getEelement(arg, e);
+            });
+        };
+        Main.prototype.attr = function (arg, val) {
+            if (val === undefined) {
+                return this._elements[0].getAttribute(arg);
+            }
+            else {
+                this.forE(function (e, i, name, value) {
+                    switch (name) {
+                        case "class":
+                            name += "Name";
+                            break;
+                        default:
+                            break;
+                    }
+                    e[name] = value;
+                }, arg, val);
+                return this;
+            }
+        };
+        Main.prototype.addClass = function (arg) {
+            this.forE(function (e, i, value) {
+                e.className += " " + value;
+            }, arg);
+            return this;
+        };
+        Main.prototype.removeClass = function (arg) {
+            var classNames = this.attr('class');
+            this.attr('class', classNames.replace(arg, ""));
+            return this;
+        };
+        Main.prototype.css = function (arg, val) {
+            if (val === undefined) {
+                if (typeof this._elements[0] != "object")
+                    return;
+                var value = this._elements[0].style[arg];
+                if (!value) {
+                    var temp = this._elements[0].currentStyle || document.defaultView.getComputedStyle(this._elements[0], null);
+                    value = temp[arg];
+                }
+                return value;
+            }
+            else {
+                this.forE(function (e, i, name, value) {
+                    e.style[name] = value;
+                }, arg, val);
+                return this;
+            }
+        };
+        Main.prototype.show = function () {
+            this.css("display", "block");
+            return this;
+        };
+        Main.prototype.hide = function () {
+            this.css("display", "none");
+            return this;
+        };
+        Main.prototype.toggle = function () {
+            if (this.css("display") == "none") {
+                this.show();
+            }
+            else {
+                this.hide();
+            }
+            return this;
+        };
+        Main.prototype.html = function (arg) {
+            if (arg === undefined) {
+                return this._elements[0].innerHTML;
+            }
+            else {
+                this.forE(function (e, i, value) {
+                    e.innerHTML = value;
+                }, arg);
+                return this;
+            }
+        };
+        Main.prototype.val = function (arg) {
+            if (arg === undefined) {
+                return this._elements[0].value;
+            }
+            else {
+                this.forE(function (e, i, value) {
+                    e.value = value;
+                }, arg);
+                return this;
+            }
+        };
+        Main.prototype.getForm = function () {
+            var data = new Object, elements = Helper.getEelement('input,textarea', this._elements[0]);
+            for (var i = 0, len = elements.length; i < len; i++) {
+                var element = elements[i];
+                if (element.required && element.value == "") {
+                    element.style.border = "1px solid red";
+                    return;
+                }
+                ;
+                switch (element.type.toLowerCase()) {
+                    case 'submit':
+                        break;
+                    case 'hidden':
+                    case 'password':
+                    case 'text':
+                    case 'email':
+                    case 'textarea':
+                        data[element.name] = element.value;
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        if (element.checked) {
+                            data[element.name] = element.value;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            ;
+            return data;
+        };
+        Main.prototype.clearForm = function () {
+            var elements = Helper.getEelement('input,textarea', this._elements[0]);
+            for (var i = 0, len = elements.length; i < len; i++) {
+                var element = elements[i];
+                switch (element.type.toLowerCase()) {
+                    case 'submit':
+                        break;
+                    case 'hidden':
+                    case 'password':
+                    case 'text':
+                    case 'email':
+                    case 'textarea':
+                        element.value = "";
+                        break;
+                    case 'checkbox':
+                    case 'radio':
+                        element.checked = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return this;
+        };
+        Main.prototype.addChild = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            (_a = this._elements[0].appendChild).call.apply(_a, [this._elements[0]].concat(args));
+            return this;
+            var _a;
+        };
+        Main.prototype.insertBefore = function (arg) {
+            this.getParent().insertBefore(arg, this._elements[0]);
+            return this;
+        };
+        Main.prototype.insertAfter = function (arg) {
+            var parent = this.getParent();
+            if (parent.lastChild == this._elements[0]) {
+                parent.appendChild(arg);
+            }
+            else {
+                parent.insertBefore(arg, this.next());
+            }
+            return this;
+        };
+        Main.prototype.removeChild = function (arg) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            if (arg) {
+                (_a = this._elements[0].removeChild).call.apply(_a, [this._elements[0], arg].concat(args));
+            }
+            else {
+                this.forE(function (e) {
+                    e.innerHTML = "";
+                });
+            }
+            return this;
+            var _a;
+        };
+        Main.prototype.removeSelf = function () {
+            this.forE(function (e) {
+                e.parentNode.removeChild(e);
+            });
+            return this;
+        };
+        Main.prototype.addEvent = function (event, func) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
+            var fun = func;
+            if (args.length > 0) {
+                fun = function (e) {
+                    func.apply(this, args); //继承监听函数,并传入参数以初始化;
+                };
+            }
+            ;
+            this.forE(function (e, i, event, func) {
+                if (e) {
+                    if (e.attachEvent) {
+                        e.attachEvent('on' + event, func);
+                    }
+                    else if (e.addEventListener) {
+                        e.addEventListener(event, func, false);
+                    }
+                    else {
+                        e["on" + event] = func;
+                    }
+                }
+            }, event, func);
+            return this;
+        };
+        Main.prototype.removeEvent = function (event, func) {
+            this.forE(function (e, i, event, func) {
+                if (e.removeEventListener) {
+                    e.removeEventListener(event, func, false);
+                }
+                else if (e.detachEvent) {
+                    e.detachEvent("on" + event, func);
+                }
+                else {
+                    delete e["on" + event];
+                }
+            }, event, func);
+            return this;
+        };
+        return Main;
+    })(Base);
+    ZoDream.Main = Main;
+    var Method;
+    (function (Method) {
+        Method[Method["GET"] = 0] = "GET";
+        Method[Method["POST"] = 1] = "POST";
+    })(Method || (Method = {}));
+    ;
+    var AjaxModel = (function () {
+        function AjaxModel(url, success, method, data, error, async) {
+            if (url === void 0) { url = null; }
+            if (success === void 0) { success = null; }
+            if (method === void 0) { method = Method.GET; }
+            if (data === void 0) { data = null; }
+            if (error === void 0) { error = null; }
+            if (async === void 0) { async = true; }
+            this.url = url;
+            this.success = success;
+            this.method = method;
+            this.data = data;
+            this.error = error;
+            this.async = async;
+        }
+        return AjaxModel;
+    })();
+    ZoDream.AjaxModel = AjaxModel;
+    var Ajax = (function (_super) {
+        __extends(Ajax, _super);
+        function Ajax(_models) {
+            _super.call(this);
+            this._models = _models;
+            this._getHttp();
+            this._request();
+        }
+        Ajax.prototype._getHttp = function () {
+            if (ActiveXObject) {
+                try {
+                    this._http = new ActiveXObject("Msxml2.XMLHTTP"); //IE高版本创建XMLHTTP  
+                }
+                catch (E) {
+                    this._http = new ActiveXObject("Microsoft.XMLHTTP"); //IE低版本创建XMLHTTP  
+                }
+            }
+            else {
+                this._http = new XMLHttpRequest();
+            }
+        };
+        Ajax.prototype._request = function () {
+            this._http.open(this._models.method, this._models.url, this._models.async);
+            this._http.onreadystatechange = this._response.bind(this);
+            this._http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            this._http.send(this._models.data);
+        };
+        Ajax.prototype._response = function () {
+            if (this._http.readyState == 4) {
+                if (this._http.status == 200) {
+                    var data;
+                    try {
+                        data = JSON.parse(this._http.responseText + "");
+                    }
+                    catch (error) {
+                        data = this._http.responseText;
+                    }
+                    if (typeof this._models.success == "function") {
+                        this._models.success(data, this._http);
+                    }
+                }
+                else {
+                    if (typeof this._models.error == "function") {
+                        this._models.error(this._http.responseText, this._http.status, this._http);
+                    }
+                    else if (typeof this._models.success == "function") {
+                        this._models.success(this._http.responseText, this._http.status, this._http);
+                    }
+                }
+            }
+        };
+        Ajax.get = function (url, func) {
+            var model;
+            if (typeof url == "string") {
+                model = new AjaxModel(url, func);
+            }
+            else {
+                model = url;
+            }
+            new Ajax(model);
+        };
+        Ajax.post = function (url, data, func) {
+            var model;
+            if (typeof url == "string") {
+                model = new AjaxModel(url, func, Method.POST, data);
+            }
+            else {
+                model = url;
+            }
+            new Ajax(model);
+        };
+        return Ajax;
+    })(Base);
+    ZoDream.Ajax = Ajax;
+    var ZoDate = (function (_super) {
+        __extends(ZoDate, _super);
+        function ZoDate() {
+            _super.apply(this, arguments);
+        }
+        ZoDate.getFormat = function () {
+            var date = new Date();
+            return date.getFullYear() + "-" +
+                this.toString(date.getMonth() + 1) + "-" + this.toString(date.getDate())
+                + " " + this.toString(date.getHours()) + ":" + this.toString(date.getMinutes())
+                + ":" + this.toString(date.getSeconds());
+        };
+        ZoDate.toString = function (num) {
+            var str = "" + num;
+            if (num >= 0 && num <= 9) {
+                str = "0" + str;
+            }
+            return str;
+        };
+        return ZoDate;
+    })(Base);
+    ZoDream.ZoDate = ZoDate;
+    var Helper = (function (_super) {
+        __extends(Helper, _super);
+        function Helper() {
+            _super.apply(this, arguments);
+        }
+        Helper.prototype.getName = function (arg) {
+            var val = "";
+            for (var i = 0; i < arg.length; i++) {
+                val += arg.charCodeAt(i).toString(16);
+            }
+            return val;
+        };
+        Helper.getEelement = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            if (name.indexOf(",") > 0) {
+                return this._getBrother(name, parent);
+            }
+            else if (name.indexOf(" ") > 0) {
+                return this._getPosterity(name, parent);
+            }
+            else if (name.indexOf(">") > 0) {
+                return this._getChildren(name, parent);
+            }
+            else {
+                return this.getPosterityByNmae(name, parent);
+            }
+        };
+        Helper._getBrother = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            var names = name.split(","), data = Array();
+            for (var i = 0, len = names.length; i < len; i++) {
+                var args = this.getEelement(names[i], parent);
+                if (args instanceof Array || args instanceof HTMLCollection) {
+                    Array.prototype.push.apply(data, args);
+                }
+                else if (typeof args == "object") {
+                    data.push(args);
+                }
+            }
+            return data;
+        };
+        Helper._getPosterity = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            return this._getElements(name, " ", parent);
+        };
+        Helper._getChildren = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            return this._getElements(name, ">", parent, this._getChildrenByName);
+        };
+        Helper._getElements = function (name, separator, elements, func) {
+            if (func === void 0) { func = this.getEelement; }
+            var names = name.split(separator);
+            if (!(elements instanceof Array)) {
+                elements = [elements];
+            }
+            for (var i = 0, len = names.length; i < len; i++) {
+                var eles = Array();
+                for (var j = 0, leng = elements.length; j < leng; j++) {
+                    var element = elements[j];
+                    var args = func(names[i], element);
+                    if (args instanceof Array || args instanceof HTMLCollection) {
+                        Array.prototype.push.apply(eles, args);
+                    }
+                    else if (typeof args == "object") {
+                        eles.push(args);
+                    }
+                }
+                elements = eles;
+            }
+            ;
+            return elements;
+        };
+        Helper._getChildrenByName = function (name, parent) {
+            var args = Array(), elements = parent.childNodes;
+            for (var i = 0, len = elements.length; i < len; i++) {
+                var element = elements[i];
+                switch (name.charAt(0)) {
+                    case '.':
+                        if (element.getAttribute("class").indexOf(name.slice(1)) >= 0) {
+                            args.push(element);
+                        }
+                        break;
+                    case '#':
+                        if (element.getAttribute("id") === name.slice(1)) {
+                            args.push(element);
+                        }
+                        break;
+                    case '@':
+                        if (element.getAttribute("name") === name.slice(1)) {
+                            args.push(element);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return args;
+        };
+        Helper.getPosterityByNmae = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            switch (name.charAt(0)) {
+                case '.':
+                    name = name.slice(1);
+                    return this._getPosterityByClass(name, parent);
+                    break;
+                case '#':
+                    name = name.slice(1);
+                    return parent.getElementById(name);
+                    break;
+                case '@':
+                    name = name.slice(1);
+                    return window.document.getElementsByName(name);
+                    break;
+                case '$':
+                    name = name.slice(1);
+                    return this._getPosterityByIndex(Number(name), parent);
+                    break;
+                default:
+                    return parent.getElementsByTagName(name);
+                    break;
+            }
+        };
+        Helper._getPosterityByIndex = function (index, parent) {
+            if (parent === void 0) { parent = window.document; }
+            var elements = parent.getElementsByTagName("*");
+            for (var i = 0, len = elements.length; i < len; i++) {
+                if (elements[i].nodeType == 1) {
+                    index--;
+                    if (index < 0) {
+                        return elements[i];
+                    }
+                }
+            }
+            return null;
+        };
+        Helper._getPosterityByClass = function (name, parent) {
+            if (parent === void 0) { parent = window.document; }
+            var elements = parent.getElementsByTagName("*"), classElements = Array();
+            for (var i = 0, len = elements.length; i < len; i++) {
+                var element = elements[i];
+                if (element.nodeType == 1) {
+                    if (element.getAttribute("class") == name) {
+                        classElements.push(element);
+                    }
+                }
+            }
+            ;
+            return classElements;
+        };
+        Helper.clone = function (obj) {
+            var o;
+            switch (typeof obj) {
+                case 'undefined':
+                    break;
+                case 'string':
+                    o = obj + '';
+                    break;
+                case 'number':
+                    o = obj - 0;
+                    break;
+                case 'boolean':
+                    o = obj;
+                    break;
+                case 'object':
+                    if (obj === null) {
+                        o = null;
+                    }
+                    else {
+                        if (obj instanceof Array) {
+                            o = [];
+                            for (var i = 0, len = obj.length; i < len; i++) {
+                                o.push(this.clone(obj[i]));
+                            }
+                        }
+                        else {
+                            o = {};
+                            for (var k in obj) {
+                                o[k] = this.clone(obj[k]);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    o = obj;
+                    break;
+            }
+            return o;
+        };
+        return Helper;
+    })(Base);
+    ZoDream.Helper = Helper;
+})(ZoDream || (ZoDream = {}));
+//# sourceMappingURL=zodream.js.map

@@ -142,7 +142,7 @@ module ZoDream {
 				if(typeof this._elements[0] != "object") return;
 				var value = this._elements[0].style[arg]; 
 				if(!value) {
-					var temp = this._elements[0].currentStyle || document.defaultView.getComputedStyle(this._elements[0], null);
+					var temp = /*this._elements[0].currentStyle ||*/ document.defaultView.getComputedStyle(this._elements[0], null);
 					value = temp[arg];
 				}
 				return value;

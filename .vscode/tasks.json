@@ -16,8 +16,7 @@
 
 	// The command is a shell script
 	"isShellCommand": true,
-
-	// Show the output window only if unrecognized errors occur.
+	
 	"showOutput": "silent",
 
 	// args is the HelloWorld program to compile.

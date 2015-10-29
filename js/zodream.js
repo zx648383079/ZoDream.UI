@@ -147,7 +147,7 @@ var ZoDream;
                     return;
                 var value = this._elements[0].style[arg];
                 if (!value) {
-                    var temp = this._elements[0].currentStyle || document.defaultView.getComputedStyle(this._elements[0], null);
+                    var temp = document.defaultView.getComputedStyle(this._elements[0], null);
                     value = temp[arg];
                 }
                 return value;

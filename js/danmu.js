@@ -36,18 +36,38 @@ var Zodream;
             var child = document.createElement("div");
             child.innerHTML = arg;
             child.style.left = window.innerWidth + "px";
-            child.style.top = this._carrier.children.length * 40 + "px";
+            child.style.top = this._getTop() + "px";
             this._carrier.appendChild(child);
         };
         Program.prototype._update = function () {
             window.requestAnimationFrame(this._update.bind(this));
             for (var i = 0; i < this._carrier.children.length; i++) {
                 var child = this._carrier.children[i];
-                if (Animation.left(child) + this._getWidth(child) < 0) {
+                if (Animation.left(child) + this._getWidth(child) < -50) {
                     //this._container.appendChild(child);
                     this._carrier.removeChild(child);
                 }
             }
+        };
+        Program.prototype._getTop = function () {
+            var tops = {};
+            for (var i = this._carrier.children.length - 1; i >= 0; i--) {
+                var child = this._carrier.children[i], top = parseInt(child.style.top, 10), right = parseInt(child.style.left, 10) + this._getWidth(child);
+                if (tops[top] === undefined || tops[top] < right) {
+                    tops[top] = right;
+                }
+            }
+            var minTop = 0, minRight = 0;
+            for (var i = 0; i < 600; i += 40) {
+                if (tops[i] === undefined) {
+                    return i;
+                }
+                if (tops[i] < minRight) {
+                    minTop = i;
+                    minRight = tops[i];
+                }
+            }
+            return minTop;
         };
         Program.prototype._getWidth = function (arg) {
             return parseInt(window.getComputedStyle(arg).width, 10);

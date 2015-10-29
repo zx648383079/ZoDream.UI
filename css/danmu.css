@@ -10,14 +10,13 @@
 	margin: 10px auto;
 	height: 500px;
 	border: 1px solid #f00;
-	position: static;
+	position: relative;
 	float: none;
 	overflow: hidden;
 }
 
 #danmu>div{
-	position: relative;
-	float: left;
+	position: absolute;
 }
 
 input,button{

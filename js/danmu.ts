@@ -29,19 +29,43 @@ module Zodream {
 			var child = document.createElement("div");
 			child.innerHTML = arg;
 			child.style.left = window.innerWidth + "px";
-			child.style.top = this._carrier.children.length * 40 + "px";
+			child.style.top = this._getTop() + "px";
 			this._carrier.appendChild(child);
 		}
 		
 		private _update() {
 			window.requestAnimationFrame(this._update.bind(this));
 			for (var i = 0; i < this._carrier.children.length; i++) {
-				var child =<HTMLDivElement>this._carrier.children[i];
+				var child = <HTMLDivElement>this._carrier.children[i];
 				if( Animation.left(child) + this._getWidth(child) < 0 ) {
 					//this._container.appendChild(child);
-					this._carrier.removeChild(child);
+					this._carrier.removeChild( child );
 				}
 			}
+		}
+		
+		private _getTop(): number{
+			var tops: Object = {};
+			for (var i = this._carrier.children.length - 1; i >= 0 ; i--) {
+				var child = <HTMLDivElement>this._carrier.children[i],
+					top = parseInt(child.style.top, 10),
+					right = parseInt(child.style.left, 10) + this._getWidth(child);
+				if(tops[top] === undefined || tops[top] < right) {
+					tops[top] = right;
+				}
+			}
+			var minTop: number = 0 ,
+				minRight: number = 0;
+			for (var i = 0; i < 600; i += 40) {
+				if(tops[i] === undefined) {
+					return i;
+				}
+				if(tops[i] < minRight){
+					minTop = i;
+					minRight = tops[i];
+				}
+			}
+			return minTop;
 		}
 		
 		private _getWidth(arg: HTMLDivElement): number{

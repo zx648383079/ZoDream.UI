@@ -842,8 +842,8 @@ footer a .fa,
     width: 40px;
 }
 
-.blog .content .comment,
-.blog .content .view {
+.blog .content .commentCount,
+.blog .content .viewCount {
     float: right;
 }
 

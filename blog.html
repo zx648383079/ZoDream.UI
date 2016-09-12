@@ -20,12 +20,12 @@
         </header>
     <section class="container">
         <div class="tab">
-            <ul class="headers">
+            <ul class="tab-header">
                 <li class="active">全部</li>
                 <li>最新</li>
                 <li>最热</li>
             </ul>
-            <ul class="items">
+            <ul class="tab-content">
                 <li class="active">
                     <ul class="blog">
                         <li>
@@ -84,7 +84,23 @@
             我的
         </a>
     </footer>
+
+    <div class="tipDialog" style="width: 100px;">
+        
+    </div>
+
+    <div class="notifyDialog">
+        
+    </div>
+
     <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/jquery.dialog.js"></script>
     <script src="js/zodream.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.dialog.tip("haha");
+            $.dialog.notify("f");
+        });
+    </script>
     </body>
 </html>

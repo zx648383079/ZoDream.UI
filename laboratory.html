@@ -16,17 +16,33 @@
             </span>
         </header>
     <section class="container">
-        <div class="viewSmart">
-            <i class="fa fa-pencil" aria-hidden="true"></i>
+        <div class="metro">
+
         </div>
-        <div class="view">
-            <i class="fa fa-pencil" aria-hidden="true"></i>
-            <p>hh</p>
+        <div class="clear"></div>
+        <div class="accordion">
+            <ul>
+                <li class="accordionItem">
+                    <div class="title">
+                            231231212312321
+                    </div>
+                    <div class="content">
+                        <img src="image/banner1.jpg" alt="">
+                        <p>gggggggggggggggggggggggggggggggggggggggggggggggggggggg</p>
+                    </div>
+                </li>
+                <li class="accordionItem">
+                    <div class="title">
+                            231231212312321
+                    </div>
+                    <div class="content">
+                        <img src="image/banner1.jpg" alt="">
+                        <p>gggggggggggggggggggggggggggggggggggggggggggggggggggggg</p>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="viewLarge">
-            <i class="fa fa-pencil" aria-hidden="true"></i>
-            <p>hh</p>
-        </div>
+        <div class="clear"></div>
     </section>
 
     <footer>
@@ -52,6 +68,37 @@
         </a>
     </footer>
     <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/jquery.metro.js"></script>
+    <script src="js/jquery.accordion.js"></script>
     <script src="js/zodream.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".metro").metro({
+                data: [
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "13"},
+                    {size: 0, content: "13"},
+                    {size: 1, content: "13"},
+                    {size: 2, content: "23123"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 0, content: "ggggggggg"},
+                    {size: 1, content: "13"},
+                    {size: 1, content: "23123"},
+                ]
+            });
+            $(".accordion").accordion({
+                minWidth: 30
+            });
+        });
+    </script>
     </body>
 </html>

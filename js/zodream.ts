@@ -17,8 +17,8 @@ $(document).ready(function() {
         $(this).parent().toggleClass("active");
     });
 
-    $(".tab .headers>li").click(function() {
+    $(".tab .tab-header>li").click(function() {
         $(this).addClass("active").siblings().removeClass("active");
-        $(this).parent().parent().find(".items>li").eq($(this).index()).addClass("active").siblings().removeClass("active");
+        $(this).parent().parent().find(".tab-content>li").eq($(this).index()).addClass("active").siblings().removeClass("active");
     });
 });

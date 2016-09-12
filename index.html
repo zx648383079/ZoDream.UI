@@ -17,7 +17,7 @@
             </div>
         </header>
     <section class="container">
-        <div class="silder">
+        <div class="carousel">
             <ul>
                 <li>
                     <img src="image/banner2.jpg">
@@ -129,6 +129,14 @@
         </a>
     </footer>
     <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/jquery.carousel.js"></script>
     <script src="js/zodream.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".carousel").carousel({
+                itemTag: "li",
+            });
+        });
+    </script>
     </body>
 </html>

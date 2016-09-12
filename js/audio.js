@@ -186,7 +186,7 @@
                             break;
                         case 'NOT_SUPPORTED_ERROR':
                         case 'NotSupportedError':
-                            HZRecorder.throwError('<a href="http://www.it165.net/edu/ewl/" target="_blank" class="keylink">浏览器</a>不支持硬件设备。');
+                            HZRecorder.throwError('浏览器不支持硬件设备。');
                             break;
                         case 'MANDATORY_UNSATISFIED_ERROR':
                         case 'MandatoryUnsatisfiedError':
@@ -199,7 +199,7 @@
                 });
             }
             else {
-                HZRecorder.throwErr('当前<a href="http://www.it165.net/edu/ewl/" target="_blank" class="keylink">浏览器</a>不支持录音功能。');
+                HZRecorder.throwErr('当前浏览器不支持录音功能。');
                 return;
             }
         }

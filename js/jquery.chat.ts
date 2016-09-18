@@ -127,8 +127,8 @@ class Chat {
           return;
         }
         let time: number = this.options.space;
-        if (this.index % 2 == 0) {
-          time = 3000;
+        if (this.index > 0 && this.index % 2 == 0) {
+          time = this.options.groupSpace;
         }
         let chat = this;
         this.mainTimer = setTimeout(function() {
@@ -150,6 +150,7 @@ enum ChatDirection {
 interface ChatOptions {
     data?: any[],
     wordSpace?: number,   //每个字的间隔时间
+    groupSpace?: number,
     space?: number,  //每一段的间隔时间
     leftClass?: string,
     rightClass?: string,
@@ -158,7 +159,8 @@ interface ChatOptions {
 class ChatDefaultOptions implements ChatOptions {
     data:any[] = [];
     wordSpace: number = 200;   //每个字的间隔时间
-    space: number = 1000;  //每一段的间隔时间
+    groupSpace: number = 1000; //每一组
+    space: number = 3000;  //每一段的间隔时间
     leftClass: string = "left";
     rightClass: string = "right";
 }

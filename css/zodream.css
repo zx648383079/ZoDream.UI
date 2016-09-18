@@ -79,6 +79,7 @@ header .search input,
     color: #fff;
     text-align: center;
     z-index: 9999;
+    border: 0;
 }
 
 .top .back {

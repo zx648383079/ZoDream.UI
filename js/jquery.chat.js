@@ -116,8 +116,8 @@ var Chat = (function () {
             return;
         }
         var time = this.options.space;
-        if (this.index % 2 == 0) {
-            time = 3000;
+        if (this.index > 0 && this.index % 2 == 0) {
+            time = this.options.groupSpace;
         }
         var chat = this;
         this.mainTimer = setTimeout(function () {
@@ -140,7 +140,8 @@ var ChatDefaultOptions = (function () {
     function ChatDefaultOptions() {
         this.data = [];
         this.wordSpace = 200; //每个字的间隔时间
-        this.space = 1000; //每一段的间隔时间
+        this.groupSpace = 1000; //每一组
+        this.space = 3000; //每一段的间隔时间
         this.leftClass = "left";
         this.rightClass = "right";
     }

@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 100%;
+    width: 100%;
+    display: table-row;
+}
+
+.login {
+    width: 400px;
+    margin: 200px auto 0;
+}
+
+.table {
+    display: table;
+    width: 100%;
+}
+
+.tr {
+    display: table-row;
+}
+
+.td {
+    display: table-cell;
+}

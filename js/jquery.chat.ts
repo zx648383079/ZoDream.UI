@@ -9,16 +9,101 @@ enum ChatDirection {
     Right
 }
 
+enum ChatAnimation {
+    None,
+    Write
+}
+
 interface ChatInterface {
     start(): this;
     pause(): this;
     stop(): this;
 }
 
+class Group {
+    constructor(
+        public text: string,
+        public direction: ChatDirection = ChatDirection.Left,
+        public animation: ChatAnimation = ChatAnimation.Write
+    ) {
+
+    }
+}
+
+let vendors = ['webkit', 'moz'];
+for(let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+    window.cancelAnimationFrame =
+        window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+}
+
+if (!window.requestAnimationFrame || !window.cancelAnimationFrame ) {
+    let lastTime = 0;
+    window.requestAnimationFrame = function(callback): number {
+      let currTime: number = new Date().getTime();
+      //为了使setTimteout的尽可能的接近每秒60帧的效果
+      let timeToCall: number = Math.max( 0, 16 - ( currTime - lastTime ) ); 
+      let id: number = window.setTimeout( function() {
+        callback( currTime + timeToCall );
+      }, timeToCall );
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+    
+    window.cancelAnimationFrame = function(id) {
+      window.clearTimeout(id);
+    };
+}
+
+enum TimerMode {
+    Once,
+    Forever
+}
+
+class Timer {
+    constructor(
+        public callback: Function,
+        public time: number = 16,
+        public mode: TimerMode = TimerMode.Once
+    ) {
+        this._index = 0;
+        this._loop();
+    }
+
+    private _index: number;
+
+    private _loop() {
+        this.stop();
+        let instance = this;
+        this._handle = window.requestAnimationFrame(function() {
+            instance._index += 16;
+            if (instance._index < instance.time) {
+                instance._loop();
+                return;
+            }
+            instance.callback();
+            if (instance.mode == TimerMode.Once) {
+                instance.stop();
+                return;
+            }
+            instance._loop();
+        });
+    }
+
+    private _handle: number;
+
+    public stop() {
+        if (this._handle) {
+            window.cancelAnimationFrame(this._handle);
+        }
+        this._handle = null;
+    }
+}
+
 class ChatPlayText implements ChatInterface {
     constructor(
         public element: JQuery,
-        public text: string,
+        public group: Group,
         public callback?: Function,
         public speed: number = 100
     ) {
@@ -61,36 +146,24 @@ class ChatPlayText implements ChatInterface {
         if (this._handle) {
             return this;
         }
-        let instance = this;
-        let char;
-        this._handle = setInterval(function() {
-            if (instance._index >= instance.text.length) {
-                instance.stop();
-                instance.callback();
-                return;
-            }
-            char = instance.text[instance._index];
-            switch (char) {
-                case "[":
-                    instance._createElementByTag(char);
-                    instance._index ++;
-                    break;
-                case "]":
-                    instance._otherElement = null;
-                    instance._index ++;
-                    break;
-                default:
-                    break;
-            }
-            char = instance.text[instance._index];
-            if (instance._otherElement) {
-                instance._otherElement.append(char);
-            } else {
-                instance.element.append(char);
-            }
-            instance._index ++;
-        }, this.speed);
-        this._status = ChatStatus.RUNNING;
+        /*switch (this.group.animation) {
+            case ChatAnimation.Write:
+                this._createWriteAnimation();
+                break;
+            case ChatAnimation.None:
+            default:
+                this._createNoneAnimation();
+                break;
+        }*/
+        switch (this.group.direction) {
+            case ChatDirection.Left:
+                this._createWriteAnimation();
+                break;
+            case ChatDirection.Right:
+            default:
+                this._createNoneAnimation();
+                break;
+        }
         return this;
     }
 
@@ -133,16 +206,56 @@ class ChatPlayText implements ChatInterface {
         return this;
     }
 
-}
+    private _createNoneAnimation() {
+        this.element.append(this.group.text.replace(/\[(.+?)\]/, '<span class="red">$1</span>'));
+        this.stop();
+        if (this.callback) {
+            this.callback();
+        }
+    }
 
-class Group {
-    constructor(
-        public text: string,
-        public direction: ChatDirection = ChatDirection.Left
-    ) {
+    private _createWriteAnimation() {
+        let instance = this;
+        let char;
+        this._handle = setInterval(function() {
+            if (instance._index >= instance.group.text.length) {
+                instance.stop();
+                if (instance.callback) {
+                    instance.callback();
+                }
+                return;
+            }
+            char = instance.group.text[instance._index];
+            switch (char) {
+                case "[":
+                    instance._createElementByTag(char);
+                    instance._index ++;
+                    break;
+                case "]":
+                    instance._otherElement = null;
+                    instance._index ++;
+                    break;
+                default:
+                    break;
+            }
+            char = instance.group.text[instance._index];
+            if (instance._otherElement) {
+                instance._otherElement.append(char);
+            } else {
+                instance.element.append(char);
+            }
+            instance._index ++;
+        }, this.speed);
+        this._status = ChatStatus.RUNNING;
+    }
 
+
+    public clear() {
+        this.stop();
+        this.callback = null;
     }
 }
+
 
 class ChatPlayGroup implements ChatInterface {
     constructor(
@@ -181,6 +294,8 @@ class ChatPlayGroup implements ChatInterface {
 
     private _text: ChatPlayText;
 
+    private _status: ChatStatus = ChatStatus.STOP;
+
     set status(arg: ChatStatus) {
         switch(arg) {
             case ChatStatus.PAUSE:
@@ -196,13 +311,17 @@ class ChatPlayGroup implements ChatInterface {
     }
 
     get status(): ChatStatus {
-        if (!this._text) {
-            return ChatStatus.STOP;
-        }
-        return this._text.status;
+        return this._status;
     }
 
+    /** 获取当前组 */
+    public currentGroup(): Group {
+        return this._group[this._index];
+    }
+
+    /** 暂停 */
     public pause(): this {
+        this._status = ChatStatus.PAUSE;
         if (this._text) {
             this._text.pause();
         }
@@ -212,29 +331,54 @@ class ChatPlayGroup implements ChatInterface {
         return this;
     }
 
+    /** 开始 */
     public start(): this {
+        this._status = ChatStatus.RUNNING;
         if (this._text) {
             this._text.start();
             return this;
         }
         if (this._index >= this._group.length) {
+            this._status = ChatStatus.STOP;
             return this;
+        }
+        if (this.options.callback) {
+            this.options.callback(this);
+            return;
+        }
+        return this.createTextAndStart();
+    }
+
+    /** 新建并开始 */
+    public createTextAndStart(): this {
+        if (this.status != ChatStatus.RUNNING) {
+            return this;
+        }
+        if (this._text) {
+            this._text.clear();
+            this._text = null;
         }
         this._text = this._createText();
         this._text.start();
         return this;
     }
 
+    /** 下一个 */
     public next() {
-        if (this._index >= this._group.length - 1) {
-            this.callback();
+        if (this._index < this._group.length - 1) {
+            this.stop();
+            this._index ++;
+            this.start();
             return;
         }
-        this._index ++;
-        this.start();
+        if (this.callback) {
+            this.callback();
+        }
     }
 
+    /** 停止 */
     public stop(): this {
+        this._status = ChatStatus.STOP;
         if (this._text) {
             this._text.stop();
         }
@@ -242,9 +386,11 @@ class ChatPlayGroup implements ChatInterface {
         if (this._handle) {
             clearTimeout(this._handle);
         }
+        this._handle = 0;
         return this;
     }
 
+    /** 创建新的文本 */
     private _createText(): ChatPlayText {
         let group = this._group[this._index];
 
@@ -253,7 +399,7 @@ class ChatPlayGroup implements ChatInterface {
         this.element.append(element);
 
         let instance = this;
-        return new ChatPlayText($(element), group.text, function() {
+        return new ChatPlayText($(element), group, function() {
             instance._text = null;
             if (instance._handle) {
                 clearTimeout(instance._handle);
@@ -263,8 +409,22 @@ class ChatPlayGroup implements ChatInterface {
             }, instance.options.space);
         }, this.options.wordSpace)
     }
+
+    /** 清除所有 */
+    public clear() {
+        this.stop();
+        this.callback = null;
+        if (this._text) {
+            this._text.clear();
+        }
+        this._text = null;
+    }
 }
 
+/**
+ * 总控制器
+ * JQuery 拓展类
+ */
 class Chat implements ChatInterface {
     constructor(
         public element: JQuery,
@@ -273,13 +433,17 @@ class Chat implements ChatInterface {
         this.options = $.extend({}, new ChatDefaultOptions(), options);
         
     }
-
+    
+    /** 设置 */
     public options: ChatOptions;
 
+    /** 当前执行的组 */
     private _index:number = 0;
 
+    /** 定时器的指针 */
     private _handle: number;
 
+    /** 当前执行组 */
     private _group: ChatPlayGroup;
 
     set status(arg: ChatStatus) {
@@ -303,16 +467,18 @@ class Chat implements ChatInterface {
         return this._group.status;
     }
 
+    /** 暂停 */
     public pause(): this {
         if (this._group) {
             this._group.pause();
         }
         if (this._handle) {
-            clearTimeout(this._handle);
+            cancelAnimationFrame(this._handle);
         }
         return this;
     }
 
+    /** 暂停/播放 */
     public toggle(): this {
         if (this.status == ChatStatus.RUNNING) {
             this.pause();
@@ -322,6 +488,7 @@ class Chat implements ChatInterface {
         return this;
     }
 
+    /** 播放 */
     public start(): this {
         if (this._group) {
             this._group.start();
@@ -330,7 +497,9 @@ class Chat implements ChatInterface {
         if (this._index >= this.options.data.length) {
             return this;
         }
+        this.element.html("");
         let instance = this;
+        let time: number = 0;
         this._group = new ChatPlayGroup(
             this.element, 
             this.options.data[this._index], 
@@ -348,6 +517,7 @@ class Chat implements ChatInterface {
         return this;
     }
 
+    /** 停止 */
     public stop(): this {
         if (this._group) {
             this._group.stop();
@@ -359,10 +529,12 @@ class Chat implements ChatInterface {
         return this;
     }
 
+    /** 上一组 */
     public previous() {
         this.go(this._index - 1);
     }
 
+    /** 下一组 */
     public next() {
         this.go(this._index + 1);
     }
@@ -375,6 +547,7 @@ class Chat implements ChatInterface {
         return this.index;
     }
 
+    /** 跳到第几个 */
     public go(arg: number) {
         if (arg < 0 || arg >= this.options.data.length) {
             return;
@@ -382,11 +555,19 @@ class Chat implements ChatInterface {
         if (arg == this._index) {
             this.start();
         }
-        this.stop();
-        this.element.html("");
-        this._group = null;
+        this.clear();
         this._index = arg;
         this.start();
+    }
+
+    /** 清除所有 */
+    public clear() {
+        this.stop();
+        if (this._group) {
+            this._group.clear();
+            this._group = null;
+        }
+        this.element.html("");
     }
 }
 
@@ -399,6 +580,7 @@ interface ChatOptions {
     space?: number,  //每一段的间隔时间
     leftClass?: string,
     rightClass?: string,
+    callback?: (ChatPlayGroup) => void    //执行事件
 }
 
 class ChatDefaultOptions implements ChatOptions {

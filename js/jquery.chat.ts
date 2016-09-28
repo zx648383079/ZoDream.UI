@@ -1,7 +1,8 @@
 enum ChatStatus {
-    STOP,
-    PAUSE,
-    RUNNING
+    STOP,      //停止
+    PAUSE,     //暂停
+    RUNNING,   //运行中
+    COMPLETE   //完成
 }
 
 enum ChatDirection {
@@ -142,8 +143,11 @@ class ChatPlayText implements ChatInterface {
         return this._status;
     }
 
+    /** 开始 */
     public start(): this {
-        if (this._handle) {
+        if (this.status == ChatStatus.COMPLETE ||
+        this.status == ChatStatus.RUNNING || 
+        this._handle) {
             return this;
         }
         /*switch (this.group.animation) {
@@ -167,7 +171,11 @@ class ChatPlayText implements ChatInterface {
         return this;
     }
 
+    /** 暂停 */
     public pause(): this {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         if (this._handle) {
             clearInterval(this._handle);
             this._handle = 0;
@@ -176,14 +184,19 @@ class ChatPlayText implements ChatInterface {
         return this;
     }
 
+    /** 停止 */
     public stop(): this {
         if (this._handle) {
             clearInterval(this._handle);
+        }
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
         }
         this.init();
         return this;
     }
 
+    /** 根据标记创造元素 */
     private _createElementByTag(tag: string): this {
         if (this._otherElement) {
             return this;
@@ -206,20 +219,24 @@ class ChatPlayText implements ChatInterface {
         return this;
     }
 
+    /** 无动画效果 */
     private _createNoneAnimation() {
-        this.element.append(this.group.text.replace(/\[(.+?)\]/, '<span class="red">$1</span>'));
+        this.element.append(this.group.text.replace(/\[(.+?)\]/g, '<span class="red">$1</span>'));
         this.stop();
+        this._status = ChatStatus.COMPLETE;
         if (this.callback) {
             this.callback();
         }
     }
 
+    /** 输入效果 */
     private _createWriteAnimation() {
         let instance = this;
         let char;
         this._handle = setInterval(function() {
             if (instance._index >= instance.group.text.length) {
                 instance.stop();
+                instance._status = ChatStatus.COMPLETE
                 if (instance.callback) {
                     instance.callback();
                 }
@@ -249,14 +266,17 @@ class ChatPlayText implements ChatInterface {
         this._status = ChatStatus.RUNNING;
     }
 
-
+    /** 清除 */
     public clear() {
-        this.stop();
+        if (this._handle) {
+            clearInterval(this._handle);
+        }
         this.callback = null;
+        this._status = ChatStatus.COMPLETE;
     }
 }
 
-
+/** 组操作 */
 class ChatPlayGroup implements ChatInterface {
     constructor(
         public element: JQuery,
@@ -267,6 +287,7 @@ class ChatPlayGroup implements ChatInterface {
         this.group = group;
     }
 
+    /** 格式化之后的组 */
     private _group: Group[];
 
     set group(arg: any) {
@@ -321,6 +342,9 @@ class ChatPlayGroup implements ChatInterface {
 
     /** 暂停 */
     public pause(): this {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         this._status = ChatStatus.PAUSE;
         if (this._text) {
             this._text.pause();
@@ -333,13 +357,20 @@ class ChatPlayGroup implements ChatInterface {
 
     /** 开始 */
     public start(): this {
+        if (this._status == ChatStatus.COMPLETE) {
+            this.next();
+            return this;
+        }
+        if (this.status == ChatStatus.RUNNING) {
+            return this;
+        }
         this._status = ChatStatus.RUNNING;
         if (this._text) {
             this._text.start();
             return this;
         }
         if (this._index >= this._group.length) {
-            this._status = ChatStatus.STOP;
+            this._status = ChatStatus.COMPLETE;
             return this;
         }
         if (this.options.callback) {
@@ -378,6 +409,9 @@ class ChatPlayGroup implements ChatInterface {
 
     /** 停止 */
     public stop(): this {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         this._status = ChatStatus.STOP;
         if (this._text) {
             this._text.stop();
@@ -393,7 +427,6 @@ class ChatPlayGroup implements ChatInterface {
     /** 创建新的文本 */
     private _createText(): ChatPlayText {
         let group = this._group[this._index];
-
         let element = document.createElement("div");
          element.className = ChatDirection.Left == group.direction ? this.options.leftClass : this.options.rightClass;
         this.element.append(element);
@@ -403,6 +436,9 @@ class ChatPlayGroup implements ChatInterface {
             instance._text = null;
             if (instance._handle) {
                 clearTimeout(instance._handle);
+            }
+            if (instance._index >= instance._group.length - 1) {
+                instance._status = ChatStatus.COMPLETE;
             }
             instance._handle = setTimeout(function() {
                 instance.next();
@@ -418,6 +454,7 @@ class ChatPlayGroup implements ChatInterface {
             this._text.clear();
         }
         this._text = null;
+        this._status = ChatStatus.COMPLETE;
     }
 }
 
@@ -446,6 +483,8 @@ class Chat implements ChatInterface {
     /** 当前执行组 */
     private _group: ChatPlayGroup;
 
+    private _status: ChatStatus = ChatStatus.STOP;
+
     set status(arg: ChatStatus) {
         switch(arg) {
             case ChatStatus.PAUSE:
@@ -461,14 +500,12 @@ class Chat implements ChatInterface {
     }
 
     get status(): ChatStatus {
-        if (!this._group) {
-            return ChatStatus.STOP;
-        }
-        return this._group.status;
+        return this._status;
     }
 
     /** 暂停 */
     public pause(): this {
+        this._status = ChatStatus.PAUSE;
         if (this._group) {
             this._group.pause();
         }
@@ -490,11 +527,16 @@ class Chat implements ChatInterface {
 
     /** 播放 */
     public start(): this {
+        if (this.status == ChatStatus.RUNNING) {
+            return this;
+        }
+        this._status = ChatStatus.RUNNING;
         if (this._group) {
             this._group.start();
             return this;
         }
         if (this._index >= this.options.data.length) {
+            this._status = ChatStatus.COMPLETE;
             return this;
         }
         this.element.html("");
@@ -508,6 +550,9 @@ class Chat implements ChatInterface {
                     clearTimeout(instance._handle);
                 }
                 instance._handle = setTimeout(function() {
+                    if (instance.status != ChatStatus.RUNNING) {
+                        return;
+                    }
                     instance.next();
                 }, instance.options.groupSpace);
             }, 
@@ -519,6 +564,7 @@ class Chat implements ChatInterface {
 
     /** 停止 */
     public stop(): this {
+        this._status = ChatStatus.STOP;
         if (this._group) {
             this._group.stop();
         }

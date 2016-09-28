@@ -3,6 +3,7 @@ var ChatStatus;
     ChatStatus[ChatStatus["STOP"] = 0] = "STOP";
     ChatStatus[ChatStatus["PAUSE"] = 1] = "PAUSE";
     ChatStatus[ChatStatus["RUNNING"] = 2] = "RUNNING";
+    ChatStatus[ChatStatus["COMPLETE"] = 3] = "COMPLETE"; //完成
 })(ChatStatus || (ChatStatus = {}));
 var ChatDirection;
 (function (ChatDirection) {
@@ -120,8 +121,11 @@ var ChatPlayText = (function () {
         enumerable: true,
         configurable: true
     });
+    /** 开始 */
     ChatPlayText.prototype.start = function () {
-        if (this._handle) {
+        if (this.status == ChatStatus.COMPLETE ||
+            this.status == ChatStatus.RUNNING ||
+            this._handle) {
             return this;
         }
         /*switch (this.group.animation) {
@@ -144,7 +148,11 @@ var ChatPlayText = (function () {
         }
         return this;
     };
+    /** 暂停 */
     ChatPlayText.prototype.pause = function () {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         if (this._handle) {
             clearInterval(this._handle);
             this._handle = 0;
@@ -152,13 +160,18 @@ var ChatPlayText = (function () {
         this._status = ChatStatus.PAUSE;
         return this;
     };
+    /** 停止 */
     ChatPlayText.prototype.stop = function () {
         if (this._handle) {
             clearInterval(this._handle);
         }
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         this.init();
         return this;
     };
+    /** 根据标记创造元素 */
     ChatPlayText.prototype._createElementByTag = function (tag) {
         if (this._otherElement) {
             return this;
@@ -180,19 +193,23 @@ var ChatPlayText = (function () {
         this._otherElement = $(element);
         return this;
     };
+    /** 无动画效果 */
     ChatPlayText.prototype._createNoneAnimation = function () {
-        this.element.append(this.group.text.replace(/\[(.+?)\]/, '<span class="red">$1</span>'));
+        this.element.append(this.group.text.replace(/\[(.+?)\]/g, '<span class="red">$1</span>'));
         this.stop();
+        this._status = ChatStatus.COMPLETE;
         if (this.callback) {
             this.callback();
         }
     };
+    /** 输入效果 */
     ChatPlayText.prototype._createWriteAnimation = function () {
         var instance = this;
         var char;
         this._handle = setInterval(function () {
             if (instance._index >= instance.group.text.length) {
                 instance.stop();
+                instance._status = ChatStatus.COMPLETE;
                 if (instance.callback) {
                     instance.callback();
                 }
@@ -222,12 +239,17 @@ var ChatPlayText = (function () {
         }, this.speed);
         this._status = ChatStatus.RUNNING;
     };
+    /** 清除 */
     ChatPlayText.prototype.clear = function () {
-        this.stop();
+        if (this._handle) {
+            clearInterval(this._handle);
+        }
         this.callback = null;
+        this._status = ChatStatus.COMPLETE;
     };
     return ChatPlayText;
 }());
+/** 组操作 */
 var ChatPlayGroup = (function () {
     function ChatPlayGroup(element, group, callback, options) {
         this.element = element;
@@ -286,6 +308,9 @@ var ChatPlayGroup = (function () {
     };
     /** 暂停 */
     ChatPlayGroup.prototype.pause = function () {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         this._status = ChatStatus.PAUSE;
         if (this._text) {
             this._text.pause();
@@ -297,13 +322,20 @@ var ChatPlayGroup = (function () {
     };
     /** 开始 */
     ChatPlayGroup.prototype.start = function () {
+        if (this._status == ChatStatus.COMPLETE) {
+            this.next();
+            return this;
+        }
+        if (this.status == ChatStatus.RUNNING) {
+            return this;
+        }
         this._status = ChatStatus.RUNNING;
         if (this._text) {
             this._text.start();
             return this;
         }
         if (this._index >= this._group.length) {
-            this._status = ChatStatus.STOP;
+            this._status = ChatStatus.COMPLETE;
             return this;
         }
         if (this.options.callback) {
@@ -339,6 +371,9 @@ var ChatPlayGroup = (function () {
     };
     /** 停止 */
     ChatPlayGroup.prototype.stop = function () {
+        if (this._status == ChatStatus.COMPLETE) {
+            return this;
+        }
         this._status = ChatStatus.STOP;
         if (this._text) {
             this._text.stop();
@@ -362,6 +397,9 @@ var ChatPlayGroup = (function () {
             if (instance._handle) {
                 clearTimeout(instance._handle);
             }
+            if (instance._index >= instance._group.length - 1) {
+                instance._status = ChatStatus.COMPLETE;
+            }
             instance._handle = setTimeout(function () {
                 instance.next();
             }, instance.options.space);
@@ -375,6 +413,7 @@ var ChatPlayGroup = (function () {
             this._text.clear();
         }
         this._text = null;
+        this._status = ChatStatus.COMPLETE;
     };
     return ChatPlayGroup;
 }());
@@ -387,14 +426,12 @@ var Chat = (function () {
         this.element = element;
         /** 当前执行的组 */
         this._index = 0;
+        this._status = ChatStatus.STOP;
         this.options = $.extend({}, new ChatDefaultOptions(), options);
     }
     Object.defineProperty(Chat.prototype, "status", {
         get: function () {
-            if (!this._group) {
-                return ChatStatus.STOP;
-            }
-            return this._group.status;
+            return this._status;
         },
         set: function (arg) {
             switch (arg) {
@@ -414,6 +451,7 @@ var Chat = (function () {
     });
     /** 暂停 */
     Chat.prototype.pause = function () {
+        this._status = ChatStatus.PAUSE;
         if (this._group) {
             this._group.pause();
         }
@@ -434,11 +472,16 @@ var Chat = (function () {
     };
     /** 播放 */
     Chat.prototype.start = function () {
+        if (this.status == ChatStatus.RUNNING) {
+            return this;
+        }
+        this._status = ChatStatus.RUNNING;
         if (this._group) {
             this._group.start();
             return this;
         }
         if (this._index >= this.options.data.length) {
+            this._status = ChatStatus.COMPLETE;
             return this;
         }
         this.element.html("");
@@ -449,6 +492,9 @@ var Chat = (function () {
                 clearTimeout(instance._handle);
             }
             instance._handle = setTimeout(function () {
+                if (instance.status != ChatStatus.RUNNING) {
+                    return;
+                }
                 instance.next();
             }, instance.options.groupSpace);
         }, this.options);
@@ -457,6 +503,7 @@ var Chat = (function () {
     };
     /** 停止 */
     Chat.prototype.stop = function () {
+        this._status = ChatStatus.STOP;
         if (this._group) {
             this._group.stop();
         }

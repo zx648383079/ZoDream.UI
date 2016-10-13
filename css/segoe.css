@@ -1,0 +1,1809 @@
+.sg {
+  display: inline-block;
+  font: normal normal normal 14px/1 "Segoe MDL2 Assets";
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sg-1 {
+  content: "\e001";
+}
+.sg-2 {
+  content: "\e002";
+}
+.sg-3 {
+  content: "\e003";
+}
+.sg-4 {
+  content: "\e4";
+}
+.sg-5 {
+  content: "\e5";
+}
+.sg-6 {
+  content: "\e6";
+}
+.sg-7 {
+  content: "\e7";
+}
+.sg-8 {
+  content: "\e8";
+}
+.sg-9 {
+  content: "\e9";
+}
+.sg-a {
+  content: "\ea";
+}
+.sg-b {
+  content: "\eb";
+}
+.sg-c {
+  content: "\ec";
+}
+.sg-d {
+  content: "\ed";
+}
+.sg-e {
+  content: "\ee";
+}
+.sg-f {
+  content: "\ef";
+}
+.sg-10 {
+  content: "\e10";
+}
+.sg-11 {
+  content: "\e11";
+}
+.sg-12 {
+  content: "\e12";
+}
+.sg-13 {
+  content: "\e13";
+}
+.sg-14 {
+  content: "\e14";
+}
+.sg-15 {
+  content: "\e15";
+}
+.sg-16 {
+  content: "\e16";
+}
+.sg-17 {
+  content: "\e17";
+}
+.sg-18 {
+  content: "\e18";
+}
+.sg-19 {
+  content: "\e19";
+}
+.sg-1a {
+  content: "\e1a";
+}
+.sg-1b {
+  content: "\e1b";
+}
+.sg-1c {
+  content: "\e1c";
+}
+.sg-1d {
+  content: "\e1d";
+}
+.sg-1e {
+  content: "\e1e";
+}
+.sg-1f {
+  content: "\e1f";
+}
+.sg-20 {
+  content: "\e20";
+}
+.sg-21 {
+  content: "\e21";
+}
+.sg-22 {
+  content: "\e22";
+}
+.sg-23 {
+  content: "\e23";
+}
+.sg-24 {
+  content: "\e24";
+}
+.sg-25 {
+  content: "\e25";
+}
+.sg-26 {
+  content: "\e26";
+}
+.sg-27 {
+  content: "\e27";
+}
+.sg-28 {
+  content: "\e28";
+}
+.sg-29 {
+  content: "\e29";
+}
+.sg-2a {
+  content: "\e2a";
+}
+.sg-2b {
+  content: "\e2b";
+}
+.sg-2c {
+  content: "\e2c";
+}
+.sg-2d {
+  content: "\e2d";
+}
+.sg-2e {
+  content: "\e2e";
+}
+.sg-2f {
+  content: "\e2f";
+}
+.sg-30 {
+  content: "\e30";
+}
+.sg-31 {
+  content: "\e31";
+}
+.sg-32 {
+  content: "\e32";
+}
+.sg-33 {
+  content: "\e33";
+}
+.sg-34 {
+  content: "\e34";
+}
+.sg-35 {
+  content: "\e35";
+}
+.sg-36 {
+  content: "\e36";
+}
+.sg-37 {
+  content: "\e37";
+}
+.sg-38 {
+  content: "\e38";
+}
+.sg-39 {
+  content: "\e39";
+}
+.sg-3a {
+  content: "\e3a";
+}
+.sg-3b {
+  content: "\e3b";
+}
+.sg-3c {
+  content: "\e3c";
+}
+.sg-3d {
+  content: "\e3d";
+}
+.sg-3e {
+  content: "\e3e";
+}
+.sg-3f {
+  content: "\e3f";
+}
+.sg-40 {
+  content: "\e40";
+}
+.sg-41 {
+  content: "\e41";
+}
+.sg-42 {
+  content: "\e42";
+}
+.sg-43 {
+  content: "\e43";
+}
+.sg-44 {
+  content: "\e44";
+}
+.sg-45 {
+  content: "\e45";
+}
+.sg-46 {
+  content: "\e46";
+}
+.sg-47 {
+  content: "\e47";
+}
+.sg-48 {
+  content: "\e48";
+}
+.sg-49 {
+  content: "\e49";
+}
+.sg-4a {
+  content: "\e4a";
+}
+.sg-4b {
+  content: "\e4b";
+}
+.sg-4c {
+  content: "\e4c";
+}
+.sg-4d {
+  content: "\e4d";
+}
+.sg-4e {
+  content: "\e4e";
+}
+.sg-4f {
+  content: "\e4f";
+}
+.sg-50 {
+  content: "\e50";
+}
+.sg-51 {
+  content: "\e51";
+}
+.sg-52 {
+  content: "\e52";
+}
+.sg-53 {
+  content: "\e53";
+}
+.sg-54 {
+  content: "\e54";
+}
+.sg-55 {
+  content: "\e55";
+}
+.sg-56 {
+  content: "\e56";
+}
+.sg-57 {
+  content: "\e57";
+}
+.sg-58 {
+  content: "\e58";
+}
+.sg-59 {
+  content: "\e59";
+}
+.sg-5a {
+  content: "\e5a";
+}
+.sg-5b {
+  content: "\e5b";
+}
+.sg-5c {
+  content: "\e5c";
+}
+.sg-5d {
+  content: "\e5d";
+}
+.sg-5e {
+  content: "\e5e";
+}
+.sg-5f {
+  content: "\e5f";
+}
+.sg-60 {
+  content: "\e60";
+}
+.sg-61 {
+  content: "\e61";
+}
+.sg-62 {
+  content: "\e62";
+}
+.sg-63 {
+  content: "\e63";
+}
+.sg-64 {
+  content: "\e64";
+}
+.sg-65 {
+  content: "\e65";
+}
+.sg-66 {
+  content: "\e66";
+}
+.sg-67 {
+  content: "\e67";
+}
+.sg-68 {
+  content: "\e68";
+}
+.sg-69 {
+  content: "\e69";
+}
+.sg-6a {
+  content: "\e6a";
+}
+.sg-6b {
+  content: "\e6b";
+}
+.sg-6c {
+  content: "\e6c";
+}
+.sg-6d {
+  content: "\e6d";
+}
+.sg-6e {
+  content: "\e6e";
+}
+.sg-6f {
+  content: "\e6f";
+}
+.sg-70 {
+  content: "\e70";
+}
+.sg-71 {
+  content: "\e71";
+}
+.sg-72 {
+  content: "\e72";
+}
+.sg-73 {
+  content: "\e73";
+}
+.sg-74 {
+  content: "\e74";
+}
+.sg-75 {
+  content: "\e75";
+}
+.sg-76 {
+  content: "\e76";
+}
+.sg-77 {
+  content: "\e77";
+}
+.sg-78 {
+  content: "\e78";
+}
+.sg-79 {
+  content: "\e79";
+}
+.sg-7a {
+  content: "\e7a";
+}
+.sg-7b {
+  content: "\e7b";
+}
+.sg-7c {
+  content: "\e7c";
+}
+.sg-7d {
+  content: "\e7d";
+}
+.sg-7e {
+  content: "\e7e";
+}
+.sg-7f {
+  content: "\e7f";
+}
+.sg-80 {
+  content: "\e80";
+}
+.sg-81 {
+  content: "\e81";
+}
+.sg-82 {
+  content: "\e82";
+}
+.sg-83 {
+  content: "\e83";
+}
+.sg-84 {
+  content: "\e84";
+}
+.sg-85 {
+  content: "\e85";
+}
+.sg-86 {
+  content: "\e86";
+}
+.sg-87 {
+  content: "\e87";
+}
+.sg-88 {
+  content: "\e88";
+}
+.sg-89 {
+  content: "\e89";
+}
+.sg-8a {
+  content: "\e8a";
+}
+.sg-8b {
+  content: "\e8b";
+}
+.sg-8c {
+  content: "\e8c";
+}
+.sg-8d {
+  content: "\e8d";
+}
+.sg-8e {
+  content: "\e8e";
+}
+.sg-8f {
+  content: "\e8f";
+}
+.sg-90 {
+  content: "\e90";
+}
+.sg-91 {
+  content: "\e91";
+}
+.sg-92 {
+  content: "\e92";
+}
+.sg-93 {
+  content: "\e93";
+}
+.sg-94 {
+  content: "\e94";
+}
+.sg-95 {
+  content: "\e95";
+}
+.sg-96 {
+  content: "\e96";
+}
+.sg-97 {
+  content: "\e97";
+}
+.sg-98 {
+  content: "\e98";
+}
+.sg-99 {
+  content: "\e99";
+}
+.sg-9a {
+  content: "\e9a";
+}
+.sg-9b {
+  content: "\e9b";
+}
+.sg-9c {
+  content: "\e9c";
+}
+.sg-9d {
+  content: "\e9d";
+}
+.sg-9e {
+  content: "\e9e";
+}
+.sg-9f {
+  content: "\e9f";
+}
+.sg-a0 {
+  content: "\ea0";
+}
+.sg-a1 {
+  content: "\ea1";
+}
+.sg-a2 {
+  content: "\ea2";
+}
+.sg-a3 {
+  content: "\ea3";
+}
+.sg-a4 {
+  content: "\ea4";
+}
+.sg-a5 {
+  content: "\ea5";
+}
+.sg-a6 {
+  content: "\ea6";
+}
+.sg-a7 {
+  content: "\ea7";
+}
+.sg-a8 {
+  content: "\ea8";
+}
+.sg-a9 {
+  content: "\ea9";
+}
+.sg-aa {
+  content: "\eaa";
+}
+.sg-ab {
+  content: "\eab";
+}
+.sg-ac {
+  content: "\eac";
+}
+.sg-ad {
+  content: "\ead";
+}
+.sg-ae {
+  content: "\eae";
+}
+.sg-af {
+  content: "\eaf";
+}
+.sg-b0 {
+  content: "\eb0";
+}
+.sg-b1 {
+  content: "\eb1";
+}
+.sg-b2 {
+  content: "\eb2";
+}
+.sg-b3 {
+  content: "\eb3";
+}
+.sg-b4 {
+  content: "\eb4";
+}
+.sg-b5 {
+  content: "\eb5";
+}
+.sg-b6 {
+  content: "\eb6";
+}
+.sg-b7 {
+  content: "\eb7";
+}
+.sg-b8 {
+  content: "\eb8";
+}
+.sg-b9 {
+  content: "\eb9";
+}
+.sg-ba {
+  content: "\eba";
+}
+.sg-bb {
+  content: "\ebb";
+}
+.sg-bc {
+  content: "\ebc";
+}
+.sg-bd {
+  content: "\ebd";
+}
+.sg-be {
+  content: "\ebe";
+}
+.sg-bf {
+  content: "\ebf";
+}
+.sg-c0 {
+  content: "\ec0";
+}
+.sg-c1 {
+  content: "\ec1";
+}
+.sg-c2 {
+  content: "\ec2";
+}
+.sg-c3 {
+  content: "\ec3";
+}
+.sg-c4 {
+  content: "\ec4";
+}
+.sg-c5 {
+  content: "\ec5";
+}
+.sg-c6 {
+  content: "\ec6";
+}
+.sg-c7 {
+  content: "\ec7";
+}
+.sg-c8 {
+  content: "\ec8";
+}
+.sg-c9 {
+  content: "\ec9";
+}
+.sg-ca {
+  content: "\eca";
+}
+.sg-cb {
+  content: "\ecb";
+}
+.sg-cc {
+  content: "\ecc";
+}
+.sg-cd {
+  content: "\ecd";
+}
+.sg-ce {
+  content: "\ece";
+}
+.sg-cf {
+  content: "\ecf";
+}
+.sg-d0 {
+  content: "\ed0";
+}
+.sg-d1 {
+  content: "\ed1";
+}
+.sg-d2 {
+  content: "\ed2";
+}
+.sg-d3 {
+  content: "\ed3";
+}
+.sg-d4 {
+  content: "\ed4";
+}
+.sg-d5 {
+  content: "\ed5";
+}
+.sg-d6 {
+  content: "\ed6";
+}
+.sg-d7 {
+  content: "\ed7";
+}
+.sg-d8 {
+  content: "\ed8";
+}
+.sg-d9 {
+  content: "\ed9";
+}
+.sg-da {
+  content: "\eda";
+}
+.sg-db {
+  content: "\edb";
+}
+.sg-dc {
+  content: "\edc";
+}
+.sg-dd {
+  content: "\edd";
+}
+.sg-de {
+  content: "\ede";
+}
+.sg-df {
+  content: "\edf";
+}
+.sg-e0 {
+  content: "\ee0";
+}
+.sg-e1 {
+  content: "\ee1";
+}
+.sg-e2 {
+  content: "\ee2";
+}
+.sg-e3 {
+  content: "\ee3";
+}
+.sg-e4 {
+  content: "\ee4";
+}
+.sg-e5 {
+  content: "\ee5";
+}
+.sg-e6 {
+  content: "\ee6";
+}
+.sg-e7 {
+  content: "\ee7";
+}
+.sg-e8 {
+  content: "\ee8";
+}
+.sg-e9 {
+  content: "\ee9";
+}
+.sg-ea {
+  content: "\eea";
+}
+.sg-eb {
+  content: "\eeb";
+}
+.sg-ec {
+  content: "\eec";
+}
+.sg-ed {
+  content: "\eed";
+}
+.sg-ee {
+  content: "\eee";
+}
+.sg-ef {
+  content: "\eef";
+}
+.sg-f0 {
+  content: "\ef0";
+}
+.sg-f1 {
+  content: "\ef1";
+}
+.sg-f2 {
+  content: "\ef2";
+}
+.sg-f3 {
+  content: "\ef3";
+}
+.sg-f4 {
+  content: "\ef4";
+}
+.sg-f5 {
+  content: "\ef5";
+}
+.sg-f6 {
+  content: "\ef6";
+}
+.sg-f7 {
+  content: "\ef7";
+}
+.sg-f8 {
+  content: "\ef8";
+}
+.sg-f9 {
+  content: "\ef9";
+}
+.sg-fa {
+  content: "\efa";
+}
+.sg-fb {
+  content: "\efb";
+}
+.sg-fc {
+  content: "\efc";
+}
+.sg-fd {
+  content: "\efd";
+}
+.sg-fe {
+  content: "\efe";
+}
+.sg-ff {
+  content: "\eff";
+}
+.sg-100 {
+  content: "\e100";
+}
+.sg-101 {
+  content: "\e101";
+}
+.sg-102 {
+  content: "\e102";
+}
+.sg-103 {
+  content: "\e103";
+}
+.sg-104 {
+  content: "\e104";
+}
+.sg-105 {
+  content: "\e105";
+}
+.sg-106 {
+  content: "\e106";
+}
+.sg-107 {
+  content: "\e107";
+}
+.sg-108 {
+  content: "\e108";
+}
+.sg-109 {
+  content: "\e109";
+}
+.sg-10a {
+  content: "\e10a";
+}
+.sg-10b {
+  content: "\e10b";
+}
+.sg-10c {
+  content: "\e10c";
+}
+.sg-10d {
+  content: "\e10d";
+}
+.sg-10e {
+  content: "\e10e";
+}
+.sg-10f {
+  content: "\e10f";
+}
+.sg-110 {
+  content: "\e110";
+}
+.sg-111 {
+  content: "\e111";
+}
+.sg-112 {
+  content: "\e112";
+}
+.sg-113 {
+  content: "\e113";
+}
+.sg-114 {
+  content: "\e114";
+}
+.sg-115 {
+  content: "\e115";
+}
+.sg-116 {
+  content: "\e116";
+}
+.sg-117 {
+  content: "\e117";
+}
+.sg-118 {
+  content: "\e118";
+}
+.sg-119 {
+  content: "\e119";
+}
+.sg-11a {
+  content: "\e11a";
+}
+.sg-11b {
+  content: "\e11b";
+}
+.sg-11c {
+  content: "\e11c";
+}
+.sg-11d {
+  content: "\e11d";
+}
+.sg-11e {
+  content: "\e11e";
+}
+.sg-11f {
+  content: "\e11f";
+}
+.sg-120 {
+  content: "\e120";
+}
+.sg-121 {
+  content: "\e121";
+}
+.sg-122 {
+  content: "\e122";
+}
+.sg-123 {
+  content: "\e123";
+}
+.sg-124 {
+  content: "\e124";
+}
+.sg-125 {
+  content: "\e125";
+}
+.sg-126 {
+  content: "\e126";
+}
+.sg-127 {
+  content: "\e127";
+}
+.sg-128 {
+  content: "\e128";
+}
+.sg-129 {
+  content: "\e129";
+}
+.sg-12a {
+  content: "\e12a";
+}
+.sg-12b {
+  content: "\e12b";
+}
+.sg-12c {
+  content: "\e12c";
+}
+.sg-12d {
+  content: "\e12d";
+}
+.sg-12e {
+  content: "\e12e";
+}
+.sg-12f {
+  content: "\e12f";
+}
+.sg-130 {
+  content: "\e130";
+}
+.sg-131 {
+  content: "\e131";
+}
+.sg-132 {
+  content: "\e132";
+}
+.sg-133 {
+  content: "\e133";
+}
+.sg-134 {
+  content: "\e134";
+}
+.sg-135 {
+  content: "\e135";
+}
+.sg-136 {
+  content: "\e136";
+}
+.sg-137 {
+  content: "\e137";
+}
+.sg-138 {
+  content: "\e138";
+}
+.sg-139 {
+  content: "\e139";
+}
+.sg-13a {
+  content: "\e13a";
+}
+.sg-13b {
+  content: "\e13b";
+}
+.sg-13c {
+  content: "\e13c";
+}
+.sg-13d {
+  content: "\e13d";
+}
+.sg-13e {
+  content: "\e13e";
+}
+.sg-13f {
+  content: "\e13f";
+}
+.sg-140 {
+  content: "\e140";
+}
+.sg-141 {
+  content: "\e141";
+}
+.sg-142 {
+  content: "\e142";
+}
+.sg-143 {
+  content: "\e143";
+}
+.sg-144 {
+  content: "\e144";
+}
+.sg-145 {
+  content: "\e145";
+}
+.sg-146 {
+  content: "\e146";
+}
+.sg-147 {
+  content: "\e147";
+}
+.sg-148 {
+  content: "\e148";
+}
+.sg-149 {
+  content: "\e149";
+}
+.sg-14a {
+  content: "\e14a";
+}
+.sg-14b {
+  content: "\e14b";
+}
+.sg-14c {
+  content: "\e14c";
+}
+.sg-14d {
+  content: "\e14d";
+}
+.sg-14e {
+  content: "\e14e";
+}
+.sg-14f {
+  content: "\e14f";
+}
+.sg-150 {
+  content: "\e150";
+}
+.sg-151 {
+  content: "\e151";
+}
+.sg-152 {
+  content: "\e152";
+}
+.sg-153 {
+  content: "\e153";
+}
+.sg-154 {
+  content: "\e154";
+}
+.sg-155 {
+  content: "\e155";
+}
+.sg-156 {
+  content: "\e156";
+}
+.sg-157 {
+  content: "\e157";
+}
+.sg-158 {
+  content: "\e158";
+}
+.sg-159 {
+  content: "\e159";
+}
+.sg-15a {
+  content: "\e15a";
+}
+.sg-15b {
+  content: "\e15b";
+}
+.sg-15c {
+  content: "\e15c";
+}
+.sg-15d {
+  content: "\e15d";
+}
+.sg-15e {
+  content: "\e15e";
+}
+.sg-15f {
+  content: "\e15f";
+}
+.sg-160 {
+  content: "\e160";
+}
+.sg-161 {
+  content: "\e161";
+}
+.sg-162 {
+  content: "\e162";
+}
+.sg-163 {
+  content: "\e163";
+}
+.sg-164 {
+  content: "\e164";
+}
+.sg-165 {
+  content: "\e165";
+}
+.sg-166 {
+  content: "\e166";
+}
+.sg-167 {
+  content: "\e167";
+}
+.sg-168 {
+  content: "\e168";
+}
+.sg-169 {
+  content: "\e169";
+}
+.sg-16a {
+  content: "\e16a";
+}
+.sg-16b {
+  content: "\e16b";
+}
+.sg-16c {
+  content: "\e16c";
+}
+.sg-16d {
+  content: "\e16d";
+}
+.sg-16e {
+  content: "\e16e";
+}
+.sg-16f {
+  content: "\e16f";
+}
+.sg-170 {
+  content: "\e170";
+}
+.sg-171 {
+  content: "\e171";
+}
+.sg-172 {
+  content: "\e172";
+}
+.sg-173 {
+  content: "\e173";
+}
+.sg-174 {
+  content: "\e174";
+}
+.sg-175 {
+  content: "\e175";
+}
+.sg-176 {
+  content: "\e176";
+}
+.sg-177 {
+  content: "\e177";
+}
+.sg-178 {
+  content: "\e178";
+}
+.sg-179 {
+  content: "\e179";
+}
+.sg-17a {
+  content: "\e17a";
+}
+.sg-17b {
+  content: "\e17b";
+}
+.sg-17c {
+  content: "\e17c";
+}
+.sg-17d {
+  content: "\e17d";
+}
+.sg-17e {
+  content: "\e17e";
+}
+.sg-17f {
+  content: "\e17f";
+}
+.sg-180 {
+  content: "\e180";
+}
+.sg-181 {
+  content: "\e181";
+}
+.sg-182 {
+  content: "\e182";
+}
+.sg-183 {
+  content: "\e183";
+}
+.sg-184 {
+  content: "\e184";
+}
+.sg-185 {
+  content: "\e185";
+}
+.sg-186 {
+  content: "\e186";
+}
+.sg-187 {
+  content: "\e187";
+}
+.sg-188 {
+  content: "\e188";
+}
+.sg-189 {
+  content: "\e189";
+}
+.sg-18a {
+  content: "\e18a";
+}
+.sg-18b {
+  content: "\e18b";
+}
+.sg-18c {
+  content: "\e18c";
+}
+.sg-18d {
+  content: "\e18d";
+}
+.sg-18e {
+  content: "\e18e";
+}
+.sg-18f {
+  content: "\e18f";
+}
+.sg-190 {
+  content: "\e190";
+}
+.sg-191 {
+  content: "\e191";
+}
+.sg-192 {
+  content: "\e192";
+}
+.sg-193 {
+  content: "\e193";
+}
+.sg-194 {
+  content: "\e194";
+}
+.sg-195 {
+  content: "\e195";
+}
+.sg-196 {
+  content: "\e196";
+}
+.sg-197 {
+  content: "\e197";
+}
+.sg-198 {
+  content: "\e198";
+}
+.sg-199 {
+  content: "\e199";
+}
+.sg-19a {
+  content: "\e19a";
+}
+.sg-19b {
+  content: "\e19b";
+}
+.sg-19c {
+  content: "\e19c";
+}
+.sg-19d {
+  content: "\e19d";
+}
+.sg-19e {
+  content: "\e19e";
+}
+.sg-19f {
+  content: "\e19f";
+}
+.sg-1a0 {
+  content: "\e1a0";
+}
+.sg-1a1 {
+  content: "\e1a1";
+}
+.sg-1a2 {
+  content: "\e1a2";
+}
+.sg-1a3 {
+  content: "\e1a3";
+}
+.sg-1a4 {
+  content: "\e1a4";
+}
+.sg-1a5 {
+  content: "\e1a5";
+}
+.sg-1a6 {
+  content: "\e1a6";
+}
+.sg-1a7 {
+  content: "\e1a7";
+}
+.sg-1a8 {
+  content: "\e1a8";
+}
+.sg-1a9 {
+  content: "\e1a9";
+}
+.sg-1aa {
+  content: "\e1aa";
+}
+.sg-1ab {
+  content: "\e1ab";
+}
+.sg-1ac {
+  content: "\e1ac";
+}
+.sg-1ad {
+  content: "\e1ad";
+}
+.sg-1ae {
+  content: "\e1ae";
+}
+.sg-1af {
+  content: "\e1af";
+}
+.sg-1b0 {
+  content: "\e1b0";
+}
+.sg-1b1 {
+  content: "\e1b1";
+}
+.sg-1b2 {
+  content: "\e1b2";
+}
+.sg-1b3 {
+  content: "\e1b3";
+}
+.sg-1b4 {
+  content: "\e1b4";
+}
+.sg-1b5 {
+  content: "\e1b5";
+}
+.sg-1b6 {
+  content: "\e1b6";
+}
+.sg-1b7 {
+  content: "\e1b7";
+}
+.sg-1b8 {
+  content: "\e1b8";
+}
+.sg-1b9 {
+  content: "\e1b9";
+}
+.sg-1ba {
+  content: "\e1ba";
+}
+.sg-1bb {
+  content: "\e1bb";
+}
+.sg-1bc {
+  content: "\e1bc";
+}
+.sg-1bd {
+  content: "\e1bd";
+}
+.sg-1be {
+  content: "\e1be";
+}
+.sg-1bf {
+  content: "\e1bf";
+}
+.sg-1c0 {
+  content: "\e1c0";
+}
+.sg-1c1 {
+  content: "\e1c1";
+}
+.sg-1c2 {
+  content: "\e1c2";
+}
+.sg-1c3 {
+  content: "\e1c3";
+}
+.sg-1c4 {
+  content: "\e1c4";
+}
+.sg-1c5 {
+  content: "\e1c5";
+}
+.sg-1c6 {
+  content: "\e1c6";
+}
+.sg-1c7 {
+  content: "\e1c7";
+}
+.sg-1c8 {
+  content: "\e1c8";
+}
+.sg-1c9 {
+  content: "\e1c9";
+}
+.sg-1ca {
+  content: "\e1ca";
+}
+.sg-1cb {
+  content: "\e1cb";
+}
+.sg-1cc {
+  content: "\e1cc";
+}
+.sg-1cd {
+  content: "\e1cd";
+}
+.sg-1ce {
+  content: "\e1ce";
+}
+.sg-1cf {
+  content: "\e1cf";
+}
+.sg-1d0 {
+  content: "\e1d0";
+}
+.sg-1d1 {
+  content: "\e1d1";
+}
+.sg-1d2 {
+  content: "\e1d2";
+}
+.sg-1d3 {
+  content: "\e1d3";
+}
+.sg-1d4 {
+  content: "\e1d4";
+}
+.sg-1d5 {
+  content: "\e1d5";
+}
+.sg-1d6 {
+  content: "\e1d6";
+}
+.sg-1d7 {
+  content: "\e1d7";
+}
+.sg-1d8 {
+  content: "\e1d8";
+}
+.sg-1d9 {
+  content: "\e1d9";
+}
+.sg-1da {
+  content: "\e1da";
+}
+.sg-1db {
+  content: "\e1db";
+}
+.sg-1dc {
+  content: "\e1dc";
+}
+.sg-1dd {
+  content: "\e1dd";
+}
+.sg-1de {
+  content: "\e1de";
+}
+.sg-1df {
+  content: "\e1df";
+}
+.sg-1e0 {
+  content: "\e1e0";
+}
+.sg-1e1 {
+  content: "\e1e1";
+}
+.sg-1e2 {
+  content: "\e1e2";
+}
+.sg-1e3 {
+  content: "\e1e3";
+}
+.sg-1e4 {
+  content: "\e1e4";
+}
+.sg-1e5 {
+  content: "\e1e5";
+}
+.sg-1e6 {
+  content: "\e1e6";
+}
+.sg-1e7 {
+  content: "\e1e7";
+}
+.sg-1e8 {
+  content: "\e1e8";
+}
+.sg-1e9 {
+  content: "\e1e9";
+}
+.sg-1ea {
+  content: "\e1ea";
+}
+.sg-1eb {
+  content: "\e1eb";
+}
+.sg-1ec {
+  content: "\e1ec";
+}
+.sg-1ed {
+  content: "\e1ed";
+}
+.sg-1ee {
+  content: "\e1ee";
+}
+.sg-1ef {
+  content: "\e1ef";
+}
+.sg-1f0 {
+  content: "\e1f0";
+}
+.sg-1f1 {
+  content: "\e1f1";
+}
+.sg-1f2 {
+  content: "\e1f2";
+}
+.sg-1f3 {
+  content: "\e1f3";
+}
+.sg-1f4 {
+  content: "\e1f4";
+}
+.sg-1f5 {
+  content: "\e1f5";
+}
+.sg-1f6 {
+  content: "\e1f6";
+}
+.sg-1f7 {
+  content: "\e1f7";
+}
+.sg-1f8 {
+  content: "\e1f8";
+}
+.sg-1f9 {
+  content: "\e1f9";
+}
+.sg-1fa {
+  content: "\e1fa";
+}
+.sg-1fb {
+  content: "\e1fb";
+}
+.sg-1fc {
+  content: "\e1fc";
+}
+.sg-1fd {
+  content: "\e1fd";
+}
+.sg-1fe {
+  content: "\e1fe";
+}
+.sg-1ff {
+  content: "\e1ff";
+}
+.sg-200 {
+  content: "\e200";
+}
+.sg-201 {
+  content: "\e201";
+}
+.sg-202 {
+  content: "\e202";
+}
+.sg-203 {
+  content: "\e203";
+}
+.sg-204 {
+  content: "\e204";
+}
+.sg-205 {
+  content: "\e205";
+}
+.sg-206 {
+  content: "\e206";
+}
+.sg-207 {
+  content: "\e207";
+}
+.sg-208 {
+  content: "\e208";
+}
+.sg-209 {
+  content: "\e209";
+}
+.sg-20a {
+  content: "\e20a";
+}
+.sg-20b {
+  content: "\e20b";
+}
+.sg-20c {
+  content: "\e20c";
+}
+.sg-20d {
+  content: "\e20d";
+}
+.sg-20e {
+  content: "\e20e";
+}
+.sg-20f {
+  content: "\e20f";
+}
+.sg-210 {
+  content: "\e210";
+}
+.sg-211 {
+  content: "\e211";
+}
+.sg-212 {
+  content: "\e212";
+}
+.sg-213 {
+  content: "\e213";
+}
+.sg-214 {
+  content: "\e214";
+}
+.sg-215 {
+  content: "\e215";
+}
+.sg-216 {
+  content: "\e216";
+}
+.sg-217 {
+  content: "\e217";
+}
+.sg-218 {
+  content: "\e218";
+}
+.sg-219 {
+  content: "\e219";
+}
+.sg-21a {
+  content: "\e21a";
+}
+.sg-21b {
+  content: "\e21b";
+}
+.sg-21c {
+  content: "\e21c";
+}
+.sg-21d {
+  content: "\e21d";
+}
+.sg-21e {
+  content: "\e21e";
+}
+.sg-21f {
+  content: "\e21f";
+}
+.sg-220 {
+  content: "\e220";
+}
+.sg-221 {
+  content: "\e221";
+}
+.sg-222 {
+  content: "\e222";
+}
+.sg-223 {
+  content: "\e223";
+}
+.sg-224 {
+  content: "\e224";
+}
+.sg-225 {
+  content: "\e225";
+}
+.sg-226 {
+  content: "\e226";
+}
+.sg-227 {
+  content: "\e227";
+}
+.sg-228 {
+  content: "\e228";
+}
+.sg-229 {
+  content: "\e229";
+}
+.sg-22a {
+  content: "\e22a";
+}
+.sg-22b {
+  content: "\e22b";
+}
+.sg-22c {
+  content: "\e22c";
+}
+.sg-22d {
+  content: "\e22d";
+}
+.sg-22e {
+  content: "\e22e";
+}
+.sg-22f {
+  content: "\e22f";
+}
+.sg-230 {
+  content: "\e230";
+}
+.sg-231 {
+  content: "\e231";
+}
+.sg-232 {
+  content: "\e232";
+}
+.sg-233 {
+  content: "\e233";
+}
+.sg-234 {
+  content: "\e234";
+}
+.sg-235 {
+  content: "\e235";
+}
+.sg-236 {
+  content: "\e236";
+}
+.sg-237 {
+  content: "\e237";
+}
+.sg-238 {
+  content: "\e238";
+}
+.sg-239 {
+  content: "\e239";
+}
+.sg-23a {
+  content: "\e23a";
+}
+.sg-23b {
+  content: "\e23b";
+}
+.sg-23c {
+  content: "\e23c";
+}
+.sg-23d {
+  content: "\e23d";
+}
+.sg-23e {
+  content: "\e23e";
+}
+.sg-23f {
+  content: "\e23f";
+}
+.sg-240 {
+  content: "\e240";
+}
+.sg-241 {
+  content: "\e241";
+}
+.sg-242 {
+  content: "\e242";
+}
+.sg-243 {
+  content: "\e243";
+}
+.sg-244 {
+  content: "\e244";
+}
+.sg-245 {
+  content: "\e245";
+}
+.sg-246 {
+  content: "\e246";
+}
+.sg-247 {
+  content: "\e247";
+}
+.sg-248 {
+  content: "\e248";
+}
+.sg-249 {
+  content: "\e249";
+}
+.sg-24a {
+  content: "\e24a";
+}
+.sg-24b {
+  content: "\e24b";
+}
+.sg-24c {
+  content: "\e24c";
+}
+.sg-24d {
+  content: "\e24d";
+}
+.sg-24e {
+  content: "\e24e";
+}
+.sg-24f {
+  content: "\e24f";
+}
+.sg-250 {
+  content: "\e250";
+}
+.sg-251 {
+  content: "\e251";
+}
+.sg-252 {
+  content: "\e252";
+}
+.sg-253 {
+  content: "\e253";
+}
+.sg-254 {
+  content: "\e254";
+}
+.sg-255 {
+  content: "\e255";
+}
+.sg-256 {
+  content: "\e256";
+}
+.sg-257 {
+  content: "\e257";
+}
+.sg-258 {
+  content: "\e258";
+}

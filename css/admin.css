@@ -26,3 +26,136 @@
 .td {
     display: table-cell;
 }
+
+.leftMenu {
+    width: 250px;
+    font-size: 30px;
+    background: #333;
+}
+
+.leftMenu>ul {
+    width: 100%;
+}
+
+.leftMenu .fa {
+    margin-left: 5px;
+}
+
+.leftMenu.min {
+    width: 40px;
+}
+
+.leftMenu.min li a span {
+    display: none;
+}
+
+.leftMenu li {
+    line-height: 40px;
+    background: #333;
+    display: block;
+    position: relative;
+}
+
+.leftMenu li a {
+    color: #fff;
+    text-decoration: none;
+    height: 40px;
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+}
+
+.leftMenu li span {
+    margin: 0 50px;
+}
+
+.leftMenu li>ul {
+    display: none;
+}
+
+.leftMenu li.active>ul {
+    display: block;
+    height: auto;
+}
+
+.leftMenu li.active {
+    background: #557755;
+}
+
+.leftMenu.min li.active>ul {
+    position: absolute;
+    top: 0;
+    left: 40px;
+    width: 210px;
+}
+
+.leftMenu.min li.active>ul span {
+    display: block;
+}
+
+.leftMenu li .fa {
+    position: absolute;
+    top: 5px;
+    left: 0;
+}
+
+.leftMenu li li {
+    background: #767675;
+}
+
+.tabHeader>ul {
+    display: inline-block;
+}
+
+.tabHeader>.fa {
+    
+}
+
+.tabHeader li {
+    list-style: none;
+    display: block;
+    width: 100px;
+    position: relative;
+    border: 1px solid #333;
+    border-radius: 5px 5px 0 0;
+    float: left;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+    background: #333;
+    color: #e1e1e1;
+}
+
+.tabHeader li .fa-close {
+    display: none;
+    position: absolute;
+    top: 7px;
+    right: 5px;
+}
+
+.tabHeader li:hover {
+    background: #767675;
+}
+
+.tabHeader li:hover .fa-close {
+    display: block;
+}
+
+.tabHeader li.active {
+    border-radius: 0 20px 0 0;
+    width: 130px;
+    background: #367678;
+}
+
+.tabContent iframe {
+    display: none;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.tabContent iframe.active {
+    display: block;
+}

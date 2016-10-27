@@ -81,36 +81,4 @@ var UploadDefaultOption = (function () {
         return new Upload(this, option);
     };
 })(jQuery);
-function a() {
-    var content = document.getElementById("content");
-    if (content.offsetWidth < 600) {
-        var tables = content.getElementsByTagName("table");
-        for (var i = 0, length = tables.length; i < length; i++) {
-            var table = tables[i];
-            table.style.width = "100%";
-            var html = table.innerHTML;
-            var matches = [];
-            var match;
-            var patt = new RegExp('<tr([^<>]*)>\s*(<td[^<>]*>.+?<\/td>)(.+?)<\/tr>', 'g');
-            while ((match = patt.exec(html)) != null) {
-                matches.push(match);
-            }
-            var td = '<td rowspan="' + matches.length + '"><div style="width:' + (table.offsetWidth - 100) + 'px; overflow-y:auto"><table style="width:877px">';
-            $(matches).each(function (i, item) {
-                td += '<tr' + item[1] + '>' + item[3] + '</tr>';
-            });
-            td += '</table></div></td>';
-            html = '';
-            $(matches).each(function (i, item) {
-                if (i == 0) {
-                    html += '<tr' + item[1] + '>' + item[2] + td + '</tr>';
-                }
-                else {
-                    html += '<tr' + item[1] + '>' + item[2] + '</tr>';
-                }
-            });
-            table.innerHTML = html;
-        }
-    }
-}
 //# sourceMappingURL=jquery.upload.js.map

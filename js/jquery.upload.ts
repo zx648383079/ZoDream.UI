@@ -76,7 +76,7 @@ interface UploadOption {
     removeCallback?: (eventObject: JQueryEventObject, ...eventData: any[]) => any,  //删除触发事件
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
-    filter?: string       // 文件过滤
+    filter?: string,       // 文件过滤
 }
 
 class UploadDefaultOption implements UploadOption {
@@ -97,36 +97,3 @@ class UploadDefaultOption implements UploadOption {
     return new Upload(this, option); 
   };
 })(jQuery);
-
-function a() {
-    var content = document.getElementById("content");
-    if (content.offsetWidth < 600) {
-        var tables = content.getElementsByTagName("table");
-        for (var i = 0, length = tables.length; i < length; i ++) {
-            var table = tables[i];
-            table.style.width = "100%";
-            var html = table.innerHTML;
-            var matches = [];
-            var match;
-            var patt = new RegExp('<tr([^<>]*)>\s*(<td[^<>]*>.+?<\/td>)(.+?)<\/tr>', 'g');
-            while ((match = patt.exec(html)) != null) {
-                matches.push(match);
-            }
-            var td = '<td rowspan="' + matches.length +'"><div style="width:' + (table.offsetWidth - 100) +'px; overflow-y:auto"><table style="width:877px">';
-            $(matches).each((i, item) => {
-                td += '<tr' + item[1] +'>' + item[3] + '</tr>';
-            });
-            td += '</table></div></td>';
-
-            html = '';
-            $(matches).each((i, item) => {
-                if (i == 0) {
-                    html += '<tr' + item[1] +'>' + item[2] + td + '</tr>';
-                } else {
-                    html += '<tr' + item[1] +'>' + item[2] + '</tr>';
-                }
-            });
-            table.innerHTML = html;
-        }
-    }
-}

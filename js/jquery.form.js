@@ -61,12 +61,49 @@ var Validate = (function () {
 }());
 var Form = (function () {
     function Form(element, options) {
+        this.element = element;
         this.options = $.extend({}, new FormDefaultOptions, options);
+        if (!this.options.url) {
+            this.options.url = this.element.attr("action");
+        }
+        if (!this.options.method) {
+            this.options.method = this.element.attr("method").toUpperCase() == 'POST' ? AjaxMethod.POST : AjaxMethod.GET;
+        }
+        element.on("blue", "input", function () {
+        });
     }
+    Form.prototype.validate = function () {
+        var instance = this;
+        this.element.find("input").each(function (index, item) {
+            var element = $(item);
+            var pattern = element.attr(instance.options.patternTag);
+            if (!pattern) {
+                return;
+            }
+        });
+    };
+    Form.prototype.validateValue = function (value, pattern) {
+        value = value.trim();
+        switch (pattern) {
+            case "*":
+                return value.length > 0;
+            case "e":
+                return Validate.email(value);
+            case "p":
+                return Validate.mobile(value);
+            case "u":
+                return Validate.url(value);
+            default:
+                break;
+        }
+        return Validate.isMatch(pattern, value);
+    };
     return Form;
 }());
 var FormDefaultOptions = (function () {
     function FormDefaultOptions() {
+        this.patternTag = "data-pattern";
+        this.messageTag = "data-message";
     }
     return FormDefaultOptions;
 }());

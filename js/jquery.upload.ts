@@ -49,11 +49,32 @@ class Upload {
                 success: function(data) {
                     data = JSON.parse(data);
                     if (data.state == "SUCCESS") {
-                        $(instance.option.grid).append(instance.replace(data));
+                        instance.deal(data);
                         return;
                     }
                 }
             });
+    }
+
+    public deal(data) {
+        if (this.option.grid) {
+            $(this.option.grid).append(this.replace(data));
+        }
+        let urlFor = this.element.attr("data-url");
+        if (!urlFor) {
+            return;
+        }
+        let tags = urlFor.split("|");
+        $(tags).each(function(index, element) {
+            let item = $(element);
+            if (item.length == 0) {
+                return;
+            }
+            if (item.attr("type") == "text") {
+                item.val(data.url);
+            }
+            item.attr("src", data.url);
+        });
     }
 
     public replace(data: Object): string {
@@ -82,7 +103,7 @@ interface UploadOption {
 class UploadDefaultOption implements UploadOption {
     name: string = "file";
     template: string = "<li>{url}</li>";
-    grid: string = ".zdGrid";
+    //grid: string = ".zdGrid";
     removeTag: string = ".delete";
     removeCallback: (eventObject: JQueryEventObject, ...eventData: any[]) => any = function() {
         $(this).parent().remove();

@@ -44,10 +44,30 @@ var Upload = (function () {
             success: function (data) {
                 data = JSON.parse(data);
                 if (data.state == "SUCCESS") {
-                    $(instance.option.grid).append(instance.replace(data));
+                    instance.deal(data);
                     return;
                 }
             }
+        });
+    };
+    Upload.prototype.deal = function (data) {
+        if (this.option.grid) {
+            $(this.option.grid).append(this.replace(data));
+        }
+        var urlFor = this.element.attr("data-url");
+        if (!urlFor) {
+            return;
+        }
+        var tags = urlFor.split("|");
+        $(tags).each(function (index, element) {
+            var item = $(element);
+            if (item.length == 0) {
+                return;
+            }
+            if (item.attr("type") == "text") {
+                item.val(data.url);
+            }
+            item.attr("src", data.url);
         });
     };
     Upload.prototype.replace = function (data) {
@@ -65,7 +85,7 @@ var UploadDefaultOption = (function () {
     function UploadDefaultOption() {
         this.name = "file";
         this.template = "<li>{url}</li>";
-        this.grid = ".zdGrid";
+        //grid: string = ".zdGrid";
         this.removeTag = ".delete";
         this.removeCallback = function () {
             $(this).parent().remove();

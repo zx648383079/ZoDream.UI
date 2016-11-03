@@ -1,3 +1,12 @@
+/**
+ * EXAMPLE:
+ * $("#upload").upload({
+ *      url: 'upload.php',
+ *      name: 'file',
+ *      template: '{url}',
+ *      grid: '.img'
+ * });
+ */
 var Upload = (function () {
     function Upload(element, option) {
         this.element = element;
@@ -51,23 +60,30 @@ var Upload = (function () {
         });
     };
     Upload.prototype.deal = function (data) {
-        if (this.option.grid) {
-            $(this.option.grid).append(this.replace(data));
-        }
-        var urlFor = this.element.attr("data-url");
+        var urlFor = this.element.attr("data-grid") || this.option.grid;
         if (!urlFor) {
             return;
         }
         var tags = urlFor.split("|");
-        $(tags).each(function (index, element) {
-            var item = $(element);
+        var value = this.replace(data);
+        $(tags).each(function (index, tag) {
+            var item = $(tag);
             if (item.length == 0) {
                 return;
             }
-            if (item.attr("type") == "text") {
-                item.val(data.url);
-            }
-            item.attr("src", data.url);
+            item.each(function (i, element) {
+                switch (element.nodeName.toUpperCase()) {
+                    case "INPUT":
+                        item.val(value);
+                        return;
+                    case "IMG":
+                        item.attr("src", value);
+                        return;
+                    default:
+                        break;
+                }
+                item.append(value);
+            });
         });
     };
     Upload.prototype.replace = function (data) {
@@ -92,6 +108,7 @@ var UploadDefaultOption = (function () {
         };
         this.multiple = false;
         this.fileClass = "zdUploadFile";
+        this.filter = "";
     }
     return UploadDefaultOption;
 }());

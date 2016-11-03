@@ -1,3 +1,12 @@
+/**
+ * EXAMPLE:
+ * $("#upload").upload({
+ *      url: 'upload.php',
+ *      name: 'file',
+ *      template: '{url}',
+ *      grid: '.img'
+ * });
+ */
 class Upload {
     constructor(
         public element: JQuery,
@@ -57,23 +66,30 @@ class Upload {
     }
 
     public deal(data) {
-        if (this.option.grid) {
-            $(this.option.grid).append(this.replace(data));
-        }
-        let urlFor = this.element.attr("data-url");
+        let urlFor = this.element.attr("data-grid") || this.option.grid;
         if (!urlFor) {
             return;
         }
         let tags = urlFor.split("|");
-        $(tags).each(function(index, element) {
-            let item = $(element);
+        let value = this.replace(data);
+        $(tags).each(function(index, tag) {
+            let item = $(tag);
             if (item.length == 0) {
                 return;
             }
-            if (item.attr("type") == "text") {
-                item.val(data.url);
-            }
-            item.attr("src", data.url);
+            item.each(function(i, element) {
+                switch (element.nodeName.toUpperCase()) {
+                    case "INPUT":
+                        item.val(value);
+                        return;
+                    case "IMG":
+                        item.attr("src", value);
+                        return;
+                    default:
+                        break;
+                }
+                item.append(value);
+            });
         });
     }
 
@@ -110,6 +126,7 @@ class UploadDefaultOption implements UploadOption {
     };
     multiple: boolean = false;
     fileClass: string = "zdUploadFile";
+    filter: string = "";
 }
 
 

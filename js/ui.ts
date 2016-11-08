@@ -3,7 +3,13 @@ $(document).ready(function () {
         connectToSortable: ".row",
         helper: "clone",
         opacity: .3,
-        revert: "invalid"
+        revert: "invalid",
+        start: function() {
+            $("#main").addClass("hover");
+        },
+        stop: function() {
+            $("#main").removeClass("hover");
+        }
     });
     $("#main .row").sortable({
         connectWith: ".row"
@@ -17,6 +23,10 @@ $(document).ready(function () {
         if (panel.hasClass("min")) {
             panel.removeClass("min");
         }
+    });
+
+    $(".menu>li>.head").click(function() {
+        $(this).parent().toggleClass("active");
     });
 
     $.htmlClean($("#main").html(), {

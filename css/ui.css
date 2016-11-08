@@ -47,6 +47,33 @@
 
 .panel>.body {
     overflow-y: auto;
+    
+}
+
+.menu>li>.head {
+    background: #9f7;
+    line-height: 20px;
+    border: 1px solid #5ff;
+}
+
+.menu>li>.head .fa {
+    float: right;
+    margin-right: 20px;
+    -webkit-transition: transforml 1s;
+    -moz-transition: transform 1s;
+    transition: transform 1s;
+}
+
+.menu>li.active>.head .fa {
+    transform: rotate(180deg);
+}
+
+.menu>li>.body {
+    display: none;
+}
+
+.menu>li.active>.body {
+    display: block;
 }
 
 .list-view {
@@ -59,13 +86,13 @@
     display: inline-block;
 }
 
-.grid>.thumb {
+.grid>.preview>.thumb {
     width: 100%;
     font-size: 40px;
     text-align: center;
 }
 
-.grid>.title {
+.grid>.preview>.title {
     text-align: center;
     margin: 0;
 }
@@ -74,11 +101,19 @@
     cursor: pointer;
 }
 
+#weight .view,
+#weight .action,
+#main .preview {
+    display: none;
+}
+
 #main {
     width: 100%;
     min-height: 200px;
 }
 
-#main:hover {
+#main.hover .row,
+#main.hover .column {
     background: #5ff;
+    height: 100px;
 }

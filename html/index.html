@@ -5,9 +5,28 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="../css/zodream.css" rel="stylesheet">
-        <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
-    
+    <div id="mvvm">
+        
+    </div>
+    <script src="../js/jquery-3.1.0.min.js"></script>
+    <script src="../js/jquery.mvvm.js"></script>
+    <script>
+    $(document).ready(function() {
+        var mvvm = $("#mvvm").mvvm({
+            data: {
+                index: 0
+            },
+            render: function() {
+                console.log(this.index);
+                return this.index;
+            }
+        });
+        setInterval(function () {
+            mvvm.index ++;
+         }, 1000);
+    });    
+    </script>
     </body>
 </html>

@@ -13,14 +13,24 @@ class Upload {
         option?: UploadOption
     ) {
         this.option = $.extend({}, new UploadDefaultOption(), option);
+        this.option.data = $.extend({}, this.option.data, this.getData());
+        if (this.option.success) {
+            this.success = this.option.success.bind(this);
+        }
+        this.getElement = this.option.getElement.bind(this);
         this.addEvent();
     }
 
     public option: UploadOption;
 
+    public success: (data: any, currentElement: JQuery) => boolean;
+
+    public getElement: (tag: string, currentElement: JQuery) => JQuery;
+
     public addEvent() {
         let instance = this;
         this.element.click(function() {
+            let currentElement = $(this);
             let element = $("." + instance.option.fileClass); 
             if (element.length < 1) {
                 let file = document.createElement("input");
@@ -31,7 +41,7 @@ class Upload {
                 document.body.appendChild(file);
                 element = $(file).bind("change", function() {
                     $.each(this.files, function(i, file) {
-                        instance.uploadOne(file);
+                        instance.uploadOne(file, currentElement);
                     });
                 }).hide();
             } else {
@@ -44,7 +54,7 @@ class Upload {
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
     }
 
-    public uploadOne(file) {
+    public uploadOne(file: File, currentElement: JQuery) {
         let instance = this;
         let data = new FormData();
             data.append(this.option.name, file);
@@ -58,22 +68,23 @@ class Upload {
                 success: function(data) {
                     data = JSON.parse(data);
                     if (data.state == "SUCCESS") {
-                        instance.deal(data);
+                        instance.deal($.extend({}, instance.option.data, data), currentElement);
                         return;
                     }
                 }
             });
     }
 
-    public deal(data) {
+    public deal(data: any, currentElement: JQuery) {
         let urlFor = this.element.attr("data-grid") || this.option.grid;
-        if (!urlFor) {
+        if (!urlFor || (this.success && false === this.success(data, currentElement))) {
             return;
         }
         let tags = urlFor.split("|");
         let value = this.replace(data);
-        $(tags).each(function(index, tag) {
-            let item = $(tag);
+        let instance = this;
+        tags.forEach(function(tag) {
+            let item = instance.getElement(tag, currentElement);
             if (item.length == 0) {
                 return;
             }
@@ -88,9 +99,30 @@ class Upload {
                     default:
                         break;
                 }
-                item.append(value);
+                if (instance.option.isAppend) {
+                    item.append(value);
+                } else {
+                    item.prepend(value);
+                }
             });
         });
+    }
+
+    public getData(): any {
+        let data = {};
+        let arg = this.element.attr("data-data");
+        if (!arg) {
+            return data;
+        }
+        let args = arg.split(",");
+        args.forEach(function(item) {
+            let keyValue = item.split(":");
+            let key = keyValue[0].trim();
+            if (key) {
+                data[key] = keyValue[1].trim();
+            }
+        });
+        return data;
     }
 
     public replace(data: Object): string {
@@ -107,17 +139,22 @@ class Upload {
 interface UploadOption {
     url?: string,         // 上传网址
     name?: string,        // 上传名
+    isAppend?: boolean,    //在后面加还是前面加 ，对多个有效
     template?: string,    // 模板
     grid?: string,        // 装载容器
+    data?: any,           //默认值
     removeTag?: string,   // 删除标志
     removeCallback?: (eventObject: JQueryEventObject, ...eventData: any[]) => any,  //删除触发事件
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
+    success?: (data: any, currentElement: JQuery) => boolean      //成功添加回掉
+    getElement?: (tag: string, currentElement: JQuery) => JQuery   //获取容器的方法
 }
 
 class UploadDefaultOption implements UploadOption {
     name: string = "file";
+    isAppend: boolean = true;
     template: string = "<li>{url}</li>";
     //grid: string = ".zdGrid";
     removeTag: string = ".delete";
@@ -125,8 +162,12 @@ class UploadDefaultOption implements UploadOption {
         $(this).parent().remove();
     };
     multiple: boolean = false;
+    data: any = {};
     fileClass: string = "zdUploadFile";
     filter: string = "";
+    getElement: (tag: string, currentElement: JQuery) => JQuery = function(tag: string): JQuery {
+        return $(tag);
+    }
 }
 
 

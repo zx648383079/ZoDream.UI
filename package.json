@@ -1,0 +1,32 @@
+{
+  "name": "zodream.ui",
+  "version": "1.0.0",
+  "description": "zodream UI",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "bowser": "^1.6.0",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-typescript": "^3.1.3",
+    "typescript": "^2.1.4"
+  },
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zx648383079/ZoDream.UI.git"
+  },
+  "keywords": [
+    "zodream",
+    "ui"
+  ],
+  "author": "Jason Zou",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zx648383079/ZoDream.UI/issues"
+  },
+  "homepage": "https://github.com/zx648383079/ZoDream.UI#readme"
+}

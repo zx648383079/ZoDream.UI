@@ -129,7 +129,7 @@ class Upload {
         let html = this.option.template;
         for (let i in data) {
             if (data.hasOwnProperty(i)) {
-                html = html.replace("{"+i+"}", data[i]);
+                html = html.replace(new RegExp("{" + i + "}", 'g'), data[i]);
             }
         }
         return html;

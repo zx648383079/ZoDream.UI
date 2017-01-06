@@ -28,6 +28,8 @@ class Dater {
         this.option = $.extend({}, new DaterDefaultOption(), option);
         this._initHtml();
         this.daysElement = this.element.find("tbody td");
+        this.titleElement = this.element.find(".calendarTitle");
+        this._lastRowElement = this.element.find("tbody tr").eq(5);
         this._bindEvent();
         if (typeof this.option.date == 'number') {
             this.setTime(this.option.date);
@@ -40,6 +42,10 @@ class Dater {
     public option: DaterOption;
 
     public daysElement: JQuery; 
+
+    public titleElement: JQuery;
+
+    private _lastRowElement: JQuery;
 
     private _date: Date;
 
@@ -102,7 +108,7 @@ class Dater {
     }
 
     private reader() {
-        this.element.find(".calendarTitle").text(this.getDateString());
+        this.titleElement.text(this.getDateString());
         let first = this._date.getDay();
         let instance = this;
         this.forEach((index: number, ele)=> {
@@ -117,6 +123,11 @@ class Dater {
             }
             ele.text(day);
         });
+        if (first + this._daysCount > 35) {
+            this._lastRowElement.show();
+        } else {
+            this._lastRowElement.hide();
+        }
     }
 
     private _bindEvent() {

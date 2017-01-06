@@ -26,6 +26,8 @@ var Dater = (function () {
         this.option = $.extend({}, new DaterDefaultOption(), option);
         this._initHtml();
         this.daysElement = this.element.find("tbody td");
+        this.titleElement = this.element.find(".calendarTitle");
+        this._lastRowElement = this.element.find("tbody tr").eq(5);
         this._bindEvent();
         if (typeof this.option.date == 'number') {
             this.setTime(this.option.date);
@@ -81,7 +83,7 @@ var Dater = (function () {
             '<tbody>' + html + '</tbody></table>');
     };
     Dater.prototype.reader = function () {
-        this.element.find(".calendarTitle").text(this.getDateString());
+        this.titleElement.text(this.getDateString());
         var first = this._date.getDay();
         var instance = this;
         this.forEach(function (index, ele) {
@@ -96,6 +98,12 @@ var Dater = (function () {
             }
             ele.text(day);
         });
+        if (first + this._daysCount > 35) {
+            this._lastRowElement.show();
+        }
+        else {
+            this._lastRowElement.hide();
+        }
     };
     Dater.prototype._bindEvent = function () {
         var instance = this;

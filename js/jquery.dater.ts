@@ -169,6 +169,16 @@ class Dater {
             return callback(date, ele, instance.element);
         });
     }
+
+    public getDay(day: number| Date): JQuery|void {
+        if (day instanceof Date) {
+            day = day.getDate();
+        }
+        if (day < 0 || day > this._daysCount) {
+            return;
+        }
+        return this.daysElement.eq(this._date.getDay() + day);
+    }
 }
 
 interface DaterOption {

@@ -143,6 +143,15 @@ var Dater = (function () {
             return callback(date, ele, instance.element);
         });
     };
+    Dater.prototype.getDay = function (day) {
+        if (day instanceof Date) {
+            day = day.getDate();
+        }
+        if (day < 0 || day > this._daysCount) {
+            return;
+        }
+        return this.daysElement.eq(this._date.getDay() + day);
+    };
     return Dater;
 }());
 var DaterDefaultOption = (function () {

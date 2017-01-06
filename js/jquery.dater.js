@@ -53,13 +53,13 @@ var Dater = (function () {
             year = new Date(year);
         }
         if (year instanceof Date) {
-            month = year.getMonth() + 1;
+            month = year.getRealMonth();
             year = year.getFullYear();
         }
         this._date = new Date(year, month, 0);
         this._daysCount = this._date.getDate();
         this._date.setDate(1);
-        if (this.option.changeDate && this.option.changeDate() == false) {
+        if (this.option.changeDate && this.option.changeDate.call(this) == false) {
             return;
         }
         this.reader();
@@ -116,10 +116,10 @@ var Dater = (function () {
                 instance.option.dayClick(date, ele, instance.element);
             }
         });
-        this.element.on("click", "previousMonth", function () {
+        this.element.find(".previousMonth").click(function () {
             instance.previousMonth();
         });
-        this.element.on("click", "nextMonth", function () {
+        this.element.find(".nextMonth").click(function () {
             instance.nextMonth();
         });
     };
@@ -145,12 +145,19 @@ var Dater = (function () {
     };
     Dater.prototype.getDay = function (day) {
         if (day instanceof Date) {
+            if (!this.isDate(day)) {
+                return;
+            }
             day = day.getDate();
         }
         if (day < 0 || day > this._daysCount) {
             return;
         }
         return this.daysElement.eq(this._date.getDay() + day);
+    };
+    Dater.prototype.isDate = function (date) {
+        if (date === void 0) { date = new Date(); }
+        return this._date.getFullYear() == date.getFullYear() && this._date.getMonth() == date.getMonth();
     };
     return Dater;
 }());

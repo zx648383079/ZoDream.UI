@@ -40,7 +40,7 @@ var Metro = (function () {
     Metro.prototype.addMetro = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
+            args[_i] = arguments[_i];
         }
         for (var i = 0, length_1 = args.length; i < length_1; i++) {
             this.createElement(args[i]);
@@ -125,4 +125,3 @@ var MetroDefaultOptions = (function () {
         return new Metro(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.metro.js.map

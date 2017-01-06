@@ -202,4 +202,3 @@ var Url = (function () {
     };
     return Url;
 }());
-//# sourceMappingURL=ajax.js.map

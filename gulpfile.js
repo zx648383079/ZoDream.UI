@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-    cleanCss = require('gulp-clean-css'),
+    minCss = require('gulp-clean-css'),
     sass = require("gulp-sass"),
     ts = require("gulp-typescript");
  

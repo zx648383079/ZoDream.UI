@@ -63,4 +63,3 @@ var DialogDefaultOptions = (function () {
         return new Dialog(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.dialog.js.map

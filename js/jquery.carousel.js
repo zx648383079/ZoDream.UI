@@ -118,4 +118,3 @@ var CarouselDefaultOptions = (function () {
         return new Carousel(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.carousel.js.map

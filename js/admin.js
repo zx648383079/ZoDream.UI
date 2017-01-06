@@ -24,4 +24,3 @@ $(document).ready(function () {
         $(".table").css("height", $(document).height() + "px");
     });
 });
-//# sourceMappingURL=admin.js.map

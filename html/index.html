@@ -10,11 +10,15 @@
     <div id="mvvm">
         
     </div>
-    <script src="../js/jquery-3.1.0.min.js"></script>
+    <div class="dater">
+
+    </div>
+    <script src="../js/jquery-3.1.1.min.js"></script>
     <script src="../js/jquery.mvvm.js"></script>
+    <script src="../js/jquery.dater.js"></script>
     <script>
     $(document).ready(function() {
-        var mvvm = $("#mvvm").mvvm({
+        /*var mvvm = $("#mvvm").mvvm({
             data: {
                 index: 0
             },
@@ -25,7 +29,13 @@
         });
         setInterval(function () {
             mvvm.index ++;
-         }, 1000);
+         }, 1000);*/
+         $(".dater").dater({
+         dayClick: function(day, ele) {
+                console.log(day.format());
+                ele.css("color", "#f00");
+             }
+         });
     });    
     </script>
     </body>

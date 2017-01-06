@@ -571,4 +571,3 @@ var ChatDefaultOptions = (function () {
         return new Chat(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.chat.js.map

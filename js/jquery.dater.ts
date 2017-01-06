@@ -1,18 +1,40 @@
+Date.prototype.getRealMonth = function(): number {
+    return this.getMonth() + 1;
+};
+
+Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
+    let o = {
+        "y+": this.getFullYear(),
+        "m+": this.getRealMonth(), //月份 
+        "d+": this.getDate(), //日 
+        "h+": this.getHours(), //小时 
+        "i+": this.getMinutes(), //分 
+        "s+": this.getSeconds(), //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒 
+    };
+    for (let k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+    }
+    return fmt;
+}
 class Dater {
     constructor(
         public element: JQuery,
         option?: DaterOption
     ) {
         this.option = $.extend({}, new DaterDefaultOption(), option);
+        this._initHtml();
+        this.daysElement = this.element.find("tbody td");
+        this._bindEvent();
         if (typeof this.option.date == 'number') {
             this.setTime(this.option.date);
         } else {
             this.setDate(this.option.date);
         }
-        this._initHtml();
-        this.daysElement = this.element.find("tbody td");
-        this._bindEvent();
-        this.reader();
+        
     }
 
     public option: DaterOption;
@@ -25,19 +47,19 @@ class Dater {
 
 
     public previousYear() {
-        this.setDate(this._date.getFullYear() - 1, this._date.getMonth());
+        this.setDate(this._date.getFullYear() - 1, this._date.getRealMonth());
     }
 
     public nextYear() {
-        this.setDate(this._date.getFullYear() + 1, this._date.getMonth());
+        this.setDate(this._date.getFullYear() + 1, this._date.getRealMonth());
     }
 
     public previousMonth() {
-        this.setDate(this._date.getFullYear(), this._date.getMonth() - 1);
+        this.setDate(this._date.getFullYear(), this._date.getMonth());
     }
 
     public nextMonth() {
-        this.setDate(this._date.getFullYear(), this._date.getMonth() + 1);
+        this.setDate(this._date.getFullYear(), this._date.getRealMonth() + 1);
     }
 
     public setDate(year: number|Date|string, month?: number) {
@@ -45,7 +67,7 @@ class Dater {
             year = new Date(year);
         }
         if (year instanceof Date) {
-            month = year.getMonth();
+            month = year.getMonth() + 1;
             year = year.getFullYear();
         }
         this._date = new Date(year, month, 0);
@@ -58,8 +80,7 @@ class Dater {
     }
 
     public setTime(time: number) {
-        let temp = new Date(time);
-        this.setDate(temp.getFullYear(), temp.getMonth());
+        this.setDate(new Date(time));
     }
 
     public getDate(): Date {
@@ -67,7 +88,7 @@ class Dater {
     }
 
     public getDateString(): string {
-        return this._date.getFullYear() + '年' + this._date.getMonth() + '月';
+        return this._date.getFullYear() + '年' + (this._date.getMonth() + 1) + '月';
     }
 
     private _initHtml() {
@@ -81,7 +102,7 @@ class Dater {
     }
 
     private reader() {
-        this.element.find("calendarTitle").text(this.getDateString());
+        this.element.find(".calendarTitle").text(this.getDateString());
         let first = this._date.getDay();
         let instance = this;
         this.forEach((index: number, ele)=> {
@@ -104,7 +125,9 @@ class Dater {
             let ele = $(this);
             let day = parseInt(ele.text());
             if (day > 0 && instance.option.dayClick) {
-                instance.option.dayClick(day, ele, instance.element);
+                let date = new Date(instance._date);
+                date.setDate(day);
+                instance.option.dayClick(date, ele, instance.element);
             }
         });
         this.element.on("click", "previousMonth", function() {
@@ -122,23 +145,25 @@ class Dater {
         });
     }
 
-    public dayEach(callback: (day: number, element: JQuery, dater: JQuery)=> any) {
+    public dayEach(callback: (day: Date, element: JQuery, dater: JQuery)=> any) {
         let instance = this;
         this.daysElement.each((index, item)=> {
             let ele = $(this);
             let day = parseInt(ele.text());
-            if (day > 0) {
-                return callback(index, ele, instance.element);
+            if (day < 1) {
+                return;
             }
+            let date = new Date(instance._date);
+            date.setDate(day);
+            return callback(date, ele, instance.element);
         });
     }
-
 }
 
 interface DaterOption {
     date: string|Date|number,
     changeDate?: () => any,
-    dayClick?: (day: number, element: JQuery, dater: JQuery)=> void
+    dayClick?: (date: Date, element: JQuery, dater: JQuery)=> void
 }
 
 class DaterDefaultOption implements DaterOption {
@@ -147,7 +172,7 @@ class DaterDefaultOption implements DaterOption {
 
 
 ;(function($: any) {
-  $.fn.Dater = function(option ?: DaterOption) {
+  $.fn.dater = function(option ?: DaterOption) {
     return new Dater(this, option); 
   };
 })(jQuery);

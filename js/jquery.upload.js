@@ -118,7 +118,7 @@ var Upload = (function () {
         var html = this.option.template;
         for (var i in data) {
             if (data.hasOwnProperty(i)) {
-                html = html.replace("{" + i + "}", data[i]);
+                html = html.replace(new RegExp("{" + i + "}", 'g'), data[i]);
             }
         }
         return html;
@@ -151,4 +151,3 @@ var UploadDefaultOption = (function () {
         return new Upload(this, option);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.upload.js.map

@@ -48,4 +48,3 @@ var AccordionDefaultOptions = (function () {
         return new Accordion(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.accordion.js.map

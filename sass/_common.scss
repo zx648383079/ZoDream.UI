@@ -3,6 +3,18 @@ $color1: #CD8162; //橙黄
 $color2: #CDBA96; //橙白
 $line: 40px;
 
+
+$zd-screen-md-min: 640px;
+$zd-screen-lg-min: 960px;
+$zd-screen-xl-min: 1200px;
+$zd-screen-xxl-min: 1600px;
+$zd-screen-xxxl-min: 1900px;
+$zd-screen-sm-max: 640px;
+$zd-screen-md-max: 768px;
+$zd-screen-lg-max: 1200px;
+$zd-screen-xl-max: 123px;
+$zd-screen-xxl-max: 12000px;
+
 .active {
     background: $color;
     color: #fff;

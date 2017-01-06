@@ -113,4 +113,3 @@ var FormDefaultOptions = (function () {
         return new Form(this, options);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.form.js.map

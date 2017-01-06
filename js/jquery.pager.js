@@ -16,4 +16,3 @@ var PagerDefaultOption = (function () {
         return new Pager(this, option);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.pager.js.map

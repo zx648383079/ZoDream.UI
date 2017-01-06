@@ -52,4 +52,3 @@ var Mvvm = (function () {
         return new Mvvm(this, option);
     };
 })(jQuery);
-//# sourceMappingURL=jquery.mvvm.js.map

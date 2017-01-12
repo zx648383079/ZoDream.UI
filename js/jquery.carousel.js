@@ -14,16 +14,8 @@ var Carousel = (function () {
         }
         this._box = items.parent();
         this.width = items.width() * this._itemLength;
-        this._box.css({ "width": this.width * 3 + "px", "left": -this.width + "px" });
-        for (var j = 0; j < 2; j++) {
-            for (var i = 0, length_1 = items.length; i < length_1; i++) {
-                this._box.append(items[i].cloneNode(true));
-            }
-        }
-        var carousel = this;
-        setInterval(function () {
-            carousel.next();
-        }, this.options.spaceTime);
+        this._copyItem(items);
+        this._init();
     }
     Object.defineProperty(Carousel.prototype, "left", {
         get: function () {
@@ -35,6 +27,33 @@ var Carousel = (function () {
         enumerable: true,
         configurable: true
     });
+    Carousel.prototype._addEvent = function () {
+        var instance = this;
+        if (this.options.previousTag) {
+            this.element.find(this.options.previousTag).click(function () {
+                instance.previous();
+            });
+        }
+        if (this.options.nextTag) {
+            this.element.find(this.options.nextTag).click(function () {
+                instance.next();
+            });
+        }
+    };
+    Carousel.prototype._copyItem = function (items) {
+        this._box.css({ "width": this.width * 3 + "px", "left": -this.width + "px" });
+        for (var j = 0; j < 2; j++) {
+            for (var i = 0, length_1 = items.length; i < length_1; i++) {
+                this._box.append(items[i].cloneNode(true));
+            }
+        }
+    };
+    Carousel.prototype._init = function () {
+        var carousel = this;
+        setInterval(function () {
+            carousel.next();
+        }, this.options.spaceTime);
+    };
     Carousel.prototype.next = function (range) {
         if (range === void 0) { range = this.options.range; }
         this.goLeft(this._left - range);

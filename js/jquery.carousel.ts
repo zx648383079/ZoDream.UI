@@ -4,7 +4,7 @@ class Carousel {
         options?: CarouselOptions
     ) {
         this.options = $.extend({}, new CarouselDefaultOptions(), options)
-        let items = this.element.find(options.itemTag);
+        let items: JQuery = this.element.find(options.itemTag);
         this._itemWidth = items.width();
         this._itemLength = items.length;
         if (!this.options.range) {
@@ -12,16 +12,8 @@ class Carousel {
         }
         this._box = items.parent();
         this.width = items.width() * this._itemLength;
-        this._box.css({"width": this.width * 3 + "px", "left": -this.width + "px"});
-        for (let j = 0; j < 2; j ++) {
-            for(let i = 0, length = items.length; i < length; i ++) {
-                this._box.append(items[i].cloneNode(true))
-            }
-        }
-        let carousel = this;
-        setInterval(function() {
-            carousel.next();
-        }, this.options.spaceTime);
+        this._copyItem(items);
+        this._init();
     }
 
     public options: CarouselOptions;
@@ -43,6 +35,36 @@ class Carousel {
     }
 
     private _box: JQuery;
+
+    private _addEvent() {
+        let instance = this;
+        if (this.options.previousTag) {
+            this.element.find(this.options.previousTag).click(function() {
+                instance.previous();
+            });
+        }
+        if (this.options.nextTag) {
+            this.element.find(this.options.nextTag).click(function() {
+                instance.next();
+            });
+        }
+    }
+
+    private _copyItem(items: JQuery) {
+        this._box.css({"width": this.width * 3 + "px", "left": -this.width + "px"});
+        for (let j = 0; j < 2; j ++) {
+            for(let i = 0, length = items.length; i < length; i ++) {
+                this._box.append(items[i].cloneNode(true));
+            }
+        }
+    }
+
+    private _init() {
+        let carousel = this;
+        setInterval(function() {
+            carousel.next();
+        }, this.options.spaceTime);
+    }
 
     public next(range: number = this.options.range) {
         this.goLeft(this._left - range);
@@ -123,7 +145,10 @@ interface CarouselOptions {
      boxTag?: string,
      spaceTime?: number,
      animationTime?: string|number,
-     animationMode?: string
+     animationMode?: string,
+     previousTag?: string,
+     nextTag?: string,
+     thumbMode?: string
 }
 
 class CarouselDefaultOptions implements CarouselOptions {

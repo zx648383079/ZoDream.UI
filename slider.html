@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .slider {
+            position: relative;
+            height: 200px;
+        }
+        .slider-previous,
+        .slider-next {
+            position: absolute;
+            top: 50%;
+            font-size:50px;
+            margin-top: -25px;
+            color: #fff;
+            z-index: 99;
+        }
+        .slider-next {
+            right: 0;
+        }
+        .slider-box {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            height: 100%;
+        }
+        .slider-box ul {
+            position: absolute;
+            width: 5000px;
+            padding: 0;
+        }
+        .slider-box ul li {
+            list-style: none;
+            /*display: inline-block;*/
+            float: left;
+        }
+        </style>
+    </head>
+    <body>
+    
+    <div class="slider">
+         <div class="slider-previous">&lt;</div>
+        <div class="slider-box">
+            <ul>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+            </ul>
+        </div>
+        <div class="slider-next">&gt;</div>
+    </div>
+
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery.slider.js"></script>
+    <script>
+        $(document).ready(function() {
+            var silder = $(".slider").slider();
+        });
+        
+    </script>
+    </body>
+</html>

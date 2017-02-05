@@ -180,7 +180,7 @@ class Dater {
         if (day < 0 || day > this._daysCount) {
             return;
         }
-        return this.daysElement.eq(this._date.getDay() + day);
+        return this.daysElement.eq(this._date.getDay() + day - 1);
     }
 
     public isDate(date: Date = new Date()): boolean {

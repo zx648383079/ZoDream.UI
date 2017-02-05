@@ -153,7 +153,7 @@ var Dater = (function () {
         if (day < 0 || day > this._daysCount) {
             return;
         }
-        return this.daysElement.eq(this._date.getDay() + day);
+        return this.daysElement.eq(this._date.getDay() + day - 1);
     };
     Dater.prototype.isDate = function (date) {
         if (date === void 0) { date = new Date(); }

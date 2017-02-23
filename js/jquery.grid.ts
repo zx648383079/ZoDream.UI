@@ -15,11 +15,12 @@
 
      public refresh() {
         let width: number = this.element.width();
+        let items = this.element.find(this.options.tag);
         let instance = this;
         $(this.options.data).each(function(i: string| number, item: Object) {
             let size = Size.parse(item);
             if (typeof i == 'number') {
-                size.setSize(instance.element.find(instance.options.tag).eq(i), width);
+                size.setSize(items.eq(i), width);
             } else {
                 size.setSize(instance.element.find(i), width);
             }
@@ -47,6 +48,9 @@ class Size {
     }
 
     public setSize(element: JQuery, width: number = 1) {
+        if (element.length < 1) {
+            return;
+        }
         let obj = $.extend({}, this.option);
         for (let i in obj) {
             if (obj.hasOwnProperty(i)) {

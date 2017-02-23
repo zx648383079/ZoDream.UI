@@ -10,11 +10,12 @@ var Grid = (function () {
     }
     Grid.prototype.refresh = function () {
         var width = this.element.width();
+        var items = this.element.find(this.options.tag);
         var instance = this;
         $(this.options.data).each(function (i, item) {
             var size = Size.parse(item);
             if (typeof i == 'number') {
-                size.setSize(instance.element.find(instance.options.tag).eq(i), width);
+                size.setSize(items.eq(i), width);
             }
             else {
                 size.setSize(instance.element.find(i), width);
@@ -42,6 +43,9 @@ var Size = (function () {
     }
     Size.prototype.setSize = function (element, width) {
         if (width === void 0) { width = 1; }
+        if (element.length < 1) {
+            return;
+        }
         var obj = $.extend({}, this.option);
         for (var i in obj) {
             if (obj.hasOwnProperty(i)) {

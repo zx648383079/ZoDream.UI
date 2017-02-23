@@ -16,6 +16,15 @@ var Couplet = (function () {
         }
         return new Couplet(data[0], data[1], data[2]);
     };
+    Couplet.prototype.drawing = function (speed, callback) {
+    };
+    Couplet.prototype._drawing = function (element, text, speed) {
+        var index = 0;
+        var timer = new Timer(function () {
+            element.append(text[index]);
+            index++;
+        }, speed, text.length);
+    };
     return Couplet;
 }());
 var Coupletor = (function () {
@@ -23,6 +32,11 @@ var Coupletor = (function () {
         this.element = element;
         this.option = $.extend({}, new CoupletDefaultOption(), option);
     }
+    Coupletor.prototype._drawing = function (text, callback) {
+        var index = 0;
+        var timer = new Timer(function () {
+        }, this.option.speed);
+    };
     return Coupletor;
 }());
 var CoupletDefaultOption = (function () {

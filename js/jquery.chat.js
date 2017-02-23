@@ -25,68 +25,6 @@ var Group = (function () {
     }
     return Group;
 }());
-var vendors = ['webkit', 'moz'];
-for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame =
-        window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-}
-if (!window.requestAnimationFrame || !window.cancelAnimationFrame) {
-    var lastTime_1 = 0;
-    window.requestAnimationFrame = function (callback) {
-        var currTime = new Date().getTime();
-        //为了使setTimteout的尽可能的接近每秒60帧的效果
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime_1));
-        var id = window.setTimeout(function () {
-            callback(currTime + timeToCall);
-        }, timeToCall);
-        lastTime_1 = currTime + timeToCall;
-        return id;
-    };
-    window.cancelAnimationFrame = function (id) {
-        window.clearTimeout(id);
-    };
-}
-var TimerMode;
-(function (TimerMode) {
-    TimerMode[TimerMode["Once"] = 0] = "Once";
-    TimerMode[TimerMode["Forever"] = 1] = "Forever";
-})(TimerMode || (TimerMode = {}));
-var Timer = (function () {
-    function Timer(callback, time, mode) {
-        if (time === void 0) { time = 16; }
-        if (mode === void 0) { mode = TimerMode.Once; }
-        this.callback = callback;
-        this.time = time;
-        this.mode = mode;
-        this._index = 0;
-        this._loop();
-    }
-    Timer.prototype._loop = function () {
-        this.stop();
-        var instance = this;
-        this._handle = window.requestAnimationFrame(function () {
-            instance._index += 16;
-            if (instance._index < instance.time) {
-                instance._loop();
-                return;
-            }
-            instance.callback();
-            if (instance.mode == TimerMode.Once) {
-                instance.stop();
-                return;
-            }
-            instance._loop();
-        });
-    };
-    Timer.prototype.stop = function () {
-        if (this._handle) {
-            window.cancelAnimationFrame(this._handle);
-        }
-        this._handle = null;
-    };
-    return Timer;
-}());
 var ChatPlayText = (function () {
     function ChatPlayText(element, group, callback, speed) {
         if (speed === void 0) { speed = 100; }

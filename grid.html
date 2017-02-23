@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        img {
+            width: 100%;
+            height: 100%;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+        }       
+        li {
+            float: left;
+            list-style: none;
+        }
+        </style>
+    </head>
+    <body>
+    
+    <div class="grid">
+        <ul>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <div style="clear: both"></div>
+        </ul>
+    </div>
+    
+    <div class="grid2">
+        <ul>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <li><img src="image/banner1.jpg" alt=""></li>
+            <div style="clear: both"></div>
+        </ul>
+    </div>
+
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery.grid.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".grid").grid({
+                tag: 'li',
+                data: [
+                    ['.4', '.8'],
+                    ['.6', '.4'],
+                    ['.3', '.4'],
+                    ['.3', '.4'],
+                ]
+            });
+            $(".grid2").grid({
+                tag: 'li',
+                data: [
+                    ['.6', '.4'],
+                    ['.4', '.8'],
+                    {width: '.3', height: '.4', 'margin-top': -.4},
+                    {width: '.3', height: '.4', 'margin-left': .3, 'margin-top': -.4},
+                ]
+            });
+        });
+    </script>
+    </body>
+</html>

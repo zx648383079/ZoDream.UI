@@ -76,7 +76,7 @@ class Upload {
     }
 
     public deal(data: any, currentElement: JQuery) {
-        let urlFor = this.element.attr("data-grid") || this.option.grid;
+        let urlFor = currentElement.attr("data-grid") || this.option.grid;
         if (!urlFor || (this.success && false === this.success(data, currentElement))) {
             return;
         }

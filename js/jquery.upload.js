@@ -66,7 +66,7 @@ var Upload = (function () {
         });
     };
     Upload.prototype.deal = function (data, currentElement) {
-        var urlFor = this.element.attr("data-grid") || this.option.grid;
+        var urlFor = currentElement.attr("data-grid") || this.option.grid;
         if (!urlFor || (this.success && false === this.success(data, currentElement))) {
             return;
         }

@@ -9,16 +9,21 @@ var Grid = (function () {
         });
     }
     Grid.prototype.refresh = function () {
-        var width = this.element.width();
-        var items = this.element.find(this.options.tag);
         var instance = this;
+        this.element.each(function (i, element) {
+            instance.refreshOne($(element));
+        });
+    };
+    Grid.prototype.refreshOne = function (element) {
+        var width = element.width();
+        var items = element.find(this.options.tag);
         $(this.options.data).each(function (i, item) {
             var size = Size.parse(item);
             if (typeof i == 'number') {
                 size.setSize(items.eq(i), width);
             }
             else {
-                size.setSize(instance.element.find(i), width);
+                size.setSize(element.find(i), width);
             }
         });
     };

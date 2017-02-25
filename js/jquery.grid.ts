@@ -14,15 +14,21 @@
      public options: GridOptions;
 
      public refresh() {
-        let width: number = this.element.width();
-        let items = this.element.find(this.options.tag);
-        let instance = this;
+         let instance = this;
+        this.element.each(function(i, element) {
+            instance.refreshOne($(element));
+        });
+     }
+
+     public refreshOne(element: JQuery) {
+        let width: number = element.width();
+        let items = element.find(this.options.tag);
         $(this.options.data).each(function(i: string| number, item: Object) {
             let size = Size.parse(item);
             if (typeof i == 'number') {
                 size.setSize(items.eq(i), width);
             } else {
-                size.setSize(instance.element.find(i), width);
+                size.setSize(element.find(i), width);
             }
         });
      }

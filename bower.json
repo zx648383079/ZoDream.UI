@@ -1,0 +1,27 @@
+{
+  "name": "zodream ui",
+  "description": "zodream UI",
+  "main": "gulpfile.js",
+  "authors": [
+    "Jason Zou"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "zodream",
+    "ui"
+  ],
+  "homepage": "https://github.com/zx648383079/ZoDream.UI",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-ui": "^1.12.1",
+    "jquery": "^3.1.1",
+    "font-awesome": "^4.7.0"
+  }
+}

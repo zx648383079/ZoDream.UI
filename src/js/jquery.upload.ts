@@ -27,11 +27,13 @@ class Upload {
 
     public getElement: (tag: string, currentElement: JQuery) => JQuery;
 
+    private currentElement: JQuery;
+
     public addEvent() {
         let instance = this;
         this.element.click(function() {
-            let currentElement = $(this);
-            let element = $("." + instance.option.fileClass); 
+            instance.currentElement = $(this);
+            let element = $("." + instance.option.fileClass);
             if (element.length < 1) {
                 let file = document.createElement("input");
                 file.type = "file";
@@ -41,20 +43,27 @@ class Upload {
                 document.body.appendChild(file);
                 element = $(file).bind("change", function() {
                     $.each(this.files, function(i, file) {
-                        instance.uploadOne(file, currentElement);
+                        instance.uploadOne(file);
                     });
                 }).hide();
             } else {
                 element.val('');
                 element.attr('multiple', instance.option.multiple ? "true" : "false");
                 element.attr('accept', instance.option.filter);
+                if (instance.option.dynamic) {
+                    element.unbind("change").bind("change", function() {
+                        $.each(this.files, function(i, file) {
+                            instance.uploadOne(file);
+                        });
+                    });
+                }
             }
             element.click();
         });
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
     }
 
-    public uploadOne(file: File, currentElement: JQuery) {
+    public uploadOne(file: File) {
         let instance = this;
         let data = new FormData();
             data.append(this.option.name, file);
@@ -68,23 +77,23 @@ class Upload {
                 success: function(data) {
                     data = JSON.parse(data);
                     if (data.state == "SUCCESS") {
-                        instance.deal($.extend({}, instance.option.data, data), currentElement);
+                        instance.deal($.extend({}, instance.option.data, data));
                         return;
                     }
                 }
             });
     }
 
-    public deal(data: any, currentElement: JQuery) {
-        let urlFor = currentElement.attr("data-grid") || this.option.grid;
-        if (!urlFor || (this.success && false === this.success(data, currentElement))) {
+    public deal(data: any) {
+        let urlFor = this.currentElement.attr("data-grid") || this.option.grid;
+        if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
             return;
         }
         let tags = urlFor.split("|");
         let value = this.replace(data);
         let instance = this;
         tags.forEach(function(tag) {
-            let item = instance.getElement(tag, currentElement);
+            let item = instance.getElement(tag, this.currentElement);
             if (item.length == 0) {
                 return;
             }
@@ -148,7 +157,8 @@ interface UploadOption {
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
-    success?: (data: any, currentElement: JQuery) => boolean      //成功添加回掉
+    success?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
+    dynamic?: boolean, //是否动态绑定上传时间
     getElement?: (tag: string, currentElement: JQuery) => JQuery   //获取容器的方法
 }
 
@@ -165,6 +175,7 @@ class UploadDefaultOption implements UploadOption {
     data: any = {};
     fileClass: string = "zdUploadFile";
     filter: string = "";
+    dynamic: boolean = true;
     getElement: (tag: string, currentElement: JQuery) => JQuery = function(tag: string): JQuery {
         return $(tag);
     }

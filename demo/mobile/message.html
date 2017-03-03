@@ -3,7 +3,7 @@
     <head>
         <title>首页</title>
         <meta charset="UTF-8">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <link href="css/zodream-mobile.css" rel="stylesheet">
     </head>
     <body>
@@ -12,38 +12,37 @@
                 <i class="fa fa-chevron-left" aria-hidden="true"></i>
             </a>
             <span class="title">
-                好友
+                消息中心
             </span>
-            <a class="btn" href="login.html">
-                添加
-            </a>
         </header>
     <section class="container">
-        <div class="group">
-            <input type="text" name="" value="">
-            <i class="fa fa-search" aria-hidden="true"></i>
-        </div>
-
-        <div class="friends">
-            <a class="tag">A</a>
-            <a class="friend">
-                <img src="image/avatar.jpg">
-                <span>不存</span>
-                <i class="fa fa-heart" aria-hidden="true"></i>
-            </a>
-
-            <a class="tag">D</a>
-            <a class="friend">
-                <img src="image/avatar.jpg">
-                <span>不存</span>
-                <i class="fa fa-heart" aria-hidden="true"></i>
-            </a>
-
-            <a class="friend">
-                <img src="image/avatar.jpg">
-                <span>不存</span>
-                <i class="fa fa-heart" aria-hidden="true"></i>
-            </a>
+        <div>
+            <ul class="message">
+                <li>
+                    <a href="chat.html">
+                        <div class="avatar">
+                            <img src="image/avatar.jpg">
+                            <span>22</span>
+                        </div>
+                        <div class="content">
+                            <h3>测试</h3>
+                            <p>33333333333333</p>
+                        </div>
+                        <span class="time">2:56</span>
+                    </a>
+                </li>
+                <li>
+                    <div class="avatar">
+                        <img src="image/avatar.jpg">
+                        <span>22</span>
+                    </div>
+                    <div class="content">
+                        <h3>测试</h3>
+                        <p>33333333333333</p>
+                    </div>
+                    <span class="time">2:56</span>
+                </li>
+            </ul>
         </div>
     </section>
 
@@ -69,7 +68,7 @@
             我的
         </a>
     </footer>
-    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="js/zodream.js"></script>
     </body>
 </html>

@@ -3,7 +3,7 @@
     <head>
         <title>首页</title>
         <meta charset="UTF-8">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <link href="css/zodream-mobile.css" rel="stylesheet">
     </head>
     <body>
@@ -12,22 +12,15 @@
                 <i class="fa fa-chevron-left" aria-hidden="true"></i>
             </a>
             <span class="title">
-                注册
+                重置密码
             </span>
         </header>
     <section class="container">
         <div class="login">
             <div class="group">
-                <input type="text" placeholder="请输入用户名" required>
+                <input type="text" placeholder="请输入账号" required>
                 <i class="fa fa-user" aria-hidden="true"></i>
             </div>
-
-            <div class="group">
-                <input type="email" placeholder="请输入邮箱" required>
-                <i class="fa fa-at" aria-hidden="true"></i>
-                <div class="tip">必须的</div>
-            </div>
-
             <div class="group">
                 <input type="password" placeholder="请输入密码" required>
                 <i class="fa fa-lock" aria-hidden="true"></i>
@@ -38,24 +31,13 @@
                 <i class="fa fa-retweet" aria-hidden="true"></i>
             </div>
 
-            <div class="group code error">
-                <input type="text" placeholder="请输入验证码" required>
-                <i class="fa fa-key" aria-hidden="true"></i>
-                <img src="image/avatar.jpg"/>
+            <button class="btn">重置密码</button>
+            <div class="textRight">
+                <a href="find.html">重发邮件</a>
             </div>
-
-            <div class="checkboxGroup">
-                <div class="checkbox">
-                    <input type="checkbox" id="checkboxInput"/>
-                    <label for="checkboxInput"></label>
-                </div>
-                我已阅读并同意《<a href="">服务条款</a>》
-            </div>
-
-            <button class="btn">注册</button>
         </div>
     </section>
-    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="js/zodream.js"></script>
     </body>
 </html>

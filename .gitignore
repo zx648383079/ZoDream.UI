@@ -48,3 +48,4 @@ node_modules/
 bower_components/
 dev/
 prov/
+/*.log

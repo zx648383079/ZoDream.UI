@@ -4,72 +4,56 @@ class Dialog {
         option?: DialogOptions
     ) {
         this.option = $.extend({}, new DialogDefaultOptions, option);
+        this.option.events[this.option.close] = function() {
+            this.hide();
+        };
+        this.bindEvent();
+        this.show();
     }
 
     public option: DialogOptions;
 
-    public addMoveEvent() {
-        let iDiffX: number,iDiffY: number, instance = this;
-        this.element.find(this.option.titleTag).mousedown(function(e) {
-            $(this).css({"cursor":"move"});
-            iDiffX = e.pageX - $(this).offset().left;
-            iDiffY = e.pageY - $(this).offset().top;
-            $(document).mousemove(function(e){
-                instance.element.css({"left":(e.pageX - iDiffX),"top":(e.pageY - iDiffY)});
-            });	
-        }).mouseup(function() {
-            $(document).unbind("mousemove");
-		    $(this).css({"cursor":"auto"});
-        });
-    }
-
-    public addCloseEvent() {
+    public bindEvent() {
         let instance = this;
-        this.element.find(this.option.closeTag).click(function() {
-            instance.element.hide();
+        $.each(this.option.events, function(tag: string, callback: Function) {
+            instance.onclick(tag, callback);
         });
     }
 
-    public static tip(content: string, time: number = 2000) {
-        let element = $(".tipDialog");
-        element.html(content).show();
-        this.timer(function() {
-            element.hide();
-        }, time);
+    public show() {
+        this.element.show();
     }
 
-    public static notify(content: string, width: number = 200, time: number = 2000) {
-        let element = $(".notifyDialog");
-        element.html(content).css("width", width + "px");
-        this.timer(function() {
-            element.css("width", "0px");
-        }, time);
+    public hide() {
+        this.element.hide();
     }
 
-    public static timer(callback: Function, time: number = 2000) {
-        let timer = setTimeout(function() {
-            callback();
-            clearTimeout(timer);
-        }, time);
+    public toggle() {
+        this.element.toggle();
+    }
+
+    public onclick(tag: string, callback: Function) {
+        let instance = this;
+        this.element.on('click', tag, function(e) {
+            if (callback instanceof Function) {
+                callback.call(instance, e, this);
+            }
+        });
     }
 }
 
 interface DialogOptions {
-     titleTag?: string,
-     minTag?: string,
-     closeTag?: string,
- }
+    close?: string,
+    events?: any
+}
 
  class DialogDefaultOptions implements DialogOptions {
-     titleTag: string = '.head';
-     minTag: string = '.min';
-     closeTag: string = '.close';
+    close: string = '.dialog-close';
+    events: any = {};
  }
  
  ;(function($: any) {
-
   $.fn.dialog = function(options ?:DialogOptions) {
     return new Dialog(this, options); 
   };
-  
 })(jQuery);

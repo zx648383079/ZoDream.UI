@@ -40,6 +40,10 @@ class Dialog {
             }
         });
     }
+
+    public find(tag: string): JQuery {
+        return this.element.find(tag);
+    }
 }
 
 interface DialogOptions {

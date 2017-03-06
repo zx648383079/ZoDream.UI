@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename');
     uglify = require('gulp-uglify');
     ts = require("gulp-typescript");
+    tslint = require("gulp-tslint");
  
 gulp.task('sass', function () {
     return gulp.src("src/css/*.scss")
@@ -18,6 +19,14 @@ gulp.task('cssMin', function () {
         .pipe(rename({suffix:'.min'}))
         .pipe(gulp.dest("prov/css"));
 });
+
+gulp.task('tslint', () =>
+    gulp.src('src/js/*.ts')
+        .pipe(tslint({
+            formatter: 'verbose'
+        }))
+        .pipe(tslint.report())
+);
 
 gulp.task('ts', function () {
     return gulp.src('src/js/*.ts')
@@ -41,4 +50,4 @@ gulp.task('jsMin', function () {
  //        .pipe(gulp.dest('all/js'))
  // }); 
 
-gulp.task('default', ['sass', 'cssMin', 'ts', 'jsMin']);
+gulp.task('default', ['sass', 'cssMin', 'tslint', 'ts', 'jsMin']);

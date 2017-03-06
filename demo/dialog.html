@@ -47,7 +47,23 @@
         $(document).ready(function() {
             $(".show").click(function() {
                 $(".sex").dialog({
-                    
+                    events: {
+                    '.dialog-yes': function () {
+                            var sex = this.find("select").val();
+                            var tag = this.find("option:selected").text();
+                            $.post('user.php?act=act_edit', {
+                                key: 'sex',
+                                value: sex
+                            }, function (data) {
+                                if (data.code == 0) {
+                                    $this.text(tag);
+                                    dialog.hide();
+                                    data.msg = '修改成功！';
+                                }
+                                showTip(data.msg);
+                            }, 'json');
+                        }
+                    }
                 })
             });
         });

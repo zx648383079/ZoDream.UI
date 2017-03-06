@@ -4,9 +4,11 @@ class Dialog {
         option?: DialogOptions
     ) {
         this.option = $.extend({}, new DialogDefaultOptions, option);
+        console.log(this.option);
         this.option.events[this.option.close] = function() {
             this.hide();
         };
+        console.log(this.option);
         this.bindEvent();
         this.show();
     }
@@ -16,6 +18,7 @@ class Dialog {
     public bindEvent() {
         let instance = this;
         $.each(this.option.events, function(tag: string, callback: Function) {
+            console.log(tag, callback);
             instance.onclick(tag, callback);
         });
     }
@@ -35,6 +38,7 @@ class Dialog {
     public onclick(tag: string, callback: Function) {
         let instance = this;
         this.element.on('click', tag, function(e) {
+            console.log(tag, callback);
             if (callback instanceof Function) {
                 callback.call(instance, e, this);
             }

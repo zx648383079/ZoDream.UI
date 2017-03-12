@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../dev/css/zodream.css" rel="stylesheet">
+    </head>
+    <body>
+    <div id="mvvm">
+        
+    </div>
+    <div class="dater">
+
+    </div>
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.mvvm.js"></script>
+    <script src="../dev/js/jquery.dater.js"></script>
+    <script>
+    $(document).ready(function() {
+        /*var mvvm = $("#mvvm").mvvm({
+            data: {
+                index: 0
+            },
+            render: function() {
+                console.log(this.index);
+                return this.index;
+            }
+        });
+        setInterval(function () {
+            mvvm.index ++;
+         }, 1000);*/
+         $(".dater").dater({
+         dayClick: function(day, ele) {
+                console.log(day.format());
+                ele.css("color", "#f00");
+             }
+         });
+    });    
+    </script>
+    </body>
+</html>

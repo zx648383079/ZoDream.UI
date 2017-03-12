@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../dev/css/dialog.css" rel="stylesheet">
+    </head>
+    <body>
+
+        <button class="show">显示</button>
+    <div class="dialog name">
+        <div class="dialog-title">
+            <span>修改昵称</span>
+            <span class="dialog-close">关闭</span>
+        </div>
+        <div class="dialog-body">
+            <input type="text" name="name" value="{$profile.nike_name}"/>
+        </div>
+        <div class="dialog-footer">
+            <button class="dialog-yes">确定</button>
+            <button class="dialog-close">取消</button>
+        </div>
+    </div>
+
+    <div class="dialog sex">
+        <div class="dialog-title">
+            <span>修改性别</span>
+            <span class="dialog-close">关闭</span>
+        </div>
+        <div class="dialog-body">
+            <span>性别</span>
+            <select name="sex">
+                <option value="0">未知</option>
+                <option value="1">男</option>
+                <option value="2" selected>女</option>
+            </select>
+        </div>
+        <div class="dialog-footer">
+            <button class="dialog-yes">确定</button>
+            <button class="dialog-close">取消</button>
+        </div>
+    </div>
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.dialog.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".show").click(function() {
+                $(".sex").dialog({
+                    events: {
+                    '.dialog-yes': function () {
+                            var sex = this.find("select").val();
+                            var tag = this.find("option:selected").text();
+                            $.post('user.php?act=act_edit', {
+                                key: 'sex',
+                                value: sex
+                            }, function (data) {
+                                if (data.code == 0) {
+                                    $this.text(tag);
+                                    dialog.hide();
+                                    data.msg = '修改成功！';
+                                }
+                                showTip(data.msg);
+                            }, 'json');
+                        }
+                    }
+                })
+            });
+        });
+    </script>
+    </body>
+</html>

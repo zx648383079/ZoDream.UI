@@ -1,0 +1,386 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+.book-skin {
+    position: relative;
+    width: 1200px;
+    margin: 0 auto;
+    min-height: 300px;
+    a {
+        text-decoration: none;
+        color: #333;
+    }
+    .book-title {
+        line-height: 100px;
+        text-align: center;
+        .book-nav {
+            >li {
+                list-style: none;
+                display: none;
+                &.active {
+                    display: inline-block;
+                    font-size: 30px;
+                }
+                &.book-back {
+                    position: absolute;
+                    left: 0;
+                }
+                &.book-search {
+                    position: absolute;
+                    right: 0;
+                    .fa {
+                        position: absolute;
+                        top: 40px;
+                        left: 5px;
+                        font-size: 20px;
+                        color: #f9cfa6;
+                    }
+                    input {
+                        font-size: 20px;
+                        padding-left: 25px;
+                        background: transparent;
+                        border: 1px solid #f9cfa6;
+                        display: none;
+                    }
+                    .search-tip {
+                        position: absolute;
+                        top: 63px;
+                        z-index: 99;
+                        line-height: 25px;
+                        background: #f9cfa6;
+                        width: 100%;
+                        display: none;
+                        li {
+                            list-style: none;
+                            &:hover {
+                                background: #af5d0d;
+                            }
+                        }
+                    }
+                    input:focus + .search-tip,
+                    &.focus .search-tip {
+                        display: block;
+                    }
+                    &.focus input {
+                        display: inline-block;
+                    }
+                }
+            }
+            &:hover,
+            &.hover {
+                >li {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+    .book-body {
+        margin-right: 200px;
+        background: #f9cfa6;
+        padding: 30px 15px;
+        min-height: 800px;
+        position: relative;
+        .book-item {
+            border-bottom: 1px solid #af5d0d;
+            padding: 5px;
+            dt {
+                font-size: 20px;
+                font-weight: 600;
+                .book-time {
+                    float: right;
+                }
+            }
+            dd {
+                display: none;
+                p {
+                    margin: 5px 0;
+                }
+                .author,
+                .comment,
+                .category {
+                    margin-right: 20px;
+                }
+                .agree,
+                .disagree {
+                    float: right;
+                    margin-left: 10px;
+                }
+            }
+            &:hover {
+                dd {
+                    display: block;
+                }
+            }
+        }
+        .info {
+            border-bottom: 1px dotted #af5d0d;
+            line-height: 40px;
+            span {
+                margin-right: 20px;
+            }
+
+        }
+        .content {
+            margin-bottom: 40px;
+        }
+        .tools {
+            border-top: 1px dotted #af5d0d;
+            line-height: 40px;
+            position: absolute;
+            bottom: 0;
+            right: 15px;
+            left: 15px;
+            font-size: 20px;
+            span {
+                
+            }
+            .agree,
+            .disagree {
+                float: right;
+                margin-left: 20px;
+            }
+        }
+    }
+    .book-footer {
+        .book-pager {
+            float: left;
+            li {
+                list-style: none;
+                background: #f9cfa6;
+                width: 40px;
+                line-height: 40px;
+                text-align: center;
+                float: left;
+                border-top: 1px dotted #af5d0d;
+                &.active {
+                    background: #af5d0d;
+                    &:hover {
+                        height: 40px;
+                    }
+                }
+                &:hover {
+                    height: 50px;
+                }
+            }
+        }
+        &.comment {
+            margin-top: 50px;
+            margin-right: 200px;
+            background: #f9cfa6;
+            padding: 15px;
+            position: relative;
+        }
+        .book-comments {
+            .title {
+                font-size: 20px;
+                border-left: 5px solid #af5d0d;
+                padding-left: 10px;
+                margin-top: 15px;
+                .order {
+                    float: right;
+                    font-size: 12px;
+                    .active {
+                        color: #f00;
+                    }
+                }
+            }
+            .comment-item {
+                padding: 8px 0;
+                border-bottom: 1px solid #af5d0d;
+                position: relative;
+                .info {
+                    line-height: 30px;
+                    .user {
+                        font-weight: 600;
+                    }
+                    .time {
+                        margin-left: 20px;
+                        color: #767676;
+                    }
+                    .floor {
+                        float: right;
+                    }
+                }
+                .content {
+                    p {
+                        margin: 5px 0;
+                    }
+                    .expand {
+                        font-size: 12px;
+                    }
+                    .comment, 
+                    .report {
+                        float: right;
+                        margin-left: 20px;
+                    }
+                }
+                .actions {
+                    position: absolute;
+                    right: -215px;
+                    width: 200px;
+                    text-align: center;
+                    top: 30px;
+                    background: #f9cfa6;
+                    font-size: 20px;
+                    line-height: 40px;
+                    span {
+                        padding: 0 3px;
+                    }
+                }
+                .comments {
+                    padding-left: 100px;
+                    margin-top: 8px;
+                    border-top: 1px solid #af5d0d;
+                    .comment-item:last-child {
+                        border: none;
+                        padding-bottom: 0;
+                    }
+                }
+            }
+            &.hot-comments {
+                .title {
+                    margin-top: 0;
+                }
+                .comment-item {
+                    .comments {
+                        display: none;
+                    }
+                    &.active {
+                        .comments {
+                            display: block;
+                        }
+                    }
+                }
+            }
+            .book-comment-form {
+                .btn-cancel {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+    .book-chapter {
+        position: absolute;
+        width: 200px;
+        right: 0;
+        top: 130px;
+        li {
+            background: #f9cfa6;
+            list-style: none;
+            width: 150px;
+            line-height: 30px;
+            border-bottom: 1px solid #af5d0d;
+            padding-left: 20px;
+            box-sizing: border-box;
+            .fa {
+                margin-right: 5px;
+            }
+            &.active {
+                background: #af5d0d;
+                width: 200px;
+                &:hover {
+                    width: 200px;
+                }
+            }
+            &:hover {
+                width: 175px;
+            }
+        }
+    }
+    .book-dynamic {
+        position: absolute;
+        width: 200px;
+        right: 0;
+        top: 400px;
+        dl {
+            background: #f9cfa6;
+            border-bottom: 1px solid #af5d0d;
+            dt {
+                line-height: 30px;
+                font-size: 12px;
+                a {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
+            dd {
+                display: none;
+                .book-time {
+                    text-align: right;
+                    display: block;
+                }
+                p {
+                    margin: 5px 0;
+                }
+            }
+            &:hover {
+                dt {
+                    background: #af5d0d;
+                }
+                dd {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+.book-comment-form {
+    .title {
+        font-size: 20px;
+        border-left: 5px solid #af5d0d;
+        padding-left: 10px;
+        margin-top: 15px;
+    }
+    .form-table {
+        display: table;
+        width: 100%;
+        .form-group {
+            display: table-row;
+            label {
+                line-height: 30px;
+                width: 200px;
+                display: table-cell;
+                text-align: center;
+            }
+            input, 
+            select {
+                display: table-cell;
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid #af5d0d;
+                font-size: 20px;
+                width: 100%;
+            }
+        }
+    }
+    
+    textarea {
+        width: 100%;
+        height: 100px;
+        resize: none;
+        background: transparent;
+        border: 1px solid #af5d0d;
+        font-size: 20px;
+    }
+    button {
+        line-height: 30px;
+        background: #af5d0d;
+        padding: 0 20px;
+        border: none;
+    }
+    .btn-cancel {
+        display: none;
+    }
+}
+
+.book-clear {
+    clear: both;
+}
+
+.footer {
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+}

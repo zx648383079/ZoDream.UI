@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>首页</title>
+        <meta charset="UTF-8">
+        <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/zodream-mobile.css" rel="stylesheet">
+    </head>
+    <body>
+        <header class="top">
+            <a class="back">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
+            <span class="title">
+                博客
+            </span>
+            <a class="btn" href="login.html">
+                写博客
+            </a>
+        </header>
+    <section class="container">
+        <div class="tab">
+            <ul class="tab-header">
+                <li class="active">全部</li>
+                <li>最新</li>
+                <li>最热</li>
+            </ul>
+            <ul class="tab-content">
+                <li class="active">
+                    <ul class="blog">
+                        <li>
+                            <a href="blogView.html">
+                                <div class="title">
+                                    <img src="image/avatar.jpg" alt="">
+                                    <span>半年</span>
+                                    <span class="time">2012-09-88</span>
+                                </div>
+                            </a>
+                            <div class="content">
+                                <p>ggggggggggggg</p>
+                                <p>
+                                    <a href="javascript:;">
+                                        <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                        0
+                                    </a>
+                                    <span class="commentCount">18评论</span>
+                                    <span class="viewCount">154浏览</span>
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    213213213
+                </li>
+                <li>
+                    213123
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <a href="index.html">
+            <i class="fa fa-home" aria-hidden="true"></i>
+            首页
+        </a>
+        <a href="blog.html" class="active">
+            <i class="fa fa-pencil" aria-hidden="true">
+                <span class="tip">2</span>
+            </i>
+            博客
+        </a>
+        <a href="laboratory.html">
+            <i class="fa fa-hourglass-start" aria-hidden="true"></i>
+            实验
+        </a>
+        <a href="task.html">
+            <i class="fa fa-clock-o" aria-hidden="true"></i>
+            日志
+        </a>
+        <a href="user.html">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            我的
+        </a>
+    </footer>
+
+    <div class="tipDialog" style="width: 100px;">
+        
+    </div>
+
+    <div class="notifyDialog">
+        
+    </div>
+
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="js/jquery.dialog.js"></script>
+    <script src="js/zodream.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.dialog.tip("haha");
+            $.dialog.notify("f");
+        });
+    </script>
+    </body>
+</html>

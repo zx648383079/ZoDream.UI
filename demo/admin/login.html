@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <title>登录</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/zodream.css" rel="stylesheet">
+        <link href="../css/admin.css" rel="stylesheet">
+    </head>
+    <body>
+    <section class="container">
+        <div class="login">
+            <form action="index.html" method="POST">
+                <div class="group">
+                    <input type="text" placeholder="请输入账号" required>
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                </div>
+                <div class="group">
+                    <input type="password" placeholder="请输入密码" required>
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                </div>
+
+                <div class="checkboxGroup">
+                    <div class="checkbox">
+                        <input type="checkbox" id="checkboxInput"/>
+                        <label for="checkboxInput"></label>
+                    </div>
+                    记住我
+                </div>
+
+                <button type="submit" class="btn">登录</button>
+            </form>
+        </div>
+    </section>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    </body>
+</html>

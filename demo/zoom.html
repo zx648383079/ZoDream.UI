@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .zoom {
+            position: relative;
+            height: 200px;
+        }
+        .zoom-box {
+            position: relative;
+            width: 1000px;
+            height: 300px;
+        }
+        .zoom-box img {
+            position: absolute;
+        }
+
+        .zoom-previous,
+        .zoom-next {
+            position: absolute;
+            top: 45%;
+        }
+
+        </style>
+    </head>
+    <body>
+    
+    <div class="zoom">
+         <div class="zoom-previous">&lt;</div>
+        <div class="zoom-box">
+            <img src="image/banner1.jpg" alt="">
+            <img src="image/banner2.jpg" alt="">
+            <img src="image/banner3.jpeg" alt="">
+            <img src="image/banner1.jpg" alt="">
+            <img src="image/banner2.jpg" alt="">
+            <img src="image/banner3.jpeg" alt="">
+        </div>
+        <div class="zoom-next">&gt;</div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/touchjs/touch.min.js"></script>
+    <script src="../dev/js/jquery.zoom.js"></script>
+    <script>
+        $(document).ready(function() {
+            var zoom = $(".zoom-box").zoom();
+            $(".zoom-previous").click(function() {
+                zoom.previous();
+            });
+            $(".zoom-next").click(function() {
+                zoom.next();
+            });
+            touch.on(".zoom-box", "swipeleft",function(){
+                zoom.previous();
+            })
+            touch.on(".zoom-box", "swiperight",function(){
+                zoom.next();
+            });
+        });
+        
+    </script>
+    </body>
+</html>

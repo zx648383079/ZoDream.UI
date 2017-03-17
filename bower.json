@@ -30,6 +30,7 @@
     "PACE": "pace#^1.0.2",
     "jquery.cookie": "^1.4.1",
     "ply": "^0.1.0",
-    "jquery_lazyload": "jquery.lazyload#^1.9.7"
+    "jquery_lazyload": "jquery.lazyload#^1.9.7",
+    "jquery-touchswipe": "^1.6.18"
   }
 }

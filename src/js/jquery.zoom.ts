@@ -4,7 +4,10 @@ class Zoom {
         option?: ZoomOption
     ) {
         this.option = $.extend({}, new ZoomDefaultOption(), option);
-        this._li = this.element.find("img");
+        this._li = this.element.find(this.option.item);
+        if (!this.option.opacity) {
+            this.option.opacity = 1 / Math.ceil(this._li.length / 2);
+        }
         this.index = 0;
         this._bindEvent();
     }
@@ -30,7 +33,6 @@ class Zoom {
         }
         this._initLeft();
         this._initRight();
-        
     }
 
     get index(): number {
@@ -39,13 +41,23 @@ class Zoom {
 
     private _initMBox() {
         let width = this.element.width();
+        let height = this.element.height();
         this._mBox = new ZoomBox(
-            width * .25,
+            0,
             0,
             30,
             width * .5,
-            this.element.height()
+            height
         );
+        if (this.option.maxWidth) {
+            this._mBox.width = Zoom.iTi(width, this.option.maxWidth);
+        }
+        if (this.option.maxHeight) {
+            height = this._mBox.height = Zoom.iTi(width, this.option.maxHeight);
+            this.element.height(this._mBox.height);
+        }
+        this._mBox.x = (width - this._mBox.width) / 2;
+        this._mBox.y = (height - this._mBox.height) / 2;
         this._mBox.apple(this._li.eq(this._index));
     }
 
@@ -57,7 +69,7 @@ class Zoom {
             if (i < 0) {
                 i = this._li.length - 1;
             }
-            box = box.toNext(this.option.scale, false);
+            box = box.toNext(this.option, false);
             box.apple(this._li.eq(i));
             count --;
             i --;
@@ -72,7 +84,7 @@ class Zoom {
             if (i >= this._li.length) {
                 i = 0;
             }
-            box = box.toNext(this.option.scale);
+            box = box.toNext(this.option);
             box.apple(this._li.eq(i));
             count --;
             i ++;
@@ -84,6 +96,23 @@ class Zoom {
         this._li.click(function() {
             instance.index = $(this).index();
         });
+        this.element.on("click", this.option.previous, function() {
+            instance.previous();
+        });
+        this.element.on("click", this.option.next, function() {
+            instance.next();
+        });
+        if (!$.fn.swipe) {
+            return;
+        }
+        this.element.swipe({
+            swipeLeft: function() {
+                instance.previous()
+            },
+            swipeRight: function() {
+                instance.next();
+            }
+        });
     }
 
     public previous() {
@@ -94,8 +123,12 @@ class Zoom {
         this.index ++;
     }
 
-
-
+    public static iTi(abservable: number, reltive: number): number {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    }
 }
 
 
@@ -122,30 +155,43 @@ class ZoomBox {
         })
     }
 
-    public toNext(scale: number, ltr: boolean = true): ZoomBox {
+    public toNext(option: ZoomOption, ltr: boolean = true): ZoomBox {
         let box = new ZoomBox();
-        box.width = this.width * scale;
-        box.height = this.height * scale;
+        box.width = this.width * option.scale;
+        box.height = this.height * option.scale;
         if (ltr) {
-            box.x = this.x - box.width +  this.width * (2 - scale) ;
+            box.x = this.x + this.width + this._getSpace(option.space) - box.width;
         } else {
-           box.x = this.x  - this.width * (1 - scale);
+           box.x = this.x  - this._getSpace(option.space); 
         }
         box.y = this.y + (this.height - box.height) / 2; 
         box.z = this.z - 1;
-        box.opacity = this.opacity - 0.1
+        box.opacity = this.opacity - option.opacity;
         return box;
+    }
+
+    private _getSpace(space: number): number {
+        return Zoom.iTi(this.width, space);
     }
 }
 
 interface ZoomOption {
     scale?: number,
-    width?: number,
-    height?: number
+    maxWidth?: number,
+    maxHeight?: number,
+    space?: number,
+    opacity?: number,
+    item?: string,
+    previous?: string,
+    next?: string
 }
 
 class ZoomDefaultOption implements ZoomOption {
     scale: number = .9;
+    space: number = .1;
+    item: string = '.zoom-item';
+    previous: string = '.zoom-previous';
+    next: string = '.zoom-previous';
 }
 
 

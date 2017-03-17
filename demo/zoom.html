@@ -42,25 +42,16 @@
     </div>
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="../bower_components/touchjs/touch.min.js"></script>
+    <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
     <script src="../dev/js/jquery.zoom.js"></script>
     <script>
         $(document).ready(function() {
-            var zoom = $(".zoom-box").zoom();
-            $(".zoom-previous").click(function() {
-                zoom.previous();
-            });
-            $(".zoom-next").click(function() {
-                zoom.next();
-            });
-            touch.on(".zoom-box", "swipeleft",function(){
-                zoom.previous();
-            })
-            touch.on(".zoom-box", "swiperight",function(){
-                zoom.next();
+            var zoom = $(".zoom").zoom({
+                item: 'img',
+                maxWidth: .6,
+                maxHeight: .3
             });
         });
-        
     </script>
     </body>
 </html>

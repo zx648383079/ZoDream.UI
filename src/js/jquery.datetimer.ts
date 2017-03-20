@@ -112,7 +112,9 @@ class DateTimer {
 
     public open() {
          let offset = this.element.offset();
-         this.box.css({left: offset.left + "px", top: offset.top + this.element.outerHeight() + "px"}).show();
+         let x = offset.left;
+         let y = offset.top + this.element.outerHeight();
+         this.box.css({left: x + "px", top: y + "px"}).show();
     }
     
     /**
@@ -170,7 +172,7 @@ class DateTimer {
      private _changeYear(y: number) {
          this._currentDate.setFullYear(y);
          this._refreshDay();
-         this._changeListGroup(this._yearBox, y - 1);
+         this._changeListGroup(this._yearBox, y - this.options.min.getFullYear());
      }
 
      private _changeMonth(m: number) {
@@ -183,16 +185,19 @@ class DateTimer {
      private _changeHour(h: number) {
          this._currentDate.setHours(h);
          this.box.find(".footer .hour").val(this._iTs(h));
+         this._changeListGroup(this._hourBox, h -1);
      }
 
      private _changeMinute(i: number) {
          this._currentDate.setMinutes(i);
          this.box.find(".footer .minute").val(this._iTs(i));
+         this._changeListGroup(this._minuteBox, i -1);
      }
 
      private _changeSecond(s: number) {
          this._currentDate.setSeconds(s);
          this.box.find(".footer .second").val(this._iTs(s));
+         this._changeListGroup(this._secondBox, s -1);
      }
 
      private _refreshDay() {
@@ -311,7 +316,15 @@ class DateTimer {
             instance._changeSecond(parseInt($(this).text()));
         });
         
-        
+        this.box.click(function(e) {
+            e.stopPropagation();
+        });
+        this.element.click(function(e) {
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            instance.box.hide();
+        });
     }
 
      private _yD(y: number, m: number): number {

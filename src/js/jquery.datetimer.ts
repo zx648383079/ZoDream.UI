@@ -34,26 +34,31 @@ class DateTimer {
          this.element.focus(function() {
             instance.init($(this).val());
          });
-     }
+    }
 
-     public options: DateTimerOptions;
+    public options: DateTimerOptions;
 
-     public box: JQuery;
+    public box: JQuery;
 
-     private _currentDate: Date;
+    private _yearGrid: JQuery;
+    private _dayGrid: JQuery;
+    private _yearBox: JQuery;
+    private _monthBox: JQuery;
+    private _hourBox: JQuery;
+    private _minuteBox: JQuery;
+    private _secondBox: JQuery;
 
-     public init(time: string) {
+
+    private _currentDate: Date;
+
+    public init(time: string) {
         this.showDate(time);
         this.open();
         this._refreshTime();
-     }
+    }
 
-     public createHtml() {
-        this.box = $("#datetimer");
-        if (this.box.length > 0) {
-            return;
-        }
-        this.box = $('<div id="datetimer" class="datetimer"></div>');
+    public createHtml() {
+        this.box = $('<div class="datetimer"></div>');
         let lis = this._nLi(60, 0);
         this.box.html('<div class="header"><i class="fa fa-backward previousYear"></i><i class="fa fa-chevron-left previousMonth"></i><span></span><i class="fa fa-chevron-right nextMonth"></i><i class="fa fa-forward nextYear"></i></div><div class="body"><div class="month-grid"><ol><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ol><ul>'+
         this._nLi(42, 0, false) 
@@ -67,16 +72,32 @@ class DateTimer {
         '</ul></div><div class="list-group second"><div class="title">秒钟</div><ul>'+
         lis +
         '</ul></div></div></div><div class="footer"><input type="text" class="hour" value="00">:<input type="text" class="minute" value="00">:<input type="text" class="second" value="00"><button>确定</button></div>');
-        this._bindEvent();
-     }
+        $(document.body).append(this.box);
 
-     private _iTs(i: number): string {
+        this._yearBox = this.box.find(".body .year-grid .year ul");
+        this._monthBox = this.box.find(".body .year-grid .month ul");
+        this._hourBox = this.box.find(".body .day-grid .hour ul");
+        this._minuteBox = this.box.find(".body .day-grid .minute ul");
+        this._secondBox = this.box.find(".body .day-grid .second ul");
+        this._yearGrid = this.box.find(".body .year-grid");
+        this._dayGrid = this.box.find(".body .day-grid");
+
+        this._bindEvent();
+    }
+
+     /**
+      * 格式化数字
+      */
+    private _iTs(i: number): string {
          if (i < 10) {
              return '0' + i;
          }
          return i.toString();
      }
 
+     /**
+      * 生成指定数目的li
+      */
      private _nLi(length: number, i: number = 0, hasN = true): string {
          let html = '';
          for(; i < length; i ++) {
@@ -92,8 +113,11 @@ class DateTimer {
     public open() {
          let offset = this.element.offset();
          this.box.css({left: offset.left + "px", top: offset.top + this.element.outerHeight() + "px"}).show();
-     }
-
+    }
+    
+    /**
+     * 获取当前设置的时间
+     */
     public getCurrentDate(): Date {
          if (this._currentDate) {
              return this._currentDate;
@@ -120,43 +144,59 @@ class DateTimer {
     public showDate(year: number|Date|string, month?: number) {
         this._currentDate = this._tD(year, month);
         this.box.data('date', this._currentDate);
-
         this._refreshDay();
+     }
 
+     private _refreshYearGrid() {
+        this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this.options.min.getFullYear());
+        this._changeListGroup(this._monthBox, this._currentDate.getMonth());
+     }
+
+     private _refreshDayGrid() {
+        this._changeListGroup(this._hourBox, this._currentDate.getHours() - 1);
+        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes() - 1);
+        this._changeListGroup(this._secondBox, this._currentDate.getSeconds() - 1);
+     }
+
+     /**
+      * 改变list-group 中的ul
+      */
+     private _changeListGroup(box: JQuery, index: number) {
+         let li = box.find("li").eq(index);
+         li.addClass("active").siblings().removeClass("active");
+         box.scrollTop(li.offset().top - box.offset().top + box.scrollTop() - box.height() / 2);
      }
 
      private _changeYear(y: number) {
          this._currentDate.setFullYear(y);
          this._refreshDay();
-         this.box.find(".body .year-grid .year li").eq(y - this.options.min.getFullYear()).addClass("active").siblings().removeClass("active");
+         this._changeListGroup(this._yearBox, y - 1);
      }
 
      private _changeMonth(m: number) {
          this._currentDate.setMonth(m - 1);
          this._refreshDay();
-         this.box.find(".body .year-grid .month li").eq(m - 1).addClass("active").siblings().removeClass("active");
+         this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this.options.min.getFullYear());
+         this._changeListGroup(this._monthBox, this._currentDate.getMonth());
      }
 
      private _changeHour(h: number) {
          this._currentDate.setHours(h);
-         this.box.find(".body .day-grid .hour li").eq(h - 1).addClass("active").siblings().removeClass("active");
          this.box.find(".footer .hour").val(this._iTs(h));
      }
 
      private _changeMinute(i: number) {
          this._currentDate.setMinutes(i);
-         this.box.find(".body .day-grid .minute li").eq(i - 1).addClass("active").siblings().removeClass("active");
          this.box.find(".footer .minute").val(this._iTs(i));
      }
 
      private _changeSecond(s: number) {
          this._currentDate.setSeconds(s);
-         this.box.find(".body .day-grid .second li").eq(s - 1).addClass("active").siblings().removeClass("active");
-         this.box.find(".footer .minute").val(this._iTs(s));
+         this.box.find(".footer .second").val(this._iTs(s));
      }
 
      private _refreshDay() {
-         this.box.find(".header span").text(this._currentDate.format('y年m月'));
+         this.box.find(".header span").text(this._currentDate.format(this.options.title));
          let days = this._mLi(this._currentDate.getFullYear(), this._currentDate.getRealMonth());
         let dayLi = this.box.find(".body .month-grid ul li");
         dayLi.removeClass("active").removeClass("disable");
@@ -234,13 +274,44 @@ class DateTimer {
         });
         this.box.find(".footer button").click(function() {
             instance.element.val(instance.getCurrentDate().format(instance.options.format));
+            instance.box.hide();
         });
+
         this.box.find(".header span").click(function() {
-            instance.box.find(".body .year-grid").toggle();
+            if (instance._yearGrid.is(":hidden")) {
+                instance._dayGrid.hide();
+                instance._yearGrid.show();
+                instance._refreshYearGrid();
+                return;
+            }
+            instance._yearGrid.hide();
         });
         this.box.find(".footer input").click(function() {
-            instance.box.find(".body .day-grid").toggle();
+            if (instance._dayGrid.is(":hidden")) {
+                instance._yearGrid.hide();
+                instance._dayGrid.show();
+                instance._refreshDayGrid();
+                return;
+            }
+            instance._dayGrid.hide();
         });
+        this._yearBox.find("li").click(function() {
+            instance._changeYear(parseInt($(this).text()));
+        });
+        this._monthBox.find("li").click(function() {
+            instance._changeMonth(parseInt($(this).text()));
+        });
+        this._hourBox.find("li").click(function() {
+            instance._changeHour(parseInt($(this).text()));
+        });
+        this._minuteBox.find("li").click(function() {
+            instance._changeMinute(parseInt($(this).text()));
+        });
+        this._secondBox.find("li").click(function() {
+            instance._changeSecond(parseInt($(this).text()));
+        });
+        
+        
     }
 
      private _yD(y: number, m: number): number {
@@ -275,13 +346,15 @@ interface DateTimerOptions {
     format?: string, //日期格式
     min?: string | Date, //最小日期
     max?: string | Date, //最大日期
-    success?: (date: Date, element: JQuery) => any
+    success?: (date: Date, element: JQuery) => any,
+    title?: string
  }
 
  class DateTimerDefaultOptions implements DateTimerOptions {
     format: string = "y-m-d h:i:s"; //日期格式
     min: string = "1900-01-01 00:00:00"; //最小日期
     max: string = "2099-12-31 23:59:59"; //最大日期
+    title: string = "y年m月";            // 标题栏的日期格式
  }
  
  ;(function($: any) {

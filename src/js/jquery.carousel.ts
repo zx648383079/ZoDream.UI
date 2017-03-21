@@ -4,7 +4,7 @@ class Carousel {
         options?: CarouselOptions
     ) {
         this.options = $.extend({}, new CarouselDefaultOptions(), options)
-        let items: JQuery = this.element.find(options.itemTag);
+        let items: JQuery = this.element.find(this.options.itemTag);
         this._itemWidth = items.width();
         this._itemLength = items.length;
         if (!this.options.range) {

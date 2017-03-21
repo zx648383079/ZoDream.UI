@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .carousel {
+            position: relative;
+            height: 200px;
+        }
+        .carousel-previous,
+        .carousel-next {
+            position: absolute;
+            top: 50%;
+            font-size:50px;
+            margin-top: -25px;
+            color: #fff;
+            z-index: 99;
+        }
+        .carousel-next {
+            right: 0;
+        }
+        .carousel-box {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            height: 100%;
+        }
+        .carousel-box ul {
+            position: absolute;
+            width: 5000px;
+            padding: 0;
+        }
+        .carousel-box ul li {
+            list-style: none;
+            /*display: inline-block;*/
+            float: left;
+        }
+        </style>
+    </head>
+    <body>
+    
+    <div class="carousel">
+         <div class="carousel-previous">&lt;</div>
+        <div class="carousel-box">
+            <ul>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+                <li><img src="image/banner1.jpg" alt=""></li>
+            </ul>
+        </div>
+        <div class="carousel-next">&gt;</div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.carousel.js"></script>
+    <script>
+        $(document).ready(function() {
+            var silder = $(".carousel").carousel();
+        });
+        
+    </script>
+    </body>
+</html>

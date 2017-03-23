@@ -58,7 +58,7 @@ class Zoom {
         }
         this._mBox.x = (width - this._mBox.width) / 2;
         this._mBox.y = (height - this._mBox.height) / 2;
-        this._mBox.apple(this._li.eq(this._index));
+        this._mBox.apple(this._li.eq(this._index), this.option);
     }
 
     private _initLeft() {
@@ -70,7 +70,7 @@ class Zoom {
                 i = this._li.length - 1;
             }
             box = box.toNext(this.option, false);
-            box.apple(this._li.eq(i));
+            box.apple(this._li.eq(i), this.option);
             count --;
             i --;
         }
@@ -85,7 +85,7 @@ class Zoom {
                 i = 0;
             }
             box = box.toNext(this.option);
-            box.apple(this._li.eq(i));
+            box.apple(this._li.eq(i), this.option);
             count --;
             i ++;
         }
@@ -144,15 +144,17 @@ class ZoomBox {
 
     }
 
-    public apple(element: JQuery) {
+    public apple(element: JQuery, option: ZoomOption) {
         element.css({
+            "z-index": this.z,
+        });
+        element.animate({
             left: this.x + "px",
             top: this.y + "px",
-            "z-index": this.z,
             width: this.width + "px",
             height: this.height + "px",
             opacity: this.opacity
-        })
+        }, option.animationTime, option.animationMode);
     }
 
     public toNext(option: ZoomOption, ltr: boolean = true): ZoomBox {
@@ -179,7 +181,9 @@ interface ZoomOption {
     scale?: number,
     maxWidth?: number,
     maxHeight?: number,
-    space?: number,
+    space?: number,          //
+    animationTime?: number,
+    animationMode?: string,
     opacity?: number,
     item?: string,
     previous?: string,
@@ -189,6 +193,8 @@ interface ZoomOption {
 class ZoomDefaultOption implements ZoomOption {
     scale: number = .9;
     space: number = .1;
+    animationTime: number = 500;
+    animationMode: string = "swing";
     item: string = '.zoom-item';
     previous: string = '.zoom-previous';
     next: string = '.zoom-previous';

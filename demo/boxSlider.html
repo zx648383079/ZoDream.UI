@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .slider-box {
+            height: 400px;
+            overflow: hidden;
+        }
+        .slider-box li {
+            line-height: 50px;
+        }
+        </style>
+    </head>
+    <body>
+    
+    <div class="slider">
+        <div class="slider-box">
+            <ul>
+                <li>13</li>
+                <li>123123</li>
+                <li>123123123123123123123</li>
+                <li>1231231231234444434532442234</li>
+                <li>1231231231231231231232343243243232</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.boxSlider.js"></script>
+    <script>
+        $(document).ready(function() {
+            var silder = $(".slider-box ul").boxSlider({
+                spaceTime: 1000,
+                animationTime: 500
+            });
+        });
+        
+    </script>
+    </body>
+</html>

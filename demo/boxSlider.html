@@ -8,6 +8,7 @@
         .slider-box {
             height: 400px;
             overflow: hidden;
+            border: 1px solid #f00;
         }
         .slider-box li {
             line-height: 50px;
@@ -28,13 +29,42 @@
         </div>
     </div>
 
+    <div class="slider">
+        <div class="slider-box">
+            <ul>
+                <li>13</li>
+                <li>123123</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slider">
+        <div class="slider-box">
+            <ul>
+                <li>13</li>
+                <li>123123</li>
+                <li>1231231231</li>
+                <li>1231231231234</li>
+                <li>12312312312312312</li>
+                <li>123123123123123123123</li>
+                <li>1231231231234444434532442</li>
+                <li>12312312312312312312323432432</li>
+                <li>123123123123123123123r435353535</li>
+                <li>1231231231234444434532442233535354</li>
+                <li>12312312312312312312323432432432323533</li>
+            </ul>
+        </div>
+    </div>
+
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dev/js/jquery.boxSlider.js"></script>
     <script>
         $(document).ready(function() {
-            var silder = $(".slider-box ul").boxSlider({
-                spaceTime: 1000,
-                animationTime: 500
+            var silder = $(".slider-box ul").each(function(i, ele) {
+                $(ele).boxSlider({
+                    spaceTime: 1000,
+                    animationTime: 500
+                })
             });
         });
         

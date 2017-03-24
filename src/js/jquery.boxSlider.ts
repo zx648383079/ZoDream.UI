@@ -34,6 +34,8 @@ class BoxSlider {
 
     private _maxHeight: number;
 
+    private _animation: Function = null;
+
     private _timeCallback() {
         this._setTime();
         this.next();
@@ -64,6 +66,9 @@ class BoxSlider {
             if (instance._time <= 0) {
                 instance._timeCallback();
             }
+            if (instance._animation != null) {
+                instance._animation();
+            }
             instance._runTimer();
         });
     }
@@ -82,9 +87,8 @@ class BoxSlider {
      * 下一个
      */
     public next() {
-        this._top += this._minHeight;
         let instance = this;
-        this._goAndCallback(function() {
+        this._goAndCallback(this._top + this._minHeight, function() {
             if (instance._top >= instance._maxHeight) {
                 instance._top = 0;
                 instance.element.css({"margin-top": "0px"});
@@ -97,13 +101,26 @@ class BoxSlider {
      * @param left 
      * @param callback 
      */
-    private _goAndCallback(callback: Function) {
-        this.element.animate(
+    private _goAndCallback(end: number, callback: Function) {
+        /*this.element.animate(
             {"margin-top": - this._top + "px"}, 
             this.options.animationTime, 
             this.options.animationMode, 
             callback
-        );
+        );*/
+        let instance = this;
+        let count = this.options.animationTime / 16;
+        let min = (end - this._top) / count;
+        this._animation = function() {
+            count --;
+            this._top += min;
+            if (count <= 0) {
+                this._top = end;
+                instance._animation = null;
+                callback();
+            }
+            instance.element.css({"margin-top": -this._top + "px"});
+        };
     }
 }
 

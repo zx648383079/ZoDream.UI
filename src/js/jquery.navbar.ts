@@ -18,11 +18,14 @@ class NavItem {
 
     public element: JQuery;
 
+    public ul: JQuery;
+
     public addItem(id: string, item: NavItem) {
         if (!this.children) {
             this.children = {};
         }
         this.children[id] = item;
+        this._renderChild(id, item);
     }
 
     public removeItem(id: string) {
@@ -68,16 +71,29 @@ class NavItem {
         return this.element;
     }
 
+
+    private _addUl() {
+        if (this.ul) {
+            return;
+        }
+        this.ul = $('<ul></ul>');
+        this.element.append(this.ul);
+    }
+
     private _renderChildren() {
         if (!this.children) {
             return;
         }
-        let ul = $('<ul></ul>');
+        this._addUl();
         let k = this.id + '/';
         $.each(this.children, function(id: string, item: NavItem) {
-            ul.append(item.render(k + id));
+            this.ul.append(item.render(k + id));
         });
-        this.element.append(ul);
+    }
+
+    private _renderChild(id: string, item: NavItem) {
+        this._addUl();
+        this.ul.append(item.render(this.id + '/' + id));
     }
 
     public clone(): NavItem {
@@ -309,7 +325,7 @@ class Navbar {
     }
 
     // 动态添加
-    public addItem(id, item: NavItem| Object) {
+    public addItem(id: string, item: NavItem| Object) {
 
     }
 

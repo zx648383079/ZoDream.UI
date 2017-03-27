@@ -5,15 +5,10 @@ class BoxSlider {
     ) {
         this.options = $.extend({}, new BoxSliderDefaultOptions(), options);
         this._height = this.element.height();
-        let li = this.element.find('li');
-        if (li.length < 1) {
-            return;
-        }
         this._box = this.element.parent();
-        this._boxHeight = this._box.height();
-        this._minHeight = li.outerHeight();
-        this._top = 0;
-        this._init();
+        if (this.options.auto) {
+            this.play();
+        }
     }
 
     public options: BoxSliderOptions;
@@ -42,6 +37,13 @@ class BoxSlider {
     }
 
     private _init() {
+        let li = this.element.find(this.options.itemTag);
+        if (li.length < 1) {
+            return;
+        }
+        this._boxHeight = this._box.height();
+        this._minHeight = li.outerHeight();
+        this._top = 0;
         let instance = this;
         let count = Math.ceil(this._boxHeight / this._height);
         this._maxHeight = count * this._height;
@@ -96,6 +98,17 @@ class BoxSlider {
         })
     }
 
+    public play() {
+        this._init();
+    }
+
+    public stop() {
+        if (!this._timer) {
+            return;
+        }
+        cancelAnimationFrame(this._timer);
+    }
+
     /**
      * 移动动画及回调
      * @param left 
@@ -128,17 +141,21 @@ interface BoxSliderOptions {
     spaceTime?: number,
     animationTime?: number,
     animationMode?: string,
+    auto?: boolean,
+    itemTag?: string,
 }
 
 class BoxSliderDefaultOptions implements BoxSliderOptions {
     spaceTime: number = 3000;
     animationTime: number = 1000;
     animationMode: string = "swing";
+    auto: boolean = true;   // 自动播放
+    itemTag: string = 'li';
 }
 
 
- ;(function($: any) {
-  $.fn.boxSlider = function(options ?: BoxSliderOptions) {
-    return new BoxSlider(this, options); 
-  };
+;(function($: any) {
+    $.fn.boxSlider = function(options ?: BoxSliderOptions) {
+        return new BoxSlider(this, options); 
+    };
 })(jQuery);

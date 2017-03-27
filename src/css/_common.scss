@@ -2,6 +2,10 @@ $color: #00BFFF;  //蓝
 $color1: #CD8162; //橙黄
 $color2: #CDBA96; //橙白
 $line: 40px;
+$danger: #f00;
+$primary: #ff77ff;
+
+$lineHeight: 30px;
 
 
 $zd-screen-md-min: 640px;
@@ -18,4 +22,8 @@ $zd-screen-xxl-max: 12000px;
 .active {
     background: $color;
     color: #fff;
+}
+* {
+    margin: 0;
+    padding: 0;
 }

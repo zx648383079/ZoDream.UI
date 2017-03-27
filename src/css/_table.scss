@@ -8,3 +8,43 @@
         }
     }
 }
+table {
+    width: 100%;
+    td, 
+    th {
+        text-align: center;
+        &.left {
+            text-align: left;
+        }
+        &.right {
+            text-align: right;
+        }
+    }
+    thead {
+        input,
+        select {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #555;
+            height: $lineHeight;
+        }
+        .sort-desc {
+            &::after {
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: inherit;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                content: "\f15e";
+            }
+        }
+        .sort-asc {
+            &::after {
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: inherit;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                content: "\f15d";
+            }
+        }
+    }
+}

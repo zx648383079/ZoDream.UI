@@ -182,22 +182,26 @@ interface ZoomOption {
     maxWidth?: number,
     maxHeight?: number,
     space?: number,          //
+    spaceTime?: number,
     animationTime?: number,
     animationMode?: string,
     opacity?: number,
     item?: string,
     previous?: string,
-    next?: string
+    next?: string,
+    auto?: boolean
 }
 
 class ZoomDefaultOption implements ZoomOption {
     scale: number = .9;
     space: number = .1;
+    spaceTime: number = 1000;
     animationTime: number = 500;
     animationMode: string = "swing";
     item: string = '.zoom-item';
     previous: string = '.zoom-previous';
     next: string = '.zoom-previous';
+    auto: boolean = true;
 }
 
 

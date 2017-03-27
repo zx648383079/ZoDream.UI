@@ -1,19 +1,54 @@
 .zd-tab {
     .zd-tab-head {
+        position: relative;
         .zd-tab-item {
-            &.active {
+            &.active,
+            &:hover {
                 @extend .active;
+                .fa {
+                    display: block;
+                }
             }
+            display: inline-block;
+            width: 150px;
+            height: 30px;
+            line-height: 30px;
             text-align: center;
-            line-height: 40px;
+            position: relative;
+            .fa-close {
+                position: absolute;
+                right: 10px;
+                top: 6px;
+                display: none;
+            }
+        }
+        &.has-over {
+            >.fa {
+                position: absolute;
+                width: 30px;
+                text-align: center;
+                line-height: 30px;
+                &:last-child {
+                    right: 0;
+                    top: 0;
+                }
+            }
+            ul {
+                padding: 0;
+                margin: 0 30px;
+                overflow: hidden;
+            }
         }
     }
     .zd-tab-body {
         .zd-tab-item {
             &.active {
                 display: block;
+                background: transparent;
+                color: #767676;
             }
             display: none;
+            width: 100%;
         }
     }
 }

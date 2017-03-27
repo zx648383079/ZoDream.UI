@@ -1,0 +1,108 @@
+.navbar {
+    width: 300px;
+    height: 100%;
+    background: #333;
+    position: relative;
+    .navicon {
+        width: 30px;
+        display: block;
+        text-align: center;
+        line-height: 30px;
+        color: #fff;
+        background: #767676;
+    }
+    
+    ul {
+        margin: 0;
+        padding: 0;
+        li {
+            list-style: none;
+            line-height: 30px;
+            text-align: center;
+            a {
+                text-decoration: none;
+                display: block;
+                width: 100%;
+                background: #333;
+                color: #fff;
+                position: relative;
+                box-sizing: border-box;
+                .fa {
+                    position: absolute;
+                    left: 10px;
+                    top: 6px;
+                }
+            }
+            ul {
+                display: none;
+                li {
+                    a {
+                        background: #888;
+                    }
+                }
+            }
+            &.active {
+                >a {
+                    background: $primary;
+                }
+                ul {
+                    display: block;
+                }
+            }
+            &:hover {
+                >a {
+                    background: $primary;
+                }
+            }
+        }
+    }
+    >ul {
+        &.nav-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    }
+
+    &.min {
+        width: 30px;
+        >ul {
+            >li {
+                >a {
+                    span {
+                        display: none;
+                    }
+                    .fa {
+                        position: static;
+                    }
+                }
+                &:hover,
+                &.active {
+                    >a {
+                        span {
+                            width: 270px;
+                            display: block;
+                            position: absolute;
+                            top: 0;
+                            background: $primary;
+                            left: 30px;
+                        }
+                    }
+                    ul {
+                        width: 270px;
+                        display: block;
+                        position: absolute;
+                        left: 30px;
+                        li {
+                            a {
+                                span {
+                                    display: block;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

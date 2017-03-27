@@ -1,0 +1,196 @@
+.form-ico {
+    .input-group {
+        position: relative;
+        line-height: $lineHeight;
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="url"] {
+            padding-left: $lineHeight;
+            height: $lineHeight;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .fa {
+            position: absolute;
+            left: 10px;
+            top: 9px;
+        }
+        &.error {
+            input {
+                border: 1px solid $danger;
+            }
+            .fa {
+                color: $danger;
+            }
+        }
+        .checkbox {
+            position: relative;
+            display: inline-block;
+            width: $lineHeight;
+            height: $lineHeight;
+            input[type=checkbox] {
+                visibility: hidden;
+                &:checked {
+                    &+label {
+                        &::before {
+                            content: "\f14a";
+                            color: $primary;
+                        }
+                    }
+                }
+            }
+            label {
+                &::before {
+                    font: normal normal normal 14px/1 FontAwesome;
+                    font-size: inherit;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    content: "\f0c8";
+                    position: absolute;
+                    left: 10px;
+                    top: 7px;
+                }
+            }
+        }
+    }
+}
+.btn {
+    padding: 0 30px;
+    background: $primary;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+}
+.checkbox {
+    position: relative;
+    display: inline-block;
+    width: $lineHeight;
+    height: $lineHeight;
+    input[type=checkbox] {
+        visibility: hidden;
+        &:checked {
+            &+label {
+                &::before {
+                    content: "\f14a";
+                    color: $primary;
+                }
+            }
+        }
+    }
+    label {
+        &::before {
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            content: "\f0c8";
+            position: absolute;
+            left: 10px;
+            top: 7px;
+        }
+    }
+}
+i {
+    &.checkbox {
+        text-align: center;
+        line-height: $lineHeight;
+        &::before {
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            content: "\f0c8";
+        }
+        &.checked {
+            &::before {
+                content: "\f14a";
+                color: $primary;
+            }
+        }
+    }
+}
+.form-horizontal {
+    line-height: $lineHeight;
+    .input-group {
+        display: inline-block;
+        border-bottom: 1px solid #777;
+        height: $lineHeight;
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="url"], 
+        select {
+            border: none;
+            background: transparent;
+            height: $lineHeight;
+            box-sizing: border-box;
+        }
+    }
+    .btn {
+        line-height: $lineHeight;
+    }
+}
+
+.form-table {
+    .input-group {
+        >label {
+            width: 25%;
+            float: left;
+            display: block;
+            text-align: right;
+            line-height: $lineHeight;
+            padding: 0 10px;
+        }        
+        >div {
+            width: 70%;
+            float: left;
+            textarea {
+                width: 100%;
+                resize: vertical;
+                height: 100px;
+            }
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"],
+            input[type="password"],
+            input[type="url"],
+            select {
+                height: $lineHeight;
+                min-width: 100px;
+            }
+
+            .inline {
+                line-height: $lineHeight;
+                min-width: 100px;
+                display: inline-block;
+            }
+
+            .input-desc {
+                display: block;
+                font-size: 12px;
+                color: #767676;
+                margin-bottom: 8px;
+            }
+        }
+        &:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    }
+    .actions {
+        text-align: center;
+        &.fixed {
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 99;
+        }
+        .btn {
+            line-height: $lineHeight;
+        }
+    }
+}

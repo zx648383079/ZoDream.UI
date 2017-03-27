@@ -1,0 +1,14 @@
+.path {
+    li {
+        display: inline-block;
+        padding: 0 6px;
+        &::after {
+            content: '/';
+        }
+        &:last-child {
+            &::after {
+                content: '';
+            }
+        }
+    }
+}

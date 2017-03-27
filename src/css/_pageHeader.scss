@@ -1,0 +1,23 @@
+.page-header {
+    line-height: $lineHeight;
+    position: relative;
+    background: $primary;
+    .path {
+        position: absolute;
+    }
+    .title {
+        text-align: center;
+    }
+    .actions {
+        position: absolute;
+        right: 0;
+        top: 0px;
+    }
+    &.fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 98;
+    }
+}

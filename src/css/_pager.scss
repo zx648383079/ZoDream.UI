@@ -1,0 +1,14 @@
+.pager {
+    li {
+        display: inline-block;
+        line-height: $lineHeight;
+        min-width: $lineHeight;
+        text-align: center;
+        border: 1px solid #707;
+        box-sizing: border-box;
+        cursor: pointer;
+        &.active {
+            border: none;
+        }
+    }
+}

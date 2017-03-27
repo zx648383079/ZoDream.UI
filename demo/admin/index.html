@@ -5,52 +5,29 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-        <link href="../css/admin.css" rel="stylesheet">
+        <link href="../../dev/css/zodream.css" rel="stylesheet">
+        <link href="../../dev/css/admin.css" rel="stylesheet">
     </head>
     <body>
         <div class="table">
-            <div class="tr">
-                <div class="td leftMenu min">
+            <div class="table-row">
+                <div class="table-cell navbar">
                     <a class="navicon" href="javascript:;"><i class="fa fa-navicon"></i></a>
-                    <ul>
-                        <li><a href="javascript:;"><i class="fa fa-home"></i> <span>首页</span></a></li>
-                        <li>
-                            <a href="javascript:;"><i class="fa fa-dashboard"></i><span>面版</span></a>
-                            <ul>
-                                <li><a href="javascript:;"><i class="fa fa-dashboard"></i><span>面包</span></a></li>
-                                <li><a href="javascript:;"><i class="fa fa-dashboard"></i><span>面包</span></a></li>
-                                <li><a href="javascript:;"><i class="fa fa-dashboard"></i><span>面包</span></a></li>
-                            </ul>            
-                        </li>
-                        <li><a href="javascript:;"><i class="fa fa-home"></i> <span>首页</span></a></li>
-                        <li>
-                            <a href="javascript:;"><i class="fa fa-dashboard"></i><span>面版</span></a>
-                            <ul>
-                                <li><a href="javascript:;"><i class="fa fa-dashboard"></i><span>面包</span></a></li>
-
-                            </ul>            
-                        </li>
+                    <ul class="nav-top">
+                        
+                    </ul>
+                    <ul class="nav-bottom">
                     </ul>
                 </div>
-                <div class="td">
-                    <div class="tab">
-                        <div class="tabHeader">
+                <div class="table-cell">
+                    <div class="zd-tab">
+                        <div class="zd-tab-head has-over">
                             <i class="fa fa-backward"></i>
                             <ul>
-                                <li class="active">
-                                    <span>首页</span>
-                                    <i class="fa fa-close"></i>
-                                </li>
-                                <li>
-                                    <span>首页</span>
-                                    <i class="fa fa-close"></i>
-                                </li>
                             </ul>
                             <i class="fa fa-forward"></i>
                         </div>
-                        <div class="tabContent">
-                            <iframe class="active" src="http://zodream.localhost:8080"></iframe>
-                            <iframe src="http://fine.localhost:8080"></iframe>
+                        <div class="zd-tab-body">
                         </div>
                     </div>
                 </div>
@@ -58,6 +35,61 @@
         </div>
 
         <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="../js/admin.js"></script>
+        <script src="../../dev/js/jquery.navbar.js"></script>
+        <script src="../../dev/js/admin.js"></script>
+        <script>
+            $(document).ready(function() {
+                $(".navbar").navbar({
+                    data: {
+                        home: {
+                            name: '首页',
+                            ico: 'home',
+                            url: 'list.html'
+                        },
+                        page: {
+                            name: '页面',
+                            ico: 'briefcase',
+                            children: {
+                                list: {
+                                    name: '列表',
+                                    ico: 'list',
+                                    url: 'list.html'
+                                },
+                                detail: {
+                                    name: '新增',
+                                    ico: 'edit',
+                                    url: 'detail.html'
+                                },
+                                setting: {
+                                    name: '设置',
+                                    ico: 'gear',
+                                    url: 'setting.html'
+                                }
+                            }
+                        }
+                    },
+                    bottom: {
+                        logout: {
+                            name: '登出',
+                            ico: 'sign-out',
+                            target: 'self',
+                            url: 'login.html'
+                        }
+                    },
+                    default: 'home',
+                    tab: $(".zd-tab")
+                });
+                $(".navbar .navicon").click(function() {
+                    $(".navbar").toggleClass("min");
+                });
+                var setMain = function() {
+                    $(".table .zd-tab-body").height($(document).height() - 30);
+                };
+                setMain();
+                $(window).resize(function() {
+                    setMain();
+                });
+            });
+        </script>
     </body>
 </html>

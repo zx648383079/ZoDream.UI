@@ -1,84 +1,98 @@
-class BoxSlider {
+class SliderItem {
     constructor(
         public element: JQuery,
-        options?: BoxSliderOptions
+        public options: BoxSliderOptions
     ) {
-        this.options = $.extend({}, new BoxSliderDefaultOptions(), options);
         this._height = this.element.height();
         this._box = this.element.parent();
-        if (this.options.auto) {
-            this.play();
-        }
+        this.status = this.options.auto;
+        this._init();
     }
 
-    public options: BoxSliderOptions;
+    private _height: number = 0;
 
-    private _height: number;
+    private _boxHeight: number = 0;
 
-    private _boxHeight: number;
+    public minHeight: number = 0;
 
-    private _minHeight: number;
-
-    private _top: number;
+    private _top: number = 0;
 
     private _box: JQuery;
 
-    private _time: number;
+    private _time: number = 0;
 
-    private _timer: number;
+    public status: boolean = true;
 
-    private _maxHeight: number;
+    public maxHeight: number = 0;
 
-    private _animation: Function = null;
-
-    private _timeCallback() {
-        this._setTime();
-        this.next();
-    }
+    private _animation: Function;
 
     private _init() {
+        this._setTime();
+        this.refresh();
+        let instance = this;
+        this.element.mouseenter(function() {
+            instance.stop();
+        }).mouseleave(function() {
+            instance.play();
+        });
+    }
+
+    public refresh() {
         let li = this.element.find(this.options.itemTag);
         if (li.length < 1) {
             return;
         }
         this._boxHeight = this._box.height();
-        this._minHeight = li.outerHeight();
+        this.minHeight = li.outerHeight();
         this._top = 0;
-        let instance = this;
         let count = Math.ceil(this._boxHeight / this._height);
-        this._maxHeight = count * this._height;
-        let html = this.element.html();
+        this.maxHeight = count * this._height;
+        let html = this.element.children();
         count *= 2;
         for (; count > 1; count --) {
-            this.element.append(html);
+            this.element.append(html.clone(false));
         }
-        this.element.mouseenter(function() {
-            instance._time = 9999;
-        }).mouseleave(function() {
-            instance._setTime();
-        });
-        this._setTime();
-        this._runTimer();
     }
 
-    private _runTimer() {
-        let instance = this;
-        this._timer = requestAnimationFrame(function() {
-            instance._time --;
-            if (instance._time <= 0) {
-                instance._timeCallback();
-            }
-            if (instance._animation != null) {
-                instance._animation();
-            }
-            instance._runTimer();
-        });
+    public run() {
+        if (this._animation) {
+            this._animation();
+        }
+        if (!this.status) {
+            return;
+        }
+        this._time --;
+        if (this._time <= 0) {
+            this._setTime();
+            this.next();
+        }
+    }
+    /**
+     * 设置移动距离和循环距离
+     * @param min 
+     * @param max 
+     */
+    public setMinAndMax(min: number, max?: number): this {
+        this.minHeight = min;
+        if (max) {
+            this.maxHeight = max;
+        }
+        return this;
     }
 
-    private _cancelTimer() {
-        if (this._timer) {
-            cancelAnimationFrame(this._timer);
+    public play() {
+        if (this.status) {
+            return;
         }
+        this.status = true;
+        if (this.options.refresh) {
+            this.refresh();
+        }
+    }
+
+    public stop() {
+        this.status = false;
     }
 
     private _setTime() {
@@ -90,23 +104,12 @@ class BoxSlider {
      */
     public next() {
         let instance = this;
-        this._goAndCallback(this._top + this._minHeight, function() {
-            if (instance._top >= instance._maxHeight) {
+        this._goAndCallback(this._top + this.minHeight, function() {
+            if (instance._top >= instance.maxHeight) {
                 instance._top = 0;
                 instance.element.css({"margin-top": "0px"});
             }
         })
-    }
-
-    public play() {
-        this._init();
-    }
-
-    public stop() {
-        if (!this._timer) {
-            return;
-        }
-        cancelAnimationFrame(this._timer);
     }
 
     /**
@@ -129,11 +132,131 @@ class BoxSlider {
             this._top += min;
             if (count <= 0) {
                 this._top = end;
-                instance._animation = null;
+                instance._animation = undefined;
                 callback();
             }
             instance.element.css({"margin-top": -this._top + "px"});
         };
+    }
+}
+
+class BoxSlider {
+    constructor(
+        public element: JQuery,
+        options?: BoxSliderOptions
+    ) {
+        this.options = $.extend({}, new BoxSliderDefaultOptions(), options);
+        this._init();
+    }
+
+    public options: BoxSliderOptions;
+
+    private _data: Array<SliderItem> = [];
+
+    private _timer: number = 0;
+
+    private _timeCallback() {
+        this._data.forEach(item => {
+            item.run();
+        })
+    }
+
+    private _init() {
+        if (this.element.length < 1) {
+            console.log('0 SliderItem');
+            return;
+        }
+        let instance = this;
+        this.element.each(function(i, item) {
+            instance._data.push(new SliderItem($(item), instance.options));
+        });
+        this._startTimer();
+    }
+
+    private _startTimer() {
+        if (this._timer > 0) {
+            return;
+        }
+        this._runTimer();
+    }
+
+    private _runTimer() {
+        let instance = this;
+        this._timer = requestAnimationFrame(function() {
+            instance._timeCallback();
+            instance._runTimer();
+        });
+    }
+
+    private _cancelTimer() {
+        if (this._timer > 0) {
+            cancelAnimationFrame(this._timer);
+        }
+        this._timer = 0;
+    }
+
+    /**
+     * 倒序循环
+     * @param callback 返回false 结束循环，返回 true 删除
+     * @param i 初始值
+     */
+    public map(callback: (item: SliderItem, index: number) => any, i: number | number[] = this._data.length - 1) {
+        if (typeof i != 'number') {
+            i.forEach(j => {
+                if (j < 0 || j >= this._data.length) {
+                    return;
+                }
+                callback(this._data[j], j);
+            });
+            return;
+        }
+        if (i >= this._data.length) {
+            i = this._data.length - 1;
+        }
+        for (; i >= 0; i --) {
+            let item = this._data[i];
+            let result = callback(item, i);
+            if (result == true) {
+                this._data.splice(i, 1);
+            }
+            if (result == false) {
+                return;
+            }
+        }
+    }
+
+    public play(...index: number[]) {
+        this._startTimer();
+        if (index.length == 0) {
+            this.map(item => {
+                item.play();
+            });
+            return;
+        }
+        let instance = this;
+        index.forEach(i => {
+            if (i < 0 || i >= this._data.length) {
+                return;
+            }
+            this._data[i].play();
+        });
+    }
+
+    public stop(...index: number[]) {
+        if (index.length == 0) {
+            this.map(item => {
+                item.stop();
+            });
+            this._cancelTimer();
+            return;
+        }
+        let instance = this;
+        index.forEach(i => {
+            if (i < 0 || i >= this._data.length) {
+                return;
+            }
+            this._data[i].stop();
+        });
     }
 }
 
@@ -143,6 +266,7 @@ interface BoxSliderOptions {
     animationMode?: string,
     auto?: boolean,
     itemTag?: string,
+    refresh?: boolean,
 }
 
 class BoxSliderDefaultOptions implements BoxSliderOptions {
@@ -151,6 +275,7 @@ class BoxSliderDefaultOptions implements BoxSliderOptions {
     animationMode: string = "swing";
     auto: boolean = true;   // 自动播放
     itemTag: string = 'li';
+    refresh: boolean = false;   //是否需要时时刷新元素
 }
 
 

@@ -346,6 +346,9 @@ class DateTimer {
       * 刷新时间
       */
      private _refreshTime() {
+         if (!this._hasTime) {
+            return;
+         }
          this._changeHour(this.getCurrentDate().getHours());
          this._changeMinute(this.getCurrentDate().getMinutes());
          this._changeSecond(this.getCurrentDate().getSeconds());
@@ -418,28 +421,20 @@ class DateTimer {
         this.box.find(".nextYear").click(function() {
             instance.nextYear();
         });
-        this.box.find(".footer button").click(function() {
-            instance.output(true);
-        });
 
         this.box.find(".header span").click(function() {
-            if (instance._yearGrid.is(":hidden")) {
-                instance._dayGrid.hide();
-                instance._yearGrid.show();
-                instance._refreshYearGrid();
-                return;
-            }
-            instance._yearGrid.hide();
-        });
-        this.box.find(".footer input").click(function() {
-            if (instance._dayGrid.is(":hidden")) {
+            if (!instance._yearGrid.is(":hidden")) {
                 instance._yearGrid.hide();
-                instance._dayGrid.show();
-                instance._refreshDayGrid();
                 return;
             }
-            instance._dayGrid.hide();
+            if (instance._hasTime) {
+                instance._dayGrid.hide();
+            }
+            instance._yearGrid.show();
+            instance._refreshYearGrid();
+            
         });
+        
         this._yearBox.find("li").click(function() {
             instance._changeYear(parseInt($(this).text()));
         });
@@ -447,6 +442,18 @@ class DateTimer {
             instance._changeMonth(parseInt($(this).text()));
         });
         if (this._hasTime) {
+            this.box.find(".footer button").click(function() {
+                instance.output(true);
+            });
+            this.box.find(".footer input").click(function() {
+                if (instance._dayGrid.is(":hidden")) {
+                    instance._yearGrid.hide();
+                    instance._dayGrid.show();
+                    instance._refreshDayGrid();
+                    return;
+                }
+                instance._dayGrid.hide();
+            });
             this._hourBox.find("li").click(function() {
                 instance._changeHour(parseInt($(this).text()));
             });

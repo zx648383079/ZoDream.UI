@@ -20,6 +20,20 @@ class NavItem {
 
     public ul: JQuery;
 
+    public getChild(allId: string[]): NavItem {
+        if (allId.length < 1) {
+            return this;
+        }
+        if (!this.children) {
+            throw new Error('error id: '+ allId[0]);
+        }
+        let id = allId.shift();
+        if (!this.children.hasOwnProperty(id)) {
+            throw new Error('error id: '+ id);
+        }
+        return this.children[id].getChild(allId);
+    }
+
     public addItem(id: string, item: NavItem) {
         if (!this.children) {
             this.children = {};
@@ -86,8 +100,9 @@ class NavItem {
         }
         this._addUl();
         let k = this.id + '/';
+        let instance = this;
         $.each(this.children, function(id: string, item: NavItem) {
-            this.ul.append(item.render(k + id));
+            instance.ul.append(item.render(k + id));
         });
     }
 
@@ -128,8 +143,8 @@ class NavItem {
 
 
 interface NavbarOption {
-    data?: {[id: string]: NavItem};
-    bottom?: {[id: string]: NavItem};
+    data?: {[id: string]: any};
+    bottom?: {[id: string]: any};
     tab?: JQuery,
     default?: string,
 }
@@ -184,6 +199,9 @@ class Tab {
     }
 
     public removeItem(index: number | string) {
+        if (this._data.length < 2) {
+            return;
+        }
         if (typeof index == 'string') {
             index = this._getIndexById(index);
         }
@@ -200,7 +218,7 @@ class Tab {
     }
 
     public showItem(index: number | string | NavItem) {
-        if (this._data.length < 0) {
+        if (this._data.length < 1) {
             return;
         }
         if (typeof index == 'string') {
@@ -261,7 +279,8 @@ class Navbar {
         });
         $(window).bind('popstate', function(e) {
             // 浏览器返回跳转
-            console.log(e);
+            let item: NavItem = e.originalEvent.state;
+            instance.tab.showItem(item);
         });
         // 刷新浏览器时跳转
         let url = window.location.href.split('#');
@@ -325,8 +344,68 @@ class Navbar {
     }
 
     // 动态添加
-    public addItem(id: string, item: NavItem| Object) {
+    public addItem(path: string, item: NavItem| Object) {
+        let [isTop, allId] = this._pathToId(path);
+        let id = allId.pop();
+        if (allId.length > 0) {
+            this.getItem(allId).addItem(id, NavItem.parse(item));
+            return;
+        }
+        let data = {};
+        data[id] = item;
+        if (isTop) {
+            this.option.data[id] = item;
+            this._addItem(this._top, data);
+            return;
+        }
+        this.option.data[id] = item;
+        this._addItem(this._bottom, data);
+        return;
+    }
 
+    /**
+     * 
+     * @param path 
+     * @param isTop 
+     */
+    public getItem(path: string| string[], isTop: boolean = true): NavItem {
+        if (typeof path == 'string') {
+            if (isTop) {
+                [isTop, path] = this._pathToId(path);
+            } else {
+                path = [path];
+            }
+        }
+        let id = path.shift();
+        if (isTop && this.option.data.hasOwnProperty(id)) {
+            return this.option.data[id].getChild(path);
+        }
+        if (this.option.bottom.hasOwnProperty(id)) {
+            return this.option.bottom[id].getChild(path);
+        }
+        throw new Error('error id: '+ id);
+    }
+
+    /**
+     * 路径转换成Id
+     * @param path 
+     */
+    private _pathToId(path: string): [boolean, string[]] {
+        let paths = path.split(':');
+        let isTop = true;
+        if (paths.length > 1 && paths[0] == 'bottom') {
+            isTop = false;
+            path = paths[1];
+        }
+        paths = path.split('/');
+        let allId = [];
+        paths.forEach(id => {
+            if (id == '') {
+                return;
+            }
+            allId.push(id);
+        });
+        return [isTop, allId];
     }
 
     private _addItem(element: JQuery, data: {[id: string]: NavItem}) {

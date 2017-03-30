@@ -1,0 +1,165 @@
+.chat-box {
+    .chat-user {
+        width: 400px;
+        margin: 0 8px;
+        display: inline-block;
+        .zd-tab-head {
+            .zd-tab-item {
+                width: 50%;
+                font-size: 30px;
+                .fa {
+                    display: block;
+                }
+            }
+        }
+        .zd-tab-body {
+            height: 400px;
+            overflow-y: auto;
+            ul {
+                margin: 0;
+                padding: 0;
+                li {
+                    height: 55px;
+                    position: relative;
+                    list-style: none;
+                    &:hover {
+                        background: rgba(100, 100, 100, 0.2);
+                    }
+                    &.active {
+                        background: rgba(100, 100, 100, 0.4);
+                    }
+                    .avatar {
+                        width: 40px;
+                        position: absolute;
+                        top: 8px;
+                        left: 8px;
+                        z-index: 20;
+                        img {
+                            border-radius: 50%;
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                    .info {
+                        margin-left: 55px;
+                        .time {
+                            float: right;
+                        }
+                        .count {
+                            float: right;
+                            background: #f00;
+                            color: #fff;
+                            border-radius: 50%;
+                            padding: 2px;
+                            min-width: 20px;
+                            text-align: center;
+                            display: block;
+                        }
+                        .name {
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .chat-message {
+        width: 600px;
+        margin: 0 8px;
+        display: inline-block;
+        .title {
+            background: #282828;
+            line-height: 40px;
+            text-align: center;
+            font-size: 30px;
+            color: #fff;
+        }
+        .message-box {
+            height: 350px;
+            overflow-y: auto;
+            .left {
+                .avatar {
+                    left: 0;
+                }
+                .content {
+                    margin-left: 52px;
+                    float: left;
+                    &::before {
+                        left: 40px;
+                        border-right-color: rgba(255, 255, 255, 0.26);
+                    }
+                }
+            }
+            .right {
+                .avatar {
+                    right: 0;
+                }
+                .content {
+                    float: right;
+                    margin-right: 52px;
+                    &::before {
+                        right: 40px;
+                        border-left-color: rgba(255, 255, 255, 0.26);
+                    }
+                }
+            }
+            .left, 
+            .right {
+                position: relative;
+                margin: 8px 0;
+                &:after {
+                    content: ' ';
+                    clear: both;
+                    display: table;
+                }
+                .avatar {
+                    position: absolute;
+                    top: 0;
+                    height: 40px;
+                    width: 40px;
+                    border-radius: 50%;
+                }
+                .content {
+                    max-width: 66%;
+                    background: rgba(0,255,255,0.16);
+                    line-height: 40px;
+                    padding: 0 10px;
+                    word-break: break-word;
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        z-index: 10;
+                        border: 6px solid transparent;
+                        top: 15px;
+                    }
+                }
+            }
+            .line, 
+            .more {
+                margin: 8px 0;
+                text-align: center;
+            }
+        }
+
+        .send-box {
+            padding-right: 100px;
+            position: relative;
+            textarea {
+                width: 100%;
+                height: 40px;
+                resize: none;
+                box-sizing: border-box;
+            }
+            button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 100px;
+                height: 40px;
+                background: #282828;
+                color: #fff;
+                border: none;
+            }
+        }
+    }
+}

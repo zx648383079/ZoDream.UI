@@ -1,27 +1,21 @@
-class Dialog {
+enum DialogMode {
+    tip,
+    loading,
+    form,
+    content,
+    message
+}
+
+abstract class DialogCore {
     constructor(
-        public element: JQuery,
-        option?: DialogOptions
+        public option: DialogOptions
     ) {
-        this.option = $.extend({}, new DialogDefaultOptions, option);
-        console.log(this.option);
-        this.option.events[this.option.close] = function() {
-            this.hide();
-        };
-        console.log(this.option);
-        this.bindEvent();
-        this.show();
+        this.init();
     }
 
-    public option: DialogOptions;
+    public abstract init()
 
-    public bindEvent() {
-        let instance = this;
-        $.each(this.option.events, function(tag: string, callback: Function) {
-            console.log(tag, callback);
-            instance.onclick(tag, callback);
-        });
-    }
+    public element: JQuery;
 
     public show() {
         this.element.show();
@@ -31,37 +25,59 @@ class Dialog {
         this.element.hide();
     }
 
+    public close() {
+        this.element.remove();
+    }
+
     public toggle() {
         this.element.toggle();
     }
 
-    public onclick(tag: string, callback: Function) {
-        let instance = this;
-        this.element.on('click', tag, function(e) {
-            console.log(tag, callback);
-            if (callback instanceof Function) {
-                callback.call(instance, e, this);
-            }
-        });
+    
+    protected _getBottom(): number {
+        return Math.max($(window).height() * .33 - this.element.height() / 2, 0);
     }
 
-    public find(tag: string): JQuery {
-        return this.element.find(tag);
+    protected _getTop(): number {
+        return Math.max($(window).height() * .66 - this.element.height() / 2, 0);
     }
+
+    protected _getLeft(): number {
+        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+    }
+
+    protected _getRight(): number {
+        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+    }
+
+    protected _getWidth(): number {
+        let width = $(window).width();
+        if (this.option.isFull) {
+            return width;
+        }
+        return width * .66;
+    }
+
+    protected _getHeight(): number {
+        let height = $(window).height();
+        if (this.option.isFull) {
+            return height;
+        }
+        return height * .33;
+    }
+
+}
+
+class DialogTip extends DialogCore {
+
 }
 
 interface DialogOptions {
     close?: string,
-    events?: any
+    events?: any,
+    isFull?: boolean
 }
 
- class DialogDefaultOptions implements DialogOptions {
-    close: string = '.dialog-close';
-    events: any = {};
- }
- 
- ;(function($: any) {
-  $.fn.dialog = function(options ?:DialogOptions) {
-    return new Dialog(this, options); 
-  };
+;(function($: any) {
+    
 })(jQuery);

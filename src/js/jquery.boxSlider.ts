@@ -3,13 +3,12 @@ class SliderItem {
         public element: JQuery,
         public options: BoxSliderOptions
     ) {
-        this._height = this.element.height();
         this._box = this.element.parent();
         this.status = this.options.auto;
         this._init();
     }
 
-    private _height: number = 0;
+    public height: number = 0;
 
     private _boxHeight: number = 0;
 
@@ -44,15 +43,17 @@ class SliderItem {
             return;
         }
         this._boxHeight = this._box.height();
+        this.height = this.element.height();
         this.minHeight = li.outerHeight();
         this._top = 0;
-        let count = Math.ceil(this._boxHeight / this._height);
-        this.maxHeight = count * this._height;
+        let count = Math.ceil(this._boxHeight / this.height);
+        this.maxHeight = count * this.height;
         let html = this.element.children();
         count *= 2;
         for (; count > 1; count --) {
             this.element.append(html.clone(false));
         }
+        
     }
 
     public run() {

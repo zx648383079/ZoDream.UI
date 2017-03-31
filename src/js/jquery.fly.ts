@@ -44,7 +44,7 @@
       let distance = Math.sqrt(Math.pow(start.top - end.top, 2) + Math.pow(start.left - end.left, 2)),
         // 元素移动次数
         steps = Math.ceil(Math.min(Math.max(Math.log(distance) / 0.05 - 75, 30), 100) / settings.speed),
-        ratio = start.top == vertex_top ? 0 : -Math.sqrt((end.top - vertex_top) / (start.top - vertex_top)),
+        ratio = start.top == vertex_top ? 0 : - Math.sqrt((end.top - vertex_top) / (start.top - vertex_top)),
         vertex_left = (ratio * start.left - end.left) / (ratio - 1),
         // 特殊情况，出现顶点left==终点left，将曲率设置为0，做直线运动。
         curvature = end.left == vertex_left ? 0 : (end.top - vertex_top) / Math.pow(end.left - vertex_left, 2);

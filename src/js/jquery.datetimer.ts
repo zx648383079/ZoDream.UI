@@ -46,6 +46,7 @@ class DateTimer {
          this.createHtml();
          let instance = this;
          this.element.focus(function() {
+            $('[data-type=datetimer]').hide();
             instance.init($(this).val());
          });
     }
@@ -129,7 +130,7 @@ class DateTimer {
      * 创建元素
      */
     public createHtml() {
-        this.box = $('<div class="datetimer"></div>');
+        this.box = $('<div class="datetimer" data-type="datetimer"></div>');
         let lis = this._nLi(60, 0);
         let html = '<div class="header"><i class="fa fa-backward previousYear"></i><i class="fa fa-chevron-left previousMonth"></i><span></span><i class="fa fa-chevron-right nextMonth"></i><i class="fa fa-forward nextYear"></i></div><div class="body"><div class="month-grid"><ol><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ol><ul>'+
         this._nLi(42, 0, false) 
@@ -506,6 +507,12 @@ class DateTimer {
       * @param isHide 
       */
      public output(isHide: boolean = false) {
+        if (this.options.min instanceof DateTimer && this.getCurrentDate() <= this.options.min.getCurrentDate()) {
+            return;
+        }
+        if (this.options.max instanceof DateTimer && this.getCurrentDate() >= this.options.max.getCurrentDate()) {
+            return;
+        }
         this.element.val(this.val());
         if (!this._hasTime || isHide) {
             this.box.hide();

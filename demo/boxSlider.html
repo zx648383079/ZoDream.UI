@@ -5,19 +5,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-        .slider-box {
+        .slider-box1 {
             height: 400px;
             overflow: hidden;
             border: 1px solid #f00;
         }
-        .slider-box li {
+        .slider-box .row {
             line-height: 50px;
         }
         </style>
     </head>
     <body>
     
-    <div class="slider">
+    <!--<div class="slider">
         <div class="slider-box">
             <ul>
                 <li>13</li>
@@ -36,7 +36,7 @@
                 <li>123123</li>
             </ul>
         </div>
-    </div>
+    </div>-->
 
     <div class="slider">
         <div class="slider-box1">
@@ -53,6 +53,8 @@
         </div>
     </div>
 
+    <button>更改</button>
+
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dev/js/jquery.boxSlider.js"></script>
     <script>
@@ -62,11 +64,21 @@
                 animationTime: 500,
                 auto: true
             });*/
-            var silder = $(".slider-box1 .table").boxSlider({
+            var slider = $(".slider-box1 .table").boxSlider({
                 spaceTime: 1000,
                 animationTime: 500,
                 auto: true,
                 itemTag: '.row'
+            });
+            $("button").click(function() {
+                slider.stop(0);
+                setTimeout(function() {
+                    slider.map(function(item) {
+                        item.element.html('<div class="row">aaaa</div><div class="row">12312312sadasad</div><div class="row">vbbvvcxcxx999</div>');
+                        item.refresh();
+                    });
+                    slider.play();
+                }, 1000);
             });
         });
         

@@ -12,6 +12,10 @@
     <input type="text" id="time">
 
     <input type="text" id="time2">
+    <br/>
+    <input type="text" id="time3">
+
+    <input type="text" id="time4">
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dev/js/jquery.datetimer.js"></script>
@@ -21,6 +25,15 @@
         $("#time2").datetimer({
             title: 'y-m',
             format: 'y-m-d'
+        });
+        var d3 = $("#time3").datetimer({
+            title: 'y-m',
+            format: 'y-m-d'
+        });
+        var d4 = $("#time4").datetimer({
+            title: 'y-m',
+            format: 'y-m-d',
+            min: d3
         });
     });    
     </script>

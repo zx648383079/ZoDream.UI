@@ -34,31 +34,41 @@ class NavItem {
         return this.children[id].getChild(allId);
     }
 
-    public addItem(id: string, item: NavItem) {
+    public addItem(id: string, item: NavItem): this {
+        this.removeItem(id);
         if (!this.children) {
             this.children = {};
         }
         this.children[id] = item;
         this._renderChild(id, item);
+        return this;
     }
 
-    public removeItem(id: string) {
+    public removeItem(id: string): this {
         if (!this.children) {
-            return;
+            return this;
         }
-        this.children[id].element.remove();
-        delete this.children[id];
+        if (this.children.hasOwnProperty(id)) {
+            this.children[id].remove();
+            delete this.children[id];
+        }
+        return this;
     }
 
-    public addActive() {
+    public remove() {
+        this.element.remove();
+    }
+
+    public addActive(): this {
         this.element.addClass("active").siblings().removeClass("active");
+        return this;
     }
 
-    public active(id?: string[] | string) {
+    public active(id?: string[] | string): this {
         this.addActive();
         if (!id || id.length == 0 || !this.children) {
             this.element.trigger('click');
-            return;
+            return this;
         }
         let k = typeof id == 'string' ? id : id.shift();
         if (!this.children.hasOwnProperty(k)) {
@@ -66,9 +76,10 @@ class NavItem {
         }
         if (typeof id == 'string') {
             this.children[k].active();
-            return;
+            return this;
         }
         this.children[k].active(id);
+        return this;
     }
 
     public render(id: string): JQuery {
@@ -298,9 +309,9 @@ class Navbar {
     private _bottom: JQuery;
     private _top: JQuery;
 
-    public open(id: string) {
-        let path = id.split('/');
-        id = path.shift();
+    public open(path: string| string[], isTop: boolean = true) {
+        [isTop, path] = this._pathToId(path, isTop);
+        let id = path.shift();
         if (this.option.data.hasOwnProperty(id)) {
             this.option.data[id].active(path);
             return;
@@ -351,6 +362,7 @@ class Navbar {
             this.getItem(allId).addItem(id, NavItem.parse(item));
             return;
         }
+        this.removeItem([id], isTop);
         let data = {};
         data[id] = item;
         if (isTop) {
@@ -363,19 +375,33 @@ class Navbar {
         return;
     }
 
+    public removeItem(path: string| string[], isTop: boolean = true): this {
+        [isTop, path] = this._pathToId(path, isTop);
+        let id = path.pop();
+        if (path.length > 0) {
+            this.getItem(path).removeItem(id);
+            return this;
+        }
+        if (isTop && this.option.data.hasOwnProperty(id)) {
+            this.option.data[id].remove();
+            delete this.option.data[id];
+            return this;
+        }
+        if (this.option.bottom.hasOwnProperty(id)) {
+            this.option.bottom[id].remove();
+            delete this.option.bottom[id];
+            return this;
+        }
+        return this;
+    }
+
     /**
      * 
      * @param path 
      * @param isTop 
      */
     public getItem(path: string| string[], isTop: boolean = true): NavItem {
-        if (typeof path == 'string') {
-            if (isTop) {
-                [isTop, path] = this._pathToId(path);
-            } else {
-                path = [path];
-            }
-        }
+        [isTop, path] = this._pathToId(path, isTop);
         let id = path.shift();
         if (isTop && this.option.data.hasOwnProperty(id)) {
             return this.option.data[id].getChild(path);
@@ -390,9 +416,14 @@ class Navbar {
      * 路径转换成Id
      * @param path 
      */
-    private _pathToId(path: string): [boolean, string[]] {
+    private _pathToId(path: string| string[], isTop: boolean = true): [boolean, string[]] {
+        if (typeof path != 'string') {
+            return [isTop, path];
+        }
+        if (!isTop) {
+            return [isTop, [path]];
+        }
         let paths = path.split(':');
-        let isTop = true;
         if (paths.length > 1 && paths[0] == 'bottom') {
             isTop = false;
             path = paths[1];

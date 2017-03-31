@@ -39,7 +39,7 @@
         <script src="../../dev/js/admin.js"></script>
         <script>
             $(document).ready(function() {
-                $(".navbar").navbar({
+                var navbar = $(".navbar").navbar({
                     data: {
                         home: {
                             name: '首页',
@@ -66,6 +66,11 @@
                                     url: 'setting.html'
                                 }
                             }
+                        },
+                        chat: {
+                            name: '聊天',
+                            ico: 'chat',
+                            url: 'chat.html'
                         }
                     },
                     bottom: {

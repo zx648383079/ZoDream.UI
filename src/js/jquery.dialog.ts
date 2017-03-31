@@ -1,4 +1,4 @@
-enum DialogMode {
+enum DialogType {
     tip,
     loading,
     form,
@@ -8,7 +8,7 @@ enum DialogMode {
 
 abstract class DialogCore {
     constructor(
-        public option: DialogOptions
+        public option: DialogOption
     ) {
         this.init();
     }
@@ -69,15 +69,50 @@ abstract class DialogCore {
 }
 
 class DialogTip extends DialogCore {
-
+    public init() {
+        
+    }
 }
 
-interface DialogOptions {
+interface DialogOption {
+    content?: string,
+    type?: string | number,
     close?: string,
     events?: any,
     isFull?: boolean
 }
 
+class Dialog {
+
+    protected static data: {[id: string]: string} = {};
+
+    public static create(option?: DialogOption): DialogCore {
+
+    }
+
+    public static tip(text: string): DialogTip {
+        return this.create({
+            content: text,
+        });
+    }
+}
+
+class DialogPlugin {
+    constructor(
+        public element: JQuery,
+        public option?: DialogOption
+    ) {
+        let instance = this;
+        this.element.click(function() {
+            instance.dialog = Dialog.create(option);
+        });
+    }
+
+    public dialog: DialogCore;
+}
+
 ;(function($: any) {
-    
+    $.fn.dialog = function(option ?: DialogOption) {
+        return new DialogPlugin(this, option);
+    };
 })(jQuery);

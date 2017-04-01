@@ -1,78 +1,98 @@
 @import "prefix";
 .dialog {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    bottom: 0;
-    background: #fff;
     z-index: 999;
-    display: none;
-    @include prefix-animation(dialog-left 2s);
-    &.active {
-        display: block;
+    &.dialog-tip {
+        background: rgba(0, 0, 0, .6);
+        color: #fff;
+        max-width: 66.66%;
+        padding: 5px 10px;
+        bottom: 33%;
+        @include prefix-animation(dialog-bottom 1s);
     }
-    .dialog-title {
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        background: #D0D0D0;
-        .dialog-close {
-            float: right;
-            background: #c9302c;
-            width: 50px;
-            height: 50px;
-            border: none;
-            color: #fff;
-        }
-    }
-    .dialog-body {
-        position: absolute;
-        bottom: 50px;
-        width: 100%;
+    &.dialog-message {
+        background: rgba(0, 0, 0, .6);
+        color: #fff;
+        max-width: 33.33%;
+        padding: 5px 10px;
+        right: 0;
         top: 50px;
-        padding-top: 20px;
-        input {
-            font-size: 20px;
-            width: 100%;
-            border: none;
-            border-bottom: 1px solid #337ab7;
-            padding: 5px;
-            
-        }
-        span {
-            font-size: 20px;
-        }
-        select {
-            font-size: 20px;
-            width: 100px;
-            float: right;
-            border: none;
-            border-bottom: 1px solid #337ab7;
-            padding: 5px;
-        }
+        @include prefix-animation(dialog-left 1s);
     }
-    .dialog-footer {
-        position: absolute;
-        bottom: 0;
+
+    &.dialog-box {
+        top: 0;
+        left: 0;
         width: 100%;
-        .dialog-yes,
-        .dialog-close {
-            width: 50%;
-            border: none;
+        bottom: 0;
+        background: #fff;
+        display: none;
+        @include prefix-animation(dialog-left 2s);
+        &.active {
+            display: block;
+        }
+        .dialog-title {
+            height: 50px;
             line-height: 50px;
-            color: #fff;
-            padding: 0;
-            margin: 0;
+            text-align: center;
+            background: #D0D0D0;
+            .dialog-close {
+                float: right;
+                background: #c9302c;
+                width: 50px;
+                height: 50px;
+                border: none;
+                color: #fff;
+            }
         }
-        .dialog-yes {
-            background: #337ab7;
-        }
-        .dialog-close {
-            background: #c9302c;
+        .dialog-body {
             position: absolute;
-            top: 0;
-            right: 0;
+            bottom: 50px;
+            width: 100%;
+            top: 50px;
+            padding-top: 20px;
+            input {
+                font-size: 20px;
+                width: 100%;
+                border: none;
+                border-bottom: 1px solid #337ab7;
+                padding: 5px;
+                
+            }
+            span {
+                font-size: 20px;
+            }
+            select {
+                font-size: 20px;
+                width: 100px;
+                float: right;
+                border: none;
+                border-bottom: 1px solid #337ab7;
+                padding: 5px;
+            }
+        }
+        .dialog-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            .dialog-yes,
+            .dialog-close {
+                width: 50%;
+                border: none;
+                line-height: 50px;
+                color: #fff;
+                padding: 0;
+                margin: 0;
+            }
+            .dialog-yes {
+                background: #337ab7;
+            }
+            .dialog-close {
+                background: #c9302c;
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
         }
     }
 }
@@ -80,9 +100,21 @@
 
 @include prefix-keyframes(dialog-left){
     from {
-        left: 100%;
+        right: -33%;
     }
     to {
-        left: 0;
+        right: 0;
+    }
+}
+
+@include prefix-keyframes(dialog-bottom){
+    0% {
+        bottom: 0;
+    }
+    30% {
+        bottom: 20%;
+    }
+    100% {
+        bottom: 33%;
     }
 }

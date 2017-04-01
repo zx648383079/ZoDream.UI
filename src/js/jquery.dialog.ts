@@ -1,9 +1,11 @@
 enum DialogType {
     tip,
+    message,
     loading,
     form,
     content,
-    message
+    box,
+    page
 }
 
 abstract class DialogCore {
@@ -16,6 +18,13 @@ abstract class DialogCore {
     public abstract init()
 
     public element: JQuery;
+
+    protected createElement(type: DialogType): JQuery {
+        let typeStr = DialogType[type];
+        this.element = $('<div class="dialog dialog-'+typeStr+'" data-type="dialog"></div>');
+       $(document.body).append(this.element);
+        return this.element;
+    }
 
     public show() {
         this.element.show();
@@ -70,12 +79,29 @@ abstract class DialogCore {
 
 class DialogTip extends DialogCore {
     public init() {
-        
+        this.createElement(DialogType.tip).text(this.option.content).css({
+            left: this._getLeft() + 'px'
+        });
+    }
+}
+
+class DialogMessage extends DialogCore {
+    public init() {
+        this.createElement(DialogType.message)
+        .text(this.option.content);
+    }
+}
+
+class DialogContent extends DialogCore {
+    public init() {
+        this.createElement(DialogType.content)
+        .html('<div class="dialog-body">'+ this.option.content +'</div><div class="dialog-footer"><button class="dialog-yes">确认</button><button class="dialog-close">确认</button></div>');
     }
 }
 
 interface DialogOption {
     content?: string,
+    title?: string
     type?: string | number,
     close?: string,
     events?: any,
@@ -87,10 +113,16 @@ class Dialog {
     protected static data: {[id: string]: string} = {};
 
     public static create(option?: DialogOption): DialogCore {
-
+        return new DialogMessage(option);
     }
 
     public static tip(text: string): DialogTip {
+        return this.create({
+            content: text,
+        });
+    }
+
+    public static message(text: string): DialogTip {
         return this.create({
             content: text,
         });

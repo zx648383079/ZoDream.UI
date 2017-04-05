@@ -42,6 +42,7 @@
                 }
             }
             &.active {
+                @include active();
                 >a {
                     background: $primary;
                 }

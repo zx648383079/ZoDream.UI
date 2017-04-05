@@ -4,18 +4,60 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <link href="../dev/css/dialog.css" rel="stylesheet">
     </head>
     <body>
 
-    <button class="tip">提示</button>
+    <button dialog-type="tip">提示</button>
+    <button dialog-type="message">消息</button>
+    <button dialog-type="loading">加载</button>
+    <button dialog-type="content">内容</button>
+    <button dialog-type="box">信息</button>
+    <button dialog-type="form">表单</button>
+    <button dialog-type="page">页面</button>
+
+
+    <div class="page-loading" style="position: relative; height: 400px; background: #f00;">
+        点击出现元素内对话框
+    </div>
+
     
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dev/js/jquery.dialog.js"></script>
     <script>
         $(document).ready(function() {
-            $(".tip").dialog({
+            $("[dialog-type=tip]").dialog({
+                content: '11111111111111111111',
+                time: 2000
+            });
+            $("[dialog-type=message]").dialog({
+                content: '11111111111111111111',
+                time: 2000
+            });
+            $("[dialog-type=loading]").dialog({
+                time: 2000
+            });
+            $("[dialog-type=content]").dialog({
                 content: '11111111111111111111'
+            });
+            $("[dialog-type=box]").dialog({
+                content: '11111111111111111111'
+            });
+            $("[dialog-type=form]").dialog({
+                content: {
+                    name: '姓名'
+                },
+                done: function() {
+                    console.log(this);
+                }
+            });
+            $("[dialog-type=page]").dialog({
+                content: '11111111111111111111'
+            });
+            $(".page-loading").dialog({
+                type: 'loading',
+                target: $(".page-loading")
             });
         });
     </script>

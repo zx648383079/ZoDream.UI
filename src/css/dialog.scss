@@ -1,14 +1,34 @@
 @import "prefix";
+@import "loading";
+.dialog-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 998;
+    display: none;
+    &.dialog-bg-private {
+        position:  absolute;
+        z-index: 988;
+        display: block;
+    }
+}
 .dialog {
     position: fixed;
     z-index: 999;
+    &.dialog-private {
+        position: absolute;
+        z-index: 989;
+    }
     &.dialog-tip {
         background: rgba(0, 0, 0, .6);
         color: #fff;
         max-width: 66.66%;
         padding: 5px 10px;
         bottom: 33%;
-        @include prefix-animation(dialog-bottom 1s);
+        @include prefix-animation(dialog-tip 1s both);
     }
     &.dialog-message {
         background: rgba(0, 0, 0, .6);
@@ -17,49 +37,100 @@
         padding: 5px 10px;
         right: 0;
         top: 50px;
-        @include prefix-animation(dialog-left 1s);
+        @include prefix-animation(dialog-message .5s);
+    }
+    &.dialog-loading {
+
     }
 
-    &.dialog-box {
+    &.dialog-page,
+    &.dialog-content,
+    &.dialog-box,
+    &.dialog-form {
+        background: #fff;
+        @include prefix-animation(dialog-box 0.5s);
+        .dialog-header {
+            position: relative;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: #D0D0D0;
+            .fa {
+                width: 30px;
+                height: 30px;
+                border: none;
+                color: #fff;
+                float: left;
+                line-height: 30px;
+            }
+            .fa-arrow-left {
+                background: #337ab7;
+            }
+            .dialog-close {
+                float: right;
+                background: #c9302c;
+            }
+        }
+        .dialog-body {
+            min-height: 100px;            
+            overflow: auto;
+        }
+        .dialog-footer {
+            button {
+                width: 50%;
+                border: none;
+                line-height: 30px;
+                color: #fff;
+                padding: 0;
+                margin: 0;
+            }
+            .dialog-yes {
+                background: #337ab7;
+            }
+            .dialog-close {
+                background: #c9302c;
+            }
+        }
+    }
+    &.dialog-content {
+        top: 0;
+        left: 0;
+        right: 0;
+        .dialog-body {
+            
+        }
+        .dialog-footer {
+        }
+    }
+    &.dialog-page {
         top: 0;
         left: 0;
         width: 100%;
         bottom: 0;
-        background: #fff;
-        display: none;
-        @include prefix-animation(dialog-left 2s);
-        &.active {
-            display: block;
-        }
-        .dialog-title {
-            height: 50px;
-            line-height: 50px;
-            text-align: center;
-            background: #D0D0D0;
-            .dialog-close {
-                float: right;
-                background: #c9302c;
-                width: 50px;
-                height: 50px;
-                border: none;
-                color: #fff;
-            }
-        }
         .dialog-body {
             position: absolute;
-            bottom: 50px;
+            bottom: 30px;
             width: 100%;
-            top: 50px;
-            padding-top: 20px;
+            top: 30px;
+        }
+        .dialog-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    }
+    &.dialog-form {
+        .dialog-body {
             input {
                 font-size: 20px;
                 width: 100%;
+                box-sizing: border-box;
                 border: none;
                 border-bottom: 1px solid #337ab7;
                 padding: 5px;
                 
             }
-            span {
+            label {
                 font-size: 20px;
             }
             select {
@@ -71,50 +142,92 @@
                 padding: 5px;
             }
         }
-        .dialog-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            .dialog-yes,
-            .dialog-close {
-                width: 50%;
-                border: none;
-                line-height: 50px;
-                color: #fff;
-                padding: 0;
-                margin: 0;
-            }
-            .dialog-yes {
-                background: #337ab7;
-            }
-            .dialog-close {
-                background: #c9302c;
-                position: absolute;
-                top: 0;
-                right: 0;
-            }
-        }
+        
+    }
+    &.dialog-box {
+        
+    }
+    &.dialog-closing {
+        @include prefix-animation(dialog-closing .5s);
     }
 }
 
 
-@include prefix-keyframes(dialog-left){
-    from {
-        right: -33%;
-    }
-    to {
-        right: 0;
-    }
-}
-
-@include prefix-keyframes(dialog-bottom){
+@include prefix-keyframes(dialog-message){
     0% {
-        bottom: 0;
+        @include prefix-content(transform, scaleY(0.1));
     }
-    30% {
-        bottom: 20%;
+    45% {
+        @include prefix-content(transform, scaleY(1.3));
+    }
+    80% {
+        @include prefix-content(transform, scaleY(0.8));
     }
     100% {
-        bottom: 33%;
+        @include prefix-content(transform, scaleY(1));
+    }
+}
+
+@include prefix-keyframes(dialog-box){
+    0% {
+        @include prefix-content(transform, scale(0.7));
+    }
+    45% {
+        @include prefix-content(transform, scale(1.05));
+    }
+    80% {
+        @include prefix-content(transform, scale(0.95));
+    }
+    100% {
+        @include prefix-content(transform, scale(1));
+    }
+}
+
+@include prefix-keyframes(dialog-tip){
+  from, 
+  60%, 
+  75%, 
+  90%, 
+  to {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  from {
+    opacity: 0;
+    @include prefix-content(transform, translate3d(0, 3000px, 0));
+  }
+
+  60% {
+    opacity: 1;
+    @include prefix-content(transform, translate3d(0, -20px, 0));
+  }
+
+  75% {
+    @include prefix-content(transform, translate3d(0, 10px, 0));
+  }
+
+  90% {
+    @include prefix-content(transform, translate3d(0, -5px, 0));
+  }
+
+  to {
+    @include prefix-content(transform, translate3d(0, 0, 0));
+  }
+}
+
+@include prefix-keyframes(dialog-closing){
+    0% {
+        opacity: 1;
+        @include prefix-content(transform, scale(1));
+    }
+    20% {
+        @include prefix-content(transform, scale(1.2));
+    }
+    55% {
+        @include prefix-content(transform, scale(0.8));
+    }
+    100% {
+        opacity: 0;
+        @include prefix-content(transform, scale(.2));
     }
 }

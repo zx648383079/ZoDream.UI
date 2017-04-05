@@ -55,6 +55,14 @@ class Pager {
         this.paginate(this.index + 1);
     }
 
+    public change(index: number | string = 1, total?: number | string) {
+        this.index = typeof index == 'number' ? index : parseInt(index);
+        if (total) {
+            this.total = typeof total == 'number' ? total : parseInt(total);
+        }
+        this.refresh();
+    }
+
 
     public refresh() {
         this._initPage();

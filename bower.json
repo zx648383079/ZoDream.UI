@@ -29,9 +29,9 @@
     "jquery-validation": "^1.16.0",
     "PACE": "pace#^1.0.2",
     "jquery.cookie": "^1.4.1",
-    "ply": "^0.1.0",
     "jquery_lazyload": "jquery.lazyload#^1.9.7",
     "jquery-touchswipe": "^1.6.18",
-    "Sortable": "sortablejs#^1.5.1"
+    "Sortable": "sortablejs#^1.5.1",
+    "animate.css": "^3.5.2"
   }
 }

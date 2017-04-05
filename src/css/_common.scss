@@ -5,25 +5,54 @@ $line: 40px;
 $danger: #f00;
 $primary: #ff77ff;
 
+$gray-dark:                 #373a3c !default;
+$gray:                      #55595c !default;
+$gray-light:                #818a91 !default;
+$gray-lighter:              #eceeef !default;
+$gray-lightest:             #f7f7f9 !default;
+
+$brand-primary:             #0275d8 !default;
+$brand-success:             #5cb85c !default;
+$brand-info:                #5bc0de !default;
+$brand-warning:             #f0ad4e !default;
+$brand-danger:              #d9534f !default;
+$brand-inverse:             $gray-dark !default;
+
 $lineHeight: 30px;
 
+$enable-flex:               false !default;
 
-$zd-screen-md-min: 640px;
-$zd-screen-lg-min: 960px;
-$zd-screen-xl-min: 1200px;
-$zd-screen-xxl-min: 1600px;
-$zd-screen-xxxl-min: 1900px;
-$zd-screen-sm-max: 640px;
-$zd-screen-md-max: 768px;
-$zd-screen-lg-max: 1200px;
-$zd-screen-xl-max: 123px;
-$zd-screen-xxl-max: 12000px;
+$grid-columns:      12 !default;
+$grid-gutter-width: 30px !default;
+$grid-breakpoints: (
+  xs: 0,
+  sm: 544px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+) !default;
 
-.active {
+@mixin active() {
     background: $color;
     color: #fff;
 }
 * {
     margin: 0;
     padding: 0;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@mixin clearfix() {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+.clearfix {
+  @include clearfix();
 }

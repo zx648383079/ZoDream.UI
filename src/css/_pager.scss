@@ -9,6 +9,7 @@
         cursor: pointer;
         &.active {
             border: none;
+            @include active();
         }
     }
 }

@@ -11,7 +11,7 @@ class Validate {
         return this.isMatch('^((\+?86)|(\(\+86\)))?\d{3,4}-\d{7,8}(-\d{3,4})?$', arg);
     }
 
-    public static length(arg: string, min: number, max: number) {
+    public static len(arg: string, min: number, max: number) {
         return arg.length >= min && arg.length <= max;
     }
 

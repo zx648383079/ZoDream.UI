@@ -4,7 +4,7 @@
         .zd-tab-item {
             &.active,
             &:hover {
-                @extend .active;
+                @include active();
                 .fa {
                     display: block;
                 }

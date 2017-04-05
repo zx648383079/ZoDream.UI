@@ -25,124 +25,90 @@
                 <a class="btn" href="detail.html">添加</a>
             </div>
        </div>
-       <div class="search-form">
-            <form class="form-horizontal">
-                <div class="input-group">
-                    <label>姓名</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>等级</label>
-                    <select>
-                        <option>选择</option>
-                    </select>
-                </div>
-                <button class="btn">搜索</button>
-            </form>
+
+       <div id="page-list">
+            <div class="page-search">
+                <form class="form-horizontal">
+                    <div class="input-group">
+                        <label>姓名</label>
+                        <input type="text">
+                    </div>
+                    <div class="input-group">
+                        <label>等级</label>
+                        <select>
+                            <option>选择</option>
+                        </select>
+                    </div>
+                    <button class="btn">搜索</button>
+                </form>
+            </div>
+
+
+            <table>
+                <thead>
+                    <tr class="sort-row">
+                        <th>
+                            <i class="checkbox checkAll"></i>
+                        </th>
+                        <th >
+                            标题
+                        </th>
+                        <th data-name="name" class="sort-desc">
+                            标题
+                        </th>
+                        <th class="sort-asc">
+                            标题
+                        </th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                    <tr class="filter-row">
+                        <th>
+                            
+                        </th>
+                        <th>
+                            <input name="name" type="text">
+                        </th>
+                        <th>
+                            <input type="text">
+                        </th>
+                        <th>
+                            <select>
+                                <option value="">请选择</option>
+                            </select>
+                        </th>
+                        <th>
+                            
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="page-body">
+                    
+                </tbody>
+                <tfoot>
+                        <tr>
+                        <td>
+                            <i class="checkbox checkAll"></i>
+                        </td>
+                        <td colspan="4" class="left">
+                            <a class="btn deleteAll">删除</a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
        </div>
-
-
-       <table>
-           <thead>
-               <tr>
-                   <th>
-                       <i class="checkbox"></i>
-                   </th>
-                   <th>
-                       标题
-                   </th>
-                   <th class="sort-desc">
-                       标题
-                   </th>
-                   <th class="sort-asc">
-                       标题
-                   </th>
-                   <th>
-                       操作
-                   </th>
-               </tr>
-               <tr>
-                   <th>
-                       
-                   </th>
-                   <th>
-                       <input type="text">
-                   </th>
-                   <th>
-                       <input type="text">
-                   </th>
-                   <th>
-                       <select>
-                           <option value="">请选择</option>
-                       </select>
-                   </th>
-                   <th>
-                       
-                   </th>
-               </tr>
-           </thead>
-           <tbody>
-               <tr>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       111
-                   </td>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <a class="btn">编辑</a>
-                       <a class="btn">删除</a>
-                   </td>
-               </tr>
-                <tr>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td>
-                       <a class="btn">编辑</a>
-                       <a class="btn">删除</a>
-                   </td>
-               </tr>
-           </tbody>
-           <tfoot>
-                <tr>
-                   <td>
-                       <i class="checkbox"></i>
-                   </td>
-                   <td colspan="4" class="left">
-                       <a class="btn">删除</a>
-                   </td>
-               </tr>
-           </tfoot>
-       </table>
-
-       <ul class="pager">
-        </ul>
 
         <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
         <script src="../../dev/js/jquery.pager.js"></script>
+        <script src="../../dev/js/jquery.page.js"></script>
         <script src="../../dev/js/admin.js"></script>
         <script>
             $(document).ready(function() {
-                $(".pager").pager({
-                    total: 300,
-                    paginate: function(page) {
-                        console.log(page);
+                $("#page-list").page({
+                    url: 'http://zodream.localhost:8080/api.php/goods',
+                    createRow: function(data) {
+                        return '<tr><td><i class="checkbox"></i></td><td>111</td><td>122</td><td>13123</td><td><a class="btn">编辑</a><a class="btn delete">删除</a></td></tr>';
                     }
                 });
             });

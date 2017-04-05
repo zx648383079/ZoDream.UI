@@ -275,7 +275,7 @@ class Navbar {
         let instance = this;
         this.tab = this.option.tab.tab({
             active: function(item: NavItem) {
-                console.log(item);
+                //console.log(item);
             }
         });
         this._bottom = this.element.find('.nav-bottom');

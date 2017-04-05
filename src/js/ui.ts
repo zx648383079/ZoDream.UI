@@ -1,48 +1,47 @@
 $(document).ready(function () {
-    $("#weight .grid").draggable({
-        connectToSortable: ".row",
-        helper: "clone",
-        opacity: .3,
-        revert: "invalid",
-        start: function() {
-            $("#main").addClass("hover");
+    let weightOption = {
+        sort: true,
+        group: {
+            name: 'advanced',
+            pull: true,
+            put: true
         },
-        stop: function() {
-            $("#main").removeClass("hover");
+        animation: 150
+    };
+    $("#weight .zd-list-view").sortable({
+        sort: false,
+        group: {
+            name: 'advanced',
+            pull: 'clone',
+            put: false
+        },
+        animation: 150,
+        onEnd: function(evt){
+            let weight = $(evt.item).find('.weight-list');
+            if (weight.length == 0) {
+                return;
+            }
+            weight.sortable(weightOption);
         }
     });
-    $("#main .row").sortable({
-        connectWith: ".row"
+    let propertyPanel = $("#property");
+    let weightPanel = $("#weight");
+    $("#main .weight-list").sortable(weightOption);
+    $("#main").on("click", '.action .fa-remove', function() {
+        $(this).parent().parent().remove();
     });
-    $(".panel .fa-close").click(function() {
-        $(this).parent().parent().addClass("min");
+    $("#main").on("click", '.action .fa-gear', function() {
+        propertyPanel.show();
     });
-
-    $(".panel>.head>.title").click(function() {
-        let panel = $(this).parent().parent();
-        if (panel.hasClass("min")) {
-            panel.removeClass("min");
-        }
+    $("#main").on("click", '.weight-list', function() {
+        weightPanel.show();
     });
-
-    $(".menu>li>.head").click(function() {
-        $(this).parent().toggleClass("active");
+    $(".zd-tab .zd-tab-head .zd-tab-item").click(function() {
+        let $this = $(this);
+        $this.addClass("active").siblings().removeClass("active");
+        $this.parents(".zd-tab").find(".zd-tab-body .zd-tab-item").eq($this.index()).addClass("active").siblings().removeClass("active");
     });
-
-    $.htmlClean($("#main").html(), {
-    format: true,
-    allowedAttributes: [
-      ["id"],
-      ["class"],
-      ["data-toggle"],
-      ["data-target"],
-      ["data-parent"],
-      ["role"],
-      ["data-dismiss"],
-      ["aria-labelledby"],
-      ["aria-hidden"],
-      ["data-slide-to"],
-      ["data-slide"]
-    ]
-  })
+    $(".zd-panel .fa-close").click(function() {
+        $(this).parent().parent().hide();
+    });
 });

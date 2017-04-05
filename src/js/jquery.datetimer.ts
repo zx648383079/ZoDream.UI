@@ -138,14 +138,14 @@ class DateTimer {
         this._nLi(this._getMax().getFullYear() + 1, this._getMin().getFullYear())
         +'</ul></div><div class="list-group month"><div class="title">月</div><ul>'+ 
         this._nLi(13, 1) +
-        '</ul></div></div>';
+        '</ul></div><i class="fa fa-close"></i></div>';
         if (this._hasTime) {
             html += '<div class="day-grid"><div class="list-group hour"><div class="title">小时</div><ul>'+ this._nLi(25, 1) +
             '</ul></div><div class="list-group minute"><div class="title">分钟</div><ul>'+ 
             lis +
             '</ul></div><div class="list-group second"><div class="title">秒钟</div><ul>'+
             lis +
-            '</ul></div></div>';
+            '</ul></div><i class="fa fa-close"></i></div>';
         }
         html += '</div>';
         if (this._hasTime) {
@@ -442,6 +442,10 @@ class DateTimer {
         this._monthBox.find("li").click(function() {
             instance._changeMonth(parseInt($(this).text()));
         });
+        // 关闭面板
+        this._yearGrid.find('.fa-close').click(function() {
+            instance._yearGrid.hide();
+        });
         if (this._hasTime) {
             this.box.find(".footer button").click(function() {
                 instance.output(true);
@@ -463,6 +467,9 @@ class DateTimer {
             });
             this._secondBox.find("li").click(function() {
                 instance._changeSecond(parseInt($(this).text()));
+            });
+            this._dayGrid.find('.fa-close').click(function() {
+                instance._dayGrid.hide();
             });
         }
         /** 实现隐藏 */

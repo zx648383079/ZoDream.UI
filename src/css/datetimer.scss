@@ -24,7 +24,9 @@
     .body {
         height: 350px;
         position: relative;
-        .month-grid, .year-grid, .day-grid {
+        .month-grid, 
+        .year-grid, 
+        .day-grid {
             background: #fff;
             position: absolute;
             top: 0;
@@ -86,6 +88,14 @@
                 &:first-child {
                     margin-left: 90px;
                 }
+            }
+        }
+        .year-grid,
+        .day-grid {
+            .fa-close {
+                position: absolute;
+                top: 5px;
+                right: 5px;
             }
         }
     }

@@ -99,6 +99,7 @@ class Page {
         this.option = $.extend({}, new PageDefaultOption(), option);
         this.option.url = Uri.parse(this.option.url);
         this.option.deleteUrl = Uri.parse(this.option.deleteUrl);
+        this.option.updateUrl = Uri.parse(this.option.updateUrl);
         this.init();
         this.search();
     }
@@ -201,13 +202,24 @@ class Page {
         }
         this.deleteId(id);
     }
+    /**
+     * 获取id标记
+     */
+    private _getIdTag(): string {
+        return this.option.idTag.replace('data-', '');
+    }
 
     public deleteId(...data: string[]) {
         if (data.length == 0) {
             return;
         }
         let instance = this;
-        this.option.deleteUrl.setData(this.option.idTag.replace('data-', ''), data).post({},function(data) {
+        if (this.option.onDelete 
+        && this.option.onDelete.apply(this, data) == false) {
+            console.log('delete is stop!');
+            return;
+        }
+        this.option.deleteUrl.setData(this._getIdTag(), data).post({},function(data) {
             if (data.code == 0) {
                 instance.refresh();
             }
@@ -216,7 +228,15 @@ class Page {
 
     public refresh() {
         let instance = this;
+        if (this.option.beforeQuery 
+        && this.option.beforeQuery.call(this) == false) {
+            console.log('query is stop!');
+            return;
+        }
         this.option.url.getJson(function(data) {
+            if (instance.option.afterQuery) {
+                instance.option.afterQuery.call(this, data);
+            }
             if (data.code != 0) {
                 console.log(data);
                 return;
@@ -224,6 +244,51 @@ class Page {
             instance._createBody(data.data.pagelist);
             instance._pager.change(data.data.page, Math.ceil(data.data.total / data.data.pageSize));
         });
+    }
+
+    /**
+     * 判断是否为空值
+     * @param val 
+     */
+    private _checkEmpty(val?: string): boolean {
+        return !val || val == '' || val.trim() == '';
+    }
+
+    public updateColumn(element: JQuery) {
+        let name = element.attr('data-name');
+        if (this._checkEmpty(name)) {
+            return;
+        }
+        let id = element.parents(this.option.row).attr(this.option.idTag);
+        if (this._checkEmpty(id)) {
+            return;
+        }
+        let instance = this;
+        let input = $('<input type="text">');
+        input.val(element.text());
+        input.blur(function() {
+            let val = input.val();
+            input.remove();
+            element.text(val);
+            instance.updateData(id, name, val);
+        });
+        element.html('').append(input);
+        input.focus();
+    }
+
+    public updateData(id: string, name: string, val: string) {
+        if (this.option.onUpdate 
+        && this.option.onUpdate.call(this, id, name, val) == false) {
+            console.log('update is stop!');
+            return;
+        }
+        this.option.updateUrl.post({
+            [this._getIdTag()]: id,
+            name: name,
+            value: val
+        }, function(data) {
+
+        }, 'json');
     }
 
     private _bindEvent() {
@@ -234,7 +299,7 @@ class Page {
         this.element.find(this.option.sortRow+ '>*').click(function() {
             let $this = $(this);
             let name = $this.attr('data-name');
-            if (!name) {
+            if (instance._checkEmpty(name)) {
                 return;
             }
             if ($this.hasClass('sort-asc')) {
@@ -282,6 +347,9 @@ class Page {
                 return;
             }
             $this.addClass('checked');
+        });
+        this._body.on('click', this.option.column, function() {
+            instance.updateColumn($(this));
         });
     }
 
@@ -333,20 +401,25 @@ class Page {
 interface PageOption {
     url?: string | Uri,  // 查询链接
     deleteUrl?: string | Uri, //删除链接， post 提交
+    updateUrl?: string | Uri,  // 更新来链接，post 提交
     searchForm?: string,   //搜索表单
     pageBody?: string,     // 列表主体
     filterRow?: string,    //筛选行
     sortRow?: string,      //排序行
     row?: string,          //列表行标签
+    column?: string,      //单元格标签
     idTag?: string,        // 行上的id 标记
     createRow?: (data: any) => string,   //一行生成
     deleteTip?: string,     //删除提示
-    onDelete?: (id: string, row: JQuery)=>any,  //删除事件
-    onQuery?: (id: string, row: JQuery)=>any,   //查询事件
+    onDelete?: (id: string, row: JQuery) => any,  //删除事件
+    onUpdate?: (id: string, name: string, val: string) => any, //更新事件
+    beforeQuery?: ()=>any,   //查询开始事件
+    afterQuery?: (data) => any, //查询结束
 }
 
 class PageDefaultOption implements PageOption {
     url: string = 'query';
+    updateUrl: string = 'update';
     deleteUrl: string = 'delete';
     idTag: string = 'data-id';
     searchForm?: string = '.page-search';
@@ -355,6 +428,7 @@ class PageDefaultOption implements PageOption {
     filterRow: string = '.filter-row';
     sortRow: string = '.sort-row';
     row: string = 'tr';
+    column: string = 'td';
 }
 
 

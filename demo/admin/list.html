@@ -108,7 +108,7 @@
                 $("#page-list").page({
                     url: 'http://zodream.localhost:8080/api.php/goods',
                     createRow: function(data) {
-                        return '<tr><td><i class="checkbox"></i></td><td>111</td><td>122</td><td>13123</td><td><a class="btn">编辑</a><a class="btn delete">删除</a></td></tr>';
+                        return '<tr data-id="12"><td><i class="checkbox"></i></td><td data-name="name">111</td><td>122</td><td>13123</td><td><a class="btn">编辑</a><a class="btn delete">删除</a></td></tr>';
                     }
                 });
             });

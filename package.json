@@ -4,6 +4,7 @@
   "description": "zodream UI",
   "main": "gulpfile.js",
   "dependencies": {
+    "@types/jquery": "^2.0.41",
     "bowser": "^1.6.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.0.4",

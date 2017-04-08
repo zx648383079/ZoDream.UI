@@ -46,7 +46,10 @@
             });
             $("[dialog-type=form]").dialog({
                 content: {
-                    name: '姓名'
+                    name: '姓名',
+                    content: {
+                        type: 'textarea'
+                    }
                 },
                 done: function() {
                     console.log(this);

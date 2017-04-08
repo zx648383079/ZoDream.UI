@@ -337,7 +337,7 @@ class DialogElement {
         }
         switch (data.type) {
             case 'textarea':
-                html += '<textarea name="'+name+'" '+attr+'>'+defaultVal+'<textarea>';
+                html += '<textarea name="'+name+'" '+attr+'>'+defaultVal+'</textarea>';
                 break;
             case 'select':
                 let option = '';

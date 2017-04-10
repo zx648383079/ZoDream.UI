@@ -95,7 +95,7 @@ class DialogElement {
             this.option.target.append(this.element);
             this.element.addClass("dialog-private");
         } else {
-            Dialog.$body.append(this.element);
+            $(document.body).append(this.element);
         }
         this._setProperty();
         return this.element;
@@ -499,8 +499,6 @@ class Dialog {
 
     private static _bgLock: number = 0;
 
-    public static $body = $(document.body);
-
     public static $window = $(window);
 
     /**
@@ -596,7 +594,7 @@ class Dialog {
     /**
      * 显示遮罩
      */
-    public static showBg(target: JQuery = this.$body) {
+    public static showBg(target: JQuery = $(document.body)) {
         let instance = this;
         if (!this._dialogBg) {
             this._dialogBg = $('<div class="dialog-bg"></div>');

@@ -181,7 +181,10 @@ class UploadDefaultOption implements UploadOption {
     fileClass: string = "zdUploadFile";
     filter: string = "";
     afterUpload: (data: any) => any = function(data: any) {
-        data = JSON.parse(data);
+        // 防止ajax自动转化json
+        if (typeof data != 'object') {
+            data = JSON.parse(data);
+        }
         if (data.status == 'SUCCESS') {
             return data;
         }

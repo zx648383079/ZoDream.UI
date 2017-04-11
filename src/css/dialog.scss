@@ -48,6 +48,7 @@
     &.dialog-box,
     &.dialog-form {
         background: #fff;
+        min-width: 260px;
         @include prefix-animation(dialog-box 0.5s);
         .dialog-header {
             position: relative;
@@ -55,19 +56,24 @@
             line-height: 30px;
             text-align: center;
             background: #D0D0D0;
+            .dialog-title {
+                cursor: move;
+            }
             .fa {
                 width: 30px;
                 height: 30px;
                 border: none;
+                position: absolute;
+                top: 0;
                 color: #fff;
-                float: left;
                 line-height: 30px;
             }
             .fa-arrow-left {
+                left: 0;
                 background: #337ab7;
             }
             .dialog-close {
-                float: right;
+                right: 0;
                 background: #c9302c;
             }
         }
@@ -121,14 +127,14 @@
     }
     &.dialog-form {
         .dialog-body {
-            input {
+            input,
+            textarea {
                 font-size: 20px;
                 width: 100%;
                 box-sizing: border-box;
                 border: none;
                 border-bottom: 1px solid #337ab7;
                 padding: 5px;
-                
             }
             label {
                 font-size: 20px;

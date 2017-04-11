@@ -28,7 +28,8 @@ interface DialogOption {
     target?: JQuery,           // 载体 显示在那个内容上，默认全局, position 需要自己设置 relative、absolute、fixed
     closing?: (element: DialogElement) => any, // 关闭请求， 是否关闭， 返回false 为不关闭
     time?: number,         //显示时间
-    isFull?: boolean,
+    width?: number,
+    height?: number,
     done?: Function        //点确定时触发
 }
 
@@ -42,6 +43,9 @@ class DefaultDialogOption implements DialogOption {
     time: number = 0;
     button: string[] = [];
     canMove: boolean = true;
+    done: Function = function() {
+        this.close();
+    }
 }
 
 class DialogElement {
@@ -91,6 +95,12 @@ class DialogElement {
         this.element = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
         this._addHtml();
         this._bindEvent();
+        if (this.option.width) {
+            this.element.width(this._getWidth());
+        }
+        if (this.option.height) {
+            this.element.height(this._getHeight());
+        }
         if (this.option.target) {
             this.option.target.append(this.element);
             this.element.addClass("dialog-private");
@@ -145,7 +155,7 @@ class DialogElement {
             });
             return;
         }
-        this.option.isFull = true; 
+        this.option.type = DialogType.page;
         this.element.addClass("dialog-page");
     }
 
@@ -185,7 +195,7 @@ class DialogElement {
             // 点击标题栏移动
             let isMove = false;
             let x, y;
-            this.element.find(".dialog-header").mousedown(function(e) {
+            this.element.find(".dialog-header .dialog-title").mousedown(function(e) {
                 isMove = true;
                 x = e.pageX - parseInt(instance.element.css('left'));
                 y = e.pageY - parseInt(instance.element.css('top'));
@@ -219,7 +229,7 @@ class DialogElement {
 
     public onClick(tag: string, callback: (element: JQuery) => any) {
         let instance = this;
-        this.element.on('click', tag, function() {
+        this.element.on('click', tag, function(e) {
             callback.call(instance, $(this));
         });
     }
@@ -254,11 +264,11 @@ class DialogElement {
         if (hasBack || this.option.type == DialogType.page) {
             html += '<i class="fa fa-arrow-left"></i>';
         }
-        html += '<span>';
+        html += '<div class="dialog-title">';
         if (ico) {
             html += '<i class="fa fa-' + ico + '"></i>';
         }
-        html += this.option.title +'</span>';
+        html += this.option.title +'</div>';
         if (hasClose) {
             html += '<i class="fa fa-close dialog-close"></i>';
         }
@@ -275,6 +285,9 @@ class DialogElement {
     }
 
     private _getFooter(): string {
+        if (!this.option.hasYes && this.option.hasNo && (typeof this.option.button == 'object' && this.option.button instanceof Array && this.option.button.length == 0)) {
+            return '';
+        }
         let html = '<div class="dialog-footer">';
         if (this.option.hasYes) {
             html += '<button class="dialog-yes">'+ (typeof this.option.hasYes == 'string' ? this.option.hasYes : '确认') +'</button>';
@@ -474,19 +487,19 @@ class DialogElement {
     }
 
     private _getWidth(): number {
-        let width = $(window).width();
-        if (this.option.isFull) {
+        let width = Dialog.$window.width();
+        if (this.option.width > 1) {
             return width;
         }
-        return width * .66;
+        return width * this.option.width;
     }
 
     private _getHeight(): number {
-        let height = $(window).height();
-        if (this.option.isFull) {
+        let height = Dialog.$window.height();
+        if (this.option.height > 1) {
             return height;
         }
-        return height * .33;
+        return height * this.option.height;
     }
 }
 
@@ -516,16 +529,98 @@ class Dialog {
         return element;
     }
 
+    /**
+     * 提示
+     * @param content 
+     * @param time 
+     */
     public static tip(content: string, time: number = 2000): DialogElement {
         return this.create({content: content, time: time});
     }
 
+    /**
+     * 消息
+     * @param content 
+     * @param time 
+     */
     public static message(content: string, time: number = 2000): DialogElement {
         return this.create({type: DialogType.message, content: content, time: time});
     }
 
+    /**
+     * 加载
+     * @param time 
+     */
     public static loading(time: number = 0): DialogElement {
         return this.create({type: DialogType.loading, time: time});
+    }
+
+    /**
+     * 内容弹窗
+     * @param content 
+     * @param hasYes 
+     * @param hasNo 
+     */
+    public static content(content: string, hasYes?: boolean, hasNo?: boolean) {
+        return this.create({
+            type: DialogType.content,
+            content: content,
+            hasYes: hasYes,
+            hasNo: hasNo
+        });
+    }
+
+    /**
+     * 普通弹窗
+     * @param content 
+     * @param title 
+     * @param hasYes 
+     * @param hasNo 
+     */
+    public static box(content: string, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+        return this.create({
+            type: DialogType.box,
+            content: content,
+            title: title,
+            hasYes: hasYes,
+            hasNo: hasNo
+        });
+    }
+
+    /**
+     * 表格弹窗
+     * @param content 
+     * @param title 
+     * @param done 
+     * @param hasYes 
+     * @param hasNo 
+     */
+    public static from(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean) {
+        return this.create({
+            type: DialogType.box,
+            content: content,
+            title: title,
+            hasYes: hasYes,
+            hasNo: hasNo,
+            done: done
+        });
+    }
+
+    /**
+     * 页面弹窗
+     * @param content 
+     * @param title 
+     * @param hasYes 
+     * @param hasNo 
+     */
+    public static page(content: string, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+        return this.create({
+            type: DialogType.page,
+            content: content,
+            title: title,
+            hasYes: hasYes,
+            hasNo: hasNo
+        });
     }
 
     /**

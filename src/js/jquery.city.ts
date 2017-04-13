@@ -13,7 +13,7 @@ class City {
     private _dist: JQuery;
 
     public seletProv(arg: string) {
-
+        this
     }
 
     public seletCity(arg: string) {
@@ -27,17 +27,16 @@ class City {
 
 interface CityOptions {
     default?: any,
-    prov?: (data: Array<string>, arg?: string) => void | string | JQuery,
-    city?: (data: Array<string>, arg?: string) => void | string | JQuery,
-    dist?: (data: Array<string>, arg?: string) => void | string | JQuery,
+    prov?: string | JQuery | ((data: Array<string>, arg?: string) => void),
+    city?: string | JQuery | ((data: Array<string>, arg?: string) => void),
+    dist?: string | JQuery | ((data: Array<string>, arg?: string) => void),
     data?: {[key: string]: Function} | string,
 }
 
 class CityDefaultOptions implements CityOptions {
     prov: string = '.prov';
     city: string = '.city';
-    dist: string = '.dist'
-
+    dist: string = '.dist';
 }
 
 ;(function($: any) {

@@ -30,6 +30,8 @@ interface DialogOption {
     time?: number,         //显示时间
     width?: number,
     height?: number,
+    x?: number,
+    y?: number
     done?: Function        //点确定时触发
 }
 
@@ -133,9 +135,13 @@ class DialogElement {
     }
 
     private _setProperty() {
-        if (this.option.type == DialogType.message 
-        || this.option.type == DialogType.page
+        if (this.option.type == DialogType.page
         || this.option.type == DialogType.content) {
+            return;
+        }
+
+        if (this.option.type == DialogType.message) {
+            this.css('top', this.option.y + 'px');
             return;
         }
         
@@ -461,6 +467,10 @@ class DialogElement {
         this.element.toggle();
     }
 
+    public css(key: any, value?: string| number): JQuery {
+        return this.element.css(key, value);
+    }
+
     /**
      * 
      * @param callback 
@@ -507,6 +517,10 @@ class Dialog {
     private static _data: {[id: number]: DialogElement} = {};
 
     private static _guid: number = 0; // id标记
+
+    private static _tipData: Array<number> = [];
+
+    private static _messageData: Array<number> = [];
 
     private static _dialogBg: JQuery;
 
@@ -630,6 +644,11 @@ class Dialog {
     public static addItem(element: DialogElement) {
         this._data[++this._guid] = element;
         element.id = this._guid;
+        if (element.option.type == DialogType.message) {
+            element.option.y = this.getMessageTop();
+            this._messageData.push(element.id);
+            return;
+        }
         if (this._needBg(element.option.type) 
         && !element.option.target) {
             this.showBg();
@@ -645,6 +664,7 @@ class Dialog {
             return;
         }
         this._data[id].close();
+        this.sortMessageAndDelete(this._data[id]);
         if (this._needBg(this._data[id].option.type)) {
             this.closeBg();
         }
@@ -716,6 +736,32 @@ class Dialog {
             return;
         }
         this._dialogBg.hide();
+    }
+
+    public static sortMessageAndDelete(element: DialogElement) {
+        if (element.option.type != DialogType.message) {
+            return;
+        }
+        let i = this._messageData.indexOf(element.id);
+        if (i < 0) {
+            return;
+        }
+        this._messageData.splice(i, 1);
+        let y = element.option.y;
+        for(; i < this._messageData.length; i ++) {
+            let item = this._data[this._messageData[i]];
+            item.css('top', y + 'px');
+            y += item.element.height() + 20;
+        }
+    }
+
+    public static getMessageTop() : number {
+        let length = this._messageData.length;
+        if (length < 1) {
+            return 30;
+        }
+        let item = this._data[this._messageData[length - 1]];
+        return item.option.y + item.element.height()  + 20;
     }
 }
 

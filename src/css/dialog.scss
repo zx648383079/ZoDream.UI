@@ -38,6 +38,7 @@
         right: 0;
         top: 50px;
         @include prefix-animation(dialog-message .5s);
+        @include prefix-content(transition, top 1s);
     }
     &.dialog-loading {
 

@@ -21,6 +21,7 @@
     <div class="page-loading" style="position: relative; height: 400px; background: #f00;">
         点击出现元素内对话框
     </div>
+    <button dialog-type="pop" style="margin-left: 30%">弹出</button>
 
     
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
@@ -33,7 +34,12 @@
             });
             $("[dialog-type=message]").dialog({
                 content: '11111111111111111111',
-                time: 2000
+                time: 5000
+            });
+            $("[dialog-type=pop]").dialog({
+                content: '11111111111111111111',
+                target: $("[dialog-type=pop]"),
+                direction: 'bottom'
             });
             $("[dialog-type=loading]").dialog({
                 time: 2000

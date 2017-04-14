@@ -1,11 +1,24 @@
 enum DialogType {
     tip,
     message,
+    pop,
     loading,
     form,
     content,
     box,
     page
+}
+
+enum DialogDirection {
+    top,
+    right,
+    bottom,
+    left,
+    center,
+    leftTop,
+    rightTop,
+    rightBottom,
+    leftBottom
 }
 
 interface DialogButton {
@@ -21,8 +34,8 @@ interface DialogOption {
     button?: string | string[]| DialogButton[],
     hasYes?: boolean | string; // 是否有确定按钮
     hasNo?: boolean | string;  // 是否有取消按钮
-    loading?: string,       //加载动画的class
-    loadingCount?: number, // 动画按钮的个数
+    extra?: string,       //额外的class
+    count?: number, // 动画按钮的个数
     type?: string | number | DialogType,
     canMove?: boolean,        //是否允许移动
     target?: JQuery,           // 载体 显示在那个内容上，默认全局, position 需要自己设置 relative、absolute、fixed
@@ -31,14 +44,15 @@ interface DialogOption {
     width?: number,
     height?: number,
     x?: number,
-    y?: number
+    y?: number,
+    direction?: DialogDirection | string | number,
     done?: Function        //点确定时触发
 }
 
 class DefaultDialogOption implements DialogOption {
     title: string = '提示';
-    loading: string = 'loading';      //加载动画的class
-    loadingCount: number = 5;
+    extra: string = 'loading';      //额外的class
+    count: number = 5;
     type?: DialogType = DialogType.tip;
     hasYes: boolean = true;
     hasNo: boolean = true;
@@ -56,8 +70,9 @@ class DialogElement {
         public id?: number
     ) {
         this.option = $.extend({}, new DefaultDialogOption(), option);
-        if (typeof this.option.type == 'string') {
-            this.option.type = DialogType[this.option.type];
+        this.option.type =  Dialog.parseEnum<DialogType>(this.option.type, DialogType);
+        if (this.option.direction) {
+            this.option.direction = Dialog.parseEnum<DialogDirection>(this.option.direction, DialogDirection);
         }
         Dialog.addItem(this);
         this._createBg();
@@ -103,7 +118,8 @@ class DialogElement {
         if (this.option.height) {
             this.element.height(this._getHeight());
         }
-        if (this.option.target) {
+        if (this.option.target 
+        && this.option.type != DialogType.pop) {
             this.option.target.append(this.element);
             this.element.addClass("dialog-private");
         } else {
@@ -128,6 +144,7 @@ class DialogElement {
                 break;
             case DialogType.tip:
             case DialogType.message:
+            case DialogType.pop:
             default:
                 this.element.text(this.option.content);
                 break;
@@ -142,6 +159,10 @@ class DialogElement {
 
         if (this.option.type == DialogType.message) {
             this.css('top', this.option.y + 'px');
+            return;
+        }
+        if (this.option.type == DialogType.pop) {
+            this._setPopProperty();
             return;
         }
         
@@ -242,18 +263,19 @@ class DialogElement {
 
     private _getLoading() {
         let html = '';
-        let num = this.option.loadingCount;
+        let num = this.option.count;
         for(; num > 0; num --) {
             html += '<span></span>';
         }
-        return '<div class="'+ this.option.loading +'">'+ html +'</div>';
+        return '<div class="'+ this.option.extra +'">'+ html +'</div>';
     }
 
     /**
      * 创建私有的遮罩
      */
     private _createBg() {
-        if (!this.option.target) {
+        if (!this.option.target 
+        || this.option.type == DialogType.pop) {
             return;
         }
         let instance = this;
@@ -511,6 +533,63 @@ class DialogElement {
         }
         return height * this.option.height;
     }
+
+    private _setPopProperty() {
+        if (!this.option.direction) {
+            this.option.direction = DialogDirection.top;
+        }
+        this.element.addClass('dialog-pop-' + DialogDirection[this.option.direction]);
+        let offest = this.option.target.offset();
+        let [x, y] = this._getPopLeftTop(this.option.direction, this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.option.target.outerWidth(), this.option.target.outerHeight());
+        this.element.css({
+            left: x + 'px',
+            top: y + 'px'
+        });
+    }
+
+    private _getPopLeftTop(direction: DialogDirection, width: number, height: number, x: number, y: number, boxWidth: number, boxHeight: number): [number, number] {
+        let space = 30; // 空隙
+        switch (direction) {
+            case DialogDirection.rightTop:
+            case DialogDirection.right:
+                return [x + boxWidth + space, y + (boxHeight - height) / 2];
+            case DialogDirection.rightBottom:
+            case DialogDirection.bottom:
+                return [x + (boxWidth - width) / 2,  y + boxHeight + space];
+            case DialogDirection.leftBottom:
+            case DialogDirection.left:
+                return [x - width - space, y + (boxHeight - height) / 2];
+            case DialogDirection.center:
+            case DialogDirection.leftTop:
+            case DialogDirection.top:
+            default:
+                return [x + (boxWidth - width) / 2, y - height - space];
+        }
+    }
+
+    private _getLeftTop(direction: DialogDirection, width: number, height: number, boxWidth: number, boxHeight: number): [number, number] {
+        switch (direction) {
+            case DialogDirection.leftTop:
+                return [0, 0];
+            case DialogDirection.top:
+                return [(boxHeight - width) / 2, 0];
+            case DialogDirection.rightTop:
+                return [boxHeight - width, 0];
+            case DialogDirection.right:
+                return [boxHeight - width, (boxHeight - height) / 2];
+            case DialogDirection.rightBottom:
+                return [boxHeight - width, boxHeight - height];
+            case DialogDirection.bottom:
+                return [(boxHeight - width) / 2, boxHeight - height];
+            case DialogDirection.leftBottom:
+                return [0, boxHeight - height];
+            case DialogDirection.left:
+                return [0, (boxHeight - height) / 2];
+            case DialogDirection.center:
+            default:
+                return [(boxHeight - width) / 2, (boxHeight - height) / 2];
+        }
+    }
 }
 
 class Dialog {
@@ -536,11 +615,15 @@ class Dialog {
         if (!option.type) {
             option.type = DialogType.tip;
         }
-        if (typeof option.type == 'string') {
-            option.type = DialogType[option.type];
-        }
         let element = new DialogElement(option);
         return element;
+    }
+
+    public static parseEnum<T>(val: any, type: any): T {
+        if (typeof val == 'string') {
+            return type[val];
+        }
+        return val;
     }
 
     /**
@@ -687,7 +770,8 @@ class Dialog {
     private static _needBg(type: DialogType | string | number): boolean {
         return type != DialogType.tip 
         && type != DialogType.message
-        && type != DialogType.page;
+        && type != DialogType.page 
+        && type != DialogType.pop;
     }
 
     /**
@@ -751,6 +835,7 @@ class Dialog {
         for(; i < this._messageData.length; i ++) {
             let item = this._data[this._messageData[i]];
             item.css('top', y + 'px');
+            item.option.y = y;
             y += item.element.height() + 20;
         }
     }

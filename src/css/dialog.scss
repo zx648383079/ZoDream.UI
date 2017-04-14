@@ -22,7 +22,8 @@
         position: absolute;
         z-index: 989;
     }
-    &.dialog-tip {
+    &.dialog-tip,
+    &.dialog-pop {
         background: rgba(0, 0, 0, .6);
         color: #fff;
         max-width: 66.66%;
@@ -42,6 +43,48 @@
     }
     &.dialog-loading {
 
+    }
+    &.dialog-pop {
+        bottom: auto;
+        &:before {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            border: transparent 20px solid;
+        }
+        &.dialog-pop-top {
+            &:before {
+                bottom: -40px;
+                left: 50%;
+                margin-left: -20px;
+                border-top-color:rgba(0, 0, 0, .6);
+            }
+        }
+        &.dialog-pop-left {
+            &:before {
+                right: -40px;
+                margin-top: -20px;
+                top: 50%;
+                border-left-color: rgba(0, 0, 0, 0.6);
+            }
+        }
+        &.dialog-pop-bottom {
+            &:before {
+                top: -40px;
+                left: 50%;
+                margin-left: -20px;
+                border-bottom-color:rgba(0, 0, 0, .6);
+            }
+        }
+        &.dialog-pop-right {
+            &:before {
+                left: -40px;
+                margin-top: -20px;
+                top: 50%;
+                border-right-color: rgba(0, 0, 0, 0.6);
+            }
+        }
     }
 
     &.dialog-page,

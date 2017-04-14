@@ -15,7 +15,7 @@
 | 侧边栏及多标签页 |[jquery.navbar](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.navbar.ts) |后台主题|[Demo](https://github.com/zx648383079/ZoDream.UI/blob/master/demo/admin/index.html)|
 | 跑马灯 |[jquery.boxSlider](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.boxSlider.ts) |只支持向上跑，支持自动复制实现完整的循环|[Demo](https://github.com/zx648383079/ZoDream.UI/blob/master/demo/boxSlider.html)|
 | 分页列表 |[jquery.page](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.page.ts) |支持搜索，支持分页，支持删除，支持排序，支持多选|[Demo](https://github.com/zx648383079/ZoDream.UI/blob/master/demo/admin/list.html)|
-| 弹出框 |[jquery.dialog](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.dialog.ts) |提示、消息、加载、内容、对话框、表单、页面， 支持元素内弹出框，支持链接弹出框（非iframe, iframe方式请直接输入代码）|[Demo](https://github.com/zx648383079/ZoDream.UI/blob/master/demo/dialog.html)|
+| 弹出框 |[jquery.dialog](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.dialog.ts) |提示、消息、弹出、加载、内容、对话框、表单、页面， 支持元素内弹出框，支持链接弹出框（非iframe, iframe方式请直接输入代码）,支持消息框自动排列对齐|[Demo](https://github.com/zx648383079/ZoDream.UI/blob/master/demo/dialog.html)|
 
 
 ## 更新进度

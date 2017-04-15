@@ -11,6 +11,7 @@
 
     <button dialog-type="tip">提示</button>
     <button dialog-type="message">消息</button>
+    <button dialog-type="notify">通知</button>
     <button dialog-type="loading">加载</button>
     <button dialog-type="content">内容</button>
     <button dialog-type="box">信息</button>
@@ -33,6 +34,10 @@
                 time: 2000
             });
             $("[dialog-type=message]").dialog({
+                content: '11111111111111111111',
+                time: 5000
+            });
+            $("[dialog-type=notify]").dialog({
                 content: '11111111111111111111',
                 time: 5000
             });

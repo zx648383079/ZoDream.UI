@@ -1,6 +1,7 @@
 enum DialogType {
     tip,
     message,
+    notify,
     pop,
     loading,
     form,
@@ -71,6 +72,10 @@ class DialogElement {
     ) {
         this.option = $.extend({}, new DefaultDialogOption(), option);
         this.option.type =  Dialog.parseEnum<DialogType>(this.option.type, DialogType);
+        if (this.option.type == DialogType.notify) {
+            this._createNotify();
+            return;
+        }
         if (this.option.direction) {
             this.option.direction = Dialog.parseEnum<DialogDirection>(this.option.direction, DialogDirection);
         }
@@ -82,6 +87,8 @@ class DialogElement {
     public option: DialogOption
 
     public element: JQuery;
+
+    public notify: Notification; // 系统通知
 
     public data: {[name: string]: string | string[]} = {};
 
@@ -259,6 +266,27 @@ class DialogElement {
         this.element.on('click', tag, function(e) {
             callback.call(instance, $(this));
         });
+    }
+
+    private _createNotify() {
+        let instance = this;
+        if ("Notification" in window) {
+            let ask = Notification.requestPermission();
+            ask.then(permission => {
+                if (permission !== "granted") {
+                    console.log('您的浏览器支持但未开启桌面提醒！')
+                }
+                instance.notify = new Notification(instance.option.title, {
+                    body: instance.option.content,
+                    icon: instance.option.ico,
+                });
+                instance.notify.addEventListener("click", event => {
+                    instance.option.done && instance.option.done.call(instance);
+                });
+            });
+            return;
+        }
+        console.log('您的浏览器不支持桌面提醒！');
     }
 
     private _getLoading() {
@@ -465,6 +493,10 @@ class DialogElement {
     }
 
     public close() {
+        if (this.option.type == DialogType.notify) {
+            this.notify && this.notify.close();
+            return;
+        }
         if (this._isClosing) {
             return;
         }
@@ -717,6 +749,20 @@ class Dialog {
             title: title,
             hasYes: hasYes,
             hasNo: hasNo
+        });
+    }
+
+    /**
+     * 桌面提醒
+     * @param title 
+     * @param content 
+     * @param icon 
+     */
+    public static notify(title: '通知', content: string = '', icon: string = '') {
+        return this.create({
+            title: title,
+            content: content,
+            ico: icon
         });
     }
 

@@ -1,3 +1,10 @@
+$defaultColor: #f9cfa6;
+$activeColor: #af5d0d;
+@mixin active() {
+    background: $activeColor;
+    color: #fff;
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -34,13 +41,13 @@
                         top: 40px;
                         left: 5px;
                         font-size: 20px;
-                        color: #f9cfa6;
+                        color: $defaultColor;
                     }
                     input {
                         font-size: 20px;
                         padding-left: 25px;
                         background: transparent;
-                        border: 1px solid #f9cfa6;
+                        border: 1px solid $defaultColor;
                         display: none;
                     }
                     .search-tip {
@@ -48,13 +55,13 @@
                         top: 63px;
                         z-index: 99;
                         line-height: 25px;
-                        background: #f9cfa6;
+                        background: $defaultColor;
                         width: 100%;
                         display: none;
                         li {
                             list-style: none;
                             &:hover {
-                                background: #af5d0d;
+                                @include active();
                             }
                         }
                     }
@@ -77,12 +84,41 @@
     }
     .book-body {
         margin-right: 200px;
-        background: #f9cfa6;
+        background: $defaultColor;
         padding: 30px 15px;
         min-height: 800px;
         position: relative;
+        .book-sort {
+            position: absolute;
+            right: 25px;
+            top: -30px;
+            a {
+                display: inline-block;
+                width: 50px;
+                line-height: 30px;
+                text-align: center;
+                position: relative;
+                background: $defaultColor;
+                &:after {
+                    position: absolute;
+                    content: "";
+                    width: 0;
+                    height: 0;
+                    left: 0;
+                    bottom: -50px;
+                    border: transparent 25px solid;
+                    border-top-color: rgba(0, 0, 0, 0.6);
+                }
+                &.active {
+                    @include active();
+                    &:after {
+                        border-top-color: $activeColor;
+                    }
+                }
+            }
+        }
         .book-item {
-            border-bottom: 1px solid #af5d0d;
+            border-bottom: 1px solid $activeColor;
             padding: 5px;
             dt {
                 font-size: 20px;
@@ -114,7 +150,7 @@
             }
         }
         .info {
-            border-bottom: 1px dotted #af5d0d;
+            border-bottom: 1px dotted $activeColor;
             line-height: 40px;
             span {
                 margin-right: 20px;
@@ -125,7 +161,7 @@
             margin-bottom: 40px;
         }
         .tools {
-            border-top: 1px dotted #af5d0d;
+            border-top: 1px dotted $activeColor;
             line-height: 40px;
             position: absolute;
             bottom: 0;
@@ -147,14 +183,14 @@
             float: left;
             li {
                 list-style: none;
-                background: #f9cfa6;
+                background: $defaultColor;
                 width: 40px;
                 line-height: 40px;
                 text-align: center;
                 float: left;
-                border-top: 1px dotted #af5d0d;
+                border-top: 1px dotted $activeColor;
                 &.active {
-                    background: #af5d0d;
+                    @include active();
                     &:hover {
                         height: 40px;
                     }
@@ -167,14 +203,14 @@
         &.comment {
             margin-top: 50px;
             margin-right: 200px;
-            background: #f9cfa6;
+            background: $defaultColor;
             padding: 15px;
             position: relative;
         }
         .book-comments {
             .title {
                 font-size: 20px;
-                border-left: 5px solid #af5d0d;
+                border-left: 5px solid $activeColor;
                 padding-left: 10px;
                 margin-top: 15px;
                 .order {
@@ -187,7 +223,7 @@
             }
             .comment-item {
                 padding: 8px 0;
-                border-bottom: 1px solid #af5d0d;
+                border-bottom: 1px solid $activeColor;
                 position: relative;
                 .info {
                     line-height: 30px;
@@ -221,7 +257,7 @@
                     width: 200px;
                     text-align: center;
                     top: 30px;
-                    background: #f9cfa6;
+                    background: $defaultColor;
                     font-size: 20px;
                     line-height: 40px;
                     span {
@@ -231,7 +267,7 @@
                 .comments {
                     padding-left: 100px;
                     margin-top: 8px;
-                    border-top: 1px solid #af5d0d;
+                    border-top: 1px solid $activeColor;
                     .comment-item:last-child {
                         border: none;
                         padding-bottom: 0;
@@ -266,21 +302,24 @@
         right: 0;
         top: 130px;
         li {
-            background: #f9cfa6;
+            background: $defaultColor;
             list-style: none;
             width: 150px;
             line-height: 30px;
-            border-bottom: 1px solid #af5d0d;
+            border-bottom: 1px solid $activeColor;
             padding-left: 20px;
             box-sizing: border-box;
             .fa {
                 margin-right: 5px;
             }
             &.active {
-                background: #af5d0d;
+                @include active();
                 width: 200px;
                 &:hover {
                     width: 200px;
+                }
+                a {
+                    color: #fff;
                 }
             }
             &:hover {
@@ -294,8 +333,8 @@
         right: 0;
         top: 400px;
         dl {
-            background: #f9cfa6;
-            border-bottom: 1px solid #af5d0d;
+            background: $defaultColor;
+            border-bottom: 1px solid $activeColor;
             dt {
                 line-height: 30px;
                 font-size: 12px;
@@ -316,7 +355,7 @@
             }
             &:hover {
                 dt {
-                    background: #af5d0d;
+                    @include active();
                 }
                 dd {
                     display: block;
@@ -329,7 +368,7 @@
 .book-comment-form {
     .title {
         font-size: 20px;
-        border-left: 5px solid #af5d0d;
+        border-left: 5px solid $activeColor;
         padding-left: 10px;
         margin-top: 15px;
     }
@@ -349,7 +388,7 @@
                 display: table-cell;
                 background: transparent;
                 border: none;
-                border-bottom: 1px solid #af5d0d;
+                border-bottom: 1px solid $activeColor;
                 font-size: 20px;
                 width: 100%;
             }
@@ -361,12 +400,12 @@
         height: 100px;
         resize: none;
         background: transparent;
-        border: 1px solid #af5d0d;
+        border: 1px solid $activeColor;
         font-size: 20px;
     }
     button {
         line-height: 30px;
-        background: #af5d0d;
+        background: $activeColor;
         padding: 0 20px;
         border: none;
     }

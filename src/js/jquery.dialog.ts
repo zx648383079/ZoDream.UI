@@ -100,12 +100,30 @@ class DialogElement {
 
     private _timeHandle: number;
 
+    private _isShow: boolean = false;
+
+    public set isShow(arg: boolean) {
+        if (!this.element) {
+            return;
+        }
+        this._isShow = arg;
+        if (this.isShow) {
+            this.element.show();
+            return;
+        }
+        this.element.hide();
+    }
+
+    public get isShow(): boolean {
+        return this._isShow;
+    }
+
     public init() {
         if (!this.option.content && this.option.url) {
-            let dialog = Dialog.loading();
+            this.toggleLoading(true);
             let instance = this;
             $.get(this.option.url, function(html) {
-                dialog.close();
+                instance. toggleLoading(false);
                 instance.option.content = html;
                 instance.init();
             });
@@ -133,6 +151,7 @@ class DialogElement {
             $(document.body).append(this.element);
         }
         this._setProperty();
+        this._isShow = true;
         return this.element;
     }
 
@@ -177,13 +196,21 @@ class DialogElement {
         let maxWidth = target.width();
         let width = this.element.width();
         if (this.option.type == DialogType.tip) {
-            this.element.css('left', (maxWidth - width) / 2 + 'px');
+            this.css('left', (maxWidth - width) / 2 + 'px');
             return;
         }
         let maxHeight = target.height();
         let height = this.element.height();
+        if (this.option.direction) {
+            let [x, y] = this._getLeftTop(Dialog.parseEnum<DialogDirection>(this.option.direction, DialogDirection), width, height, maxWidth, maxHeight);
+            this.css({
+                left: x + 'px',
+                top: y + 'px'
+            });
+            return;
+        }
         if (maxWidth > width && maxHeight > height) {
-            this.element.css({
+            this.css({
                 left: (maxWidth - width) / 2 + 'px',
                 top: (maxHeight - height) / 2 + 'px'
             });
@@ -485,11 +512,25 @@ class DialogElement {
     
 
     public show() {
-        this.element.show();
+        this.isShow = true;
     }
 
     public hide() {
-        this.element.hide();
+        this.isShow = false;
+    }
+
+    private _loading: DialogElement;
+
+    public toggleLoading(is_show?: boolean) {
+        if (!this._loading) {
+            is_show = true;
+            this._loading = Dialog.loading();
+        }
+        if (typeof is_show == 'undefined') {
+            is_show = !this._loading.isShow;
+        }
+        this._loading.isShow = is_show;
+        this.isShow = !is_show;
     }
 
     public close() {
@@ -515,10 +556,13 @@ class DialogElement {
         this.element.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
             $(this).remove();
         });
+        if (this._loading) {
+            this._loading.close();
+        }
     }
 
     public toggle() {
-        this.element.toggle();
+        this.isShow = !this.isShow;
     }
 
     public css(key: any, value?: string| number): JQuery {
@@ -531,6 +575,16 @@ class DialogElement {
      */
     public done(callback: Function) {
         this.option.done = callback;
+    }
+
+    public setContent(data: any) {
+        if (!this.element) {
+            this.option.content = data;
+            this._createElement();
+            return;
+        }
+        this.element.find('.dialog-body').html(this._createForm(data));
+        this.option.content = data;
     }
 
     
@@ -572,7 +626,7 @@ class DialogElement {
         }
         this.element.addClass('dialog-pop-' + DialogDirection[this.option.direction]);
         let offest = this.option.target.offset();
-        let [x, y] = this._getPopLeftTop(this.option.direction, this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.option.target.outerWidth(), this.option.target.outerHeight());
+        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.option.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.option.target.outerWidth(), this.option.target.outerHeight());
         this.element.css({
             left: x + 'px',
             top: y + 'px'

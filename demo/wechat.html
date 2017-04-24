@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../dev/css/dialog.css" rel="stylesheet">
+        <link href="../dev/css/wechat.css" rel="stylesheet">
+    </head>
+    <body>
+    <div>
+        <div class="tab-box">
+            <ul class="tab-header">
+                <li class="active">文本</li><li>图片</li><li>音乐</li><li>视频</li><li>图文</li>
+            </ul>
+            <div class="tab-body">
+                <div class="active">
+                    <div class="editor-box" contenteditable="true"></div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-5">
+                            从素材库中选择
+                        </div>
+                        <div class="col-5">
+                            上传图片
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-5">
+                            从素材库中选择
+                        </div>
+                        <div class="col-5">
+                            上传音乐
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-5">
+                            从素材库中选择
+                        </div>
+                        <div class="col-5">
+                            上传视频
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-5">
+                            从素材库中选择
+                        </div>
+                        <div class="col-5">
+                            新建图文
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="select-box">
+        <div class="search-box">
+            <input type="text">
+            <i class="fa fa-search"></i>
+        </div>
+        <ul class="list-box">
+            <li class="selected">
+                aaaaaaaaaadaafdfafdfsfsaa
+            </li>
+        </ul>
+    </div>
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.dialog.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".tab-box .tab-header>li").click(function() {
+                $(this).addClass('active').siblings().removeClass('active');
+                $(this).parents('.tab-box').find('.tab-body>div').eq($(this).index()).addClass('active').siblings().removeClass('active');
+            });
+            var selectDialog = Dialog.box('', '图文选择');
+            $(".col-5").click(function() {
+                
+            });
+        });
+    </script>
+    </body>
+</html>

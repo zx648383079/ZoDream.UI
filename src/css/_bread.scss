@@ -1,0 +1,22 @@
+.zd-bread {
+    .zd-bread-item {
+        display: inline-block;
+        line-height: 40px;
+        background: #777;
+        color: #fff;
+        padding: 0 10px;
+        position: relative;
+        &:after {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 0;
+            border: transparent 20px solid;
+            right: -40px;
+            margin-top: -20px;
+            top: 50%;
+            border-left-color: #777;
+            z-index: 99;
+        }
+    }
+}

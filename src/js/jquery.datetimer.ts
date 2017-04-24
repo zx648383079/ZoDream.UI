@@ -533,13 +533,18 @@ class DateTimer {
          if (!year) {
              return new Date();
          }
-         if (typeof year == 'string') {
-             return new Date(year);
+         if (typeof year == 'object') {
+             return year;
          }
-         if (typeof year == 'number') {
+         if (typeof year == 'number' 
+         && typeof month == 'number') {
              return new Date(year, month - 1, 1);
          }
-         return year;
+         let date = new Date(year);
+         if (isNaN(date.getTime())) {
+             return new Date();
+         }
+         return date;
      }
 }
 

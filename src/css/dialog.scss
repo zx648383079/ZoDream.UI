@@ -99,7 +99,9 @@
             height: 30px;
             line-height: 30px;
             text-align: center;
-            background: #D0D0D0;
+            background: #fff;
+            padding: 5px 10px;
+            border-bottom: 1px solid #ccc;
             .dialog-title {
                 cursor: move;
             }
@@ -114,16 +116,21 @@
             }
             .fa-arrow-left {
                 left: 0;
-                background: #337ab7;
+                background: #fff;
+                color:#ccc;
+                top:5px;
             }
             .dialog-close {
                 right: 0;
-                background: #c9302c;
+                background:#fff;
+                color:#ccc;
+                top:6px;
             }
         }
         .dialog-body {
             min-height: 100px;            
             overflow: auto;
+            padding:10px;
         }
         .dialog-footer {
             button {
@@ -133,13 +140,43 @@
                 color: #fff;
                 padding: 0;
                 margin: 0;
+                &:focus {
+                    outline: -webkit-focus-ring-color auto 0px;
+                }
             }
             .dialog-yes {
-                background: #337ab7;
+                width: 30%;
+                background: #fff;
+                padding: 3px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                margin-right: 5px;
+                line-height: 30px;
+                color: #333;
             }
             .dialog-close {
-                background: #c9302c;
+                width:30%;
+                background: #337ab7;
+                color: #fff;
+                padding: 3px;
+                border: 1px solid #337ab7;
+                border-radius: 5px;
+                line-height:30px;
             }
+        }
+    }
+    &.dialog-box,
+    &.dialog-form,
+    &.dialog-content {
+        .dialog-header {
+            .dialog-title {
+                text-align:left;
+            }
+        }
+        .dialog-footer {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            text-align: right;
         }
     }
     &.dialog-content {
@@ -150,6 +187,7 @@
             
         }
         .dialog-footer {
+            text-align:center
         }
     }
     &.dialog-page {
@@ -157,6 +195,13 @@
         left: 0;
         width: 100%;
         bottom: 0;
+        .dialog-header {
+            .dialog-close{
+                background:#fff;
+                color:#ccc;
+                top:6px;
+            }
+        }
         .dialog-body {
             position: absolute;
             bottom: 30px;
@@ -167,6 +212,7 @@
             position: absolute;
             bottom: 0;
             width: 100%;
+            text-align:center
         }
     }
     &.dialog-form {

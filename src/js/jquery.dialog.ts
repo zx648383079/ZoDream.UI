@@ -239,7 +239,10 @@ class DialogElement {
                 }
             });
         }
-        if (this.option.hasNo) {
+        if (this.option.type == DialogType.box
+            || this.option.type == DialogType.form
+            || this.option.type == DialogType.page
+            || this.option.hasNo) {
             this.onClick(".dialog-close", function() {
                 this.close();
             });

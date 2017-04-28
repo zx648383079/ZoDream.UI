@@ -185,8 +185,8 @@ class UploadDefaultOption implements UploadOption {
         if (typeof data != 'object') {
             data = JSON.parse(data);
         }
-        if (data.status == 'SUCCESS') {
-            return data;
+        if (data.code == 0) {
+            return data.data;
         }
         return false;
     };

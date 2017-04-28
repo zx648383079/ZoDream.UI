@@ -46,7 +46,7 @@ typings/
 .vscode/
 node_modules/
 bower_components/
-dev/
 prov/
+dev/
 /*.log
 /demo/*.log

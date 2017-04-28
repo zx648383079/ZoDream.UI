@@ -371,7 +371,7 @@ class DialogElement {
     }
 
     private _getFooter(): string {
-        if (!this.option.hasYes && this.option.hasNo && (typeof this.option.button == 'object' && this.option.button instanceof Array && this.option.button.length == 0)) {
+        if (!this.option.hasYes && !this.option.hasNo && (typeof this.option.button == 'object' && this.option.button instanceof Array && this.option.button.length == 0)) {
             return '';
         }
         let html = '<div class="dialog-footer">';

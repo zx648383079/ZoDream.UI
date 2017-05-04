@@ -107,10 +107,10 @@ class Zoom {
         }
         this.element.swipe({
             swipeLeft: function() {
-                instance.previous()
+                instance.next();
             },
             swipeRight: function() {
-                instance.next();
+                instance.previous();
             }
         });
     }

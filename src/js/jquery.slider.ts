@@ -51,6 +51,9 @@ class Slider {
         options?: SliderOptions
     ) {
         this.options = $.extend({}, new SliderDefaultOptions(), options);
+        if (this.element.length == 0) {
+            return;
+        }
         let items = this.element.find(this.options.item);
         this._length = items.length;
         this._box = items.parent();

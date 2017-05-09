@@ -4,7 +4,14 @@ class City {
         options?: CityOptions
     ) {
         this.options = $.extend({}, new CityDefaultOptions(), options);
+        if (!this.options.onchange) {
+            this.options.onchange = this._onchange;
+        }
         this._init();
+        let instance = this;
+        this.element.click(function() {
+            instance.show();
+        });
     }
 
     public options: CityOptions;
@@ -15,9 +22,46 @@ class City {
 
     private _body: JQuery;
 
+    private _onchange(id?: string| number, index?: number) {
+        if (typeof this.options.data == 'object') {
+            this._setData(id);
+            return;
+        }
+        if (typeof this.options.data != 'string') {
+            return false;
+        }
+        let instance = this;
+        $.getJSON(this.options.data, function(data) {
+            if (data.code == 0) {
+                instance.options.data = data.data;
+                this._setData(id);
+            }
+        });
+    }
+
+    private _setData(id?: string| number) {
+        if (!id) {
+            this.addTab(this.options.data);
+            return;
+        }
+        let data = this.options.data;
+        this.map(id => {
+            data = data[id][this.options.children];
+            if (!data) {
+                return false;
+            }
+        });
+        if (!data) {
+            this.options.done && this.options.done.call(this);
+            return;
+        }
+        this.addTab(data);
+    }
+
     private _init() {
         this._create();
         this._bindEvent();
+        this.setId();
     }
 
     private _getTabHeader(title: string = '请选择'): string {
@@ -39,7 +83,7 @@ class City {
             return [i, item];
         }
         let name = item[this.options.name];
-        if (this.options.id) {
+        if (this.options.id && item.hasOwnProperty(this.options.id)) {
             return [item[this.options.id], name];
         }
         return [i, name];
@@ -79,6 +123,7 @@ class City {
         if (typeof data == 'object') {
             this.addTab(data);
         }
+        
         if (data == false) {
             this.options.done && this.options.done.call(this);
             return;
@@ -157,6 +202,14 @@ class City {
         });
         return data;
     }
+
+    public output(element: JQuery = this.element) {
+        if (element.is('input') || element.is('textarea')) {
+            element.val(this.text());
+            return;
+        }
+        element.text(this.text());
+    }
 }
 
 interface CityOptions {
@@ -166,26 +219,14 @@ interface CityOptions {
     done?: Function,
     id?: string,
     name?: string,
-    
+    children?: string,
 }
 
 class CityDefaultOptions implements CityOptions {
     data: string = '';
     id: string = 'id';
     name: string = 'name';
-    onchange: (id?: string| number, index?: number) => any = function(id?: string| number, index?: number) {
-        if (typeof this.options.data == 'object') {
-            
-        }
-        if (typeof this.options.data != 'string') {
-            return false;
-        }
-        $.getJSON(this.options.data, function(data) {
-            if (data.code == 0) {
-                this.options.data = data.data;
-            }
-        });
-    }
+    children: string = 'children',
 }
 
 ;(function($: any) {

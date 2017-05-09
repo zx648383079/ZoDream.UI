@@ -101,20 +101,19 @@ class Upload {
                 return;
             }
             item.each(function(i, element) {
-                switch (element.nodeName.toUpperCase()) {
-                    case "INPUT":
-                        item.val(value);
-                        return;
-                    case "IMG":
-                        item.attr("src", value);
-                        return;
-                    default:
-                        break;
+                let ele = $(element);
+                if (ele.is('input') || ele.is('textarea')) {
+                    ele.val(value);
+                    return;
+                }
+                if (ele.is('img')) {
+                    ele.attr("src", value);
+                    return;
                 }
                 if (instance.option.isAppend) {
-                    item.append(value);
+                    ele.append(value);
                 } else {
-                    item.prepend(value);
+                    ele.prepend(value);
                 }
             });
         });

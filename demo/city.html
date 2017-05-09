@@ -15,10 +15,26 @@
     <script src="../dev/js/jquery.city.js"></script>
     <script>
     $(document).ready(function() {
-        var selector = $("#city").city();
-        selector.addTab([
-            {id: 1, name: 'chengs'}
-        ]);
+        var selector = $("#city").city({
+            data: {
+                1: {
+                    name: 'ad',
+                    children: {
+                        2: 242
+                    }
+                },
+                2: {
+                    name: '2423',
+                    children: {
+                        4: 45
+                    }
+                },
+            },
+            done: function() {
+                console.log(this.close().val());
+                this.output();
+            }
+        });
     });    
     </script>
     </body>

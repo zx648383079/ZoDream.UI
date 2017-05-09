@@ -3,10 +3,22 @@
     width: 300px;
     height: 200px;
     background: #fff;
+    border: 1px solid #0275d8;
+    display: none;
+    * {
+        margin: 0;
+        padding: 0;
+    }
     .selector-header {
+        border-bottom: 2px solid #0275d8;
         li {
             list-style: none;
             display: inline-block;
+            line-height: 30px;
+            padding: 0 5px;
+            text-align: center;
+            min-width: 78px;
+            
             &.active {
                 background: #0275d8;
                 color: #fff;
@@ -22,6 +34,10 @@
             li {
                 list-style: none;
                 display: inline-block;
+                line-height: 25px;
+                padding: 0 8px;
+                text-align: center;
+                min-width: 60px;
                 &.selected {
                     background: #0275d8;
                     color: #fff;
@@ -32,6 +48,7 @@
     .fa-close {
         position: absolute;
         top: 0;
-        right: 0;
+        line-height: 30px;
+        right: 5px;
     }
 }

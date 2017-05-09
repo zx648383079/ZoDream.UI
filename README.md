@@ -16,8 +16,9 @@
 | 跑马灯 |[jquery.boxSlider](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.boxSlider.ts) |只支持向上跑，支持自动复制实现完整的循环|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/boxSlider.html)|
 | 分页列表 |[jquery.page](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.page.ts) |支持搜索，支持分页，支持删除，支持排序，支持多选|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/admin/list.html)|
 | 弹出框 |[jquery.dialog](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.dialog.ts) |提示、消息、弹出、加载、内容、对话框、表单、页面， 支持元素内弹出框，支持链接弹出框（非iframe, iframe方式请直接输入代码）,支持消息框自动排列对齐|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/dialog.html)|
+| 选择器 |[jquery.city](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.city.ts) |多层选择器，支持动态获取和json|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/city.html)|
 
 
 ## 更新进度
 
-2017/4/6 插件积累
+2017/5/9 插件积累

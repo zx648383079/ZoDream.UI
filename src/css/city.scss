@@ -1,0 +1,37 @@
+.selector {
+    position: fixed;
+    width: 300px;
+    height: 200px;
+    background: #fff;
+    .selector-header {
+        li {
+            list-style: none;
+            display: inline-block;
+            &.active {
+                background: #0275d8;
+                color: #fff;
+            }
+        }
+    }
+    .selector-body {
+        ul {
+            display: none;
+            &.active {
+                display: block;
+            }
+            li {
+                list-style: none;
+                display: inline-block;
+                &.selected {
+                    background: #0275d8;
+                    color: #fff;
+                }
+            }
+        }
+    }
+    .fa-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}

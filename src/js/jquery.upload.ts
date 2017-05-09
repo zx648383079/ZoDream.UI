@@ -96,7 +96,7 @@ class Upload {
         let value = this.replace(data);
         let instance = this;
         tags.forEach(function(tag) {
-            let item = instance.getElement(tag, this.currentElement);
+            let item = instance.getElement(tag, instance.currentElement);
             if (item.length == 0) {
                 return;
             }

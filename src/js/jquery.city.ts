@@ -1,89 +1,191 @@
-/**
- * 
- */
 class City {
     constructor(
         public element: JQuery,
         options?: CityOptions
     ) {
         this.options = $.extend({}, new CityDefaultOptions(), options);
+        this._init();
     }
 
     public options: CityOptions;
 
-    public selectProv(arg: string) {
-        this.options.prov.val(arg);
+    public box: JQuery;
+
+    private _header: JQuery;
+
+    private _body: JQuery;
+
+    private _init() {
+        this._create();
+        this._bindEvent();
     }
 
-    public selectCity(arg: string) {
-        this.options.city.val(arg);
+    private _getTabHeader(title: string = '请选择'): string {
+        return '<li class="active">' + title +'</li>';
     }
 
-    public selectDist(arg: string) {
-        this.options.dist.val(arg);
+    private _getTabBody(data: any): string {
+        let html = '';
+        let instance = this;
+        $.each(data, (i, item) => {
+            let [id, name] = instance._getIdAndName(item, i);
+            html += '<li data-id="' + id + '">' + name +'</li>';
+        });
+        return '<ul class="active">' + html + '</ul>';
     }
 
-    public setProv(arg?: string) {
-        this._setData(this.options.prov, this.options.data['prov'].call(this), arg);
-    }
-
-    public setCity(arg?: string) {
-        this._setData(this.options.prov, this.options.data['city'].call(this), arg);
-    }
-
-    public setDist(arg?: string) {
-        this._setData(this.options.prov, this.options.data['dist'].call(this), arg);
-    }
-
-    private _setData(element: string | JQuery | ((data: Array<any>, arg?: string) => void), data: Array<any>, arg?: string) {
-        if (typeof element == 'string') {
-            element = this.element.find(element);
+    private _getIdAndName(item: any, i: string| number): [string| number, string] {
+        if (typeof item != 'object') {
+            return [i, item];
         }
-        if (typeof element == 'function') {
-            element(data, arg);
+        let name = item[this.options.name];
+        if (this.options.id) {
+            return [item[this.options.id], name];
+        }
+        return [i, name];
+    }
+
+    private _create() {
+        this.box = $('<div class="selector" data-type="selector"></div>');
+        this.box.html('<ul class="selector-header"></ul><div class="selector-body"></div><i class="fa fa-close"></i>');
+        $(document.body).append(this.box);
+        this._header = this.box.find('.selector-header');
+        this._body = this.box.find('.selector-body');
+    }
+
+    private _bindEvent() {
+        let instance = this;
+        this.box.on('click', '.fa-close', function() {
+            instance.close();
+        });
+        this._header.on('click', 'li', function() {
+             instance.changeTab($(this).index());
+        });
+        this._body.on('click', 'li', function() {
+            let $this = $(this);
+            let id = $this.attr('data-id');
+            let index = $this.parent().index();
+             $this.addClass('selected').siblings().removeClass('selected');
+
+             instance._header.find('li').eq(index).attr('data-id', id)
+             .text($this.text());
+             instance.setId(id, index);
+        });
+    }
+
+    public setId(id?: string| number, index?: number) {
+        this.remove(index + 1);
+        let data = this.options.onchange.call(this, id, index);
+        if (typeof data == 'object') {
+            this.addTab(data);
+        }
+        if (data == false) {
+            this.options.done && this.options.done.call(this);
             return;
         }
-        let html = '';
-        data.forEach((item, i) => {
-            if (typeof item != 'object') {
-                item = [i, item];
+        return this;
+    }
+
+    public close() {
+        this.box.hide();
+        return this;
+    }
+
+    public show() {
+        this.box.show();
+        return this;
+    }
+
+    public changeTab(index: number): this {
+        this._header.find('li').addClass('active').siblings().removeClass('active');
+        this._body.find('ul').eq(index).addClass('active').siblings().removeClass('active');
+        return this;
+    }
+
+    public addTab(data: any, title: string = '请选择'): this {
+        this._header.find('li').removeClass('active');
+        this._body.find('ul').removeClass('active');
+        this._header.append(this._getTabHeader(title));
+        this._body.append(this._getTabBody(data));
+        return this;
+    }
+
+    public remove(start: number = 1): this {
+        let headers = this._header.find('li');
+        let bodies = this._body.find('ul');
+        for(let i = headers.length - 1; i >= start; i--) {
+            headers.eq(i).remove();
+            bodies.eq(i).remove();
+        }
+        return this;
+    }
+
+    public map(callback: (id: string, name: string, index: number) => any): this {
+        this._header.find('li').each(function(i, ele) {
+            let item = $(ele);
+            let id = item.attr('data-id');
+            if (!id) {
+                return;
             }
-            html += this._createOption(item,  arg);
+            if (callback.call(item, id, item.text(), i) == false) {
+                return false;
+            }
         });
-        element.html(html);
+        return this;
     }
 
-    private _createOption(data: any, arg?: string) {
-        let [label, val] = this._getOption(data);
-        if (arg && val == arg) {
-            return '<option value="'+val+'" selected>'+label+'</option>';
-        }
-        return '<option value="'+val+'">'+label+'</option>';
+    public text(link: string = '-'): string {
+        let arg = [];
+        this.map((id, name) => {
+            arg.push(name);
+        });
+        return arg.join(link);
     }
 
-    private _getOption(data: any): [string, string] {
-        if (typeof data != 'object') {
-            return [data, data];
-        }
-        if (data instanceof Array) {
-            return [data[0], data[1]];
-        }
-        return [data.value, data.label];
+    public val(): string {
+        let val = '';
+        this.map(id => {
+            val = id;
+        });
+        return val;
+    }
+
+    public all(): Array<string> {
+        let data = [];
+        this.map(id => {
+            data.push(id);
+        });
+        return data;
     }
 }
 
 interface CityOptions {
-    default?: any,
-    prov?: string | JQuery | ((data: Array<any>, arg?: string) => void),
-    city?: string | JQuery | ((data: Array<any>, arg?: string) => void),
-    dist?: string | JQuery | ((data: Array<any>, arg?: string) => void),
-    data?: {[key: string]: () => any} | string,
+    default?: Array<string|number> | string | number,
+    data?: any,
+    onchange?: (id?: string| number, index?: number) => any,
+    done?: Function,
+    id?: string,
+    name?: string,
+    
 }
 
 class CityDefaultOptions implements CityOptions {
-    prov: string = '.prov';
-    city: string = '.city';
-    dist: string = '.dist';
+    data: string = '';
+    id: string = 'id';
+    name: string = 'name';
+    onchange: (id?: string| number, index?: number) => any = function(id?: string| number, index?: number) {
+        if (typeof this.options.data == 'object') {
+            
+        }
+        if (typeof this.options.data != 'string') {
+            return false;
+        }
+        $.getJSON(this.options.data, function(data) {
+            if (data.code == 0) {
+                this.options.data = data.data;
+            }
+        });
+    }
 }
 
 ;(function($: any) {

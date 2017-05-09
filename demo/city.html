@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../dev/css/city.css" rel="stylesheet">
+    </head>
+    <body>
+    
+    <input type="text" id="city">
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dev/js/jquery.city.js"></script>
+    <script>
+    $(document).ready(function() {
+        var selector = $("#city").city();
+        selector.addTab([
+            {id: 1, name: 'chengs'}
+        ]);
+    });    
+    </script>
+    </body>
+</html>

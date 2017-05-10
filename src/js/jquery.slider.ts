@@ -99,7 +99,13 @@ class Slider {
         this.resize();
         // 输出可点击的列表
         this._addListPoint();
+        this._bindEvent();
+        this._setTime();
+        this._runTimer();
+    }
 
+    private _bindEvent() {
+        let instance = this;
         this.element.find(this.options.previous).click(function() {
             instance.previous();
         });
@@ -109,11 +115,20 @@ class Slider {
         $(window).resize(function() {
             instance.resize();
         });
-        this._setTime();
-        this._runTimer();
+        if (!$.fn.swipe) {
+            return;
+        }
+        this.element.swipe({
+            swipeLeft: function() {
+                instance.next();
+            },
+            swipeRight: function() {
+                instance.previous();
+            }
+        });
     }
 
-    public _getWidth(reltive: number): number {
+    private _getWidth(reltive: number): number {
         if (reltive > 1) {
             return reltive;
         }

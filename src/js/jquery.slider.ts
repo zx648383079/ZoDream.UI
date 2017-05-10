@@ -38,6 +38,11 @@ class Point {
      */
     public applyWidthAndHeight() {
         let instance = this;
+        let [width, height] = this.getElementWidthAndHeight();
+        if (height == this.height && this.width != width) {
+            // 等比例缩放
+            this.height = this.width * height / width;
+        }
         $.each(this.elements, function(i, ele) {
             ele.width(instance.width);
             ele.height(instance.height);
@@ -45,34 +50,33 @@ class Point {
     }
 }
 
-class Slider {
+class SliderItem {
     constructor(
         public element: JQuery,
-        options?: SliderOptions
+        public options: SliderOptions
     ) {
-        this.options = $.extend({}, new SliderDefaultOptions(), options);
-        if (this.element.length == 0) {
+        if (this.element.attr('data-slider')) {
             return;
         }
         let items = this.element.find(this.options.item);
+        if (items.length < 2) {
+            return;
+        }
         this._length = items.length;
         this._box = items.parent();
         this._init(items);
+        this.element.attr('data-slider', 1);
     }
-
-    public options: SliderOptions;
 
     private _data: Array<Point> = [];
 
-    private _length: number;
+    private _length: number = 0;
 
     private _index: number = 0;
 
     private _box: JQuery;
 
     private _time: number;
-
-    private _timer: number;
 
     private _timeCallback() {
         if (this.options.auto) {
@@ -98,10 +102,12 @@ class Slider {
         }
         this.resize();
         // 输出可点击的列表
-        this._addListPoint();
+        if (instance.options.hasPoint) {
+            this._addListPoint();
+        }
         this._bindEvent();
         this._setTime();
-        this._runTimer();
+        
     }
 
     private _bindEvent() {
@@ -135,28 +141,11 @@ class Slider {
         return this.element.width() * reltive;
     }
 
-    private _runTimer() {
-        let instance = this;
-        this._timer = requestAnimationFrame(function() {
-            instance._time --;
-            if (instance._time <= 0) {
-                instance._timeCallback();
-            }
-            instance._runTimer();
-        });
-    }
-
-    private _cancelTimer() {
-        if (this._timer) {
-            cancelAnimationFrame(this._timer);
-        }
-    }
-
     private _setTime() {
         this._time = (this.options.spaceTime + this.options.animationTime) / 16;
     }
 
-    /**
+       /**
      * 添加跳转点
      * @param count 
      */
@@ -273,6 +262,93 @@ class Slider {
             this.options.animationMode, 
             callback
         );
+    }
+
+    public run() {
+        if (this._length < 1) {
+            return;
+        }
+        this._time --;
+        if (this._time <= 0) {
+            this._timeCallback();
+        }
+    }
+
+}
+
+class Slider {
+    constructor(
+        public element: JQuery,
+        options?: SliderOptions
+    ) {
+        this.options = $.extend({}, new SliderDefaultOptions(), options);
+        if (this.element.length == 0) {
+            return;
+        }
+        this.element.each((i, item) => {
+            this.addItem($(item));
+        });
+        this._runTimer();
+    }
+
+    public options: SliderOptions;
+
+    private _data: Array<SliderItem> = [];
+
+    private _timer: number;
+
+    public addItem(item: SliderItem | JQuery) {
+        if (item instanceof SliderItem) {
+            this._data.push(item);
+            return;
+        }
+        this._data.push(new SliderItem(item, this.options));
+    }
+
+    /**
+     * 倒序循环
+     * @param callback 返回false 结束循环，返回 true 删除
+     * @param i 初始值
+     */
+    public map(callback: (item: SliderItem, index: number) => any, i: number | number[] = this._data.length - 1) {
+        if (typeof i != 'number') {
+            i.forEach(j => {
+                if (j < 0 || j >= this._data.length) {
+                    return;
+                }
+                callback(this._data[j], j);
+            });
+            return;
+        }
+        if (i >= this._data.length) {
+            i = this._data.length - 1;
+        }
+        for (; i >= 0; i --) {
+            let item = this._data[i];
+            let result = callback(item, i);
+            if (result == true) {
+                this._data.splice(i, 1);
+            }
+            if (result == false) {
+                return;
+            }
+        }
+    }
+
+    private _runTimer() {
+        let instance = this;
+        this._timer = requestAnimationFrame(function() {
+            instance.map(item=> {
+                item.run();
+            });
+            instance._runTimer();
+        });
+    }
+
+    private _cancelTimer() {
+        if (this._timer) {
+            cancelAnimationFrame(this._timer);
+        }
     }
 }
 

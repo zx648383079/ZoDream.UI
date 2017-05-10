@@ -204,6 +204,7 @@ class City {
     }
 
     public output(element: JQuery = this.element) {
+        element.attr('data-id', this.val());
         if (element.is('input') || element.is('textarea')) {
             element.val(this.text());
             return;
@@ -226,7 +227,7 @@ class CityDefaultOptions implements CityOptions {
     data: string = '';
     id: string = 'id';
     name: string = 'name';
-    children: string = 'children',
+    children: string = 'children';
 }
 
 ;(function($: any) {

@@ -1,7 +1,7 @@
+@import "scrollbar";
 .selector {
     position: fixed;
     width: 300px;
-    height: 200px;
     background: #fff;
     border: 1px solid #0275d8;
     display: none;
@@ -26,6 +26,9 @@
         }
     }
     .selector-body {
+        overflow-y: auto;
+        height: 160px;
+        @include scrollbar();
         ul {
             display: none;
             &.active {
@@ -38,7 +41,8 @@
                 padding: 0 8px;
                 text-align: center;
                 min-width: 60px;
-                &.selected {
+                &.selected,
+                &:hover {
                     background: #0275d8;
                     color: #fff;
                 }

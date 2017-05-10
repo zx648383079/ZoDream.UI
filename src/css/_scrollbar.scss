@@ -1,0 +1,28 @@
+@mixin scrollbar() {
+    &::-webkit-scrollbar{
+        height:6px;
+        width:6px;
+        margin-right:5px;
+        background: #f5f5f5;
+        transition:all 0.3s ease-in-out;
+        border-radius:0px
+    }
+    &::-webkit-scrollbar-track { 
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+    }
+    &::-webkit-scrollbar-thumb{
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+        background: rgba(0,0,0,0.5); 
+        &:hover{
+            background:rgba(0,0,0,0.6);
+        }
+        &:active{
+            background:rgba(0,0,0,0.8);
+        }
+        &:window-inactive {
+            background: rgba(0,0,0,0.4);
+        }
+    }
+}

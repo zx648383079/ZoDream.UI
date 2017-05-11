@@ -22,9 +22,11 @@ class City {
 
     private _body: JQuery;
 
-    private _onchange(id?: string| number, index?: number) {
+    private _index: number = -1;
+
+    private _onchange(id?: string| number, index?: number, selected?: string| number) {
         if (typeof this.options.data == 'object') {
-            this._setData(id);
+            this._setData(id, index, selected);
             return;
         }
         if (typeof this.options.data != 'string') {
@@ -34,14 +36,15 @@ class City {
         $.getJSON(this.options.data, function(data) {
             if (data.code == 0) {
                 instance.options.data = data.data;
-                this._setData(id);
+                this._setData(id, index, selected);
             }
         });
     }
 
-    private _setData(id?: string| number) {
+    private _setData(id?: string| number, index?: number, selected?: string| number) {
         if (!id) {
             this.addTab(this.options.data);
+            selected && this.selectedId(selected);
             return;
         }
         let data = this.options.data;
@@ -56,26 +59,35 @@ class City {
             return;
         }
         this.addTab(data);
+        selected && this.selectedId(selected);
     }
 
     private _init() {
+        if (typeof this.options.default != 'object') {
+            this.options.default = [this.options.default];
+        }
         this._create();
         this._bindEvent();
-        this.setId();
+        this.selected();
     }
 
-    private _getTabHeader(title: string = '请选择'): string {
-        return '<li class="active">' + title +'</li>';
-    }
-
-    private _getTabBody(data: any): string {
+    /**
+     * 获取生成标签的头和身体
+     */
+    private _getHtml(data: any, title: string = '请选择', selected?: string | number): [string, string] {
         let html = '';
         let instance = this;
+        let header = '<li class="active">' + title + '</li>';
         $.each(data, (i, item) => {
             let [id, name] = instance._getIdAndName(item, i);
+            if (selected && id == selected) {
+                html += '<li class="selected" data-id="' + id + '">' + name +'</li>';
+                header = '<li class="active" data-id="' + id + '">' + name + '</li>';
+                return;
+            }
             html += '<li data-id="' + id + '">' + name +'</li>';
         });
-        return '<ul class="active">' + html + '</ul>';
+        return [header, '<ul class="active">' + html + '</ul>'];
     }
 
     private _getIdAndName(item: any, i: string| number): [string| number, string] {
@@ -103,7 +115,7 @@ class City {
             instance.close();
         });
         this._header.on('click', 'li', function() {
-             instance.changeTab($(this).index());
+             instance.selectedTab($(this).index());
         });
         this._body.on('click', 'li', function() {
             let $this = $(this);
@@ -113,15 +125,54 @@ class City {
 
              instance._header.find('li').eq(index).attr('data-id', id)
              .text($this.text());
-             instance.setId(id, index);
+             instance.selected(id, index);
+        });
+        /** 实现隐藏 */
+        this.box.click(function(e) {
+            e.stopPropagation();
+        });
+        this.element.click(function(e) {
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            instance.box.hide();
         });
     }
 
-    public setId(id?: string| number, index?: number) {
+    public setDefault(...args: Array<string| number>) {
+        this.options.default = args;
+        this.selected();
+    }
+
+    public bodyMap(callback: (id: string, name: string, index: number) => any, index: number = this._index) {
+        this._body.find('ul').eq(index).find('li').each(function(i, ele) {
+            let item = $(ele);
+            let id = item.attr('data-id');
+            if (!id) {
+                return;
+            }
+            if (callback.call(item, id, item.text(), i) == false) {
+                return false;
+            }
+        });
+    }
+
+    private _getSelect(index: number = 0): number | string | undefined {
+        if (this.options.default.length > index) {
+            return this.options.default[index];
+        }
+        this.options.default = [];
+        return undefined;
+    }
+
+    /**
+     * 加载下一页不进行选择
+     */
+    public selected(id?: string| number, index: number = this._index) {
         this.remove(index + 1);
-        let data = this.options.onchange.call(this, id, index);
+        let data = this.options.onchange.call(this, id, index, this._getSelect(index + 1));
         if (typeof data == 'object') {
-            this.addTab(data);
+            this.addTab(data, '请选择', this._getSelect(index + 1));
         }
         
         if (data == false) {
@@ -129,6 +180,18 @@ class City {
             return;
         }
         return this;
+    }
+
+    /**
+     * 选中并触发加载下一页 不进行自动关闭
+     */
+    public selectedId(id: string| number, index: number = this._index) {
+        this.bodyMap(function(i) {
+            if (i == id) {
+                this.trigger('click');
+                return false;
+            }
+        },  index);
     }
 
     public close() {
@@ -141,24 +204,27 @@ class City {
         return this;
     }
 
-    public changeTab(index: number): this {
-        this._header.find('li').addClass('active').siblings().removeClass('active');
+    public selectedTab(index: number): this {
+        this._index = index;
+        this._header.find('li').eq
+        (index).addClass('active').siblings().removeClass('active');
         this._body.find('ul').eq(index).addClass('active').siblings().removeClass('active');
         return this;
     }
 
-    public addTab(data: any, title: string = '请选择'): this {
+    public addTab(data: any, title: string = '请选择', selected?: string| number): this {
         this._header.find('li').removeClass('active');
         this._body.find('ul').removeClass('active');
-        this._header.append(this._getTabHeader(title));
-        this._body.append(this._getTabBody(data));
+        let [header, body] = this._getHtml(data, title, selected);
+        this._header.append(header);
+        this._body.append(body);
         return this;
     }
 
     public remove(start: number = 1): this {
         let headers = this._header.find('li');
         let bodies = this._body.find('ul');
-        for(let i = headers.length - 1; i >= start; i--) {
+        for (let i = headers.length - 1; i >= start; i--) {
             headers.eq(i).remove();
             bodies.eq(i).remove();
         }
@@ -214,9 +280,9 @@ class City {
 }
 
 interface CityOptions {
-    default?: Array<string|number> | string | number,
+    default?: Array<string|number>,
     data?: any,
-    onchange?: (id?: string| number, index?: number) => any,
+    onchange?: (id?: string| number, index?: number, selected?: string| number) => any,
     done?: Function,
     id?: string,
     name?: string,

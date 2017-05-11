@@ -11,11 +11,14 @@
     
     <input type="text" id="city">
 
+    <input type="text" id="selector">
+
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dev/js/jquery.city.js"></script>
     <script>
     $(document).ready(function() {
-        var selector = $("#city").city({
+        $("#city").city({
+            default: [1, 2],
             data: {
                 1: {
                     name: 'ad',

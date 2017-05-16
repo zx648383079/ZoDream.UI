@@ -36,7 +36,7 @@ class City {
         $.getJSON(this.options.data, function(data) {
             if (data.code == 0) {
                 instance.options.data = data.data;
-                this._setData(id, index, selected);
+                instance._setData(id, index, selected);
             }
         });
     }
@@ -121,11 +121,11 @@ class City {
             let $this = $(this);
             let id = $this.attr('data-id');
             let index = $this.parent().index();
-             $this.addClass('selected').siblings().removeClass('selected');
+            $this.addClass('selected').siblings().removeClass('selected');
 
-             instance._header.find('li').eq(index).attr('data-id', id)
+            instance._header.find('li').eq(index).attr('data-id', id)
              .text($this.text());
-             instance.selected(id, index);
+            instance.selected(id, index);
         });
         /** 实现隐藏 */
         this.box.click(function(e) {
@@ -200,7 +200,10 @@ class City {
     }
 
     public show() {
-        this.box.show();
+        let offset = this.element.offset();
+        let x = offset.left;
+        let y = offset.top + this.element.outerHeight();
+        this.box.css({left: x + "px", top: y + "px"}).show();
         return this;
     }
 
@@ -245,7 +248,7 @@ class City {
         return this;
     }
 
-    public text(link: string = '-'): string {
+    public text(link: string = this.options.line): string {
         let arg = [];
         this.map((id, name) => {
             arg.push(name);
@@ -287,6 +290,7 @@ interface CityOptions {
     id?: string,
     name?: string,
     children?: string,
+    line?: string  //连接符号
 }
 
 class CityDefaultOptions implements CityOptions {
@@ -294,6 +298,7 @@ class CityDefaultOptions implements CityOptions {
     id: string = 'id';
     name: string = 'name';
     children: string = 'children';
+    line: string = '-';
 }
 
 ;(function($: any) {

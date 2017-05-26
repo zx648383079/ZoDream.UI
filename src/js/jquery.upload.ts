@@ -64,7 +64,7 @@ class Upload {
     }
 
     public uploadOne(file: File) {
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, file) == false) {
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, file, this.currentElement) == false) {
             return;
         }
         let instance = this;
@@ -78,7 +78,7 @@ class Upload {
                 contentType: false,    //不可缺
                 processData: false,    //不可缺
                 success: function(data) {
-                    data = instance.option.afterUpload.call(instance, data);
+                    data = instance.option.afterUpload.call(instance, data, this.currentElement);
                     if (data != false) {
                         instance.deal($.extend({}, instance.option.data, data));
                         return;
@@ -159,8 +159,8 @@ interface UploadOption {
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
-    beforeUpload?: (file: File) => any,  //验证要上传的文件
-    afterUpload?: (data: any) => any,   //验证上传返回数据
+    beforeUpload?: (file: File, currentElement: JQuery) => any,  //验证要上传的文件
+    afterUpload?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
     success?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
     dynamic?: boolean, //是否动态绑定上传时间
     getElement?: (tag: string, currentElement: JQuery) => JQuery   //获取容器的方法

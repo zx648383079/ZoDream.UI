@@ -133,10 +133,17 @@ class DialogElement {
     }
 
     private _createElement(type: DialogType | number | string = this.option.type): JQuery {
+        this._createNewElement(type);
+        this._bindEvent();
+        this._setProperty();
+        this._isShow = true;
+        return this.element;
+    }
+
+    private _createNewElement(type: DialogType | number | string = this.option.type) {
         let typeStr = DialogType[type];
         this.element = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
         this._addHtml();
-        this._bindEvent();
         if (this.option.width) {
             this.element.width(this._getWidth());
         }
@@ -150,9 +157,6 @@ class DialogElement {
         } else {
             $(document.body).append(this.element);
         }
-        this._setProperty();
-        this._isShow = true;
-        return this.element;
     }
 
     private _addHtml() {

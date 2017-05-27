@@ -40,14 +40,14 @@ interface DialogOption {
     type?: string | number | DialogType,
     canMove?: boolean,        //是否允许移动
     target?: JQuery,           // 载体 显示在那个内容上，默认全局, position 需要自己设置 relative、absolute、fixed
-    closing?: (element: DialogElement) => any, // 关闭请求， 是否关闭， 返回false 为不关闭
+    onclosing?: (element: DialogElement) => any, // 关闭请求， 是否关闭， 返回false 为不关闭
     time?: number,         //显示时间
     width?: number,
     height?: number,
     x?: number,
     y?: number,
     direction?: DialogDirection | string | number,
-    done?: Function        //点确定时触发
+    ondone?: Function        //点确定时触发
 }
 
 class DefaultDialogOption implements DialogOption {
@@ -60,7 +60,7 @@ class DefaultDialogOption implements DialogOption {
     time: number = 0;
     button: string[] = [];
     canMove: boolean = true;
-    done: Function = function() {
+    ondone: Function = function() {
         this.close();
     }
 }
@@ -236,11 +236,9 @@ class DialogElement {
         }
         if (this.option.hasYes) {
             this.onClick(".dialog-yes", function() {
-                if (this.option.done) {
-                    this._getFormElement();
-                    this._getFormData();
-                    this.option.done.call(this);
-                }
+                this._getFormElement();
+                this._getFormData();
+                this.trigger('done');
             });
         }
         if (this.option.type == DialogType.box
@@ -315,7 +313,7 @@ class DialogElement {
                     icon: instance.option.ico,
                 });
                 instance.notify.addEventListener("click", event => {
-                    instance.option.done && instance.option.done.call(instance);
+                    instance.trigger('done');
                 });
             });
             return;
@@ -538,6 +536,9 @@ class DialogElement {
         }
         this._loading.isShow = is_show;
         this.isShow = !is_show;
+        if (this.option.type == DialogType.page && !is_show) {
+            Dialog.closeBg();
+        }
     }
 
     public close() {
@@ -552,7 +553,7 @@ class DialogElement {
             clearTimeout(this._timeHandle);
             this._timeHandle = undefined;
         }
-        if (this.option.closing && false == this.option.closing(this)) {
+        if (false == this.trigger('closing')) {
             return;
         }
         this._isClosing = true;
@@ -576,12 +577,21 @@ class DialogElement {
         return this.element.css(key, value);
     }
 
-    /**
-     * 
-     * @param callback 
-     */
-    public done(callback: Function) {
-        this.option.done = callback;
+    public on(event: string, callback: Function): this {
+        this.option['on' + event] = callback;
+        return this;
+    }
+
+    public done(callback: Function): this {
+        return this.on('done', callback);
+    }
+
+    public trigger(event: string, ... args: any[]): any {
+        let realEvent = 'on' + event;
+        if (!this.option[realEvent]) {
+            return;
+        }
+        return this.option[realEvent].call(this, ...args);
     }
 
     public setContent(data: any) {
@@ -964,7 +974,10 @@ class DialogPlugin {
     ) {
         let instance = this;
         this.element.click(function() {
-            instance.dialog = Dialog.create(instance._parseOption($(this)));
+            if (!instance.dialog) {
+                instance.dialog = Dialog.create(instance._parseOption($(this)));
+            }
+            instance.dialog.show();
         });
     }
 

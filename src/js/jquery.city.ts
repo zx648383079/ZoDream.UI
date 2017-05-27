@@ -5,7 +5,7 @@ class City {
     ) {
         this.options = $.extend({}, new CityDefaultOptions(), options);
         if (!this.options.onchange) {
-            this.options.onchange = this._onchange;
+            this.change(this._onchange);
         }
         this._init();
         let instance = this;
@@ -55,7 +55,7 @@ class City {
             }
         });
         if (!data) {
-            this.options.done && this.options.done.call(this);
+            this.trigger('done');
             return;
         }
         this.addTab(data);
@@ -170,13 +170,13 @@ class City {
      */
     public selected(id?: string| number, index: number = this._index) {
         this.remove(index + 1);
-        let data = this.options.onchange.call(this, id, index, this._getSelect(index + 1));
+        let data = this.trigger('change', id, index, this._getSelect(index + 1));
         if (typeof data == 'object') {
             this.addTab(data, '请选择', this._getSelect(index + 1));
         }
         
         if (data == false) {
-            this.options.done && this.options.done.call(this);
+            this.trigger('done');
             return;
         }
         return this;
@@ -200,10 +200,13 @@ class City {
     }
 
     public show() {
-        let offset = this.element.offset();
-        let x = offset.left;
-        let y = offset.top + this.element.outerHeight();
-        this.box.css({left: x + "px", top: y + "px"}).show();
+        if (this.options.auto) {
+            let offset = this.element.offset();
+            let x = offset.left;
+            let y = offset.top + this.element.outerHeight();
+            this.box.css({left: x + "px", top: y + "px"});
+        }
+        this.box.show();
         return this;
     }
 
@@ -280,17 +283,39 @@ class City {
         }
         element.text(this.text());
     }
+
+    public on(event: string, callback: Function): this {
+        this.options['on' + event] = callback;
+        return this;
+    }
+
+    public change(callback: (id?: string| number, index?: number, selected?: string| number) => any): this {
+        return this.on('change', callback);
+    }
+
+    public done(callback: Function): this {
+        return this.on('done', callback);
+    }
+
+    public trigger(event: string, ... args: any[]) {
+        let realEvent = 'on' + event;
+        if (!this.options[realEvent]) {
+            return;
+        }
+        return this.options[realEvent].call(this, ...args);
+    }
 }
 
 interface CityOptions {
     default?: Array<string|number>,
     data?: any,
     onchange?: (id?: string| number, index?: number, selected?: string| number) => any,
-    done?: Function,
+    ondone?: Function,
     id?: string,
     name?: string,
     children?: string,
-    line?: string  //连接符号
+    line?: string,  //连接符号
+    auto?: boolean // 自动设置位置
 }
 
 class CityDefaultOptions implements CityOptions {
@@ -299,6 +324,7 @@ class CityDefaultOptions implements CityOptions {
     name: string = 'name';
     children: string = 'children';
     line: string = '-';
+    auto: boolean = true;
 }
 
 ;(function($: any) {

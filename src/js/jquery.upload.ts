@@ -78,7 +78,7 @@ class Upload {
                 contentType: false,    //不可缺
                 processData: false,    //不可缺
                 success: function(data) {
-                    data = instance.option.afterUpload.call(instance, data, this.currentElement);
+                    data = instance.option.afterUpload.call(instance, data, instance.currentElement);
                     if (data != false) {
                         instance.deal($.extend({}, instance.option.data, data));
                         return;

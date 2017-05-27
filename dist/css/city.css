@@ -1,0 +1,66 @@
+.selector {
+  position: fixed;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #0275d8;
+  display: none;
+  box-sizing: border-box; }
+  .selector * {
+    margin: 0;
+    padding: 0; }
+  .selector .selector-header {
+    border-bottom: 2px solid #0275d8; }
+    .selector .selector-header li {
+      list-style: none;
+      display: inline-block;
+      line-height: 30px;
+      padding: 0 5px;
+      text-align: center;
+      min-width: 78px; }
+      .selector .selector-header li.active {
+        background: #0275d8;
+        color: #fff; }
+  .selector .selector-body {
+    overflow-y: auto;
+    height: 160px; }
+    .selector .selector-body::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+      margin-right: 5px;
+      background: #f5f5f5;
+      transition: all 0.3s ease-in-out;
+      border-radius: 0px; }
+    .selector .selector-body::-webkit-scrollbar-track {
+      -webkit-border-radius: 0px;
+      border-radius: 0px; }
+    .selector .selector-body::-webkit-scrollbar-thumb {
+      -webkit-border-radius: 0px;
+      border-radius: 0px;
+      background: rgba(0, 0, 0, 0.5); }
+      .selector .selector-body::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.6); }
+      .selector .selector-body::-webkit-scrollbar-thumb:active {
+        background: rgba(0, 0, 0, 0.8); }
+      .selector .selector-body::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(0, 0, 0, 0.4); }
+    .selector .selector-body ul {
+      display: none; }
+      .selector .selector-body ul.active {
+        display: block; }
+      .selector .selector-body ul li {
+        list-style: none;
+        display: inline-block;
+        line-height: 25px;
+        padding: 0 8px;
+        text-align: center;
+        min-width: 60px; }
+        .selector .selector-body ul li.selected, .selector .selector-body ul li:hover {
+          background: #0275d8;
+          color: #fff; }
+  .selector .fa-close {
+    position: absolute;
+    top: 0;
+    line-height: 30px;
+    right: 5px; }
+
+/*# sourceMappingURL=city.css.map */

@@ -1,8 +1,9 @@
- class Select {
+ class Select extends Box {
      constructor(
          public element: JQuery,
          options?: SelectOptions
      ) {
+         super();
          this.options = $.extend({}, new SelectDefaultOptions(), options);
          if (!this.options.name) {
              this.options.name = this.element.attr("data-name");
@@ -83,7 +84,7 @@
             item.addClass("selected").siblings().removeClass("selected");
             let value = item.attr("data-value");
             instance._input.val(value);
-            instance.options.onClick.call(instance, value, item);
+            instance.trigger('click', value, item);
          });
      }
 
@@ -94,6 +95,10 @@
      public hide() {
          this._box.hide();
      }
+
+    public click(callback: Function): this {
+        return this.on('change', callback);
+    }
 }
 
 interface SelectOptions {
@@ -102,7 +107,7 @@ interface SelectOptions {
     data?: any,
     textTag?: string,
     valueTag?: string,
-    onClick?: (item: string, element: JQuery) => any
+    onclick?: (item: string, element: JQuery) => any
  }
 
  class SelectDefaultOptions implements SelectOptions {

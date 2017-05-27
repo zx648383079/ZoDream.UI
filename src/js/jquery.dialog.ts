@@ -65,26 +65,27 @@ class DefaultDialogOption implements DialogOption {
     }
 }
 
-class DialogElement {
+class DialogElement extends Box {
     constructor(
         option: DialogOption,
         public id?: number
     ) {
-        this.option = $.extend({}, new DefaultDialogOption(), option);
-        this.option.type =  Dialog.parseEnum<DialogType>(this.option.type, DialogType);
-        if (this.option.type == DialogType.notify) {
+        super();
+        this.options = $.extend({}, new DefaultDialogOption(), option);
+        this.options.type =  Dialog.parseEnum<DialogType>(this.options.type, DialogType);
+        if (this.options.type == DialogType.notify) {
             this._createNotify();
             return;
         }
-        if (this.option.direction) {
-            this.option.direction = Dialog.parseEnum<DialogDirection>(this.option.direction, DialogDirection);
+        if (this.options.direction) {
+            this.options.direction = Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection);
         }
         Dialog.addItem(this);
         this._createBg();
         this.init();
     }
 
-    public option: DialogOption
+    public options: DialogOption;
 
     public element: JQuery;
 
@@ -119,12 +120,12 @@ class DialogElement {
     }
 
     public init() {
-        if (!this.option.content && this.option.url) {
+        if (!this.options.content && this.options.url) {
             this.toggleLoading(true);
             let instance = this;
-            $.get(this.option.url, function(html) {
+            $.get(this.options.url, function(html) {
                 instance. toggleLoading(false);
-                instance.option.content = html;
+                instance.options.content = html;
                 instance.init();
             });
             return;
@@ -132,7 +133,7 @@ class DialogElement {
         this._createElement();
     }
 
-    private _createElement(type: DialogType | number | string = this.option.type): JQuery {
+    private _createElement(type: DialogType | number | string = this.options.type): JQuery {
         this._createNewElement(type);
         this._bindEvent();
         this._setProperty();
@@ -140,19 +141,19 @@ class DialogElement {
         return this.element;
     }
 
-    private _createNewElement(type: DialogType | number | string = this.option.type) {
+    private _createNewElement(type: DialogType | number | string = this.options.type) {
         let typeStr = DialogType[type];
         this.element = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
         this._addHtml();
-        if (this.option.width) {
+        if (this.options.width) {
             this.element.width(this._getWidth());
         }
-        if (this.option.height) {
+        if (this.options.height) {
             this.element.height(this._getHeight());
         }
-        if (this.option.target 
-        && this.option.type != DialogType.pop) {
-            this.option.target.append(this.element);
+        if (this.options.target 
+        && this.options.type != DialogType.pop) {
+            this.options.target.append(this.element);
             this.element.addClass("dialog-private");
         } else {
             $(document.body).append(this.element);
@@ -160,7 +161,7 @@ class DialogElement {
     }
 
     private _addHtml() {
-        switch (this.option.type) {
+        switch (this.options.type) {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
@@ -176,37 +177,37 @@ class DialogElement {
             case DialogType.message:
             case DialogType.pop:
             default:
-                this.element.text(this.option.content);
+                this.element.text(this.options.content);
                 break;
         }
     }
 
     private _setProperty() {
-        if (this.option.type == DialogType.page
-        || this.option.type == DialogType.content) {
+        if (this.options.type == DialogType.page
+        || this.options.type == DialogType.content) {
             return;
         }
 
-        if (this.option.type == DialogType.message) {
-            this.css('top', this.option.y + 'px');
+        if (this.options.type == DialogType.message) {
+            this.css('top', this.options.y + 'px');
             return;
         }
-        if (this.option.type == DialogType.pop) {
+        if (this.options.type == DialogType.pop) {
             this._setPopProperty();
             return;
         }
         
-        let target = this.option.target || Dialog.$window;
+        let target = this.options.target || Dialog.$window;
         let maxWidth = target.width();
         let width = this.element.width();
-        if (this.option.type == DialogType.tip) {
+        if (this.options.type == DialogType.tip) {
             this.css('left', (maxWidth - width) / 2 + 'px');
             return;
         }
         let maxHeight = target.height();
         let height = this.element.height();
-        if (this.option.direction) {
-            let [x, y] = this._getLeftTop(Dialog.parseEnum<DialogDirection>(this.option.direction, DialogDirection), width, height, maxWidth, maxHeight);
+        if (this.options.direction) {
+            let [x, y] = this._getLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection), width, height, maxWidth, maxHeight);
             this.css({
                 left: x + 'px',
                 top: y + 'px'
@@ -220,7 +221,7 @@ class DialogElement {
             });
             return;
         }
-        this.option.type = DialogType.page;
+        this.options.type = DialogType.page;
         this.element.addClass("dialog-page");
     }
 
@@ -228,36 +229,36 @@ class DialogElement {
         this.element.click(function(e) {
             e.stopPropagation();
         });
-        if (this.option.type == DialogType.message 
-        || this.option.type == DialogType.tip
-        || this.option.type == DialogType.loading) {
+        if (this.options.type == DialogType.message 
+        || this.options.type == DialogType.tip
+        || this.options.type == DialogType.loading) {
             this._addTime();
             return;
         }
-        if (this.option.hasYes) {
+        if (this.options.hasYes) {
             this.onClick(".dialog-yes", function() {
                 this._getFormElement();
                 this._getFormData();
                 this.trigger('done');
             });
         }
-        if (this.option.type == DialogType.box
-            || this.option.type == DialogType.form
-            || this.option.type == DialogType.page
-            || this.option.hasNo) {
+        if (this.options.type == DialogType.box
+            || this.options.type == DialogType.form
+            || this.options.type == DialogType.page
+            || this.options.hasNo) {
             this.onClick(".dialog-close", function() {
                 this.close();
             });
         }
-        if (this.option.type == DialogType.page) {
+        if (this.options.type == DialogType.page) {
             this.onClick(".dialog-header .fa-arrow-left", function() {
                 this.close();
             });
         }
         let instance = this;
-        if (this.option.canMove 
-        && (this.option.type == DialogType.box 
-        || this.option.type == DialogType.form)) {
+        if (this.options.canMove 
+        && (this.options.type == DialogType.box 
+        || this.options.type == DialogType.form)) {
             // 点击标题栏移动
             let isMove = false;
             let x, y;
@@ -283,14 +284,14 @@ class DialogElement {
     }
 
     private _addTime() {
-        if (this.option.time <= 0) {
+        if (this.options.time <= 0) {
             return;
         }
         let instance = this;
         this._timeHandle = setTimeout(function() {
             instance._timeHandle = undefined;
             instance.close();
-        }, this.option.time);
+        }, this.options.time);
     }
 
     public onClick(tag: string, callback: (element: JQuery) => any) {
@@ -308,9 +309,9 @@ class DialogElement {
                 if (permission !== "granted") {
                     console.log('您的浏览器支持但未开启桌面提醒！')
                 }
-                instance.notify = new Notification(instance.option.title, {
-                    body: instance.option.content,
-                    icon: instance.option.ico,
+                instance.notify = new Notification(instance.options.title, {
+                    body: instance.options.content,
+                    icon: instance.options.ico,
                 });
                 instance.notify.addEventListener("click", event => {
                     instance.trigger('done');
@@ -323,19 +324,19 @@ class DialogElement {
 
     private _getLoading() {
         let html = '';
-        let num = this.option.count;
+        let num = this.options.count;
         for(; num > 0; num --) {
             html += '<span></span>';
         }
-        return '<div class="'+ this.option.extra +'">'+ html +'</div>';
+        return '<div class="'+ this.options.extra +'">'+ html +'</div>';
     }
 
     /**
      * 创建私有的遮罩
      */
     private _createBg() {
-        if (!this.option.target 
-        || this.option.type == DialogType.pop) {
+        if (!this.options.target 
+        || this.options.type == DialogType.pop) {
             return;
         }
         let instance = this;
@@ -344,27 +345,27 @@ class DialogElement {
             e.stopPropagation();
             instance.close();
         });
-        this.option.target.append(this._dialogBg);
+        this.options.target.append(this._dialogBg);
     }
 
-    private _getHeader(title: string = this.option.title, hasClose: boolean = true, hasBack?: boolean, ico?: string): string {
+    private _getHeader(title: string = this.options.title, hasClose: boolean = true, hasBack?: boolean, ico?: string): string {
         let html = '<div class="dialog-header">';
-        if (hasBack || this.option.type == DialogType.page) {
+        if (hasBack || this.options.type == DialogType.page) {
             html += '<i class="fa fa-arrow-left"></i>';
         }
         html += '<div class="dialog-title">';
         if (ico) {
             html += '<i class="fa fa-' + ico + '"></i>';
         }
-        html += this.option.title +'</div>';
+        html += this.options.title +'</div>';
         if (hasClose) {
             html += '<i class="fa fa-close dialog-close"></i>';
         }
         return html + '</div>';
     }
 
-    private _getContent(content: string = this.option.content): string {
-        if (this.option.type == DialogType.form) {
+    private _getContent(content: string = this.options.content): string {
+        if (this.options.type == DialogType.form) {
             content = this._createForm(content);
         } else if (typeof content == 'object') {
             content = JSON.stringify(content);
@@ -373,20 +374,20 @@ class DialogElement {
     }
 
     private _getFooter(): string {
-        if (!this.option.hasYes && !this.option.hasNo && (typeof this.option.button == 'object' && this.option.button instanceof Array && this.option.button.length == 0)) {
+        if (!this.options.hasYes && !this.options.hasNo && (typeof this.options.button == 'object' && this.options.button instanceof Array && this.options.button.length == 0)) {
             return '';
         }
         let html = '<div class="dialog-footer">';
-        if (this.option.hasYes) {
-            html += '<button class="dialog-yes">'+ (typeof this.option.hasYes == 'string' ? this.option.hasYes : '确认') +'</button>';
+        if (this.options.hasYes) {
+            html += '<button class="dialog-yes">'+ (typeof this.options.hasYes == 'string' ? this.options.hasYes : '确认') +'</button>';
         }
-        if (this.option.hasNo) {
-            html += '<button class="dialog-close">'+ (typeof this.option.hasNo == 'string' ? this.option.hasNo : '取消') +'</button>';
+        if (this.options.hasNo) {
+            html += '<button class="dialog-close">'+ (typeof this.options.hasNo == 'string' ? this.options.hasNo : '取消') +'</button>';
         }
-        if (typeof this.option.button == 'string') {
-            this.option.button = [this.option.button];
+        if (typeof this.options.button == 'string') {
+            this.options.button = [this.options.button];
         }
-        $.each(this.option.button, (i, item)=> {
+        $.each(this.options.button, (i, item)=> {
             if (typeof item == 'string') {
                 html += '<button">'+item+'</button>';
                 return;
@@ -536,13 +537,13 @@ class DialogElement {
         }
         this._loading.isShow = is_show;
         this.isShow = !is_show;
-        if (this.option.type == DialogType.page && !is_show) {
+        if (this.options.type == DialogType.page && !is_show) {
             Dialog.closeBg();
         }
     }
 
     public close() {
-        if (this.option.type == DialogType.notify) {
+        if (this.options.type == DialogType.notify) {
             this.notify && this.notify.close();
             return;
         }
@@ -577,31 +578,18 @@ class DialogElement {
         return this.element.css(key, value);
     }
 
-    public on(event: string, callback: Function): this {
-        this.option['on' + event] = callback;
-        return this;
-    }
-
     public done(callback: Function): this {
         return this.on('done', callback);
     }
 
-    public trigger(event: string, ... args: any[]): any {
-        let realEvent = 'on' + event;
-        if (!this.option[realEvent]) {
-            return;
-        }
-        return this.option[realEvent].call(this, ...args);
-    }
-
     public setContent(data: any) {
         if (!this.element) {
-            this.option.content = data;
+            this.options.content = data;
             this._createElement();
             return;
         }
         this.element.find('.dialog-body').html(this._createForm(data));
-        this.option.content = data;
+        this.options.content = data;
     }
 
     
@@ -623,27 +611,27 @@ class DialogElement {
 
     private _getWidth(): number {
         let width = Dialog.$window.width();
-        if (this.option.width > 1) {
+        if (this.options.width > 1) {
             return width;
         }
-        return width * this.option.width;
+        return width * this.options.width;
     }
 
     private _getHeight(): number {
         let height = Dialog.$window.height();
-        if (this.option.height > 1) {
+        if (this.options.height > 1) {
             return height;
         }
-        return height * this.option.height;
+        return height * this.options.height;
     }
 
     private _setPopProperty() {
-        if (!this.option.direction) {
-            this.option.direction = DialogDirection.top;
+        if (!this.options.direction) {
+            this.options.direction = DialogDirection.top;
         }
-        this.element.addClass('dialog-pop-' + DialogDirection[this.option.direction]);
-        let offest = this.option.target.offset();
-        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.option.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.option.target.outerWidth(), this.option.target.outerHeight());
+        this.element.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
+        let offest = this.options.target.offset();
+        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight());
         this.element.css({
             left: x + 'px',
             top: y + 'px'
@@ -802,7 +790,7 @@ class Dialog {
             title: title,
             hasYes: hasYes,
             hasNo: hasNo,
-            done: done
+            ondone: done
         });
     }
 
@@ -844,13 +832,13 @@ class Dialog {
     public static addItem(element: DialogElement) {
         this._data[++this._guid] = element;
         element.id = this._guid;
-        if (element.option.type == DialogType.message) {
-            element.option.y = this.getMessageTop();
+        if (element.options.type == DialogType.message) {
+            element.options.y = this.getMessageTop();
             this._messageData.push(element.id);
             return;
         }
-        if (this._needBg(element.option.type) 
-        && !element.option.target) {
+        if (this._needBg(element.options.type) 
+        && !element.options.target) {
             this.showBg();
         }
     }
@@ -865,7 +853,7 @@ class Dialog {
         }
         this._data[id].close();
         this.sortMessageAndDelete(this._data[id]);
-        if (this._needBg(this._data[id].option.type)) {
+        if (this._needBg(this._data[id].options.type)) {
             this.closeBg();
         }
         delete this._data[id];
@@ -940,7 +928,7 @@ class Dialog {
     }
 
     public static sortMessageAndDelete(element: DialogElement) {
-        if (element.option.type != DialogType.message) {
+        if (element.options.type != DialogType.message) {
             return;
         }
         let i = this._messageData.indexOf(element.id);
@@ -948,11 +936,11 @@ class Dialog {
             return;
         }
         this._messageData.splice(i, 1);
-        let y = element.option.y;
+        let y = element.options.y;
         for(; i < this._messageData.length; i ++) {
             let item = this._data[this._messageData[i]];
             item.css('top', y + 'px');
-            item.option.y = y;
+            item.options.y = y;
             y += item.element.height() + 20;
         }
     }
@@ -963,7 +951,7 @@ class Dialog {
             return 30;
         }
         let item = this._data[this._messageData[length - 1]];
-        return item.option.y + item.element.height()  + 20;
+        return item.options.y + item.element.height()  + 20;
     }
 }
 

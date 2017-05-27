@@ -1,8 +1,9 @@
-class City {
+class City extends Box {
     constructor(
         public element: JQuery,
         options?: CityOptions
     ) {
+        super();
         this.options = $.extend({}, new CityDefaultOptions(), options);
         if (!this.options.onchange) {
             this.change(this._onchange);
@@ -284,25 +285,12 @@ class City {
         element.text(this.text());
     }
 
-    public on(event: string, callback: Function): this {
-        this.options['on' + event] = callback;
-        return this;
-    }
-
     public change(callback: (id?: string| number, index?: number, selected?: string| number) => any): this {
         return this.on('change', callback);
     }
 
     public done(callback: Function): this {
         return this.on('done', callback);
-    }
-
-    public trigger(event: string, ... args: any[]) {
-        let realEvent = 'on' + event;
-        if (!this.options[realEvent]) {
-            return;
-        }
-        return this.options[realEvent].call(this, ...args);
     }
 }
 

@@ -20,26 +20,27 @@ Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
     }
     return fmt;
 }
-class Dater {
+class Dater extends Box {
     constructor(
         public element: JQuery,
         option?: DaterOption
     ) {
-        this.option = $.extend({}, new DaterDefaultOption(), option);
+        super();
+        this.options = $.extend({}, new DaterDefaultOption(), option);
         this._initHtml();
         this.daysElement = this.element.find("tbody td");
         this.titleElement = this.element.find(".calendarTitle");
         this._lastRowElement = this.element.find("tbody tr").eq(5);
         this._bindEvent();
-        if (typeof this.option.date == 'number') {
-            this.setTime(this.option.date);
+        if (typeof this.options.date == 'number') {
+            this.setTime(this.options.date);
         } else {
-            this.setDate(this.option.date);
+            this.setDate(this.options.date);
         }
         
     }
 
-    public option: DaterOption;
+    public options: DaterOption;
 
     public daysElement: JQuery; 
 
@@ -79,7 +80,7 @@ class Dater {
         this._date = new Date(year, month, 0);
         this._daysCount = this._date.getDate();
         this._date.setDate(1);
-        if (this.option.changeDate && this.option.changeDate.call(this) == false) {
+        if (false == this.trigger('change')) {
             return;
         }
         this.reader();
@@ -135,10 +136,10 @@ class Dater {
         this.daysElement.click(function() {
             let ele = $(this);
             let day = parseInt(ele.text());
-            if (day > 0 && instance.option.dayClick) {
+            if (day > 0 && instance.hasEvent('click')) {
                 let date = new Date(instance._date);
                 date.setDate(day);
-                instance.option.dayClick(date, ele, instance.element);
+                instance.trigger('click', date, ele, instance.element);
             }
         });
         this.element.find(".previousMonth").click(function() {
@@ -186,12 +187,28 @@ class Dater {
     public isDate(date: Date = new Date()): boolean {
         return this._date.getFullYear() == date.getFullYear() && this._date.getMonth() == date.getMonth();
     }
+
+    /**
+     * 日期改变事件
+     * @param callback 
+     */
+    public change(callback: (date: Date, element: JQuery, dater: JQuery)=> void): this {
+        return this.on('change', callback);
+    }
+
+    /**
+     * 日期点击事件
+     * @param callback 
+     */
+    public click(callback: Function): this {
+        return this.on('change', callback);
+    }
 }
 
 interface DaterOption {
     date: string|Date|number,
-    changeDate?: () => any,
-    dayClick?: (date: Date, element: JQuery, dater: JQuery)=> void
+    onchange?: () => any,
+    onclick?: (date: Date, element: JQuery, dater: JQuery)=> void
 }
 
 class DaterDefaultOption implements DaterOption {

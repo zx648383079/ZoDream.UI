@@ -1,5 +1,4 @@
-
-class Time {
+export class Time {
     constructor(
         public callback: Function,
         public space: number = 16,
@@ -32,7 +31,7 @@ class Time {
     }
 }
 
-class Timer {
+export class Timer {
     constructor(
         callback: Function,
         space: number = 16,

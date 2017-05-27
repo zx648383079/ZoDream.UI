@@ -1,0 +1,131 @@
+.chat-box .chat-user {
+  width: 400px;
+  margin: 0 8px;
+  display: inline-block; }
+  .chat-box .chat-user .zd-tab-head .zd-tab-item {
+    width: 50%;
+    font-size: 30px; }
+    .chat-box .chat-user .zd-tab-head .zd-tab-item .fa {
+      display: block; }
+  .chat-box .chat-user .zd-tab-body {
+    height: 400px;
+    overflow-y: auto; }
+    .chat-box .chat-user .zd-tab-body ul {
+      margin: 0;
+      padding: 0; }
+      .chat-box .chat-user .zd-tab-body ul li {
+        height: 55px;
+        position: relative;
+        list-style: none; }
+        .chat-box .chat-user .zd-tab-body ul li:hover {
+          background: rgba(100, 100, 100, 0.2); }
+        .chat-box .chat-user .zd-tab-body ul li.active {
+          background: rgba(100, 100, 100, 0.4); }
+        .chat-box .chat-user .zd-tab-body ul li .avatar {
+          width: 40px;
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          z-index: 20; }
+          .chat-box .chat-user .zd-tab-body ul li .avatar img {
+            border-radius: 50%;
+            width: 100%;
+            height: 100%; }
+        .chat-box .chat-user .zd-tab-body ul li .info {
+          margin-left: 55px; }
+          .chat-box .chat-user .zd-tab-body ul li .info .time {
+            float: right; }
+          .chat-box .chat-user .zd-tab-body ul li .info .count {
+            float: right;
+            background: #f00;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px;
+            min-width: 20px;
+            text-align: center;
+            display: block; }
+          .chat-box .chat-user .zd-tab-body ul li .info .name {
+            font-size: 20px; }
+
+.chat-box .chat-message {
+  width: 600px;
+  margin: 0 8px;
+  display: inline-block; }
+  .chat-box .chat-message .title {
+    background: #282828;
+    line-height: 40px;
+    text-align: center;
+    font-size: 30px;
+    color: #fff; }
+  .chat-box .chat-message .message-box {
+    height: 350px;
+    overflow-y: auto; }
+    .chat-box .chat-message .message-box .left .avatar {
+      left: 0; }
+    .chat-box .chat-message .message-box .left .content {
+      margin-left: 52px;
+      float: left; }
+      .chat-box .chat-message .message-box .left .content::before {
+        left: 40px;
+        border-right-color: rgba(255, 255, 255, 0.26); }
+    .chat-box .chat-message .message-box .right .avatar {
+      right: 0; }
+    .chat-box .chat-message .message-box .right .content {
+      float: right;
+      margin-right: 52px; }
+      .chat-box .chat-message .message-box .right .content::before {
+        right: 40px;
+        border-left-color: rgba(255, 255, 255, 0.26); }
+    .chat-box .chat-message .message-box .left,
+    .chat-box .chat-message .message-box .right {
+      position: relative;
+      margin: 8px 0; }
+      .chat-box .chat-message .message-box .left:after,
+      .chat-box .chat-message .message-box .right:after {
+        content: ' ';
+        clear: both;
+        display: table; }
+      .chat-box .chat-message .message-box .left .avatar,
+      .chat-box .chat-message .message-box .right .avatar {
+        position: absolute;
+        top: 0;
+        height: 40px;
+        width: 40px;
+        border-radius: 50%; }
+      .chat-box .chat-message .message-box .left .content,
+      .chat-box .chat-message .message-box .right .content {
+        max-width: 66%;
+        background: rgba(0, 255, 255, 0.16);
+        line-height: 40px;
+        padding: 0 10px;
+        word-break: break-word; }
+        .chat-box .chat-message .message-box .left .content::before,
+        .chat-box .chat-message .message-box .right .content::before {
+          content: '';
+          position: absolute;
+          z-index: 10;
+          border: 6px solid transparent;
+          top: 15px; }
+    .chat-box .chat-message .message-box .line,
+    .chat-box .chat-message .message-box .more {
+      margin: 8px 0;
+      text-align: center; }
+  .chat-box .chat-message .send-box {
+    padding-right: 100px;
+    position: relative; }
+    .chat-box .chat-message .send-box textarea {
+      width: 100%;
+      height: 40px;
+      resize: none;
+      box-sizing: border-box; }
+    .chat-box .chat-message .send-box button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 40px;
+      background: #282828;
+      color: #fff;
+      border: none; }
+
+/*# sourceMappingURL=chat.css.map */

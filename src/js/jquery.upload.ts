@@ -148,6 +148,7 @@ class Upload {
 }
 
 interface UploadOption {
+    [setting: string]: any,
     url?: string,         // 上传网址
     name?: string,        // 上传名
     isAppend?: boolean,    //在后面加还是前面加 ，对多个有效
@@ -167,6 +168,7 @@ interface UploadOption {
 }
 
 class UploadDefaultOption implements UploadOption {
+    [setting: string]: any;
     name: string = "file";
     isAppend: boolean = true;
     template: string = "<li>{url}</li>";

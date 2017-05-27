@@ -28,11 +28,12 @@ Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
 /**
  * 已知问题当最大值最小值为DateTimer 时无法正确显示
  */
-class DateTimer {
+class DateTimer extends Box {
      constructor(
          public element: JQuery,
          options?: DateTimerOptions
      ) {
+         super();
          this.options = $.extend({}, new DateTimerDefaultOptions(), options);
          if (typeof this.options.min != 'object') {
             this.options.min = this._tD(this.options.min);
@@ -520,6 +521,9 @@ class DateTimer {
         if (this.options.max instanceof DateTimer && this.getCurrentDate() >= this.options.max.getCurrentDate()) {
             return;
         }
+        if (false == this.trigger('done')) {
+            return;
+        }
         this.element.val(this.val());
         if (!this._hasTime || isHide) {
             this.box.hide();
@@ -546,13 +550,17 @@ class DateTimer {
          }
          return date;
      }
+
+     public done(callback: (date: Date, element: JQuery) => any): this {
+        return this.on('done', callback);
+     }
 }
 
 interface DateTimerOptions {
     format?: string, //日期格式
     min?: string | Date | DateTimer, //最小日期
     max?: string | Date | DateTimer, //最大日期
-    success?: (date: Date, element: JQuery) => any,
+    ondone?: (date: Date, element: JQuery) => any,
     title?: string
  }
 

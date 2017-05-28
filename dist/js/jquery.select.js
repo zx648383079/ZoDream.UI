@@ -1,11 +1,24 @@
-var Select = (function () {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Select = (function (_super) {
+    __extends(Select, _super);
     function Select(element, options) {
-        this.element = element;
-        this.options = $.extend({}, new SelectDefaultOptions(), options);
-        if (!this.options.name) {
-            this.options.name = this.element.attr("data-name");
+        var _this = _super.call(this) || this;
+        _this.element = element;
+        _this.options = $.extend({}, new SelectDefaultOptions(), options);
+        if (!_this.options.name) {
+            _this.options.name = _this.element.attr("data-name");
         }
-        this._input = $('input[name="' + this.options.name + '"]');
+        _this._input = $('input[name="' + _this.options.name + '"]');
+        return _this;
     }
     Object.defineProperty(Select.prototype, "data", {
         get: function () {
@@ -67,7 +80,7 @@ var Select = (function () {
             item.addClass("selected").siblings().removeClass("selected");
             var value = item.attr("data-value");
             instance._input.val(value);
-            instance.options.onClick.call(instance, value, item);
+            instance.trigger('click', value, item);
         });
     };
     Select.prototype.show = function () {
@@ -76,8 +89,11 @@ var Select = (function () {
     Select.prototype.hide = function () {
         this._box.hide();
     };
+    Select.prototype.click = function (callback) {
+        return this.on('change', callback);
+    };
     return Select;
-}());
+}(Box));
 var SelectDefaultOptions = (function () {
     function SelectDefaultOptions() {
     }

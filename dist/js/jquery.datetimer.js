@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 /**
  * 获取真实的月份
  */
@@ -29,29 +39,32 @@ Date.prototype.format = function (fmt) {
 /**
  * 已知问题当最大值最小值为DateTimer 时无法正确显示
  */
-var DateTimer = (function () {
+var DateTimer = (function (_super) {
+    __extends(DateTimer, _super);
     function DateTimer(element, options) {
-        this.element = element;
+        var _this = _super.call(this) || this;
+        _this.element = element;
         /**
          * 是否有时间
          */
-        this._hasTime = true;
-        this.options = $.extend({}, new DateTimerDefaultOptions(), options);
-        if (typeof this.options.min != 'object') {
-            this.options.min = this._tD(this.options.min);
+        _this._hasTime = true;
+        _this.options = $.extend({}, new DateTimerDefaultOptions(), options);
+        if (typeof _this.options.min != 'object') {
+            _this.options.min = _this._tD(_this.options.min);
         }
-        if (typeof this.options.max != 'object') {
-            this.options.max = this._tD(this.options.max);
+        if (typeof _this.options.max != 'object') {
+            _this.options.max = _this._tD(_this.options.max);
         }
-        if (this.options.format.indexOf('h') < 0) {
-            this._hasTime = false;
+        if (_this.options.format.indexOf('h') < 0) {
+            _this._hasTime = false;
         }
-        this.createHtml();
-        var instance = this;
-        this.element.focus(function () {
+        _this.createHtml();
+        var instance = _this;
+        _this.element.focus(function () {
             $('[data-type=datetimer]').hide();
             instance.init($(this).val());
         });
+        return _this;
     }
     /**
      * 获取设置的最小值
@@ -153,10 +166,7 @@ var DateTimer = (function () {
      * 显示
      */
     DateTimer.prototype.open = function () {
-        var offset = this.element.offset();
-        var x = offset.left;
-        var y = offset.top + this.element.outerHeight();
-        this.box.css({ left: x + "px", top: y + "px" }).show();
+        this.showPosition();
     };
     /**
      * 获取当前设置的时间
@@ -474,6 +484,9 @@ var DateTimer = (function () {
         if (this.options.max instanceof DateTimer && this.getCurrentDate() >= this.options.max.getCurrentDate()) {
             return;
         }
+        if (false == this.trigger('done')) {
+            return;
+        }
         this.element.val(this.val());
         if (!this._hasTime || isHide) {
             this.box.hide();
@@ -499,8 +512,11 @@ var DateTimer = (function () {
         }
         return date;
     };
+    DateTimer.prototype.done = function (callback) {
+        return this.on('done', callback);
+    };
     return DateTimer;
-}());
+}(Box));
 var DateTimerDefaultOptions = (function () {
     function DateTimerDefaultOptions() {
         this.format = "y-m-d h:i:s"; //日期格式

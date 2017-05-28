@@ -196,10 +196,7 @@ class DateTimer extends Box {
      * 显示
      */
     public open() {
-        let offset = this.element.offset();
-        let x = offset.left;
-        let y = offset.top + this.element.outerHeight();
-        this.box.css({left: x + "px", top: y + "px"}).show();
+        this.showPosition();
     }
 
     /**

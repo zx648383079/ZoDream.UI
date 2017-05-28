@@ -197,10 +197,7 @@ var City = (function (_super) {
     };
     City.prototype.show = function () {
         if (this.options.auto) {
-            var offset = this.element.offset();
-            var x = offset.left;
-            var y = offset.top + this.element.outerHeight();
-            this.box.css({ left: x + "px", top: y + "px" });
+            return this.showPosition();
         }
         this.box.show();
         return this;
@@ -279,6 +276,41 @@ var City = (function (_super) {
     };
     City.prototype.done = function (callback) {
         return this.on('done', callback);
+    };
+    /**
+     * 根据ID查找无限树的路径
+     * @param id
+     */
+    City.prototype.getPath = function (id) {
+        if (this.options.hasOwnProperty(id)) {
+            return [id];
+        }
+        var path = [], found = false, instance = this, findPath = function (data) {
+            if (typeof data != 'object') {
+                return;
+            }
+            if (data.hasOwnProperty(id)) {
+                path.push(id);
+                found = true;
+                return;
+            }
+            $.each(data, function (key, args) {
+                findPath(args[instance.options.children]);
+                if (found) {
+                    path.push(key);
+                    return false;
+                }
+            });
+        };
+        $.each(this.options.data, function (key, data) {
+            findPath(data[instance.options.children]);
+            if (found) {
+                path.push(key);
+                return false;
+            }
+        });
+        path.reverse();
+        return path;
     };
     return City;
 }(Box));

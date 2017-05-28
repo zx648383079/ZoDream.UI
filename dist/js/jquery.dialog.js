@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var DialogType;
 (function (DialogType) {
     DialogType[DialogType["tip"] = 0] = "tip";
@@ -39,25 +49,28 @@ var DefaultDialogOption = (function () {
     }
     return DefaultDialogOption;
 }());
-var DialogElement = (function () {
+var DialogElement = (function (_super) {
+    __extends(DialogElement, _super);
     function DialogElement(option, id) {
-        this.id = id;
-        this.data = {};
-        this.elements = {};
-        this._isClosing = false;
-        this._isShow = false;
-        this.option = $.extend({}, new DefaultDialogOption(), option);
-        this.option.type = Dialog.parseEnum(this.option.type, DialogType);
-        if (this.option.type == DialogType.notify) {
-            this._createNotify();
-            return;
+        var _this = _super.call(this) || this;
+        _this.id = id;
+        _this.data = {};
+        _this.elements = {};
+        _this._isClosing = false;
+        _this._isShow = false;
+        _this.options = $.extend({}, new DefaultDialogOption(), option);
+        _this.options.type = Dialog.parseEnum(_this.options.type, DialogType);
+        if (_this.options.type == DialogType.notify) {
+            _this._createNotify();
+            return _this;
         }
-        if (this.option.direction) {
-            this.option.direction = Dialog.parseEnum(this.option.direction, DialogDirection);
+        if (_this.options.direction) {
+            _this.options.direction = Dialog.parseEnum(_this.options.direction, DialogDirection);
         }
-        Dialog.addItem(this);
-        this._createBg();
-        this.init();
+        Dialog.addItem(_this);
+        _this._createBg();
+        _this.init();
+        return _this;
     }
     Object.defineProperty(DialogElement.prototype, "isShow", {
         get: function () {
@@ -78,12 +91,12 @@ var DialogElement = (function () {
         configurable: true
     });
     DialogElement.prototype.init = function () {
-        if (!this.option.content && this.option.url) {
+        if (!this.options.content && this.options.url) {
             this.toggleLoading(true);
             var instance_1 = this;
-            $.get(this.option.url, function (html) {
+            $.get(this.options.url, function (html) {
                 instance_1.toggleLoading(false);
-                instance_1.option.content = html;
+                instance_1.options.content = html;
                 instance_1.init();
             });
             return;
@@ -91,7 +104,7 @@ var DialogElement = (function () {
         this._createElement();
     };
     DialogElement.prototype._createElement = function (type) {
-        if (type === void 0) { type = this.option.type; }
+        if (type === void 0) { type = this.options.type; }
         this._createNewElement(type);
         this._bindEvent();
         this._setProperty();
@@ -99,19 +112,19 @@ var DialogElement = (function () {
         return this.element;
     };
     DialogElement.prototype._createNewElement = function (type) {
-        if (type === void 0) { type = this.option.type; }
+        if (type === void 0) { type = this.options.type; }
         var typeStr = DialogType[type];
         this.element = $('<div class="dialog dialog-' + typeStr + '" data-type="dialog"></div>');
         this._addHtml();
-        if (this.option.width) {
+        if (this.options.width) {
             this.element.width(this._getWidth());
         }
-        if (this.option.height) {
+        if (this.options.height) {
             this.element.height(this._getHeight());
         }
-        if (this.option.target
-            && this.option.type != DialogType.pop) {
-            this.option.target.append(this.element);
+        if (this.options.target
+            && this.options.type != DialogType.pop) {
+            this.options.target.append(this.element);
             this.element.addClass("dialog-private");
         }
         else {
@@ -119,7 +132,7 @@ var DialogElement = (function () {
         }
     };
     DialogElement.prototype._addHtml = function () {
-        switch (this.option.type) {
+        switch (this.options.type) {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
@@ -135,34 +148,34 @@ var DialogElement = (function () {
             case DialogType.message:
             case DialogType.pop:
             default:
-                this.element.text(this.option.content);
+                this.element.text(this.options.content);
                 break;
         }
     };
     DialogElement.prototype._setProperty = function () {
-        if (this.option.type == DialogType.page
-            || this.option.type == DialogType.content) {
+        if (this.options.type == DialogType.page
+            || this.options.type == DialogType.content) {
             return;
         }
-        if (this.option.type == DialogType.message) {
-            this.css('top', this.option.y + 'px');
+        if (this.options.type == DialogType.message) {
+            this.css('top', this.options.y + 'px');
             return;
         }
-        if (this.option.type == DialogType.pop) {
+        if (this.options.type == DialogType.pop) {
             this._setPopProperty();
             return;
         }
-        var target = this.option.target || Dialog.$window;
+        var target = this.options.target || Dialog.$window;
         var maxWidth = target.width();
         var width = this.element.width();
-        if (this.option.type == DialogType.tip) {
+        if (this.options.type == DialogType.tip) {
             this.css('left', (maxWidth - width) / 2 + 'px');
             return;
         }
         var maxHeight = target.height();
         var height = this.element.height();
-        if (this.option.direction) {
-            var _a = this._getLeftTop(Dialog.parseEnum(this.option.direction, DialogDirection), width, height, maxWidth, maxHeight), x = _a[0], y = _a[1];
+        if (this.options.direction) {
+            var _a = this._getLeftTop(Dialog.parseEnum(this.options.direction, DialogDirection), width, height, maxWidth, maxHeight), x = _a[0], y = _a[1];
             this.css({
                 left: x + 'px',
                 top: y + 'px'
@@ -176,43 +189,43 @@ var DialogElement = (function () {
             });
             return;
         }
-        this.option.type = DialogType.page;
+        this.options.type = DialogType.page;
         this.element.addClass("dialog-page");
     };
     DialogElement.prototype._bindEvent = function () {
         this.element.click(function (e) {
             e.stopPropagation();
         });
-        if (this.option.type == DialogType.message
-            || this.option.type == DialogType.tip
-            || this.option.type == DialogType.loading) {
+        if (this.options.type == DialogType.message
+            || this.options.type == DialogType.tip
+            || this.options.type == DialogType.loading) {
             this._addTime();
             return;
         }
-        if (this.option.hasYes) {
+        if (this.options.hasYes) {
             this.onClick(".dialog-yes", function () {
                 this._getFormElement();
                 this._getFormData();
                 this.trigger('done');
             });
         }
-        if (this.option.type == DialogType.box
-            || this.option.type == DialogType.form
-            || this.option.type == DialogType.page
-            || this.option.hasNo) {
+        if (this.options.type == DialogType.box
+            || this.options.type == DialogType.form
+            || this.options.type == DialogType.page
+            || this.options.hasNo) {
             this.onClick(".dialog-close", function () {
                 this.close();
             });
         }
-        if (this.option.type == DialogType.page) {
+        if (this.options.type == DialogType.page) {
             this.onClick(".dialog-header .fa-arrow-left", function () {
                 this.close();
             });
         }
         var instance = this;
-        if (this.option.canMove
-            && (this.option.type == DialogType.box
-                || this.option.type == DialogType.form)) {
+        if (this.options.canMove
+            && (this.options.type == DialogType.box
+                || this.options.type == DialogType.form)) {
             // 点击标题栏移动
             var isMove_1 = false;
             var x_1, y_1;
@@ -237,14 +250,14 @@ var DialogElement = (function () {
         }
     };
     DialogElement.prototype._addTime = function () {
-        if (this.option.time <= 0) {
+        if (this.options.time <= 0) {
             return;
         }
         var instance = this;
         this._timeHandle = setTimeout(function () {
             instance._timeHandle = undefined;
             instance.close();
-        }, this.option.time);
+        }, this.options.time);
     };
     DialogElement.prototype.onClick = function (tag, callback) {
         var instance = this;
@@ -260,9 +273,9 @@ var DialogElement = (function () {
                 if (permission !== "granted") {
                     console.log('您的浏览器支持但未开启桌面提醒！');
                 }
-                instance.notify = new Notification(instance.option.title, {
-                    body: instance.option.content,
-                    icon: instance.option.ico,
+                instance.notify = new Notification(instance.options.title, {
+                    body: instance.options.content,
+                    icon: instance.options.ico,
                 });
                 instance.notify.addEventListener("click", function (event) {
                     instance.trigger('done');
@@ -274,18 +287,18 @@ var DialogElement = (function () {
     };
     DialogElement.prototype._getLoading = function () {
         var html = '';
-        var num = this.option.count;
+        var num = this.options.count;
         for (; num > 0; num--) {
             html += '<span></span>';
         }
-        return '<div class="' + this.option.extra + '">' + html + '</div>';
+        return '<div class="' + this.options.extra + '">' + html + '</div>';
     };
     /**
      * 创建私有的遮罩
      */
     DialogElement.prototype._createBg = function () {
-        if (!this.option.target
-            || this.option.type == DialogType.pop) {
+        if (!this.options.target
+            || this.options.type == DialogType.pop) {
             return;
         }
         var instance = this;
@@ -294,28 +307,28 @@ var DialogElement = (function () {
             e.stopPropagation();
             instance.close();
         });
-        this.option.target.append(this._dialogBg);
+        this.options.target.append(this._dialogBg);
     };
     DialogElement.prototype._getHeader = function (title, hasClose, hasBack, ico) {
-        if (title === void 0) { title = this.option.title; }
+        if (title === void 0) { title = this.options.title; }
         if (hasClose === void 0) { hasClose = true; }
         var html = '<div class="dialog-header">';
-        if (hasBack || this.option.type == DialogType.page) {
+        if (hasBack || this.options.type == DialogType.page) {
             html += '<i class="fa fa-arrow-left"></i>';
         }
         html += '<div class="dialog-title">';
         if (ico) {
             html += '<i class="fa fa-' + ico + '"></i>';
         }
-        html += this.option.title + '</div>';
+        html += this.options.title + '</div>';
         if (hasClose) {
             html += '<i class="fa fa-close dialog-close"></i>';
         }
         return html + '</div>';
     };
     DialogElement.prototype._getContent = function (content) {
-        if (content === void 0) { content = this.option.content; }
-        if (this.option.type == DialogType.form) {
+        if (content === void 0) { content = this.options.content; }
+        if (this.options.type == DialogType.form) {
             content = this._createForm(content);
         }
         else if (typeof content == 'object') {
@@ -324,20 +337,20 @@ var DialogElement = (function () {
         return '<div class="dialog-body">' + content + '</div>';
     };
     DialogElement.prototype._getFooter = function () {
-        if (!this.option.hasYes && !this.option.hasNo && (typeof this.option.button == 'object' && this.option.button instanceof Array && this.option.button.length == 0)) {
+        if (!this.options.hasYes && !this.options.hasNo && (typeof this.options.button == 'object' && this.options.button instanceof Array && this.options.button.length == 0)) {
             return '';
         }
         var html = '<div class="dialog-footer">';
-        if (this.option.hasYes) {
-            html += '<button class="dialog-yes">' + (typeof this.option.hasYes == 'string' ? this.option.hasYes : '确认') + '</button>';
+        if (this.options.hasYes) {
+            html += '<button class="dialog-yes">' + (typeof this.options.hasYes == 'string' ? this.options.hasYes : '确认') + '</button>';
         }
-        if (this.option.hasNo) {
-            html += '<button class="dialog-close">' + (typeof this.option.hasNo == 'string' ? this.option.hasNo : '取消') + '</button>';
+        if (this.options.hasNo) {
+            html += '<button class="dialog-close">' + (typeof this.options.hasNo == 'string' ? this.options.hasNo : '取消') + '</button>';
         }
-        if (typeof this.option.button == 'string') {
-            this.option.button = [this.option.button];
+        if (typeof this.options.button == 'string') {
+            this.options.button = [this.options.button];
         }
-        $.each(this.option.button, function (i, item) {
+        $.each(this.options.button, function (i, item) {
             if (typeof item == 'string') {
                 html += '<button">' + item + '</button>';
                 return;
@@ -477,12 +490,12 @@ var DialogElement = (function () {
         }
         this._loading.isShow = is_show;
         this.isShow = !is_show;
-        if (this.option.type == DialogType.page && !is_show) {
+        if (this.options.type == DialogType.page && !is_show) {
             Dialog.closeBg();
         }
     };
     DialogElement.prototype.close = function () {
-        if (this.option.type == DialogType.notify) {
+        if (this.options.type == DialogType.notify) {
             this.notify && this.notify.close();
             return;
         }
@@ -514,33 +527,17 @@ var DialogElement = (function () {
     DialogElement.prototype.css = function (key, value) {
         return this.element.css(key, value);
     };
-    DialogElement.prototype.on = function (event, callback) {
-        this.option['on' + event] = callback;
-        return this;
-    };
     DialogElement.prototype.done = function (callback) {
         return this.on('done', callback);
     };
-    DialogElement.prototype.trigger = function (event) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var realEvent = 'on' + event;
-        if (!this.option[realEvent]) {
-            return;
-        }
-        return (_a = this.option[realEvent]).call.apply(_a, [this].concat(args));
-        var _a;
-    };
     DialogElement.prototype.setContent = function (data) {
         if (!this.element) {
-            this.option.content = data;
+            this.options.content = data;
             this._createElement();
             return;
         }
         this.element.find('.dialog-body').html(this._createForm(data));
-        this.option.content = data;
+        this.options.content = data;
     };
     DialogElement.prototype._getBottom = function () {
         return Math.max($(window).height() * .33 - this.element.height() / 2, 0);
@@ -556,25 +553,25 @@ var DialogElement = (function () {
     };
     DialogElement.prototype._getWidth = function () {
         var width = Dialog.$window.width();
-        if (this.option.width > 1) {
+        if (this.options.width > 1) {
             return width;
         }
-        return width * this.option.width;
+        return width * this.options.width;
     };
     DialogElement.prototype._getHeight = function () {
         var height = Dialog.$window.height();
-        if (this.option.height > 1) {
+        if (this.options.height > 1) {
             return height;
         }
-        return height * this.option.height;
+        return height * this.options.height;
     };
     DialogElement.prototype._setPopProperty = function () {
-        if (!this.option.direction) {
-            this.option.direction = DialogDirection.top;
+        if (!this.options.direction) {
+            this.options.direction = DialogDirection.top;
         }
-        this.element.addClass('dialog-pop-' + DialogDirection[this.option.direction]);
-        var offest = this.option.target.offset();
-        var _a = this._getPopLeftTop(Dialog.parseEnum(this.option.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.option.target.outerWidth(), this.option.target.outerHeight()), x = _a[0], y = _a[1];
+        this.element.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
+        var offest = this.options.target.offset();
+        var _a = this._getPopLeftTop(Dialog.parseEnum(this.options.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight()), x = _a[0], y = _a[1];
         this.element.css({
             left: x + 'px',
             top: y + 'px'
@@ -623,7 +620,7 @@ var DialogElement = (function () {
         }
     };
     return DialogElement;
-}());
+}(Box));
 var Dialog = (function () {
     function Dialog() {
     }
@@ -717,7 +714,7 @@ var Dialog = (function () {
             title: title,
             hasYes: hasYes,
             hasNo: hasNo,
-            done: done
+            ondone: done
         });
     };
     /**
@@ -759,13 +756,13 @@ var Dialog = (function () {
     Dialog.addItem = function (element) {
         this._data[++this._guid] = element;
         element.id = this._guid;
-        if (element.option.type == DialogType.message) {
-            element.option.y = this.getMessageTop();
+        if (element.options.type == DialogType.message) {
+            element.options.y = this.getMessageTop();
             this._messageData.push(element.id);
             return;
         }
-        if (this._needBg(element.option.type)
-            && !element.option.target) {
+        if (this._needBg(element.options.type)
+            && !element.options.target) {
             this.showBg();
         }
     };
@@ -780,7 +777,7 @@ var Dialog = (function () {
         }
         this._data[id].close();
         this.sortMessageAndDelete(this._data[id]);
-        if (this._needBg(this._data[id].option.type)) {
+        if (this._needBg(this._data[id].options.type)) {
             this.closeBg();
         }
         delete this._data[id];
@@ -850,7 +847,7 @@ var Dialog = (function () {
         this._dialogBg.hide();
     };
     Dialog.sortMessageAndDelete = function (element) {
-        if (element.option.type != DialogType.message) {
+        if (element.options.type != DialogType.message) {
             return;
         }
         var i = this._messageData.indexOf(element.id);
@@ -858,11 +855,11 @@ var Dialog = (function () {
             return;
         }
         this._messageData.splice(i, 1);
-        var y = element.option.y;
+        var y = element.options.y;
         for (; i < this._messageData.length; i++) {
             var item = this._data[this._messageData[i]];
             item.css('top', y + 'px');
-            item.option.y = y;
+            item.options.y = y;
             y += item.element.height() + 20;
         }
     };
@@ -872,7 +869,7 @@ var Dialog = (function () {
             return 30;
         }
         var item = this._data[this._messageData[length - 1]];
-        return item.option.y + item.element.height() + 20;
+        return item.options.y + item.element.height() + 20;
     };
     return Dialog;
 }());

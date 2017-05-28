@@ -2,6 +2,18 @@ abstract class Box {
 
     public options: any;
 
+    public element: JQuery;
+
+    public box: JQuery;
+
+    protected showPosition(): this {
+        let offset = this.element.offset();
+        let x = offset.left;
+        let y = offset.top + this.element.outerHeight();
+        this.box.css({left: x + "px", top: y + "px"}).show();
+        return this;
+    }
+
     public on(event: string, callback: Function): this {
         this.options['on' + event] = callback;
         return this;
@@ -13,7 +25,7 @@ abstract class Box {
 
     public trigger(event: string, ... args: any[]) {
         let realEvent = 'on' + event;
-        if (this.hasEvent(event)) {
+        if (!this.hasEvent(event)) {
             return;
         }
         return this.options[realEvent].call(this, ...args);

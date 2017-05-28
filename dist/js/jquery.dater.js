@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Date.prototype.getRealMonth = function () {
     return this.getMonth() + 1;
 };
@@ -20,21 +30,24 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 };
-var Dater = (function () {
+var Dater = (function (_super) {
+    __extends(Dater, _super);
     function Dater(element, option) {
-        this.element = element;
-        this.option = $.extend({}, new DaterDefaultOption(), option);
-        this._initHtml();
-        this.daysElement = this.element.find("tbody td");
-        this.titleElement = this.element.find(".calendarTitle");
-        this._lastRowElement = this.element.find("tbody tr").eq(5);
-        this._bindEvent();
-        if (typeof this.option.date == 'number') {
-            this.setTime(this.option.date);
+        var _this = _super.call(this) || this;
+        _this.element = element;
+        _this.options = $.extend({}, new DaterDefaultOption(), option);
+        _this._initHtml();
+        _this.daysElement = _this.element.find("tbody td");
+        _this.titleElement = _this.element.find(".calendarTitle");
+        _this._lastRowElement = _this.element.find("tbody tr").eq(5);
+        _this._bindEvent();
+        if (typeof _this.options.date == 'number') {
+            _this.setTime(_this.options.date);
         }
         else {
-            this.setDate(this.option.date);
+            _this.setDate(_this.options.date);
         }
+        return _this;
     }
     Dater.prototype.previousYear = function () {
         this.setDate(this._date.getFullYear() - 1, this._date.getRealMonth());
@@ -59,7 +72,7 @@ var Dater = (function () {
         this._date = new Date(year, month, 0);
         this._daysCount = this._date.getDate();
         this._date.setDate(1);
-        if (this.option.changeDate && this.option.changeDate.call(this) == false) {
+        if (false == this.trigger('change')) {
             return;
         }
         this.reader();
@@ -110,10 +123,10 @@ var Dater = (function () {
         this.daysElement.click(function () {
             var ele = $(this);
             var day = parseInt(ele.text());
-            if (day > 0 && instance.option.dayClick) {
+            if (day > 0 && instance.hasEvent('click')) {
                 var date = new Date(instance._date);
                 date.setDate(day);
-                instance.option.dayClick(date, ele, instance.element);
+                instance.trigger('click', date, ele, instance.element);
             }
         });
         this.element.find(".previousMonth").click(function () {
@@ -159,8 +172,22 @@ var Dater = (function () {
         if (date === void 0) { date = new Date(); }
         return this._date.getFullYear() == date.getFullYear() && this._date.getMonth() == date.getMonth();
     };
+    /**
+     * 日期改变事件
+     * @param callback
+     */
+    Dater.prototype.change = function (callback) {
+        return this.on('change', callback);
+    };
+    /**
+     * 日期点击事件
+     * @param callback
+     */
+    Dater.prototype.click = function (callback) {
+        return this.on('change', callback);
+    };
     return Dater;
-}());
+}(Box));
 var DaterDefaultOption = (function () {
     function DaterDefaultOption() {
         this.date = new Date();

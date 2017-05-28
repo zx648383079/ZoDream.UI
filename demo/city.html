@@ -17,7 +17,7 @@
     <script src="../dist/js/jquery.city.js"></script>
     <script>
     $(document).ready(function() {
-        $("#city").city({
+        var city = $("#city").city({
             default: [1, 2],
             data: {
                 1: {
@@ -29,7 +29,19 @@
                 2: {
                     name: '2423',
                     children: {
-                        4: 45
+                        4: 45,
+                        8: {
+                            name: '2423',
+                            children: {
+                                4: 45,
+                                13: {
+                                    name: '2423',
+                                    children: {
+                                        666: 45
+                                    }
+                                },
+                            }
+                        },
                     }
                 },
                 3: 12312414112,
@@ -56,6 +68,7 @@
                 this.output();
             }
         });
+        console.log(city.getPath(66666));
         $("#selector").city({
             data: 'http://sxg.netdns.com.cn/region.php'
         });

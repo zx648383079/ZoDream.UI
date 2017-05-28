@@ -26,6 +26,7 @@ class City extends Box {
     private _index: number = -1;
 
     private _onchange(id?: string| number, index?: number, selected?: string| number) {
+        
         if (typeof this.options.data == 'object') {
             this._setData(id, index, selected);
             return;
@@ -202,10 +203,7 @@ class City extends Box {
 
     public show() {
         if (this.options.auto) {
-            let offset = this.element.offset();
-            let x = offset.left;
-            let y = offset.top + this.element.outerHeight();
-            this.box.css({left: x + "px", top: y + "px"});
+            return this.showPosition();
         }
         this.box.show();
         return this;
@@ -291,6 +289,46 @@ class City extends Box {
 
     public done(callback: Function): this {
         return this.on('done', callback);
+    }
+
+    /**
+     * 根据ID查找无限树的路径
+     * @param id 
+     */
+    public getPath(id: string): Array<string> {
+        if (this.options.hasOwnProperty(id)) {
+            return [id];
+        }
+        let path = [],
+            found = false,
+            instance = this,
+            findPath = function(data: any) {
+                if (typeof data != 'object') {
+                    return;
+                }
+                if (data.hasOwnProperty(id)) {
+                    path.push(id);
+                    found = true;
+                    return;
+                }
+                $.each(data, function(key, args) {
+                    findPath(args[instance.options.children]);
+                    if (found) {
+                        path.push(key);
+                        return false;
+                    }
+                });
+            };
+
+        $.each(this.options.data, function(key, data) {
+            findPath(data[instance.options.children]);
+            if (found) {
+                path.push(key);
+                return false;
+            }
+        });
+        path.reverse();
+        return path;
     }
 }
 

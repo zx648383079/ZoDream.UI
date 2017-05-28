@@ -64,10 +64,11 @@ class Validate {
     }
 }
 
-class Form {
+class Form extends Eve {
     constructor(
         public element: JQuery, 
         options?: FormOptions) {
+        super();
         this.options = $.extend({}, new FormDefaultOptions, options);
         if (!this.options.url) {
             this.options.url = this.element.attr("action");
@@ -75,9 +76,6 @@ class Form {
         if (!this.options.method) {
             this.options.method = this.element.attr("method").toUpperCase() == 'POST' ? AjaxMethod.POST :  AjaxMethod.GET;
         }
-        element.on("blue", "input", function() {
-            
-        });
     }
 
     public options: FormOptions;
@@ -110,6 +108,8 @@ class Form {
         }
         return Validate.isMatch(pattern, value);
     }
+
+
 }
 
 interface FormOptions {

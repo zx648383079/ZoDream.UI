@@ -8,6 +8,48 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var Box = (function () {
+    function Box() {
+    }
+    Box.prototype.showPosition = function () {
+        var offset = this.element.offset();
+        var x = offset.left;
+        var y = offset.top + this.element.outerHeight();
+        this.box.css({ left: x + "px", top: y + "px" }).show();
+        return this;
+    };
+    Box.prototype.on = function (event, callback) {
+        this.options['on' + event] = callback;
+        return this;
+    };
+    Box.prototype.hasEvent = function (event) {
+        return this.options.hasOwnProperty('on' + event);
+    };
+    Box.prototype.trigger = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var realEvent = 'on' + event;
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        var _a;
+    };
+    /**
+     * 根据可能是相对值获取绝对值
+     * @param abservable
+     * @param reltive
+     */
+    Box.getReal = function (abservable, reltive) {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    };
+    return Box;
+}());
 var DialogType;
 (function (DialogType) {
     DialogType[DialogType["tip"] = 0] = "tip";
@@ -60,15 +102,9 @@ var DialogElement = (function (_super) {
         _this._isShow = false;
         _this.options = $.extend({}, new DefaultDialogOption(), option);
         _this.options.type = Dialog.parseEnum(_this.options.type, DialogType);
-        if (_this.options.type == DialogType.notify) {
-            _this._createNotify();
-            return _this;
-        }
         if (_this.options.direction) {
             _this.options.direction = Dialog.parseEnum(_this.options.direction, DialogDirection);
         }
-        Dialog.addItem(_this);
-        _this._createBg();
         _this.init();
         return _this;
     }
@@ -77,20 +113,34 @@ var DialogElement = (function (_super) {
             return this._isShow;
         },
         set: function (arg) {
-            if (!this.element) {
+            if (this.isDeleted()) {
+                this.init();
+                return;
+            }
+            if (this._isShow == arg) {
                 return;
             }
             this._isShow = arg;
-            if (this.isShow) {
-                this.element.show();
+            if (this.options.type == DialogType.notify) {
+                //this._createNotify();
                 return;
             }
-            this.element.hide();
+            if (this.isShow) {
+                this.box.show();
+                return;
+            }
+            this.box.hide();
         },
         enumerable: true,
         configurable: true
     });
     DialogElement.prototype.init = function () {
+        Dialog.addItem(this);
+        if (this.options.type == DialogType.notify) {
+            this._createNotify();
+            return;
+        }
+        this._createBg();
         if (!this.options.content && this.options.url) {
             this.toggleLoading(true);
             var instance_1 = this;
@@ -102,6 +152,7 @@ var DialogElement = (function (_super) {
             return;
         }
         this._createElement();
+        this._isClosing = false;
     };
     DialogElement.prototype._createElement = function (type) {
         if (type === void 0) { type = this.options.type; }
@@ -109,26 +160,26 @@ var DialogElement = (function (_super) {
         this._bindEvent();
         this._setProperty();
         this._isShow = true;
-        return this.element;
+        return this.box;
     };
     DialogElement.prototype._createNewElement = function (type) {
         if (type === void 0) { type = this.options.type; }
         var typeStr = DialogType[type];
-        this.element = $('<div class="dialog dialog-' + typeStr + '" data-type="dialog"></div>');
+        this.box = $('<div class="dialog dialog-' + typeStr + '" data-type="dialog"></div>');
         this._addHtml();
         if (this.options.width) {
-            this.element.width(this._getWidth());
+            this.box.width(this._getWidth());
         }
         if (this.options.height) {
-            this.element.height(this._getHeight());
+            this.box.height(this._getHeight());
         }
         if (this.options.target
             && this.options.type != DialogType.pop) {
-            this.options.target.append(this.element);
-            this.element.addClass("dialog-private");
+            this.options.target.append(this.box);
+            this.box.addClass("dialog-private");
         }
         else {
-            $(document.body).append(this.element);
+            $(document.body).append(this.box);
         }
     };
     DialogElement.prototype._addHtml = function () {
@@ -136,19 +187,19 @@ var DialogElement = (function (_super) {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
-                this.element.html(this._getHeader() + this._getContent() + this._getFooter());
+                this.box.html(this._getHeader() + this._getContent() + this._getFooter());
                 break;
             case DialogType.content:
-                this.element.html(this._getContent() + this._getFooter());
+                this.box.html(this._getContent() + this._getFooter());
                 break;
             case DialogType.loading:
-                this.element.html(this._getLoading());
+                this.box.html(this._getLoading());
                 break;
             case DialogType.tip:
             case DialogType.message:
             case DialogType.pop:
             default:
-                this.element.text(this.options.content);
+                this.box.text(this.options.content);
                 break;
         }
     };
@@ -167,13 +218,13 @@ var DialogElement = (function (_super) {
         }
         var target = this.options.target || Dialog.$window;
         var maxWidth = target.width();
-        var width = this.element.width();
+        var width = this.box.width();
         if (this.options.type == DialogType.tip) {
             this.css('left', (maxWidth - width) / 2 + 'px');
             return;
         }
         var maxHeight = target.height();
-        var height = this.element.height();
+        var height = this.box.height();
         if (this.options.direction) {
             var _a = this._getLeftTop(Dialog.parseEnum(this.options.direction, DialogDirection), width, height, maxWidth, maxHeight), x = _a[0], y = _a[1];
             this.css({
@@ -190,10 +241,10 @@ var DialogElement = (function (_super) {
             return;
         }
         this.options.type = DialogType.page;
-        this.element.addClass("dialog-page");
+        this.box.addClass("dialog-page");
     };
     DialogElement.prototype._bindEvent = function () {
-        this.element.click(function (e) {
+        this.box.click(function (e) {
             e.stopPropagation();
         });
         if (this.options.type == DialogType.message
@@ -229,7 +280,7 @@ var DialogElement = (function (_super) {
             // 点击标题栏移动
             var isMove_1 = false;
             var x_1, y_1;
-            this.element.find(".dialog-header .dialog-title").mousedown(function (e) {
+            this.box.find(".dialog-header .dialog-title").mousedown(function (e) {
                 isMove_1 = true;
                 x_1 = e.pageX - parseInt(instance.element.css('left'));
                 y_1 = e.pageY - parseInt(instance.element.css('top'));
@@ -261,7 +312,7 @@ var DialogElement = (function (_super) {
     };
     DialogElement.prototype.onClick = function (tag, callback) {
         var instance = this;
-        this.element.on('click', tag, function (e) {
+        this.box.on('click', tag, function (e) {
             callback.call(instance, $(this));
         });
     };
@@ -432,7 +483,7 @@ var DialogElement = (function (_super) {
     DialogElement.prototype._getFormElement = function () {
         this.elements = {};
         var instance = this;
-        this.element.find('input,select,textarea').each(function (i, ele) {
+        this.box.find('input,select,textarea').each(function (i, ele) {
             var item = $(ele);
             if (!item.is('[type=ridio]') || !item.is('[type=checkbox]')) {
                 instance.elements[item.attr('name')] = item;
@@ -480,6 +531,9 @@ var DialogElement = (function (_super) {
     DialogElement.prototype.hide = function () {
         this.isShow = false;
     };
+    DialogElement.prototype.isDeleted = function () {
+        return !Dialog.hasItem(this.id);
+    };
     DialogElement.prototype.toggleLoading = function (is_show) {
         if (!this._loading) {
             is_show = true;
@@ -514,7 +568,7 @@ var DialogElement = (function (_super) {
             this._dialogBg.remove();
         }
         Dialog.removeItem(this.id);
-        this.element.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
             $(this).remove();
         });
         if (this._loading) {
@@ -525,31 +579,31 @@ var DialogElement = (function (_super) {
         this.isShow = !this.isShow;
     };
     DialogElement.prototype.css = function (key, value) {
-        return this.element.css(key, value);
+        return this.box.css(key, value);
     };
     DialogElement.prototype.done = function (callback) {
         return this.on('done', callback);
     };
     DialogElement.prototype.setContent = function (data) {
-        if (!this.element) {
+        if (!this.box) {
             this.options.content = data;
             this._createElement();
             return;
         }
-        this.element.find('.dialog-body').html(this._createForm(data));
+        this.box.find('.dialog-body').html(this._createForm(data));
         this.options.content = data;
     };
     DialogElement.prototype._getBottom = function () {
-        return Math.max($(window).height() * .33 - this.element.height() / 2, 0);
+        return Math.max($(window).height() * .33 - this.box.height() / 2, 0);
     };
     DialogElement.prototype._getTop = function () {
-        return Math.max($(window).height() / 2 - this.element.height() / 2, 0);
+        return Math.max($(window).height() / 2 - this.box.height() / 2, 0);
     };
     DialogElement.prototype._getLeft = function () {
-        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+        return Math.max($(window).width() / 2 - this.box.width() / 2, 0);
     };
     DialogElement.prototype._getRight = function () {
-        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+        return Math.max($(window).width() / 2 - this.box.width() / 2, 0);
     };
     DialogElement.prototype._getWidth = function () {
         var width = Dialog.$window.width();
@@ -569,10 +623,10 @@ var DialogElement = (function (_super) {
         if (!this.options.direction) {
             this.options.direction = DialogDirection.top;
         }
-        this.element.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
+        this.box.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
         var offest = this.options.target.offset();
-        var _a = this._getPopLeftTop(Dialog.parseEnum(this.options.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight()), x = _a[0], y = _a[1];
-        this.element.css({
+        var _a = this._getPopLeftTop(Dialog.parseEnum(this.options.direction, DialogElement), this.box.outerWidth(), this.box.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight()), x = _a[0], y = _a[1];
+        this.box.css({
             left: x + 'px',
             top: y + 'px'
         });
@@ -648,7 +702,11 @@ var Dialog = (function () {
      */
     Dialog.tip = function (content, time) {
         if (time === void 0) { time = 2000; }
-        return this.create({ content: content, time: time });
+        if (typeof content != 'object') {
+            content = { content: content, time: time };
+        }
+        content.type = DialogType.tip;
+        return this.create(content);
     };
     /**
      * 消息
@@ -657,7 +715,11 @@ var Dialog = (function () {
      */
     Dialog.message = function (content, time) {
         if (time === void 0) { time = 2000; }
-        return this.create({ type: DialogType.message, content: content, time: time });
+        if (typeof content != 'object') {
+            content = { content: content, time: time };
+        }
+        content.type = DialogType.message;
+        return this.create(content);
     };
     /**
      * 加载
@@ -665,7 +727,11 @@ var Dialog = (function () {
      */
     Dialog.loading = function (time) {
         if (time === void 0) { time = 0; }
-        return this.create({ type: DialogType.loading, time: time });
+        if (typeof time != 'object') {
+            time = { time: time };
+        }
+        time.type = DialogType.loading;
+        return this.create(time);
     };
     /**
      * 内容弹窗
@@ -674,12 +740,15 @@ var Dialog = (function () {
      * @param hasNo
      */
     Dialog.content = function (content, hasYes, hasNo) {
-        return this.create({
-            type: DialogType.content,
-            content: content,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.content;
+        return this.create(content);
     };
     /**
      * 普通弹窗
@@ -690,13 +759,16 @@ var Dialog = (function () {
      */
     Dialog.box = function (content, title, hasYes, hasNo) {
         if (title === void 0) { title = '提示'; }
-        return this.create({
-            type: DialogType.box,
-            content: content,
-            title: title,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                title: title,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.box;
+        return this.create(content);
     };
     /**
      * 表格弹窗
@@ -726,13 +798,16 @@ var Dialog = (function () {
      */
     Dialog.page = function (content, title, hasYes, hasNo) {
         if (title === void 0) { title = '提示'; }
-        return this.create({
-            type: DialogType.page,
-            content: content,
-            title: title,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                title: title,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.page;
+        return this.create(content);
     };
     /**
      * 桌面提醒
@@ -741,13 +816,18 @@ var Dialog = (function () {
      * @param icon
      */
     Dialog.notify = function (title, content, icon) {
+        if (title === void 0) { title = '通知'; }
         if (content === void 0) { content = ''; }
         if (icon === void 0) { icon = ''; }
-        return this.create({
-            title: title,
-            content: content,
-            ico: icon
-        });
+        if (typeof title != 'object') {
+            title = {
+                title: title,
+                content: content,
+                ico: icon
+            };
+        }
+        title.type = DialogType.notify;
+        return this.create(title);
     };
     /**
      * 添加弹出框
@@ -766,13 +846,17 @@ var Dialog = (function () {
             this.showBg();
         }
     };
+    Dialog.hasItem = function (id) {
+        if (id === void 0) { id = this._guid; }
+        return this._data.hasOwnProperty(id + '');
+    };
     /**
      * 根据id删除弹出框
      * @param id
      */
     Dialog.removeItem = function (id) {
         if (id === void 0) { id = this._guid; }
-        if (!this._data.hasOwnProperty(id + '')) {
+        if (!this.hasItem(id)) {
             return;
         }
         this._data[id].close();
@@ -798,6 +882,7 @@ var Dialog = (function () {
         return type != DialogType.tip
             && type != DialogType.message
             && type != DialogType.page
+            && type != DialogType.notify
             && type != DialogType.pop;
     };
     /**
@@ -806,7 +891,7 @@ var Dialog = (function () {
      */
     Dialog.map = function (callback) {
         for (var id in this._data) {
-            if (!this._data.hasOwnProperty(id)) {
+            if (!this.hasItem(id)) {
                 continue;
             }
             var result = callback(this._data[id]);
@@ -887,6 +972,7 @@ var DialogPlugin = (function () {
         this.element.click(function () {
             if (!instance.dialog) {
                 instance.dialog = Dialog.create(instance._parseOption($(this)));
+                //return;
             }
             instance.dialog.show();
         });

@@ -32,6 +32,7 @@
     "jquery_lazyload": "jquery.lazyload#^1.9.7",
     "jquery-touchswipe": "^1.6.18",
     "Sortable": "sortablejs#^1.5.1",
-    "animate.css": "^3.5.2"
+    "animate.css": "^3.5.2",
+    "jquery-form": "^4.2.1"
   }
 }

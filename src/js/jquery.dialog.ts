@@ -1,3 +1,49 @@
+abstract class Box {
+
+    public options: any;
+
+    public element: JQuery;
+
+    public box: JQuery;
+
+    protected showPosition(): this {
+        let offset = this.element.offset();
+        let x = offset.left;
+        let y = offset.top + this.element.outerHeight();
+        this.box.css({left: x + "px", top: y + "px"}).show();
+        return this;
+    }
+
+    public on(event: string, callback: Function): this {
+        this.options['on' + event] = callback;
+        return this;
+    }
+
+    public hasEvent(event: string): boolean {
+        return this.options.hasOwnProperty('on' + event);
+    }
+
+    public trigger(event: string, ... args: any[]) {
+        let realEvent = 'on' + event;
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return this.options[realEvent].call(this, ...args);
+    }
+
+    /**
+     * 根据可能是相对值获取绝对值
+     * @param abservable 
+     * @param reltive 
+     */
+    public static getReal(abservable: number, reltive: number): number {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    }
+}
+
 enum DialogType {
     tip,
     message,
@@ -73,21 +119,14 @@ class DialogElement extends Box {
         super();
         this.options = $.extend({}, new DefaultDialogOption(), option);
         this.options.type =  Dialog.parseEnum<DialogType>(this.options.type, DialogType);
-        if (this.options.type == DialogType.notify) {
-            this._createNotify();
-            return;
-        }
+        
         if (this.options.direction) {
             this.options.direction = Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection);
         }
-        Dialog.addItem(this);
-        this._createBg();
         this.init();
     }
 
     public options: DialogOption;
-
-    public element: JQuery;
 
     public notify: Notification; // 系统通知
 
@@ -104,15 +143,23 @@ class DialogElement extends Box {
     private _isShow: boolean = false;
 
     public set isShow(arg: boolean) {
-        if (!this.element) {
+        if (this.isDeleted()) {
+            this.init();
+            return;
+        }
+        if (this._isShow == arg) {
             return;
         }
         this._isShow = arg;
-        if (this.isShow) {
-            this.element.show();
+        if (this.options.type == DialogType.notify) {
+            //this._createNotify();
             return;
         }
-        this.element.hide();
+        if (this.isShow) {
+            this.box.show();
+            return;
+        }
+        this.box.hide();
     }
 
     public get isShow(): boolean {
@@ -120,6 +167,12 @@ class DialogElement extends Box {
     }
 
     public init() {
+        Dialog.addItem(this);
+        if (this.options.type == DialogType.notify) {
+            this._createNotify();
+            return;
+        }
+        this._createBg();
         if (!this.options.content && this.options.url) {
             this.toggleLoading(true);
             let instance = this;
@@ -131,6 +184,7 @@ class DialogElement extends Box {
             return;
         }
         this._createElement();
+        this._isClosing = false;
     }
 
     private _createElement(type: DialogType | number | string = this.options.type): JQuery {
@@ -138,25 +192,25 @@ class DialogElement extends Box {
         this._bindEvent();
         this._setProperty();
         this._isShow = true;
-        return this.element;
+        return this.box;
     }
 
     private _createNewElement(type: DialogType | number | string = this.options.type) {
         let typeStr = DialogType[type];
-        this.element = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
+        this.box = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
         this._addHtml();
         if (this.options.width) {
-            this.element.width(this._getWidth());
+            this.box.width(this._getWidth());
         }
         if (this.options.height) {
-            this.element.height(this._getHeight());
+            this.box.height(this._getHeight());
         }
         if (this.options.target 
         && this.options.type != DialogType.pop) {
-            this.options.target.append(this.element);
-            this.element.addClass("dialog-private");
+            this.options.target.append(this.box);
+            this.box.addClass("dialog-private");
         } else {
-            $(document.body).append(this.element);
+            $(document.body).append(this.box);
         }
     }
 
@@ -165,19 +219,19 @@ class DialogElement extends Box {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
-                this.element.html(this._getHeader() + this._getContent() + this._getFooter());
+                this.box.html(this._getHeader() + this._getContent() + this._getFooter());
                 break;
             case DialogType.content:
-                this.element.html(this._getContent() + this._getFooter());
+                this.box.html(this._getContent() + this._getFooter());
                 break;
             case DialogType.loading:
-                this.element.html(this._getLoading());
+                this.box.html(this._getLoading());
                 break;
             case DialogType.tip:
             case DialogType.message:
             case DialogType.pop:
             default:
-                this.element.text(this.options.content);
+                this.box.text(this.options.content);
                 break;
         }
     }
@@ -199,13 +253,13 @@ class DialogElement extends Box {
         
         let target = this.options.target || Dialog.$window;
         let maxWidth = target.width();
-        let width = this.element.width();
+        let width = this.box.width();
         if (this.options.type == DialogType.tip) {
             this.css('left', (maxWidth - width) / 2 + 'px');
             return;
         }
         let maxHeight = target.height();
-        let height = this.element.height();
+        let height = this.box.height();
         if (this.options.direction) {
             let [x, y] = this._getLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection), width, height, maxWidth, maxHeight);
             this.css({
@@ -222,11 +276,11 @@ class DialogElement extends Box {
             return;
         }
         this.options.type = DialogType.page;
-        this.element.addClass("dialog-page");
+        this.box.addClass("dialog-page");
     }
 
     private _bindEvent() {
-        this.element.click(function(e) {
+        this.box.click(function(e) {
             e.stopPropagation();
         });
         if (this.options.type == DialogType.message 
@@ -262,7 +316,7 @@ class DialogElement extends Box {
             // 点击标题栏移动
             let isMove = false;
             let x, y;
-            this.element.find(".dialog-header .dialog-title").mousedown(function(e) {
+            this.box.find(".dialog-header .dialog-title").mousedown(function(e) {
                 isMove = true;
                 x = e.pageX - parseInt(instance.element.css('left'));
                 y = e.pageY - parseInt(instance.element.css('top'));
@@ -296,7 +350,7 @@ class DialogElement extends Box {
 
     public onClick(tag: string, callback: (element: JQuery) => any) {
         let instance = this;
-        this.element.on('click', tag, function(e) {
+        this.box.on('click', tag, function(e) {
             callback.call(instance, $(this));
         });
     }
@@ -472,7 +526,7 @@ class DialogElement extends Box {
     private _getFormElement() {
         this.elements = {};
         let instance = this;
-        this.element.find('input,select,textarea').each(function(i, ele) {
+        this.box.find('input,select,textarea').each(function(i, ele) {
             let item = $(ele);
             if (!item.is('[type=ridio]') || !item.is('[type=checkbox]')) {
                 instance.elements[item.attr('name')] = item;
@@ -525,6 +579,10 @@ class DialogElement extends Box {
         this.isShow = false;
     }
 
+    public isDeleted(): boolean {
+        return !Dialog.hasItem(this.id);
+    }
+
     private _loading: DialogElement;
 
     public toggleLoading(is_show?: boolean) {
@@ -562,7 +620,7 @@ class DialogElement extends Box {
             this._dialogBg.remove();
         }
         Dialog.removeItem(this.id);
-        this.element.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
             $(this).remove();
         });
         if (this._loading) {
@@ -575,7 +633,7 @@ class DialogElement extends Box {
     }
 
     public css(key: any, value?: string| number): JQuery {
-        return this.element.css(key, value);
+        return this.box.css(key, value);
     }
 
     public done(callback: Function): this {
@@ -583,30 +641,30 @@ class DialogElement extends Box {
     }
 
     public setContent(data: any) {
-        if (!this.element) {
+        if (!this.box) {
             this.options.content = data;
             this._createElement();
             return;
         }
-        this.element.find('.dialog-body').html(this._createForm(data));
+        this.box.find('.dialog-body').html(this._createForm(data));
         this.options.content = data;
     }
 
     
     private _getBottom(): number {
-        return Math.max($(window).height() * .33 - this.element.height() / 2, 0);
+        return Math.max($(window).height() * .33 - this.box.height() / 2, 0);
     }
 
     private _getTop(): number {
-        return Math.max($(window).height() / 2 - this.element.height() / 2, 0);
+        return Math.max($(window).height() / 2 - this.box.height() / 2, 0);
     }
 
     private _getLeft(): number {
-        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+        return Math.max($(window).width() / 2 - this.box.width() / 2, 0);
     }
 
     private _getRight(): number {
-        return Math.max($(window).width() / 2 - this.element.width() / 2, 0);
+        return Math.max($(window).width() / 2 - this.box.width() / 2, 0);
     }
 
     private _getWidth(): number {
@@ -629,10 +687,10 @@ class DialogElement extends Box {
         if (!this.options.direction) {
             this.options.direction = DialogDirection.top;
         }
-        this.element.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
+        this.box.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
         let offest = this.options.target.offset();
-        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogElement), this.element.outerWidth(), this.element.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight());
-        this.element.css({
+        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogElement), this.box.outerWidth(), this.box.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight());
+        this.box.css({
             left: x + 'px',
             top: y + 'px'
         });
@@ -722,8 +780,12 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static tip(content: string, time: number = 2000): DialogElement {
-        return this.create({content: content, time: time});
+    public static tip(content: string | DialogOption, time: number = 2000): DialogElement {
+        if (typeof content != 'object') {
+            content = {content: content, time: time};
+        }
+        content.type = DialogType.tip;
+        return this.create(content);
     }
 
     /**
@@ -731,16 +793,24 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static message(content: string, time: number = 2000): DialogElement {
-        return this.create({type: DialogType.message, content: content, time: time});
+    public static message(content: string | DialogOption, time: number = 2000): DialogElement {
+        if (typeof content != 'object') {
+            content = {content: content, time: time};
+        }
+        content.type = DialogType.message;
+        return this.create(content);
     }
 
     /**
      * 加载
      * @param time 
      */
-    public static loading(time: number = 0): DialogElement {
-        return this.create({type: DialogType.loading, time: time});
+    public static loading(time: number | DialogOption = 0): DialogElement {
+        if (typeof time != 'object') {
+            time = {time: time};
+        }
+        time.type = DialogType.loading;
+        return this.create(time);
     }
 
     /**
@@ -749,13 +819,16 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static content(content: string, hasYes?: boolean, hasNo?: boolean) {
-        return this.create({
-            type: DialogType.content,
-            content: content,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+    public static content(content: string | DialogOption, hasYes?: boolean, hasNo?: boolean) {
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.content;
+        return this.create(content);
     }
 
     /**
@@ -765,14 +838,17 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static box(content: string, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
-        return this.create({
-            type: DialogType.box,
-            content: content,
-            title: title,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+    public static box(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                title: title,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.box;
+        return this.create(content);
     }
 
     /**
@@ -801,14 +877,17 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static page(content: string, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
-        return this.create({
-            type: DialogType.page,
-            content: content,
-            title: title,
-            hasYes: hasYes,
-            hasNo: hasNo
-        });
+    public static page(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+        if (typeof content != 'object') {
+            content = {
+                content: content,
+                title: title,
+                hasYes: hasYes,
+                hasNo: hasNo
+            };
+        }
+        content.type = DialogType.page;
+        return this.create(content);
     }
 
     /**
@@ -817,12 +896,16 @@ class Dialog {
      * @param content 
      * @param icon 
      */
-    public static notify(title: '通知', content: string = '', icon: string = '') {
-        return this.create({
-            title: title,
-            content: content,
-            ico: icon
-        });
+    public static notify(title: string  | DialogOption = '通知', content: string = '', icon: string = '') {
+        if (typeof title != 'object') {
+            title = {
+                title: title,
+                content: content,
+                ico: icon
+            };
+        }
+        title.type = DialogType.notify;
+        return this.create(title);
     }
 
     /**
@@ -843,12 +926,16 @@ class Dialog {
         }
     }
 
+    public static hasItem(id: number | string = this._guid): boolean {
+        return this._data.hasOwnProperty(id + '')
+    }
+
     /**
      * 根据id删除弹出框
      * @param id 
      */
     public static removeItem(id: number = this._guid) {
-        if (!this._data.hasOwnProperty(id + '')) {
+        if (!this.hasItem(id)) {
             return;
         }
         this._data[id].close();
@@ -876,6 +963,7 @@ class Dialog {
         return type != DialogType.tip 
         && type != DialogType.message
         && type != DialogType.page 
+        && type != DialogType.notify
         && type != DialogType.pop;
     }
 
@@ -885,7 +973,7 @@ class Dialog {
      */
     public static map(callback: (item: DialogElement) => any) {
         for(let id in this._data) {
-            if (!this._data.hasOwnProperty(id)) {
+            if (!this.hasItem(id)) {
                 continue;
             }
             let result = callback(this._data[id]);
@@ -964,6 +1052,7 @@ class DialogPlugin {
         this.element.click(function() {
             if (!instance.dialog) {
                 instance.dialog = Dialog.create(instance._parseOption($(this)));
+                //return;
             }
             instance.dialog.show();
         });

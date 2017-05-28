@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Validate = (function () {
     function Validate() {
     }
@@ -59,18 +69,19 @@ var Validate = (function () {
     };
     return Validate;
 }());
-var Form = (function () {
+var Form = (function (_super) {
+    __extends(Form, _super);
     function Form(element, options) {
-        this.element = element;
-        this.options = $.extend({}, new FormDefaultOptions, options);
-        if (!this.options.url) {
-            this.options.url = this.element.attr("action");
+        var _this = _super.call(this) || this;
+        _this.element = element;
+        _this.options = $.extend({}, new FormDefaultOptions, options);
+        if (!_this.options.url) {
+            _this.options.url = _this.element.attr("action");
         }
-        if (!this.options.method) {
-            this.options.method = this.element.attr("method").toUpperCase() == 'POST' ? AjaxMethod.POST : AjaxMethod.GET;
+        if (!_this.options.method) {
+            _this.options.method = _this.element.attr("method").toUpperCase() == 'POST' ? AjaxMethod.POST : AjaxMethod.GET;
         }
-        element.on("blue", "input", function () {
-        });
+        return _this;
     }
     Form.prototype.validate = function () {
         var instance = this;
@@ -99,7 +110,7 @@ var Form = (function () {
         return Validate.isMatch(pattern, value);
     };
     return Form;
-}());
+}(Eve));
 var FormDefaultOptions = (function () {
     function FormDefaultOptions() {
         this.patternTag = "data-pattern";

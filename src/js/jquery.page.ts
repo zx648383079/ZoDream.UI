@@ -91,20 +91,21 @@ class Uri {
     }
 }
 
-class Page {
+class Page extends Box {
     constructor(
         public element: JQuery,
         option?: PageOption
     ) {
-        this.option = $.extend({}, new PageDefaultOption(), option);
-        this.option.url = Uri.parse(this.option.url);
-        this.option.deleteUrl = Uri.parse(this.option.deleteUrl);
-        this.option.updateUrl = Uri.parse(this.option.updateUrl);
+        super();
+        this.options = $.extend({}, new PageDefaultOption(), option);
+        this.options.url = Uri.parse(this.options.url);
+        this.options.deleteUrl = Uri.parse(this.options.deleteUrl);
+        this.options.updateUrl = Uri.parse(this.options.updateUrl);
         this.init();
         this.search();
     }
 
-    public option: PageOption;
+    public options: PageOption;
 
     private _searchForm: JQuery;
 
@@ -118,8 +119,8 @@ class Page {
 
     public init() {
         let instance = this;
-        this._body = this.element.find(this.option.pageBody);
-        this._searchForm = this.element.find(this.option.searchForm);
+        this._body = this.element.find(this.options.pageBody);
+        this._searchForm = this.element.find(this.options.searchForm);
         this._searchElements = this._searchForm.find('input,select,textarea');
         this._pager = $('<ul class="pager"></ul>').pager({
             paginate: function(page: number) {
@@ -139,7 +140,7 @@ class Page {
         let data = [];
         let instance = this;
         this._body.find('.checkbox.checked').each(function(i, el) {
-            data.push($(el).parents(instance.option.row));
+            data.push($(el).parents(instance.options.row));
         });
         return data;
     }
@@ -149,7 +150,7 @@ class Page {
         let data = [];
         let instance = this;
         $.each(this.getCheckedRow(), function(i, item) {
-            data.push(item.attr(instance.option.idTag));
+            data.push(item.attr(instance.options.idTag));
         });
         return data;
     }
@@ -178,7 +179,7 @@ class Page {
         if (!name.hasOwnProperty('page')) {
             name['page'] = 1;
         }
-        this.option.url.setData(name);
+        this.options.url.setData(name);
         this.refresh();
     }
 
@@ -190,13 +191,13 @@ class Page {
         let instance = this;
         let data = [];
         elements.forEach(item=> {
-            data.push(item.attr(instance.option.idTag));
+            data.push(item.attr(instance.options.idTag));
         });
         this.deleteId(...data);
     }
 
     public deleteRow(element: JQuery) {
-        let id = element.attr(this.option.idTag);
+        let id = element.attr(this.options.idTag);
         if (!id) {
             return;
         }
@@ -206,7 +207,7 @@ class Page {
      * 获取id标记
      */
     private _getIdTag(): string {
-        return this.option.idTag.replace('data-', '');
+        return this.options.idTag.replace('data-', '');
     }
 
     public deleteId(...data: string[]) {
@@ -214,12 +215,11 @@ class Page {
             return;
         }
         let instance = this;
-        if (this.option.onDelete 
-        && this.option.onDelete.apply(this, data) == false) {
+        if (false == this.trigger('delete', ...data)) {
             console.log('delete is stop!');
             return;
         }
-        this.option.deleteUrl.setData(this._getIdTag(), data).post({},function(data) {
+        this.options.deleteUrl.setData(this._getIdTag(), data).post({},function(data) {
             if (data.code == 0) {
                 instance.refresh();
             }
@@ -228,14 +228,14 @@ class Page {
 
     public refresh() {
         let instance = this;
-        if (this.option.beforeQuery 
-        && this.option.beforeQuery.call(this) == false) {
+        if (this.options.beforeQuery 
+        && this.options.beforeQuery.call(this) == false) {
             console.log('query is stop!');
             return;
         }
-        this.option.url.getJson(function(data) {
-            if (instance.option.afterQuery) {
-                instance.option.afterQuery.call(this, data);
+        this.options.url.getJson(function(data) {
+            if (instance.options.afterQuery) {
+                instance.options.afterQuery.call(this, data);
             }
             if (data.code != 0) {
                 console.log(data);
@@ -259,8 +259,12 @@ class Page {
         if (this._checkEmpty(name)) {
             return;
         }
-        let id = element.parents(this.option.row).attr(this.option.idTag);
+        let id = element.parents(this.options.row).attr(this.options.idTag);
         if (this._checkEmpty(id)) {
+            return;
+        }
+        if (this.options.beforeUpdate 
+        && false == this.options.beforeUpdate.call(this, element, id)) {
             return;
         }
         let instance = this;
@@ -277,12 +281,11 @@ class Page {
     }
 
     public updateData(id: string, name: string, val: string) {
-        if (this.option.onUpdate 
-        && this.option.onUpdate.call(this, id, name, val) == false) {
+        if (false == this.trigger('update', id, name, val)) {
             console.log('update is stop!');
             return;
         }
-        this.option.updateUrl.post({
+        this.options.updateUrl.post({
             [this._getIdTag()]: id,
             name: name,
             value: val
@@ -296,7 +299,7 @@ class Page {
         this._searchForm.find("[type=submit]").click(function() {
             instance.search(instance._getSearchFormData());
         });
-        this.element.find(this.option.sortRow+ '>*').click(function() {
+        this.element.find(this.options.sortRow+ '>*').click(function() {
             let $this = $(this);
             let name = $this.attr('data-name');
             if (instance._checkEmpty(name)) {
@@ -321,22 +324,22 @@ class Page {
         });
         this.element.find('.deleteAll').click(function() {
             let $this = $(this);
-            let tip = $this.attr('data-tip') || instance.option.deleteTip;
+            let tip = $this.attr('data-tip') || instance.options.deleteTip;
             if (confirm(tip)) {
                 instance.deleteChecked();
             }
         });
-        this.element.find(this.option.filterRow + ' input').blur(function() {
+        this.element.find(this.options.filterRow + ' input').blur(function() {
             instance._searchElement($(this));
         });
-        this.element.find(this.option.filterRow + ' select').change(function() {
+        this.element.find(this.options.filterRow + ' select').change(function() {
             instance._searchElement($(this));
         });
         this._body.on("click", '.delete', function() {
             let $this = $(this);
-            let tip = $this.attr('data-tip') || instance.option.deleteTip;
+            let tip = $this.attr('data-tip') || instance.options.deleteTip;
             if (confirm(tip)) {
-                instance.deleteRow($this.parents(instance.option.row));
+                instance.deleteRow($this.parents(instance.options.row));
             }
         });
         this._body.on("click", '.checkbox', function() {
@@ -348,7 +351,7 @@ class Page {
             }
             $this.addClass('checked');
         });
-        this._body.on('click', this.option.column, function() {
+        this._body.on('click', this.options.column, function() {
             instance.updateColumn($(this));
         });
     }
@@ -366,7 +369,7 @@ class Page {
         if (typeof data == 'object') {
             let instance = this;
             $.each(data, function(i, item) {
-                html += instance.option.createRow(item);
+                html += instance.options.createRow(item);
             });
         } else {
             html = data;
@@ -396,6 +399,14 @@ class Page {
         });
         return data;
     }
+
+    public delete(callback: (id: string, row: JQuery) => any): this {
+        return this.on('delete', callback);
+    }
+
+    public update(callback: (id: string, name: string, val: string) => any): this {
+        return this.on('update', callback);
+    }
 }
 
 interface PageOption {
@@ -411,8 +422,9 @@ interface PageOption {
     idTag?: string,        // 行上的id 标记
     createRow?: (data: any) => string,   //一行生成
     deleteTip?: string,     //删除提示
-    onDelete?: (id: string, row: JQuery) => any,  //删除事件
-    onUpdate?: (id: string, name: string, val: string) => any, //更新事件
+    ondelete?: (id: string, row: JQuery) => any,  //删除事件
+    onupdate?: (id: string, name: string, val: string) => any, //更新事件
+    beforeUpdate?: (element: JQuery, id: string) => any, 
     beforeQuery?: ()=>any,   //查询开始事件
     afterQuery?: (data) => any, //查询结束
 }

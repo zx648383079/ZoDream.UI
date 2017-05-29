@@ -318,21 +318,21 @@ class DialogElement extends Box {
             let x, y;
             this.box.find(".dialog-header .dialog-title").mousedown(function(e) {
                 isMove = true;
-                x = e.pageX - parseInt(instance.element.css('left'));
-                y = e.pageY - parseInt(instance.element.css('top'));
-                instance.element.fadeTo(20, .5);
+                x = e.pageX - parseInt(instance.box.css('left'));
+                y = e.pageY - parseInt(instance.box.css('top'));
+                instance.box.fadeTo(20, .5);
             });
             $(document).mousemove(function(e) {
                 if (!isMove) {
                     return;
                 }
-                instance.element.css({
+                instance.box.css({
                     top: e.pageY - y,
                     left: e.pageX - x
                 })
             }).mouseup(function() {
                 isMove = false;
-                instance.element.fadeTo('fast', 1);
+                instance.box.fadeTo('fast', 1);
             });
         }
     }

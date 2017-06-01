@@ -112,25 +112,21 @@ var DateTimer = (function (_super) {
      * 获取设置的最小值
      */
     DateTimer.prototype._getMin = function () {
-        if (this.options.min instanceof DateTimer) {
-            return this.options.min.getCurrentDate();
+        var date = this._tD(this.options.min);
+        if (!this._hasTime) {
+            date.setHours(23, 59, 59, 99);
         }
-        if (typeof this.options.min == 'string') {
-            return this._tD(this.options.min);
-        }
-        return this.options.min;
+        return date;
     };
     /**
      * 获取设置的最大值
      */
     DateTimer.prototype._getMax = function () {
-        if (this.options.max instanceof DateTimer) {
-            return this.options.max.getCurrentDate();
+        var date = this._tD(this.options.max);
+        if (!this._hasTime) {
+            date.setHours(0, 0, 0, 0);
         }
-        if (typeof this.options.max == 'string') {
-            return this._tD(this.options.max);
-        }
-        return this.options.max;
+        return date;
     };
     /**
      * 初始化
@@ -155,7 +151,7 @@ var DateTimer = (function (_super) {
             this._nLi(13, 1) +
             '</ul></div><i class="fa fa-close"></i></div>';
         if (this._hasTime) {
-            html += '<div class="day-grid"><div class="list-group hour"><div class="title">小时</div><ul>' + this._nLi(25, 1) +
+            html += '<div class="day-grid"><div class="list-group hour"><div class="title">小时</div><ul>' + this._nLi(24) +
                 '</ul></div><div class="list-group minute"><div class="title">分钟</div><ul>' +
                 lis +
                 '</ul></div><div class="list-group second"><div class="title">秒钟</div><ul>' +
@@ -276,7 +272,7 @@ var DateTimer = (function (_super) {
      * 刷新时间列表
      */
     DateTimer.prototype._refreshDayGrid = function () {
-        this._changeListGroup(this._hourBox, this._currentDate.getHours() - 1);
+        this._changeListGroup(this._hourBox, this._currentDate.getHours());
         this._changeListGroup(this._minuteBox, this._currentDate.getMinutes());
         this._changeListGroup(this._secondBox, this._currentDate.getSeconds());
     };
@@ -314,7 +310,7 @@ var DateTimer = (function (_super) {
     DateTimer.prototype._changeHour = function (h) {
         this._currentDate.setHours(h);
         this.box.find(".footer .hour").val(this._iTs(h));
-        this._changeListGroup(this._hourBox, h - 1);
+        this._changeListGroup(this._hourBox, h);
     };
     /**
      * 改变分
@@ -560,7 +556,7 @@ var DateTimer = (function (_super) {
             return new Date();
         }
         if (typeof year == 'object') {
-            return year;
+            return year instanceof DateTimer ? year.getCurrentDate() : year;
         }
         if (typeof year == 'number'
             && typeof month == 'number') {

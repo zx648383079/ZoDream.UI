@@ -36,6 +36,48 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 };
+var Box = (function () {
+    function Box() {
+    }
+    Box.prototype.showPosition = function () {
+        var offset = this.element.offset();
+        var x = offset.left;
+        var y = offset.top + this.element.outerHeight();
+        this.box.css({ left: x + "px", top: y + "px" }).show();
+        return this;
+    };
+    Box.prototype.on = function (event, callback) {
+        this.options['on' + event] = callback;
+        return this;
+    };
+    Box.prototype.hasEvent = function (event) {
+        return this.options.hasOwnProperty('on' + event);
+    };
+    Box.prototype.trigger = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var realEvent = 'on' + event;
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        var _a;
+    };
+    /**
+     * 根据可能是相对值获取绝对值
+     * @param abservable
+     * @param reltive
+     */
+    Box.getReal = function (abservable, reltive) {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    };
+    return Box;
+}());
 /**
  * 已知问题当最大值最小值为DateTimer 时无法正确显示
  */
@@ -208,6 +250,9 @@ var DateTimer = (function (_super) {
      */
     DateTimer.prototype.showDate = function (year, month) {
         this._currentDate = this._tD(year, month);
+        if (!this._hasTime) {
+            this._currentDate.setHours(12, 0, 0, 0);
+        }
         this.box.data('date', this._currentDate);
         this._refreshDay();
     };
@@ -232,8 +277,8 @@ var DateTimer = (function (_super) {
      */
     DateTimer.prototype._refreshDayGrid = function () {
         this._changeListGroup(this._hourBox, this._currentDate.getHours() - 1);
-        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes() - 1);
-        this._changeListGroup(this._secondBox, this._currentDate.getSeconds() - 1);
+        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes());
+        this._changeListGroup(this._secondBox, this._currentDate.getSeconds());
     };
     /**
      * 改变list-group 中的ul
@@ -278,7 +323,7 @@ var DateTimer = (function (_super) {
     DateTimer.prototype._changeMinute = function (i) {
         this._currentDate.setMinutes(i);
         this.box.find(".footer .minute").val(this._iTs(i));
-        this._changeListGroup(this._minuteBox, i - 1);
+        this._changeListGroup(this._minuteBox, i);
     };
     /**
      * 改变秒
@@ -287,7 +332,7 @@ var DateTimer = (function (_super) {
     DateTimer.prototype._changeSecond = function (s) {
         this._currentDate.setSeconds(s);
         this.box.find(".footer .second").val(this._iTs(s));
-        this._changeListGroup(this._secondBox, s - 1);
+        this._changeListGroup(this._secondBox, s);
     };
     /**
      * 刷新日
@@ -354,26 +399,37 @@ var DateTimer = (function (_super) {
         this.box.find(".body .month-grid ul li").click(function () {
             var ele = $(this);
             var day = parseInt(ele.text());
+            var date = new Date(instance._currentDate);
             if (!ele.hasClass("disable")) {
-                instance._currentDate.setDate(day);
-                ele.addClass("active").siblings().removeClass("active");
-                instance.output();
-                return;
+                date.setDate(day);
             }
-            if (day > ele.index()) {
+            else if (day > ele.index()) {
                 /**点击上月日期 */
-                instance._currentDate.setMonth(instance._currentDate.getMonth() - 1);
-                instance._currentDate.setDate(day);
-                instance.showDate(instance._currentDate);
-                instance.output();
+                date.setMonth(date.getMonth() - 1);
+                date.setDate(day);
+            }
+            else {
+                /**
+                 * 点击下月日期
+                 */
+                date.setMonth(date.getMonth() + 1);
+                date.setDate(day);
+            }
+            if (instance.trigger('click', date, ele) == false) {
                 return;
             }
-            /**
-             * 点击下月日期
-             */
-            instance._currentDate.setMonth(instance._currentDate.getMonth() + 1);
-            instance._currentDate.setDate(day);
-            instance.showDate(instance._currentDate);
+            if (!instance.checkDate(date)) {
+                // 超出范围
+                instance.trigger('error', date);
+                return;
+            }
+            if (date.getMonth() == instance._currentDate.getMonth()) {
+                ele.addClass("active").siblings().removeClass("active");
+                instance._currentDate = date;
+            }
+            else {
+                instance.showDate(date);
+            }
             instance.output();
         });
         this.box.find(".previousYear").click(function () {
@@ -472,16 +528,20 @@ var DateTimer = (function (_super) {
     DateTimer.prototype.val = function () {
         return this.getCurrentDate().format(this.options.format);
     };
+    DateTimer.prototype.checkDate = function (date) {
+        if (this.options.min && date <= this._getMin()) {
+            return false;
+        }
+        return !this.options.max || date < this._getMax();
+    };
     /**
      * 输出时间
      * @param isHide
      */
     DateTimer.prototype.output = function (isHide) {
         if (isHide === void 0) { isHide = false; }
-        if (this.options.min instanceof DateTimer && this.getCurrentDate() <= this.options.min.getCurrentDate()) {
-            return;
-        }
-        if (this.options.max instanceof DateTimer && this.getCurrentDate() >= this.options.max.getCurrentDate()) {
+        if (!this.checkDate(this.getCurrentDate())) {
+            this.trigger('error', this.getCurrentDate());
             return;
         }
         if (false == this.trigger('done')) {

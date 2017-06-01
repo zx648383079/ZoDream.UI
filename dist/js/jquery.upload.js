@@ -53,12 +53,12 @@ var Upload = (function () {
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
     };
     Upload.prototype.uploadOne = function (file) {
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, file, this.currentElement) == false) {
-            return;
-        }
         var instance = this;
         var data = new FormData();
         data.append(this.option.name, file);
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+            return;
+        }
         $.ajax({
             url: this.option.url,
             type: 'POST',

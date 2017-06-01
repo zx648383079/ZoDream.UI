@@ -8,6 +8,48 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var Box = (function () {
+    function Box() {
+    }
+    Box.prototype.showPosition = function () {
+        var offset = this.element.offset();
+        var x = offset.left;
+        var y = offset.top + this.element.outerHeight();
+        this.box.css({ left: x + "px", top: y + "px" }).show();
+        return this;
+    };
+    Box.prototype.on = function (event, callback) {
+        this.options['on' + event] = callback;
+        return this;
+    };
+    Box.prototype.hasEvent = function (event) {
+        return this.options.hasOwnProperty('on' + event);
+    };
+    Box.prototype.trigger = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var realEvent = 'on' + event;
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        var _a;
+    };
+    /**
+     * 根据可能是相对值获取绝对值
+     * @param abservable
+     * @param reltive
+     */
+    Box.getReal = function (abservable, reltive) {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    };
+    return Box;
+}());
 var City = (function (_super) {
     __extends(City, _super);
     function City(element, options) {

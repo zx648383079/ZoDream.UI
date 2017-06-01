@@ -25,6 +25,53 @@ Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
     }
     return fmt;
 }
+
+abstract class Box {
+
+    public options: any;
+
+    public element: JQuery;
+
+    public box: JQuery;
+
+    protected showPosition(): this {
+        let offset = this.element.offset();
+        let x = offset.left;
+        let y = offset.top + this.element.outerHeight();
+        this.box.css({left: x + "px", top: y + "px"}).show();
+        return this;
+    }
+
+    public on(event: string, callback: Function): this {
+        this.options['on' + event] = callback;
+        return this;
+    }
+
+    public hasEvent(event: string): boolean {
+        return this.options.hasOwnProperty('on' + event);
+    }
+
+    public trigger(event: string, ... args: any[]) {
+        let realEvent = 'on' + event;
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return this.options[realEvent].call(this, ...args);
+    }
+
+    /**
+     * 根据可能是相对值获取绝对值
+     * @param abservable 
+     * @param reltive 
+     */
+    public static getReal(abservable: number, reltive: number): number {
+        if (reltive > 1) {
+            return reltive;
+        }
+        return abservable * reltive;
+    }
+}
+
 /**
  * 已知问题当最大值最小值为DateTimer 时无法正确显示
  */
@@ -239,6 +286,9 @@ class DateTimer extends Box {
      */
     public showDate(year: number|Date|string, month?: number) {
         this._currentDate = this._tD(year, month);
+        if (!this._hasTime) {
+            this._currentDate.setHours(12, 0, 0, 0);
+        }
         this.box.data('date', this._currentDate);
         this._refreshDay();
     }
@@ -264,8 +314,8 @@ class DateTimer extends Box {
      */
     private _refreshDayGrid() {
         this._changeListGroup(this._hourBox, this._currentDate.getHours() - 1);
-        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes() - 1);
-        this._changeListGroup(this._secondBox, this._currentDate.getSeconds() - 1);
+        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes() );
+        this._changeListGroup(this._secondBox, this._currentDate.getSeconds());
     }
 
      /**
@@ -311,7 +361,7 @@ class DateTimer extends Box {
     private _changeMinute(i: number) {
         this._currentDate.setMinutes(i);
         this.box.find(".footer .minute").val(this._iTs(i));
-        this._changeListGroup(this._minuteBox, i -1);
+        this._changeListGroup(this._minuteBox, i);
     }
     /**
      * 改变秒
@@ -320,7 +370,7 @@ class DateTimer extends Box {
     private _changeSecond(s: number) {
         this._currentDate.setSeconds(s);
         this.box.find(".footer .second").val(this._iTs(s));
-        this._changeListGroup(this._secondBox, s -1);
+        this._changeListGroup(this._secondBox, s);
     }
     /**
      * 刷新日
@@ -386,26 +436,34 @@ class DateTimer extends Box {
         this.box.find(".body .month-grid ul li").click(function() {
             let ele = $(this);
             let day = parseInt(ele.text());
+            let date: Date = new Date(instance._currentDate);
             if (!ele.hasClass("disable")) {
-                instance._currentDate.setDate(day);
-                ele.addClass("active").siblings().removeClass("active");
-                instance.output();
-                return;
-            }
-            if (day > ele.index()) {
+                date.setDate(day);
+            } else if (day > ele.index()) {
                 /**点击上月日期 */
-                instance._currentDate.setMonth(instance._currentDate.getMonth() - 1);
-                instance._currentDate.setDate(day);
-                instance.showDate(instance._currentDate);
-                instance.output();
+                date.setMonth(date.getMonth() - 1);
+                date.setDate(day);
+            } else {
+                /**
+                 * 点击下月日期
+                 */
+                date.setMonth(date.getMonth() + 1);
+                date.setDate(day);
+            }
+            if (instance.trigger('click', date, ele) == false) {
                 return;
             }
-            /**
-             * 点击下月日期
-             */
-            instance._currentDate.setMonth(instance._currentDate.getMonth() + 1);
-            instance._currentDate.setDate(day);
-            instance.showDate(instance._currentDate);
+            if (!instance.checkDate(date)) {
+                // 超出范围
+                instance.trigger('error', date);
+                return;
+            }
+            if (date.getMonth() == instance._currentDate.getMonth()) {
+                ele.addClass("active").siblings().removeClass("active");
+                instance._currentDate = date;
+            } else {
+                instance.showDate(date);
+            }
             instance.output();
         });
         this.box.find(".previousYear").click(function() {
@@ -507,15 +565,21 @@ class DateTimer extends Box {
      public val(): string {
         return this.getCurrentDate().format(this.options.format);
      }
+
+     public checkDate(date: Date): boolean {
+         if (this.options.min && date <= this._getMin()) {
+             return false;
+         }
+         return !this.options.max || date < this._getMax();
+     }
+
      /**
       * 输出时间
       * @param isHide 
       */
      public output(isHide: boolean = false) {
-        if (this.options.min instanceof DateTimer && this.getCurrentDate() <= this.options.min.getCurrentDate()) {
-            return;
-        }
-        if (this.options.max instanceof DateTimer && this.getCurrentDate() >= this.options.max.getCurrentDate()) {
+        if (!this.checkDate(this.getCurrentDate())) {
+            this.trigger('error', this.getCurrentDate());
             return;
         }
         if (false == this.trigger('done')) {
@@ -558,6 +622,8 @@ interface DateTimerOptions {
     min?: string | Date | DateTimer, //最小日期
     max?: string | Date | DateTimer, //最大日期
     ondone?: (date: Date, element: JQuery) => any,
+    onclick?: (date: Date, element: JQuery) => any,   // 点击事件
+    onerror?: (date: Date, element: JQuery) => any,  // 点击错误的
     title?: string
  }
 

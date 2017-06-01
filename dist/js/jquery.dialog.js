@@ -282,21 +282,21 @@ var DialogElement = (function (_super) {
             var x_1, y_1;
             this.box.find(".dialog-header .dialog-title").mousedown(function (e) {
                 isMove_1 = true;
-                x_1 = e.pageX - parseInt(instance.element.css('left'));
-                y_1 = e.pageY - parseInt(instance.element.css('top'));
-                instance.element.fadeTo(20, .5);
+                x_1 = e.pageX - parseInt(instance.box.css('left'));
+                y_1 = e.pageY - parseInt(instance.box.css('top'));
+                instance.box.fadeTo(20, .5);
             });
             $(document).mousemove(function (e) {
                 if (!isMove_1) {
                     return;
                 }
-                instance.element.css({
+                instance.box.css({
                     top: e.pageY - y_1,
                     left: e.pageX - x_1
                 });
             }).mouseup(function () {
                 isMove_1 = false;
-                instance.element.fadeTo('fast', 1);
+                instance.box.fadeTo('fast', 1);
             });
         }
     };

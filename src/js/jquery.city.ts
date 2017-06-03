@@ -71,7 +71,7 @@ class City extends Box {
 
     private _index: number = -1;
 
-    private _onchange(id?: string| number, index?: number, selected?: string| number) {
+    private _onchange(id?: string| number, index?: number, selected?: string | number) {
         
         if (typeof this.options.data == 'object') {
             this._setData(id, index, selected);

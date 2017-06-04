@@ -4,7 +4,8 @@
   background: #fff;
   border: 1px solid #0275d8;
   display: none;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  z-index: 999; }
   .selector * {
     margin: 0;
     padding: 0; }

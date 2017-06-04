@@ -50,11 +50,12 @@ class Point {
     }
 }
 
-class SliderItem {
+class SliderItem extends Eve {
     constructor(
         public element: JQuery,
         public options: SliderOptions
     ) {
+        super();
         if (this.element.attr('data-slider')) {
             return;
         }
@@ -243,11 +244,11 @@ class SliderItem {
                 instance._box.css({left: points[1].getLeft(width) + 'px'});
             }
             instance._index = points[1].index;
-            if (instance.options.hasPoint) {
-                instance.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
-            }
         });
-        
+        this.trigger('change', ...points);
+        if (this.options.hasPoint) {
+            this.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
+        }
     }
 
     /**
@@ -364,6 +365,7 @@ interface SliderOptions {
     next?: string,
     hasPoint?: boolean,   //是否有点击跳转
     auto?: boolean,  //是否自动播放
+    onchange?: (start: Point, end: Point) => any; //切换事件
 }
 
 class SliderDefaultOptions implements SliderOptions {

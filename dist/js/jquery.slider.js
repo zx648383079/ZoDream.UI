@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Point = (function () {
     function Point(index, x, width, height) {
         this.index = index;
@@ -43,24 +53,27 @@ var Point = (function () {
     };
     return Point;
 }());
-var SliderItem = (function () {
+var SliderItem = (function (_super) {
+    __extends(SliderItem, _super);
     function SliderItem(element, options) {
-        this.element = element;
-        this.options = options;
-        this._data = [];
-        this._length = 0;
-        this._index = 0;
-        if (this.element.attr('data-slider')) {
-            return;
+        var _this = _super.call(this) || this;
+        _this.element = element;
+        _this.options = options;
+        _this._data = [];
+        _this._length = 0;
+        _this._index = 0;
+        if (_this.element.attr('data-slider')) {
+            return _this;
         }
-        var items = this.element.find(this.options.item);
+        var items = _this.element.find(_this.options.item);
         if (items.length < 2) {
-            return;
+            return _this;
         }
-        this._length = items.length;
-        this._box = items.parent();
-        this._init(items);
-        this.element.attr('data-slider', 1);
+        _this._length = items.length;
+        _this._box = items.parent();
+        _this._init(items);
+        _this.element.attr('data-slider', 1);
+        return _this;
     }
     SliderItem.prototype._timeCallback = function () {
         if (this.options.auto) {
@@ -218,10 +231,11 @@ var SliderItem = (function () {
                 instance._box.css({ left: points[1].getLeft(width) + 'px' });
             }
             instance._index = points[1].index;
-            if (instance.options.hasPoint) {
-                instance.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
-            }
         });
+        this.trigger('change', index);
+        if (this.options.hasPoint) {
+            this.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
+        }
     };
     /**
      * 移动动画及回调
@@ -241,7 +255,7 @@ var SliderItem = (function () {
         }
     };
     return SliderItem;
-}());
+}(Eve));
 var Slider = (function () {
     function Slider(element, options) {
         var _this = this;

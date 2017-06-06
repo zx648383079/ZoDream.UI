@@ -277,6 +277,7 @@ class DialogElement extends Box {
         }
         this.options.type = DialogType.page;
         this.box.addClass("dialog-page");
+        Dialog.closeBg();
     }
 
     private _bindEvent() {

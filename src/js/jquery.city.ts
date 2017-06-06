@@ -7,10 +7,16 @@ abstract class Box {
     public box: JQuery;
 
     protected showPosition(): this {
+        this.setPosition();
+        this.box.show();
+        return this;
+    }
+
+    protected setPosition(): this {
         let offset = this.element.offset();
-        let x = offset.left;
-        let y = offset.top + this.element.outerHeight();
-        this.box.css({left: x + "px", top: y + "px"}).show();
+        let x = offset.left - $(window).scrollLeft();
+        let y = offset.top + this.element.outerHeight() - $(window).scrollTop();
+        this.box.css({left: x + "px", top: y + "px"});
         return this;
     }
 
@@ -184,6 +190,9 @@ class City extends Box {
         });
         $(document).click(function() {
             instance.box.hide();
+        });
+        $(window).scroll(function() {
+            instance.setPosition();
         });
     }
 

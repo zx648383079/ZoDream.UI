@@ -336,6 +336,9 @@ class DialogElement extends Box {
                 instance.box.fadeTo('fast', 1);
             });
         }
+        $(window).resize(function() {
+            instance._setProperty();
+        });
     }
 
     private _addTime() {

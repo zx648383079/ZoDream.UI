@@ -217,6 +217,71 @@
     100%{   
         margin-left: 142px;   
         background: lightblue;   
-    }  
+    } 
+}
 
+/*** 吃豆豆 **/
+.loading6 {
+    position: relative;
+    span {
+        &:nth-child(1) {
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-top: 25px solid #a5dc86;
+            border-left: 25px solid #a5dc86;
+            border-bottom: 25px solid #a5dc86;
+            border-radius: 25px;
+            @include prefix-content(animation, rotate_pacman_half_up 0.5s 0s infinite);
+        }
+        &:nth-child(2) {
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-top: 25px solid #a5dc86;
+            border-left: 25px solid #a5dc86;
+            border-bottom: 25px solid #a5dc86;
+            border-radius: 25px;
+            @include prefix-content(animation, rotate_pacman_half_down 0.5s 0s infinite);
+            margin-top: -50px;
+        }
+        &:nth-child(3) {
+            @include prefix-content(animation, pacman-balls 1s 0.33s infinite linear);
+        }
+        &:nth-child(4) {
+            @include prefix-content(animation, pacman-balls 1s 0.66s infinite linear);
+        }
+        &:nth-child(5) {
+            @include prefix-content(animation, pacman-balls 1s 0.99s infinite linear);
+        }
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5) {
+            background-color: #a5dc86;
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+            margin: 2px;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            @include prefix-content(transform, translate(0, -6.25px));
+            top: 25px;
+            left: 100px;
+        }
+    }
+}
+
+/** 方块旋转 **/
+.loading7 {
+    position: relative;
+    span {
+        -webkit-animation-fill-mode: both;
+        @include prefix-content(animation-fill-mode, both);
+        width: 50px;
+        height: 50px;
+        background: #a5dc86;
+        border: 1px solid #a5dc86;
+        @include prefix-content(animation, square-spin 3s 0s cubic-bezier(.09, .57, .49, .9) infinite);
+    }
 }

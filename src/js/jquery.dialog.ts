@@ -278,7 +278,6 @@ class DialogElement extends Box {
             this._setPopProperty();
             return;
         }
-        
         let target = this.options.target || Dialog.$window;
         let maxWidth = target.width();
         let width = this.box.width();

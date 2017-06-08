@@ -130,9 +130,34 @@ class DialogElement extends Box {
 
     public notify: Notification; // 系统通知
 
-    public data: {[name: string]: string | string[]} = {};
+    private _data: {[name: string]: string | string[]};
 
-    public elements: {[name: string]: JQuery} = {};
+    /**
+     * 表单数据
+     */
+    public get data(): {[name: string]: string | string[]} {
+        if (!this._data) {
+            this._data = this._getFormData();
+        }
+        return this._data;
+    }
+
+    private _elements: {[name: string]: JQuery};
+    /**
+     * 表单控件
+     */
+    public get elements(): {[name: string]: JQuery} {
+        if (!this._elements) {
+            this._elements = this._getFormElement();
+        }
+        return this._elements;
+    }
+
+    public clearFormData(): this {
+        this._data = undefined;
+        this._elements = undefined;
+        return this;
+    }
 
     private _isClosing: boolean = false;
 
@@ -300,9 +325,7 @@ class DialogElement extends Box {
         }
         if (this.options.hasYes) {
             this.onClick(".dialog-yes", function() {
-                this._getFormElement();
-                this._getFormData();
-                this.trigger('done');
+                this.clearFormData().trigger('done');
             });
         }
         if (this.options.type == DialogType.box
@@ -535,33 +558,39 @@ class DialogElement extends Box {
         return '<div class="input-group">'+html+'</div>';
     }
 
-    private _getFormElement() {
-        this.elements = {};
+    /**
+     * 获取表单控件
+     */
+    private _getFormElement():{[name:string]: JQuery} {
+        let elements = {};
         let instance = this;
         this.box.find('input,select,textarea').each(function(i, ele) {
             let item = $(ele);
             if (!item.is('[type=ridio]') || !item.is('[type=checkbox]')) {
-                instance.elements[item.attr('name')] = item;
+                elements[item.attr('name')] = item;
                 return;
             }
             let name = item.attr('name');
             if (!instance.elements.hasOwnProperty(name)) {
-                instance.elements[name] = item;
+                elements[name] = item;
                 return;
             }
-            instance.elements[name].add(item);
+            elements[name].add(item);
         });
+        return elements;
     }
 
-    private _getFormData() {
-        this.data = {};
-        let instance = this;
+    /**
+     * 获取表单数据
+     */
+    private _getFormData(): {[name: string]: any} {
+        let formData = {};
         $.each(this.elements, function(name: string, element: JQuery) {
             if (element.is('[type=ridio]')) {
                 element.each(function(i, ele) {
                     let item = $(ele);
                     if (item.attr('checked')) {
-                        instance.data[name] = item.val();
+                        formData[name] = item.val();
                     }
                 });
                 return;
@@ -574,12 +603,12 @@ class DialogElement extends Box {
                        data.push(item.val());
                     }
                 });
-                instance.data[name] = data;
+                formData[name] = data;
                 return;
             }
-            instance.data[name] = element.val();
+            formData[name] = element.val();
         });
-        return this.data;
+        return formData;
     }
     
 

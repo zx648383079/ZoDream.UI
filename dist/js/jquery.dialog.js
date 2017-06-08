@@ -96,8 +96,6 @@ var DialogElement = (function (_super) {
     function DialogElement(option, id) {
         var _this = _super.call(this) || this;
         _this.id = id;
-        _this.data = {};
-        _this.elements = {};
         _this._isClosing = false;
         _this._isShow = false;
         _this.options = $.extend({}, new DefaultDialogOption(), option);
@@ -108,6 +106,37 @@ var DialogElement = (function (_super) {
         _this.init();
         return _this;
     }
+    Object.defineProperty(DialogElement.prototype, "data", {
+        /**
+         * 表单数据
+         */
+        get: function () {
+            if (!this._data) {
+                this._data = this._getFormData();
+            }
+            return this._data;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DialogElement.prototype, "elements", {
+        /**
+         * 表单控件
+         */
+        get: function () {
+            if (!this._elements) {
+                this._elements = this._getFormElement();
+            }
+            return this._elements;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    DialogElement.prototype.clearFormData = function () {
+        this._data = undefined;
+        this._elements = undefined;
+        return this;
+    };
     Object.defineProperty(DialogElement.prototype, "isShow", {
         get: function () {
             return this._isShow;
@@ -165,7 +194,7 @@ var DialogElement = (function (_super) {
     DialogElement.prototype._createNewElement = function (type) {
         if (type === void 0) { type = this.options.type; }
         var typeStr = DialogType[type];
-        this.box = $('<div class="dialog dialog-' + typeStr + '" data-type="dialog"></div>');
+        this.box = $('<div class="dialog dialog-' + typeStr + '" data-type="dialog" dialog-id=' + this.id + '></div>');
         this._addHtml();
         if (this.options.width) {
             this.box.width(this._getWidth());
@@ -242,6 +271,14 @@ var DialogElement = (function (_super) {
         }
         this.options.type = DialogType.page;
         this.box.addClass("dialog-page");
+        Dialog.closeBg();
+    };
+    /**
+     * 重设尺寸
+     */
+    DialogElement.prototype.resize = function () {
+        this._setProperty();
+        this.trigger('resize');
     };
     DialogElement.prototype._bindEvent = function () {
         this.box.click(function (e) {
@@ -255,9 +292,7 @@ var DialogElement = (function (_super) {
         }
         if (this.options.hasYes) {
             this.onClick(".dialog-yes", function () {
-                this._getFormElement();
-                this._getFormData();
-                this.trigger('done');
+                this.clearFormData().trigger('done');
             });
         }
         if (this.options.type == DialogType.box
@@ -299,6 +334,9 @@ var DialogElement = (function (_super) {
                 instance.box.fadeTo('fast', 1);
             });
         }
+        $(window).resize(function () {
+            instance.resize();
+        });
     };
     DialogElement.prototype._addTime = function () {
         if (this.options.time <= 0) {
@@ -480,32 +518,38 @@ var DialogElement = (function (_super) {
         }
         return '<div class="input-group">' + html + '</div>';
     };
+    /**
+     * 获取表单控件
+     */
     DialogElement.prototype._getFormElement = function () {
-        this.elements = {};
+        var elements = {};
         var instance = this;
         this.box.find('input,select,textarea').each(function (i, ele) {
             var item = $(ele);
             if (!item.is('[type=ridio]') || !item.is('[type=checkbox]')) {
-                instance.elements[item.attr('name')] = item;
+                elements[item.attr('name')] = item;
                 return;
             }
             var name = item.attr('name');
             if (!instance.elements.hasOwnProperty(name)) {
-                instance.elements[name] = item;
+                elements[name] = item;
                 return;
             }
-            instance.elements[name].add(item);
+            elements[name].add(item);
         });
+        return elements;
     };
+    /**
+     * 获取表单数据
+     */
     DialogElement.prototype._getFormData = function () {
-        this.data = {};
-        var instance = this;
+        var formData = {};
         $.each(this.elements, function (name, element) {
             if (element.is('[type=ridio]')) {
                 element.each(function (i, ele) {
                     var item = $(ele);
                     if (item.attr('checked')) {
-                        instance.data[name] = item.val();
+                        formData[name] = item.val();
                     }
                 });
                 return;
@@ -518,12 +562,12 @@ var DialogElement = (function (_super) {
                         data_1.push(item.val());
                     }
                 });
-                instance.data[name] = data_1;
+                formData[name] = data_1;
                 return;
             }
-            instance.data[name] = element.val();
+            formData[name] = element.val();
         });
-        return this.data;
+        return formData;
     };
     DialogElement.prototype.show = function () {
         this.isShow = true;
@@ -849,6 +893,13 @@ var Dialog = (function () {
     Dialog.hasItem = function (id) {
         if (id === void 0) { id = this._guid; }
         return this._data.hasOwnProperty(id + '');
+    };
+    Dialog.get = function (id) {
+        if (id === void 0) { id = this._guid; }
+        if (this.hasItem(id)) {
+            return this._data[id];
+        }
+        throw "error:" + id;
     };
     /**
      * 根据id删除弹出框

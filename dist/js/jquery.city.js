@@ -12,10 +12,15 @@ var Box = (function () {
     function Box() {
     }
     Box.prototype.showPosition = function () {
+        this.setPosition();
+        this.box.show();
+        return this;
+    };
+    Box.prototype.setPosition = function () {
         var offset = this.element.offset();
-        var x = offset.left;
-        var y = offset.top + this.element.outerHeight();
-        this.box.css({ left: x + "px", top: y + "px" }).show();
+        var x = offset.left - $(window).scrollLeft();
+        var y = offset.top + this.element.outerHeight() - $(window).scrollTop();
+        this.box.css({ left: x + "px", top: y + "px" });
         return this;
     };
     Box.prototype.on = function (event, callback) {
@@ -174,6 +179,9 @@ var City = (function (_super) {
         });
         $(document).click(function () {
             instance.box.hide();
+        });
+        $(window).scroll(function () {
+            instance.setPosition();
         });
     };
     City.prototype.setDefault = function () {

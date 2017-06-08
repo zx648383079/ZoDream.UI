@@ -232,7 +232,7 @@ var SliderItem = (function (_super) {
             }
             instance._index = points[1].index;
         });
-        this.trigger('change', index);
+        this.trigger.apply(this, ['change'].concat(points));
         if (this.options.hasPoint) {
             this.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
         }

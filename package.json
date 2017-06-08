@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/jquery": "^2.0.46",
     "bowser": "^1.7.0",
+    "graceful-fs": "^4.1.11",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.4.1",
     "gulp-concat": "^2.6.1",
@@ -14,6 +15,7 @@
     "gulp-tslint": "^7.1.0",
     "gulp-typescript": "^3.1.7",
     "gulp-uglify": "^2.0.1",
+    "minimatch": "^3.0.4",
     "tslint": "^4.5.1",
     "typescript": "^2.3.4"
   },

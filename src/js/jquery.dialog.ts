@@ -564,13 +564,16 @@ class DialogElement extends Box {
     private _getFormElement():{[name:string]: JQuery} {
         let elements = {};
         let instance = this;
-        this.box.find('input,select,textarea').each(function(i, ele) {
+        this.box.find('input,select,textarea,button').each(function(i, ele) {
             let item = $(ele);
-            if (!item.is('[type=ridio]') || !item.is('[type=checkbox]')) {
-                elements[item.attr('name')] = item;
+            let name = item.attr('name');
+            if (!name) {
                 return;
             }
-            let name = item.attr('name');
+            if (!item.is('[type=ridio]') && !item.is('[type=checkbox]') && name.indexOf('[]') < 0) {
+                elements[name] = item;
+                return;
+            }
             if (!instance.elements.hasOwnProperty(name)) {
                 elements[name] = item;
                 return;
@@ -602,6 +605,15 @@ class DialogElement extends Box {
                     if (item.attr('checked')) {
                        data.push(item.val());
                     }
+                });
+                formData[name] = data;
+                return;
+            }
+            if (name.indexOf('[]') > 0) {
+                let data = [];
+                element.each(function(i, ele) {
+                    let item = $(ele);
+                    data.push(item.val());
                 });
                 formData[name] = data;
                 return;

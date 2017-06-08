@@ -50,6 +50,8 @@ enum DialogType {
     notify,
     pop,
     loading,
+    image,
+    disk,
     form,
     content,
     box,
@@ -119,6 +121,7 @@ class DialogElement extends Box {
         super();
         this.options = $.extend({}, new DefaultDialogOption(), option);
         this.options.type =  Dialog.parseEnum<DialogType>(this.options.type, DialogType);
+        console.log(this.options.type);
         
         if (this.options.direction) {
             this.options.direction = Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection);
@@ -247,6 +250,12 @@ class DialogElement extends Box {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
+                this.box.html(this._getHeader() + this._getContent() + this._getFooter());
+                break;
+            case DialogType.image:
+                this.box.html(this._getHeader() + this._getContent('<div></div>') + this._getFooter());
+                break;
+            case DialogType.disk:
                 this.box.html(this._getHeader() + this._getContent() + this._getFooter());
                 break;
             case DialogType.content:
@@ -448,7 +457,10 @@ class DialogElement extends Box {
         if (ico) {
             html += '<i class="fa fa-' + ico + '"></i>';
         }
-        html += this.options.title +'</div>';
+        if (this.options.title) {
+            html += this.options.title;
+        }
+        html += '</div>';
         if (hasClose) {
             html += '<i class="fa fa-close dialog-close"></i>';
         }

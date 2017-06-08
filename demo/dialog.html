@@ -17,6 +17,9 @@
     <button dialog-type="box">信息</button>
     <button dialog-type="form">表单</button>
     <button dialog-type="page">页面</button>
+    <button dialog-type="image">图片</button>
+    <button dialog-type="disk">文件</button>
+    
 
 
     <div class="page-loading" style="position: relative; height: 400px; background: #f00;">
@@ -74,6 +77,26 @@
             });
             $("[dialog-type=page]").dialog({
                 content: '11111111111111111111'
+            });
+            $("[dialog-type=image]").dialog({
+                title: false,
+                onnext: function() {
+                    return 'image/avatar.jpg';
+                },
+                onprevious: function() {
+                    return 'image/banner1.jpg';
+                }
+            });
+            $("[dialog-type=disk]").dialog({
+                catalog: {
+                    home: {
+                        name: '首页',
+                        file: '/'
+                    }
+                },
+                content: [
+                    {name: '文件', type: 'dir', file: '/'}
+                ]
             });
             $(".page-loading").dialog({
                 type: 'loading',

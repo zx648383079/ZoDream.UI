@@ -57,10 +57,12 @@ var DialogType;
     DialogType[DialogType["notify"] = 2] = "notify";
     DialogType[DialogType["pop"] = 3] = "pop";
     DialogType[DialogType["loading"] = 4] = "loading";
-    DialogType[DialogType["form"] = 5] = "form";
-    DialogType[DialogType["content"] = 6] = "content";
-    DialogType[DialogType["box"] = 7] = "box";
-    DialogType[DialogType["page"] = 8] = "page";
+    DialogType[DialogType["image"] = 5] = "image";
+    DialogType[DialogType["disk"] = 6] = "disk";
+    DialogType[DialogType["form"] = 7] = "form";
+    DialogType[DialogType["content"] = 8] = "content";
+    DialogType[DialogType["box"] = 9] = "box";
+    DialogType[DialogType["page"] = 10] = "page";
 })(DialogType || (DialogType = {}));
 var DialogDirection;
 (function (DialogDirection) {
@@ -100,6 +102,7 @@ var DialogElement = (function (_super) {
         _this._isShow = false;
         _this.options = $.extend({}, new DefaultDialogOption(), option);
         _this.options.type = Dialog.parseEnum(_this.options.type, DialogType);
+        console.log(_this.options.type);
         if (_this.options.direction) {
             _this.options.direction = Dialog.parseEnum(_this.options.direction, DialogDirection);
         }
@@ -219,6 +222,8 @@ var DialogElement = (function (_super) {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
+            case DialogType.image:
+            case DialogType.disk:
                 this.box.html(this._getHeader() + this._getContent() + this._getFooter());
                 break;
             case DialogType.content:
@@ -412,7 +417,10 @@ var DialogElement = (function (_super) {
         if (ico) {
             html += '<i class="fa fa-' + ico + '"></i>';
         }
-        html += this.options.title + '</div>';
+        if (this.options.title) {
+            html += this.options.title;
+        }
+        html += '</div>';
         if (hasClose) {
             html += '<i class="fa fa-close dialog-close"></i>';
         }

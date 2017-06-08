@@ -180,6 +180,9 @@ class DialogElement extends Box {
             //this._createNotify();
             return;
         }
+        if (!this.box) {
+            return;
+        }
         if (this.isShow) {
             this.box.show();
             return;
@@ -574,11 +577,11 @@ class DialogElement extends Box {
                 elements[name] = item;
                 return;
             }
-            if (!instance.elements.hasOwnProperty(name)) {
+            if (!elements.hasOwnProperty(name)) {
                 elements[name] = item;
                 return;
             }
-            elements[name].add(item);
+            elements[name].push(ele);
         });
         return elements;
     }

@@ -154,6 +154,9 @@ var DialogElement = (function (_super) {
                 //this._createNotify();
                 return;
             }
+            if (!this.box) {
+                return;
+            }
             if (this.isShow) {
                 this.box.show();
                 return;
@@ -534,11 +537,11 @@ var DialogElement = (function (_super) {
                 elements[name] = item;
                 return;
             }
-            if (!instance.elements.hasOwnProperty(name)) {
+            if (!elements.hasOwnProperty(name)) {
                 elements[name] = item;
                 return;
             }
-            elements[name].add(item);
+            elements[name].push(ele);
         });
         return elements;
     };

@@ -197,7 +197,7 @@ class DialogElement extends Box {
 
     private _createNewElement(type: DialogType | number | string = this.options.type) {
         let typeStr = DialogType[type];
-        this.box = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog"></div>');
+        this.box = $('<div class="dialog dialog-'+ typeStr +'" data-type="dialog" dialog-id='+ this.id +'></div>');
         this._addHtml();
         if (this.options.width) {
             this.box.width(this._getWidth());
@@ -280,6 +280,14 @@ class DialogElement extends Box {
         Dialog.closeBg();
     }
 
+    /**
+     * 重设尺寸
+     */
+    public resize() {
+        this._setProperty();
+        this.trigger('resize');
+    }
+
     private _bindEvent() {
         this.box.click(function(e) {
             e.stopPropagation();
@@ -337,7 +345,7 @@ class DialogElement extends Box {
             });
         }
         $(window).resize(function() {
-            instance._setProperty();
+            instance.resize();
         });
     }
 
@@ -932,6 +940,13 @@ class Dialog {
 
     public static hasItem(id: number | string = this._guid): boolean {
         return this._data.hasOwnProperty(id + '')
+    }
+
+    public static get(id: number | string = this._guid) {
+        if (this.hasItem(id)) {
+            return this._data[id];
+        }
+        throw "error:" + id;
     }
 
     /**

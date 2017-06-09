@@ -50,6 +50,9 @@ var Box = (function () {
     };
     return Box;
 }());
+/**
+ * 弹出框类型
+ */
 var DialogType;
 (function (DialogType) {
     DialogType[DialogType["tip"] = 0] = "tip";
@@ -64,6 +67,9 @@ var DialogType;
     DialogType[DialogType["box"] = 9] = "box";
     DialogType[DialogType["page"] = 10] = "page";
 })(DialogType || (DialogType = {}));
+/**
+ * 弹出框位置
+ */
 var DialogDirection;
 (function (DialogDirection) {
     DialogDirection[DialogDirection["top"] = 0] = "top";
@@ -76,6 +82,16 @@ var DialogDirection;
     DialogDirection[DialogDirection["rightBottom"] = 7] = "rightBottom";
     DialogDirection[DialogDirection["leftBottom"] = 8] = "leftBottom";
 })(DialogDirection || (DialogDirection = {}));
+/**
+ * 弹出框状态
+ */
+var DialogStatus;
+(function (DialogStatus) {
+    DialogStatus[DialogStatus["hide"] = 0] = "hide";
+    DialogStatus[DialogStatus["show"] = 1] = "show";
+    DialogStatus[DialogStatus["closing"] = 2] = "closing";
+    DialogStatus[DialogStatus["closed"] = 3] = "closed"; //已关闭
+})(DialogStatus || (DialogStatus = {}));
 var DefaultDialogOption = (function () {
     function DefaultDialogOption() {
         this.title = '提示';
@@ -98,17 +114,65 @@ var DialogElement = (function (_super) {
     function DialogElement(option, id) {
         var _this = _super.call(this) || this;
         _this.id = id;
-        _this._isClosing = false;
-        _this._isShow = false;
+        _this._status = DialogStatus.closed;
+        _this._isLoading = false; //加载中 显示时候出现加载动画
         _this.options = $.extend({}, new DefaultDialogOption(), option);
         _this.options.type = Dialog.parseEnum(_this.options.type, DialogType);
-        console.log(_this.options.type);
         if (_this.options.direction) {
             _this.options.direction = Dialog.parseEnum(_this.options.direction, DialogDirection);
         }
-        _this.init();
+        _this.hide();
         return _this;
     }
+    Object.defineProperty(DialogElement.prototype, "status", {
+        get: function () {
+            return this._status;
+        },
+        set: function (arg) {
+            arg = Dialog.parseEnum(arg, DialogStatus);
+            // 相同状态不做操作
+            if (this._status == arg) {
+                return;
+            }
+            if (this._isLoading) {
+                return;
+            }
+            this._toggleLoading(arg);
+            switch (arg) {
+                case DialogStatus.show:
+                    this._show();
+                    break;
+                case DialogStatus.show:
+                    this._hide();
+                    break;
+                case DialogStatus.closing:
+                    this._animationClose();
+                    break;
+                case DialogStatus.closed:
+                    this._close();
+                    break;
+                default:
+                    break;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DialogElement.prototype, "isLoading", {
+        get: function () {
+            return this._isLoading;
+        },
+        set: function (arg) {
+            this._isLoading = arg;
+            this._toggleLoading();
+            // 加载完成时显示元素
+            if (!this._isLoading && this.status == DialogStatus.show) {
+                this._show();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DialogElement.prototype, "data", {
         /**
          * 表单数据
@@ -135,66 +199,139 @@ var DialogElement = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    /**
+     * 创建并显示控件
+     */
+    DialogElement.prototype._show = function () {
+        if (this.options.type == DialogType.notify) {
+            this._createNotify();
+            return;
+        }
+        if (!this.box) {
+            this.init();
+        }
+        if (false == this.trigger('show')) {
+            console.log('show stop!');
+            return;
+        }
+        this.box.show();
+        this._status = DialogStatus.show;
+    };
+    /**
+     * 创建并隐藏控件
+     */
+    DialogElement.prototype._hide = function () {
+        if (!this.box) {
+            this.init();
+        }
+        if (false == this.trigger('hide')) {
+            console.log('hide stop!');
+            return;
+        }
+        this.box.hide();
+        this._status = DialogStatus.hide;
+    };
+    /**
+     * 动画关闭，有关闭动画
+     */
+    DialogElement.prototype._animationClose = function () {
+        if (this.options.type == DialogType.notify) {
+            if (this.notify) {
+                this.notify.close();
+                this.notify = undefined;
+            }
+            return;
+        }
+        if (!this.box) {
+            return;
+        }
+        if (this.status == DialogStatus.closing
+            || this.status == DialogStatus.closed) {
+            return;
+        }
+        if (this._timeHandle) {
+            clearTimeout(this._timeHandle);
+            this._timeHandle = undefined;
+        }
+        if (false == this.trigger('closing')) {
+            console.log('closing stop!');
+            return;
+        }
+        this._status = DialogStatus.closing;
+        var instance = this;
+        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+            if (instance.status == DialogStatus.closing) {
+                // 防止中途改变当前状态
+                instance._close();
+            }
+        });
+    };
+    /**
+     * 删除控件
+     */
+    DialogElement.prototype._close = function () {
+        if (!this.box) {
+            return;
+        }
+        if (this.trigger('closed') == false) {
+            console.log('closed stop!');
+            return;
+        }
+        this._status = DialogStatus.closed;
+        if (this._dialogBg) {
+            this._dialogBg.remove();
+            this._dialogBg = undefined;
+        }
+        Dialog.removeItem(this.id);
+        this.box.remove();
+        this.box = undefined;
+    };
+    /**
+     * 显示加载动画
+     */
+    DialogElement.prototype._toggleLoading = function (arg) {
+        if (arg === void 0) { arg = this.status; }
+        if (!this.isLoading || arg != DialogStatus.show) {
+            if (this._loadingDialog) {
+                this._loadingDialog.close();
+                this._loadingDialog = undefined;
+            }
+            return;
+        }
+        if (this._loadingDialog) {
+            this._loadingDialog.show();
+            return;
+        }
+        this._loadingDialog = Dialog.loading().show();
+    };
     DialogElement.prototype.clearFormData = function () {
         this._data = undefined;
         this._elements = undefined;
         return this;
     };
-    Object.defineProperty(DialogElement.prototype, "isShow", {
-        get: function () {
-            return this._isShow;
-        },
-        set: function (arg) {
-            if (this.isDeleted()) {
-                this.init();
-                return;
-            }
-            if (this._isShow == arg) {
-                return;
-            }
-            this._isShow = arg;
-            if (this.options.type == DialogType.notify) {
-                //this._createNotify();
-                return;
-            }
-            if (!this.box) {
-                return;
-            }
-            if (this.isShow) {
-                this.box.show();
-                return;
-            }
-            this.box.hide();
-        },
-        enumerable: true,
-        configurable: true
-    });
     DialogElement.prototype.init = function () {
         Dialog.addItem(this);
         if (this.options.type == DialogType.notify) {
-            this._createNotify();
             return;
         }
         this._createBg();
         if (!this.options.content && this.options.url) {
-            this.toggleLoading(true);
+            this.isLoading = true;
             var instance_1 = this;
             $.get(this.options.url, function (html) {
-                instance_1.toggleLoading(false);
+                instance_1.isLoading = false;
                 instance_1.options.content = html;
-                instance_1.init();
             });
             return;
         }
         this._createElement();
-        this._isClosing = false;
+        this.trigger('init');
     };
     DialogElement.prototype._createElement = function (type) {
         if (type === void 0) { type = this.options.type; }
         this._createNewElement(type);
         this._bindEvent();
         this._setProperty();
-        this._isShow = true;
         return this.box;
     };
     DialogElement.prototype._createNewElement = function (type) {
@@ -222,7 +359,11 @@ var DialogElement = (function (_super) {
             case DialogType.box:
             case DialogType.form:
             case DialogType.page:
+                this.box.html(this._getHeader() + this._getContent() + this._getFooter());
+                break;
             case DialogType.image:
+                this.box.html(this._getHeader() + this._getContent('<div></div>') + this._getFooter());
+                break;
             case DialogType.disk:
                 this.box.html(this._getHeader() + this._getContent() + this._getFooter());
                 break;
@@ -339,7 +480,9 @@ var DialogElement = (function (_super) {
                 });
             }).mouseup(function () {
                 isMove_1 = false;
-                instance.box.fadeTo('fast', 1);
+                if (instance.box) {
+                    instance.box.fadeTo('fast', 1);
+                }
             });
         }
         $(window).resize(function () {
@@ -593,57 +736,23 @@ var DialogElement = (function (_super) {
         return formData;
     };
     DialogElement.prototype.show = function () {
-        this.isShow = true;
+        this.status = DialogStatus.show;
+        return this;
     };
     DialogElement.prototype.hide = function () {
-        this.isShow = false;
-    };
-    DialogElement.prototype.isDeleted = function () {
-        return !Dialog.hasItem(this.id);
-    };
-    DialogElement.prototype.toggleLoading = function (is_show) {
-        if (!this._loading) {
-            is_show = true;
-            this._loading = Dialog.loading();
-        }
-        if (typeof is_show == 'undefined') {
-            is_show = !this._loading.isShow;
-        }
-        this._loading.isShow = is_show;
-        this.isShow = !is_show;
-        if (this.options.type == DialogType.page && !is_show) {
-            Dialog.closeBg();
-        }
+        this.status = DialogStatus.hide;
+        return this;
     };
     DialogElement.prototype.close = function () {
-        if (this.options.type == DialogType.notify) {
-            this.notify && this.notify.close();
-            return;
-        }
-        if (this._isClosing) {
-            return;
-        }
-        if (this._timeHandle) {
-            clearTimeout(this._timeHandle);
-            this._timeHandle = undefined;
-        }
-        if (false == this.trigger('closing')) {
-            return;
-        }
-        this._isClosing = true;
-        if (this._dialogBg) {
-            this._dialogBg.remove();
-        }
-        Dialog.removeItem(this.id);
-        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-            $(this).remove();
-        });
-        if (this._loading) {
-            this._loading.close();
-        }
+        this.status = DialogStatus.closing;
+        return this;
     };
     DialogElement.prototype.toggle = function () {
-        this.isShow = !this.isShow;
+        if (this.status == DialogStatus.hide) {
+            this.show();
+            return;
+        }
+        this.hide();
     };
     DialogElement.prototype.css = function (key, value) {
         return this.box.css(key, value);

@@ -44,6 +44,9 @@ abstract class Box {
     }
 }
 
+/**
+ * 弹出框类型
+ */
 enum DialogType {
     tip,
     message,
@@ -58,6 +61,9 @@ enum DialogType {
     page
 }
 
+/**
+ * 弹出框位置
+ */
 enum DialogDirection {
     top,
     right,
@@ -68,6 +74,16 @@ enum DialogDirection {
     rightTop,
     rightBottom,
     leftBottom
+}
+
+/**
+ * 弹出框状态
+ */
+enum DialogStatus {
+    hide,
+    show,
+    closing,   //关闭中
+    closed    //已关闭
 }
 
 interface DialogButton {
@@ -121,17 +137,69 @@ class DialogElement extends Box {
         super();
         this.options = $.extend({}, new DefaultDialogOption(), option);
         this.options.type =  Dialog.parseEnum<DialogType>(this.options.type, DialogType);
-        console.log(this.options.type);
         
         if (this.options.direction) {
             this.options.direction = Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection);
         }
-        this.init();
+        this.hide();
     }
 
     public options: DialogOption;
 
     public notify: Notification; // 系统通知
+
+    private _status: DialogStatus = DialogStatus.closed;
+
+    public get status(): DialogStatus {
+        return this._status;
+    }
+
+    public set status(arg: DialogStatus) {
+        arg = Dialog.parseEnum<DialogStatus>(arg, DialogStatus);
+        // 相同状态不做操作
+        if (this._status == arg) {
+            return;
+        }
+        if (this._isLoading) {
+            return;
+        }
+        this._toggleLoading(arg);
+        switch (arg) {
+            case DialogStatus.show:
+                this._show();
+                break;
+            case DialogStatus.show:
+                this._hide();
+                break;
+            case DialogStatus.closing:
+                this._animationClose();
+                break;
+            case DialogStatus.closed:
+                this._close();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private _isLoading: boolean = false; //加载中 显示时候出现加载动画
+
+    private _loadingDialog: DialogElement;
+
+    public get isLoading(): boolean {
+        return this._isLoading;
+    }
+
+    public set isLoading(arg: boolean) {
+        this._isLoading = arg;
+        this._toggleLoading();
+        // 加载完成时显示元素
+        if (!this._isLoading && this.status == DialogStatus.show) {
+            this._show();
+        }
+    }
+
+    private _dialogBg: JQuery;  // 自己的背景遮罩
 
     private _data: {[name: string]: string | string[]};
 
@@ -156,73 +224,151 @@ class DialogElement extends Box {
         return this._elements;
     }
 
+    private _timeHandle: number;
+
+
+    /**
+     * 创建并显示控件
+     */
+    private _show() {
+        if (this.options.type == DialogType.notify) {
+            this._createNotify();
+            return;
+        }
+        if (!this.box) {
+            this.init();
+        }
+        if (false == this.trigger('show')) {
+            console.log('show stop!');
+            return;
+        }
+        this.box.show();
+        this._status = DialogStatus.show;
+    }
+
+    /**
+     * 创建并隐藏控件
+     */
+    private _hide() {
+        if (!this.box) {
+            this.init();
+        }
+        if (false == this.trigger('hide')) {
+            console.log('hide stop!');
+            return;
+        }
+        this.box.hide();
+        this._status = DialogStatus.hide;
+    }
+
+    /**
+     * 动画关闭，有关闭动画
+     */
+    private _animationClose() {
+        if (this.options.type == DialogType.notify) {
+            if (this.notify) {
+                this.notify.close();
+                this.notify = undefined;
+            }
+            return;
+        }
+        if (!this.box) {
+            return;
+        }
+        if (this.status == DialogStatus.closing 
+        || this.status == DialogStatus.closed) {
+            return;
+        }
+        if (this._timeHandle) {
+            clearTimeout(this._timeHandle);
+            this._timeHandle = undefined;
+        }
+        if (false == this.trigger('closing')) {
+            console.log('closing stop!');
+            return;
+        }
+        this._status = DialogStatus.closing;
+        let instance = this;
+        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+            if (instance.status == DialogStatus.closing) {
+                // 防止中途改变当前状态
+                instance._close();
+            }
+        });
+    }
+
+    /**
+     * 删除控件
+     */
+    private _close() {
+        if (!this.box) {
+            return;
+        }
+        if (this.trigger('closed') == false) {
+            console.log('closed stop!');
+            return;
+        }
+        this._status = DialogStatus.closed;
+        if (this._dialogBg) {
+            this._dialogBg.remove();
+            this._dialogBg = undefined;
+        }
+        Dialog.removeItem(this.id); 
+        this.box.remove();
+        this.box = undefined;
+    }
+
+    /**
+     * 显示加载动画
+     */
+    private _toggleLoading(arg: DialogStatus = this.status) {
+        if (!this.isLoading || arg != DialogStatus.show) {
+            if (this._loadingDialog) {
+                this._loadingDialog.close();
+                this._loadingDialog = undefined;
+            }
+            return;
+        }
+        if (this._loadingDialog) {
+            this._loadingDialog.show();
+            return;
+        }
+        this._loadingDialog = Dialog.loading().show();
+    }
+
+
+
     public clearFormData(): this {
         this._data = undefined;
         this._elements = undefined;
         return this;
     }
 
-    private _isClosing: boolean = false;
 
-    private _dialogBg: JQuery;  // 自己的背景遮罩
-
-    private _timeHandle: number;
-
-    private _isShow: boolean = false;
-
-    public set isShow(arg: boolean) {
-        if (this.isDeleted()) {
-            this.init();
-            return;
-        }
-        if (this._isShow == arg) {
-            return;
-        }
-        this._isShow = arg;
-        if (this.options.type == DialogType.notify) {
-            //this._createNotify();
-            return;
-        }
-        if (!this.box) {
-            return;
-        }
-        if (this.isShow) {
-            this.box.show();
-            return;
-        }
-        this.box.hide();
-    }
-
-    public get isShow(): boolean {
-        return this._isShow;
-    }
 
     public init() {
         Dialog.addItem(this);
         if (this.options.type == DialogType.notify) {
-            this._createNotify();
             return;
         }
         this._createBg();
         if (!this.options.content && this.options.url) {
-            this.toggleLoading(true);
+            this.isLoading = true;
             let instance = this;
             $.get(this.options.url, function(html) {
-                instance. toggleLoading(false);
+                instance.isLoading = false;
                 instance.options.content = html;
-                instance.init();
             });
             return;
         }
         this._createElement();
-        this._isClosing = false;
+        this.trigger('init');
     }
 
     private _createElement(type: DialogType | number | string = this.options.type): JQuery {
         this._createNewElement(type);
         this._bindEvent();
         this._setProperty();
-        this._isShow = true;
         return this.box;
     }
 
@@ -375,7 +521,9 @@ class DialogElement extends Box {
                 })
             }).mouseup(function() {
                 isMove = false;
-                instance.box.fadeTo('fast', 1);
+                if (instance.box) {
+                    instance.box.fadeTo('fast', 1);
+                }
             });
         }
         $(window).resize(function() {
@@ -638,65 +786,27 @@ class DialogElement extends Box {
     }
     
 
-    public show() {
-        this.isShow = true;
+    public show(): this {
+        this.status = DialogStatus.show;
+        return this;
     }
 
-    public hide() {
-        this.isShow = false;
+    public hide(): this {
+        this.status = DialogStatus.hide;
+        return this;
     }
 
-    public isDeleted(): boolean {
-        return !Dialog.hasItem(this.id);
-    }
-
-    private _loading: DialogElement;
-
-    public toggleLoading(is_show?: boolean) {
-        if (!this._loading) {
-            is_show = true;
-            this._loading = Dialog.loading();
-        }
-        if (typeof is_show == 'undefined') {
-            is_show = !this._loading.isShow;
-        }
-        this._loading.isShow = is_show;
-        this.isShow = !is_show;
-        if (this.options.type == DialogType.page && !is_show) {
-            Dialog.closeBg();
-        }
-    }
-
-    public close() {
-        if (this.options.type == DialogType.notify) {
-            this.notify && this.notify.close();
-            return;
-        }
-        if (this._isClosing) {
-            return;
-        }
-        if (this._timeHandle) {
-            clearTimeout(this._timeHandle);
-            this._timeHandle = undefined;
-        }
-        if (false == this.trigger('closing')) {
-            return;
-        }
-        this._isClosing = true;
-        if (this._dialogBg) {
-            this._dialogBg.remove();
-        }
-        Dialog.removeItem(this.id);
-        this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-            $(this).remove();
-        });
-        if (this._loading) {
-            this._loading.close();
-        }
+    public close(): this {
+        this.status = DialogStatus.closing;
+        return this;
     }
 
     public toggle() {
-        this.isShow = !this.isShow;
+        if (this.status == DialogStatus.hide) {
+            this.show();
+            return;
+        }
+        this.hide();
     }
 
     public css(key: any, value?: string| number): JQuery {

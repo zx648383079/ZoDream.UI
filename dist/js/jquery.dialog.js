@@ -891,7 +891,7 @@ var Dialog = (function () {
             content = { content: content, time: time };
         }
         content.type = DialogType.tip;
-        return this.create(content);
+        return this.create(content).show();
     };
     /**
      * 消息
@@ -904,7 +904,7 @@ var Dialog = (function () {
             content = { content: content, time: time };
         }
         content.type = DialogType.message;
-        return this.create(content);
+        return this.create(content).show();
     };
     /**
      * 加载
@@ -916,7 +916,7 @@ var Dialog = (function () {
             time = { time: time };
         }
         time.type = DialogType.loading;
-        return this.create(time);
+        return this.create(time).show();
     };
     /**
      * 内容弹窗
@@ -933,7 +933,7 @@ var Dialog = (function () {
             };
         }
         content.type = DialogType.content;
-        return this.create(content);
+        return this.create(content).show();
     };
     /**
      * 普通弹窗
@@ -953,7 +953,7 @@ var Dialog = (function () {
             };
         }
         content.type = DialogType.box;
-        return this.create(content);
+        return this.create(content).show();
     };
     /**
      * 表格弹窗
@@ -972,7 +972,7 @@ var Dialog = (function () {
             hasYes: hasYes,
             hasNo: hasNo,
             ondone: done
-        });
+        }).show();
     };
     /**
      * 页面弹窗
@@ -992,7 +992,7 @@ var Dialog = (function () {
             };
         }
         content.type = DialogType.page;
-        return this.create(content);
+        return this.create(content).show();
     };
     /**
      * 桌面提醒
@@ -1012,7 +1012,7 @@ var Dialog = (function () {
             };
         }
         title.type = DialogType.notify;
-        return this.create(title);
+        return this.create(title).show();
     };
     /**
      * 添加弹出框

@@ -971,7 +971,7 @@ class Dialog {
             content = {content: content, time: time};
         }
         content.type = DialogType.tip;
-        return this.create(content);
+        return this.create(content).show();
     }
 
     /**
@@ -984,7 +984,7 @@ class Dialog {
             content = {content: content, time: time};
         }
         content.type = DialogType.message;
-        return this.create(content);
+        return this.create(content).show();
     }
 
     /**
@@ -996,7 +996,7 @@ class Dialog {
             time = {time: time};
         }
         time.type = DialogType.loading;
-        return this.create(time);
+        return this.create(time).show();
     }
 
     /**
@@ -1014,7 +1014,7 @@ class Dialog {
             };
         }
         content.type = DialogType.content;
-        return this.create(content);
+        return this.create(content).show();
     }
 
     /**
@@ -1034,7 +1034,7 @@ class Dialog {
             };
         }
         content.type = DialogType.box;
-        return this.create(content);
+        return this.create(content).show();
     }
 
     /**
@@ -1053,7 +1053,7 @@ class Dialog {
             hasYes: hasYes,
             hasNo: hasNo,
             ondone: done
-        });
+        }).show();
     }
 
     /**
@@ -1073,7 +1073,7 @@ class Dialog {
             };
         }
         content.type = DialogType.page;
-        return this.create(content);
+        return this.create(content).show();
     }
 
     /**
@@ -1091,7 +1091,7 @@ class Dialog {
             };
         }
         title.type = DialogType.notify;
-        return this.create(title);
+        return this.create(title).show();
     }
 
     /**

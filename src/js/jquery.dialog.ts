@@ -168,7 +168,7 @@ class DialogElement extends Box {
             case DialogStatus.show:
                 this._show();
                 break;
-            case DialogStatus.show:
+            case DialogStatus.hide:
                 this._hide();
                 break;
             case DialogStatus.closing:
@@ -178,7 +178,7 @@ class DialogElement extends Box {
                 this._close();
                 break;
             default:
-                break;
+                throw "status error:"+ arg;
         }
     }
 
@@ -231,6 +231,9 @@ class DialogElement extends Box {
      * 创建并显示控件
      */
     private _show() {
+        if (this.isLoading) {
+            return;
+        }
         if (this.options.type == DialogType.notify) {
             this._createNotify();
             return;
@@ -240,6 +243,9 @@ class DialogElement extends Box {
         }
         if (false == this.trigger('show')) {
             console.log('show stop!');
+            return;
+        }
+        if (this.isLoading) {
             return;
         }
         this.box.show();
@@ -255,6 +261,9 @@ class DialogElement extends Box {
         }
         if (false == this.trigger('hide')) {
             console.log('hide stop!');
+            return;
+        }
+        if (this.isLoading) {
             return;
         }
         this.box.hide();

@@ -142,7 +142,7 @@ var DialogElement = (function (_super) {
                 case DialogStatus.show:
                     this._show();
                     break;
-                case DialogStatus.show:
+                case DialogStatus.hide:
                     this._hide();
                     break;
                 case DialogStatus.closing:
@@ -152,7 +152,7 @@ var DialogElement = (function (_super) {
                     this._close();
                     break;
                 default:
-                    break;
+                    throw "status error:" + arg;
             }
         },
         enumerable: true,
@@ -203,6 +203,9 @@ var DialogElement = (function (_super) {
      * 创建并显示控件
      */
     DialogElement.prototype._show = function () {
+        if (this.isLoading) {
+            return;
+        }
         if (this.options.type == DialogType.notify) {
             this._createNotify();
             return;
@@ -212,6 +215,9 @@ var DialogElement = (function (_super) {
         }
         if (false == this.trigger('show')) {
             console.log('show stop!');
+            return;
+        }
+        if (this.isLoading) {
             return;
         }
         this.box.show();
@@ -226,6 +232,9 @@ var DialogElement = (function (_super) {
         }
         if (false == this.trigger('hide')) {
             console.log('hide stop!');
+            return;
+        }
+        if (this.isLoading) {
             return;
         }
         this.box.hide();

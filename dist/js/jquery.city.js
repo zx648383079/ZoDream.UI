@@ -85,6 +85,7 @@ var City = (function (_super) {
             if (data.code == 0) {
                 instance.options.data = data.data;
                 instance._setData(id, index, selected);
+                instance.trigger('init');
             }
         });
     };
@@ -136,6 +137,11 @@ var City = (function (_super) {
         });
         return [header, '<ul class="active">' + html + '</ul>'];
     };
+    /**
+     * 获取一个数据的id和显示的文字
+     * @param item
+     * @param i
+     */
     City.prototype._getIdAndName = function (item, i) {
         if (typeof item != 'object') {
             return [i, item];
@@ -190,6 +196,7 @@ var City = (function (_super) {
             args[_i] = arguments[_i];
         }
         this.options.default = args;
+        this._index = 0;
         this.selected();
     };
     City.prototype.bodyMap = function (callback, index) {

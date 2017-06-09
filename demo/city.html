@@ -12,7 +12,8 @@
     <input type="text" id="city">
 
     <input type="text" id="selector">
-
+    
+    <button type="">选择</button>
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dist/js/jquery.city.js"></script>
     <script>
@@ -63,14 +64,16 @@
                 259: 123113242,
                 512: 1231221323434,
             },
-            done: function() {
+            ondone: function() {
                 console.log(this.close().val());
                 this.output();
             }
         });
-        console.log(city.getPath(66666));
-        $("#selector").city({
-            data: 'http://sxg.netdns.com.cn/region.php'
+        $("button").click(function() {
+            var path = city.getPath(666);
+            console.log(path);
+            city.setDefault(path);
+
         });
     });    
     </script>

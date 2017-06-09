@@ -57,14 +57,21 @@ class City extends Box {
     ) {
         super();
         this.options = $.extend({}, new CityDefaultOptions(), options);
-        if (!this.options.onchange) {
-            this.change(this._onchange);
+        if (typeof this.options.data == 'function') {
+            this.options.data = this.options.data.call(this);
         }
-        this._init();
+        if (typeof this.options.data == 'object') {
+            this._init();
+            return;
+        }
         let instance = this;
-        this.element.click(function() {
-            instance.show();
-        });
+        if (typeof this.options.data == 'string') {
+            $.getJSON(this.options.data, function(data) {
+                if (data.code == 0) {
+                    instance.source(data.data);
+                }
+            });
+        }
     }
 
     public options: CityOptions;
@@ -77,22 +84,9 @@ class City extends Box {
 
     private _index: number = -1;
 
-    private _onchange(id?: string| number, index?: number, selected?: string | number) {
-        
-        if (typeof this.options.data == 'object') {
-            this._setData(id, index, selected);
-            return;
-        }
-        if (typeof this.options.data != 'string') {
-            return false;
-        }
-        let instance = this;
-        $.getJSON(this.options.data, function(data) {
-            if (data.code == 0) {
-                instance.options.data = data.data;
-                instance._setData(id, index, selected);
-            }
-        });
+    public source(data: any) {
+        this.options.data = data;
+        this._init();
     }
 
     private _setData(id?: string| number, index?: number, selected?: string| number) {
@@ -117,9 +111,7 @@ class City extends Box {
     }
 
     private _init() {
-        if (typeof this.options.default != 'object') {
-            this.options.default = [this.options.default];
-        }
+        
         this._create();
         this._bindEvent();
         this.selected();
@@ -144,6 +136,11 @@ class City extends Box {
         return [header, '<ul class="active">' + html + '</ul>'];
     }
 
+    /**
+     * 获取一个数据的id和显示的文字
+     * @param item 
+     * @param i 
+     */
     private _getIdAndName(item: any, i: string| number): [string| number, string] {
         if (typeof item != 'object') {
             return [i, item];
@@ -194,10 +191,14 @@ class City extends Box {
         $(window).scroll(function() {
             instance.setPosition();
         });
+        this.element.click(function() {
+            instance.show();
+        });
     }
 
     public setDefault(...args: Array<string| number>) {
         this.options.default = args;
+        this._index = 0;
         this.selected();
     }
 

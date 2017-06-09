@@ -62,32 +62,26 @@ var City = (function (_super) {
         _this.element = element;
         _this._index = -1;
         _this.options = $.extend({}, new CityDefaultOptions(), options);
-        if (!_this.options.onchange) {
-            _this.change(_this._onchange);
+        if (typeof _this.options.data == 'function') {
+            _this.options.data = _this.options.data.call(_this);
         }
-        _this._init();
+        if (typeof _this.options.data == 'object') {
+            _this._init();
+            return _this;
+        }
         var instance = _this;
-        _this.element.click(function () {
-            instance.show();
-        });
+        if (typeof _this.options.data == 'string') {
+            $.getJSON(_this.options.data, function (data) {
+                if (data.code == 0) {
+                    instance.source(data.data);
+                }
+            });
+        }
         return _this;
     }
-    City.prototype._onchange = function (id, index, selected) {
-        if (typeof this.options.data == 'object') {
-            this._setData(id, index, selected);
-            return;
-        }
-        if (typeof this.options.data != 'string') {
-            return false;
-        }
-        var instance = this;
-        $.getJSON(this.options.data, function (data) {
-            if (data.code == 0) {
-                instance.options.data = data.data;
-                instance._setData(id, index, selected);
-                instance.trigger('init');
-            }
-        });
+    City.prototype.source = function (data) {
+        this.options.data = data;
+        this._init();
     };
     City.prototype._setData = function (id, index, selected) {
         var _this = this;
@@ -111,9 +105,6 @@ var City = (function (_super) {
         selected && this.selectedId(selected);
     };
     City.prototype._init = function () {
-        if (typeof this.options.default != 'object') {
-            this.options.default = [this.options.default];
-        }
         this._create();
         this._bindEvent();
         this.selected();
@@ -188,6 +179,9 @@ var City = (function (_super) {
         });
         $(window).scroll(function () {
             instance.setPosition();
+        });
+        this.element.click(function () {
+            instance.show();
         });
     };
     City.prototype.setDefault = function () {

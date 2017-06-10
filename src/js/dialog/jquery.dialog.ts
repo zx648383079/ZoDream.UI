@@ -12,7 +12,7 @@ class DialogPlugin {
         });
     }
 
-    public dialog: DialogElement;
+    public dialog: DialogCore;
 
     private _parseOption(element: JQuery) {
         let option: DialogOption = $.extend({}, this.option);

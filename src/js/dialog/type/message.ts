@@ -1,10 +1,8 @@
-class DialogMessage extends DialogCore {
-    protected createContent(): this {
-        throw new Error("Method not implemented.");
-    }
-    protected setProperty(): this {
-        throw new Error("Method not implemented.");
-    }
+interface DialogMessageOption extends DialogTipOption {
+
+}
+
+class DialogMessage extends DialogTip {
     constructor(
         option: DialogOption,
         id?: number
@@ -16,5 +14,11 @@ class DialogMessage extends DialogCore {
 
     }
 
-    
+    protected setProperty(): this {
+        let y = Dialog.getMessageTop();
+        this.css('top', y + 'px');
+        return this;
+    }
 }
+
+Dialog.addMethod(DialogType.message, DialogMessage);

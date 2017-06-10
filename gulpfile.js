@@ -37,9 +37,9 @@ gulp.task('ts', function () {
 });
 
 gulp.task('dialog', function () {
-    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/dialog/*.ts', 'src/js/dialog/type/*.ts'])
+    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/dialog/*.ts', 'src/js/dialog/type/tip.ts', 'src/js/dialog/type/message.ts'])
     .pipe(sourcemaps.init())
-    .pipe(concat('jquery.dialog1.ts'))
+    .pipe(concat('jquery.dialog.ts'))
     .pipe(tsProject())
     //.pipe(uglify())
     //.pipe(rename({suffix:'.min'}))

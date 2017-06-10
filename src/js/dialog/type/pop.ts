@@ -27,7 +27,7 @@ class DialogPop extends DialogCore {
         }
         this.box.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
         let offest = this.options.target.offset();
-        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogElement), this.box.outerWidth(), this.box.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight());
+        let [x, y] = this._getPopLeftTop(Dialog.parseEnum<DialogDirection>(this.options.direction, DialogCore), this.box.outerWidth(), this.box.outerHeight(), offest.left, offest.top, this.options.target.outerWidth(), this.options.target.outerHeight());
         this.box.css({
             left: x + 'px',
             top: y + 'px'

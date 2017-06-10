@@ -1,5 +1,8 @@
 class Dialog {
-    private static _data: {[id: number]: DialogElement} = {};
+
+    public static methods: {[type: number]: Function} = {};
+
+    private static _data: {[id: number]: DialogCore} = {};
 
     private static _guid: number = 0; // id标记
 
@@ -17,11 +20,13 @@ class Dialog {
      * 创造弹出框
      * @param option 
      */
-    public static create(option?: DialogOption): DialogElement {
+    public static create(option?: DialogOption): DialogCore {
         if (!option.type) {
             option.type = DialogType.tip;
         }
-        let element = new DialogElement(option);
+        option.type = this.parseEnum<DialogType>(option.type, DialogType);
+        let method = this.getMethod(option.type);
+        let element = new method(option);
         return element;
     }
 
@@ -37,7 +42,7 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static tip(content: string | DialogOption, time: number = 2000): DialogElement {
+    public static tip(content: string | DialogTipOption, time: number = 2000): DialogCore {
         if (typeof content != 'object') {
             content = {content: content, time: time};
         }
@@ -50,7 +55,7 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static message(content: string | DialogOption, time: number = 2000): DialogElement {
+    public static message(content: string | DialogOption, time: number = 2000): DialogCore {
         if (typeof content != 'object') {
             content = {content: content, time: time};
         }
@@ -62,7 +67,7 @@ class Dialog {
      * 加载
      * @param time 
      */
-    public static loading(time: number | DialogOption = 0): DialogElement {
+    public static loading(time: number | DialogOption = 0): DialogCore {
         if (typeof time != 'object') {
             time = {time: time};
         }
@@ -169,11 +174,10 @@ class Dialog {
      * 添加弹出框
      * @param element 
      */
-    public static addItem(element: DialogElement) {
+    public static addItem(element: DialogCore) {
         this._data[++this._guid] = element;
         element.id = this._guid;
         if (element.options.type == DialogType.message) {
-            element.options.y = this.getMessageTop();
             this._messageData.push(element.id);
             return;
         }
@@ -235,7 +239,7 @@ class Dialog {
      * 循环所有弹出框
      * @param callback 
      */
-    public static map(callback: (item: DialogElement) => any) {
+    public static map(callback: (item: DialogCore) => any) {
         for(let id in this._data) {
             if (!this.hasItem(id)) {
                 continue;
@@ -279,7 +283,7 @@ class Dialog {
         this._dialogBg.hide();
     }
 
-    public static sortMessageAndDelete(element: DialogElement) {
+    public static sortMessageAndDelete(element: DialogCore) {
         if (element.options.type != DialogType.message) {
             return;
         }
@@ -306,7 +310,15 @@ class Dialog {
         return item.options.y + item.element.height()  + 20;
     }
 
-    public static register(type: DialogType, dialog: DialogCore, defaultOption: DialogOption) {
-        
+    public static addMethod(type: DialogType, dialog: Function) {
+        this.methods[type] = dialog;
+    }
+
+    public static hasMethod(type: DialogType): boolean {
+        return this.methods.hasOwnProperty(type.toString());
+    }
+
+    public static getMethod(type: DialogType): Function {
+        return this.methods[type];
     }
 }

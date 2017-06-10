@@ -4,13 +4,13 @@ abstract class DialogCore extends Box {
         public id?: number
     ) {
         super();
-        this.options = $.extend({}, new DefaultDialogOption(), option);
+        this.options = $.extend({}, this.getDefaultOption(), option);
         this.options.type =  Dialog.parseEnum<DialogType>(this.options.type, DialogType);
     }
 
     public options: DialogOption;
 
-        private _status: DialogStatus = DialogStatus.closed;
+    private _status: DialogStatus = DialogStatus.closed;
 
     public get status(): DialogStatus {
         return this._status;
@@ -22,10 +22,6 @@ abstract class DialogCore extends Box {
         if (this._status == arg) {
             return;
         }
-        if (this._isLoading) {
-            return;
-        }
-        this._toggleLoading(arg);
         switch (arg) {
             case DialogStatus.show:
                 this._show();
@@ -44,47 +40,28 @@ abstract class DialogCore extends Box {
         }
     }
 
-    private _isLoading: boolean = false; //加载中 显示时候出现加载动画
-
-    private _loadingDialog: DialogElement;
-
-    public get isLoading(): boolean {
-        return this._isLoading;
-    }
-
-    public set isLoading(arg: boolean) {
-        this._isLoading = arg;
-        this._toggleLoading();
-        // 加载完成时显示元素
-        if (!this._isLoading && this.status == DialogStatus.show) {
-            this._show();
-        }
-    }
 
     private _dialogBg: JQuery;  // 自己的背景遮罩
 
     private _timeHandle: number;
+
+    /**
+     * 获取默认设置
+     */
+    protected getDefaultOption(): DialogOption {
+        return new DefaultDialogOption();
+    }
 
 
     /**
      * 创建并显示控件
      */
     private _show() {
-        if (this.isLoading) {
-            return;
-        }
-        if (this.options.type == DialogType.notify) {
-            this._createNotify();
-            return;
-        }
         if (!this.box) {
             this.init();
         }
         if (false == this.trigger('show')) {
             console.log('show stop!');
-            return;
-        }
-        if (this.isLoading) {
             return;
         }
         this.box.show();
@@ -102,9 +79,6 @@ abstract class DialogCore extends Box {
             console.log('hide stop!');
             return;
         }
-        if (this.isLoading) {
-            return;
-        }
         this.box.hide();
         this._status = DialogStatus.hide;
     }
@@ -113,13 +87,6 @@ abstract class DialogCore extends Box {
      * 动画关闭，有关闭动画
      */
     private _animationClose() {
-        if (this.options.type == DialogType.notify) {
-            if (this.notify) {
-                this.notify.close();
-                this.notify = undefined;
-            }
-            return;
-        }
         if (!this.box) {
             return;
         }

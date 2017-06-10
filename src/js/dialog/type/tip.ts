@@ -12,7 +12,10 @@ class DialogTip extends DialogCore {
 
     public init() {
         this.createCore().createContent().setProperty();
+    }
 
+    protected getDefaultOption() {
+        return new DefaultDialogTipOption();
     }
 
     protected createContent(): this {
@@ -20,11 +23,10 @@ class DialogTip extends DialogCore {
         return this;
     }
     protected setProperty(): this {
-        let target = this.options.target || Dialog.$window;
-        let maxWidth = target.width();
+        $(document.body).append(this.box);
+        let maxWidth = Dialog.$window.width();
         let width = this.box.width();
         this.css('left', (maxWidth - width) / 2 + 'px');
-        target.append(this.box);
         return this;
     }
 }
@@ -33,4 +35,4 @@ class DefaultDialogTipOption implements DialogTipOption {
     time: number = 2000;
 }
 
-Dialog.register(DialogType.tip, DialogTip, DefaultDialogTipOption);
+Dialog.addMethod(DialogType.tip, DialogTip);

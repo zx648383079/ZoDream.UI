@@ -7,23 +7,7 @@ class DialogElement extends Box {
 
 
 
-    /**
-     * 显示加载动画
-     */
-    private _toggleLoading(arg: DialogStatus = this.status) {
-        if (!this.isLoading || arg != DialogStatus.show) {
-            if (this._loadingDialog) {
-                this._loadingDialog.close();
-                this._loadingDialog = undefined;
-            }
-            return;
-        }
-        if (this._loadingDialog) {
-            this._loadingDialog.show();
-            return;
-        }
-        this._loadingDialog = Dialog.loading().show();
-    }
+
 
 
 

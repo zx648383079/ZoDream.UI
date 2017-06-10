@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <img class="lazy" data-original="image/banner1.jpg">
+        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="../dist/js/jquery.lazyload.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("img.lazy").lazyload({
+                  callback: function($this) {
+                    var img = $this.attr('data-original');
+                    console.log(img);
+                    $("<img />")
+                        .bind("load", function() {
+                          $this.attr('src', img);
+                        }).attr('src', img);
+                  }
+                });
+            });
+        </script>
+    </body>
+</html>

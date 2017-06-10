@@ -12,6 +12,17 @@ var LazyItem = (function () {
         this.mode = mode;
         this.diff = diff;
     }
+    /**
+     * 重新刷新
+     */
+    LazyItem.prototype.refresh = function () {
+        this._lastHeight = undefined;
+    };
+    /**
+     * 判断能否执行
+     * @param height
+     * @param bottom
+     */
     LazyItem.prototype.canRun = function (height, bottom) {
         if (this.mode == LazyMode.once && this._lastHeight) {
             return false;
@@ -27,7 +38,7 @@ var LazyItem = (function () {
         if (top + this.diff < height || top >= bottom) {
             return false;
         }
-        this.callback(this.element);
+        this.callback.call(this, this.element);
         this._lastHeight = height + this.diff;
         return true;
     };
@@ -59,6 +70,9 @@ var Lazy = (function () {
     };
     // 暂时只做一次
     Lazy.prototype._init = function () {
+        if (typeof this.options.callback != 'function') {
+            this.options.callback = Lazy.getMethod(this.options.callback);
+        }
         this._data = [];
         var instance = this;
         this.element.each(function (i, ele) {
@@ -66,8 +80,41 @@ var Lazy = (function () {
             instance._data.push(item);
         });
     };
+    Lazy.addMethod = function (name, callback) {
+        this.methods[name] = callback;
+    };
+    Lazy.getMethod = function (name) {
+        return this.methods[name];
+    };
     return Lazy;
 }());
+Lazy.methods = {};
+/**
+ * 加载图片，如需加载动画控制请自定义
+ */
+Lazy.addMethod('img', function (imgEle) {
+    var img = imgEle.attr('data-original');
+    $("<img />")
+        .bind("load", function () {
+        imgEle.attr('src', img);
+    }).attr('src', img);
+});
+/**
+ * 加载模板，需要引用 template 函数
+ */
+Lazy.addMethod('tpl', function (tplEle) {
+    var url = tplEle.attr('data-url');
+    var templateId = tplEle.attr('data-tpl');
+    $.getJSON(url, function (data) {
+        if (data.code != 0) {
+            return;
+        }
+        if (typeof data.data != 'string') {
+            data.data = template(templateId, data.data);
+        }
+        tplEle.html(data.data);
+    });
+});
 var LazyDefaultOptions = (function () {
     function LazyDefaultOptions() {
         this.mode = LazyMode.once;

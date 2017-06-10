@@ -8,8 +8,6 @@ class Dialog {
 
     private static _tipData: Array<number> = [];
 
-    private static _messageData: Array<number> = [];
-
     private static _dialogBg: JQuery;
 
     private static _bgLock: number = 0;
@@ -55,7 +53,7 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static message(content: string | DialogOption, time: number = 2000): DialogCore {
+    public static message(content: string | DialogMessageOption, time: number = 2000): DialogCore {
         if (typeof content != 'object') {
             content = {content: content, time: time};
         }
@@ -177,10 +175,6 @@ class Dialog {
     public static addItem(element: DialogCore) {
         this._data[++this._guid] = element;
         element.id = this._guid;
-        if (element.options.type == DialogType.message) {
-            this._messageData.push(element.id);
-            return;
-        }
         if (this._needBg(element.options.type) 
         && !element.options.target) {
             this.showBg();
@@ -207,7 +201,6 @@ class Dialog {
             return;
         }
         this._data[id].close();
-        this.sortMessageAndDelete(this._data[id]);
         if (this._needBg(this._data[id].options.type)) {
             this.closeBg();
         }
@@ -281,33 +274,6 @@ class Dialog {
             return;
         }
         this._dialogBg.hide();
-    }
-
-    public static sortMessageAndDelete(element: DialogCore) {
-        if (element.options.type != DialogType.message) {
-            return;
-        }
-        let i = this._messageData.indexOf(element.id);
-        if (i < 0) {
-            return;
-        }
-        this._messageData.splice(i, 1);
-        let y = element.options.y;
-        for(; i < this._messageData.length; i ++) {
-            let item = this._data[this._messageData[i]];
-            item.css('top', y + 'px');
-            item.options.y = y;
-            y += item.element.height() + 20;
-        }
-    }
-
-    public static getMessageTop(): number {
-        let length = this._messageData.length;
-        if (length < 1) {
-            return 30;
-        }
-        let item = this._data[this._messageData[length - 1]];
-        return item.options.y + item.element.height()  + 20;
     }
 
     public static addMethod(type: DialogType, dialog: Function) {

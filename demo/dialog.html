@@ -32,13 +32,15 @@
     <script src="../dist/js/jquery.dialog.js"></script>
     <script>
         $(document).ready(function() {
-            $("[dialog-type=tip]").dialog({
-                content: '11111111111111111111',
-                time: 2000
+            var i = 0;
+            $("[dialog-type=tip]").click(function() {
+                Dialog.tip(i, 5000);
+                i ++;
             });
-            $("[dialog-type=message]").dialog({
-                content: '11111111111111111111',
-                time: 5000
+            
+            $("[dialog-type=message]").click(function() {
+                Dialog.message(i, 5000);
+                i ++;
             });
             $("[dialog-type=notify]").dialog({
                 content: '11111111111111111111',

@@ -204,17 +204,6 @@ class DialogElement extends Box {
         });
     }
 
-    private _addTime() {
-        if (this.options.time <= 0) {
-            return;
-        }
-        let instance = this;
-        this._timeHandle = setTimeout(function() {
-            instance._timeHandle = undefined;
-            instance.close();
-        }, this.options.time);
-    }
-
     public onClick(tag: string, callback: (element: JQuery) => any) {
         let instance = this;
         this.box.on('click', tag, function(e) {

@@ -28,8 +28,8 @@
         color: #fff;
         max-width: 66.66%;
         padding: 5px 10px;
-        bottom: 33%;
         @include prefix-animation(dialog-tip 1s both);
+        @include prefix-content(transition, top 1s);
     }
     &.dialog-message {
         background: rgba(0, 0, 0, .6);
@@ -37,7 +37,6 @@
         max-width: 33.33%;
         padding: 5px 10px;
         right: 0;
-        top: 50px;
         @include prefix-animation(dialog-message .5s);
         @include prefix-content(transition, top 1s);
     }

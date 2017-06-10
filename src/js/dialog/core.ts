@@ -24,16 +24,16 @@ abstract class DialogCore extends Box {
         }
         switch (arg) {
             case DialogStatus.show:
-                this._show();
+                this.showBox();
                 break;
             case DialogStatus.hide:
-                this._hide();
+                this.hideBox();
                 break;
             case DialogStatus.closing:
-                this._animationClose();
+                this.closingBox();
                 break;
             case DialogStatus.closed:
-                this._close();
+                this.closeBox();
                 break;
             default:
                 throw "status error:"+ arg;
@@ -43,7 +43,33 @@ abstract class DialogCore extends Box {
 
     private _dialogBg: JQuery;  // 自己的背景遮罩
 
-    private _timeHandle: number;
+    private _y: number;
+
+    public get y(): number {
+        if (!this._y) {
+            this._y = this.box.offset().top - $(window).scrollTop();
+        }
+        return this._y;
+    }
+
+    public set y(y: number) {
+        this._y = y;
+        this.css('top', y + 'px');
+    }
+
+    private _height: number;
+
+    public get height(): number {
+        if (!this._height) {
+            this._height = this.box.height();
+        }
+        return this._height;
+    }
+
+    public set height(height: number) {
+        this._height = height;
+        this.box.height(height);
+    }
 
     /**
      * 获取默认设置
@@ -56,7 +82,7 @@ abstract class DialogCore extends Box {
     /**
      * 创建并显示控件
      */
-    private _show() {
+    protected showBox() {
         if (!this.box) {
             this.init();
         }
@@ -66,12 +92,13 @@ abstract class DialogCore extends Box {
         }
         this.box.show();
         this._status = DialogStatus.show;
+        
     }
 
     /**
      * 创建并隐藏控件
      */
-    private _hide() {
+    protected hideBox() {
         if (!this.box) {
             this.init();
         }
@@ -86,17 +113,13 @@ abstract class DialogCore extends Box {
     /**
      * 动画关闭，有关闭动画
      */
-    private _animationClose() {
+    protected closingBox() {
         if (!this.box) {
             return;
         }
         if (this.status == DialogStatus.closing 
         || this.status == DialogStatus.closed) {
             return;
-        }
-        if (this._timeHandle) {
-            clearTimeout(this._timeHandle);
-            this._timeHandle = undefined;
         }
         if (false == this.trigger('closing')) {
             console.log('closing stop!');
@@ -107,7 +130,7 @@ abstract class DialogCore extends Box {
         this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
             if (instance.status == DialogStatus.closing) {
                 // 防止中途改变当前状态
-                instance._close();
+                instance.closeBox();
             }
         });
     }
@@ -115,7 +138,7 @@ abstract class DialogCore extends Box {
     /**
      * 删除控件
      */
-    private _close() {
+    protected closeBox() {
         if (!this.box) {
             return;
         }
@@ -172,13 +195,45 @@ abstract class DialogCore extends Box {
         this.hide();
     }
 
+    /**
+     * 获取相同类型弹出框的最上面
+     */
+    protected getDialogTop(): number | undefined {
+        let y;
+        let instance = this;
+        Dialog.map(item => {
+            if (item.options.type != this.options.type || item.id == instance.id) {
+                return;
+            }
+            if (!y || item.y < y) {
+                y = item.y;
+            }
+        })
+        return y;
+    }
+
+    protected getDialogBottom(): number | undefined {
+        let y;
+        let instance = this;
+        Dialog.map(item => {
+            if (item.options.type != this.options.type || item.id == instance.id) {
+                return;
+            }
+            let bottom = item.y + item.height;
+            if (!y || bottom > y) {
+                y = bottom;
+            }
+        });
+        return y;
+    }
+
     
     private _getBottom(): number {
-        return Math.max($(window).height() * .33 - this.box.height() / 2, 0);
+        return Math.max($(window).height() * .33 - this.height / 2, 0);
     }
 
     private _getTop(): number {
-        return Math.max($(window).height() / 2 - this.box.height() / 2, 0);
+        return Math.max($(window).height() / 2 - this.height / 2, 0);
     }
 
     private _getLeft(): number {

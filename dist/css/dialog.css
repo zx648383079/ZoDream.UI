@@ -770,18 +770,20 @@
     color: #fff;
     max-width: 66.66%;
     padding: 5px 10px;
-    bottom: 33%;
     animation: dialog-tip 1s both;
     -webkit-animation: dialog-tip 1s both;
     -moz-animation: dialog-tip 1s both;
-    -o-animation: dialog-tip 1s both; }
+    -o-animation: dialog-tip 1s both;
+    transition: top 1s;
+    -webkit-transition: top 1s;
+    -moz-transition: top 1s;
+    -o-transition: top 1s; }
   .dialog.dialog-message {
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     max-width: 33.33%;
     padding: 5px 10px;
     right: 0;
-    top: 50px;
     animation: dialog-message 0.5s;
     -webkit-animation: dialog-message 0.5s;
     -moz-animation: dialog-message 0.5s;

@@ -10,14 +10,21 @@ class DialogMessage extends DialogTip {
         super(option, id);
     }
 
-    public init() {
-
+    protected setProperty(): this {
+        $(document.body).append(this.box);
+        this.height;
+        this.y = (this.getDialogBottom() || (Dialog.$window.height() * 0.1 - 30)) + 30;
+        return this;
     }
 
-    protected setProperty(): this {
-        let y = Dialog.getMessageTop();
-        this.css('top', y + 'px');
-        return this;
+    protected changeOther() {
+        let instance = this;
+        Dialog.map(item => {
+            if (item.options.type != DialogType.message || item.y <= instance.y) {
+                return;
+            }
+            item.y -= instance.height + 30;
+        });
     }
 }
 

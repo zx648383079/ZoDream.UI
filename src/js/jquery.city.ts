@@ -85,6 +85,8 @@ class City extends Box {
 
     private _index: number = -1;
 
+    private _val: string;
+
     public get val() {
         let val = '';
         this.map(id => {
@@ -94,6 +96,10 @@ class City extends Box {
     }
 
     public set val(arg: string) {
+        this._val = arg;
+        if (!this.box) {
+            return;
+        }
         this._selectedPath(...this.getPath(arg));
     }
 
@@ -101,10 +107,11 @@ class City extends Box {
         let data = this.options.data;
         this._index = -1;
         this._header.html('');
-        this._body.html('')
+        this._body.html('');
+        let id;
         do {
             this._index ++;
-            let id = args.shift();
+            id = args.shift();
             if (typeof data != 'object' || !data.hasOwnProperty(id)) {
                 this.addTab(data);
                 return;
@@ -112,12 +119,15 @@ class City extends Box {
             this.addTab(data, '请选择', id);
             data = data[id][this.options.children];
         } while (args.length > 0);
+        if (id) {
+            this.trigger('change');
+        }
     }
 
     protected init() {
         this._create();
         this._bindEvent();
-        this.val = undefined;
+        this.val = this._val;
     }
 
     /**
@@ -230,13 +240,13 @@ class City extends Box {
     public selected(id?: string| number, index: number = this._index) {
         this.remove(index + 1);
         let data = this._getNextData();
-        this.trigger('change', id, index);
+        this.trigger('change');
         if (typeof data == 'object') {
             this.addTab(data, '请选择');
         }
-        if (data == false) {
+        if (!data || data.length == 0) {
             this.trigger('done');
-            return;
+            return this;
         }
         return this;
     }
@@ -250,6 +260,10 @@ class City extends Box {
                 return false;
             }
             data = data[id][instance.options.children];
+            if (!data) {
+                data = [];
+                return false;
+            }
         });
         return data;
     }
@@ -356,6 +370,9 @@ class City extends Box {
      * @param id 
      */
     public getPath(id: string): Array<string> {
+        if (!id) {
+            return [];
+        }
         if (this.options.hasOwnProperty(id)) {
             return [id];
         }

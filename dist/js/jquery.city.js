@@ -89,6 +89,10 @@ var City = (function (_super) {
             return val;
         },
         set: function (arg) {
+            this._val = arg;
+            if (!this.box) {
+                return;
+            }
             this._selectedPath.apply(this, this.getPath(arg));
         },
         enumerable: true,
@@ -103,9 +107,10 @@ var City = (function (_super) {
         this._index = -1;
         this._header.html('');
         this._body.html('');
+        var id;
         do {
             this._index++;
-            var id = args.shift();
+            id = args.shift();
             if (typeof data != 'object' || !data.hasOwnProperty(id)) {
                 this.addTab(data);
                 return;
@@ -113,11 +118,14 @@ var City = (function (_super) {
             this.addTab(data, '请选择', id);
             data = data[id][this.options.children];
         } while (args.length > 0);
+        if (id) {
+            this.trigger('change');
+        }
     };
     City.prototype.init = function () {
         this._create();
         this._bindEvent();
-        this.val = undefined;
+        this.val = this._val;
     };
     /**
      * 获取生成标签的头和身体
@@ -225,13 +233,13 @@ var City = (function (_super) {
         if (index === void 0) { index = this._index; }
         this.remove(index + 1);
         var data = this._getNextData();
-        this.trigger('change', id, index);
+        this.trigger('change');
         if (typeof data == 'object') {
             this.addTab(data, '请选择');
         }
-        if (data == false) {
+        if (!data || data.length == 0) {
             this.trigger('done');
-            return;
+            return this;
         }
         return this;
     };
@@ -244,6 +252,10 @@ var City = (function (_super) {
                 return false;
             }
             data = data[id][instance.options.children];
+            if (!data) {
+                data = [];
+                return false;
+            }
         });
         return data;
     };
@@ -341,6 +353,9 @@ var City = (function (_super) {
      * @param id
      */
     City.prototype.getPath = function (id) {
+        if (!id) {
+            return [];
+        }
         if (this.options.hasOwnProperty(id)) {
             return [id];
         }

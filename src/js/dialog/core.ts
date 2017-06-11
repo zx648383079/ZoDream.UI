@@ -72,6 +72,19 @@ abstract class DialogCore extends Box {
     }
 
     /**
+     * 改变状态
+     * @param status 
+     * @param hasEvent 
+     */
+    protected changeStatus(status: DialogStatus, hasEvent: boolean = false) {
+        if (hasEvent) {
+            this._status = status;
+            return;
+        }
+        this.status = status;
+    }
+
+    /**
      * 获取默认设置
      */
     protected getDefaultOption(): DialogOption {
@@ -82,48 +95,49 @@ abstract class DialogCore extends Box {
     /**
      * 创建并显示控件
      */
-    protected showBox() {
+    protected showBox(): boolean {
         if (!this.box) {
             this.init();
         }
         if (false == this.trigger('show')) {
             console.log('show stop!');
-            return;
+            return false;
         }
         this.box.show();
         this._status = DialogStatus.show;
-        
+        return true;
     }
 
     /**
      * 创建并隐藏控件
      */
-    protected hideBox() {
+    protected hideBox(): boolean {
         if (!this.box) {
             this.init();
         }
         if (false == this.trigger('hide')) {
             console.log('hide stop!');
-            return;
+            return false;
         }
         this.box.hide();
         this._status = DialogStatus.hide;
+        return true;
     }
 
     /**
      * 动画关闭，有关闭动画
      */
-    protected closingBox() {
+    protected closingBox(): boolean {
         if (!this.box) {
-            return;
+            return false;
         }
         if (this.status == DialogStatus.closing 
         || this.status == DialogStatus.closed) {
-            return;
+            return false;
         }
         if (false == this.trigger('closing')) {
             console.log('closing stop!');
-            return;
+            return false;
         }
         this._status = DialogStatus.closing;
         let instance = this;
@@ -133,18 +147,19 @@ abstract class DialogCore extends Box {
                 instance.closeBox();
             }
         });
+        return true;
     }
 
     /**
      * 删除控件
      */
-    protected closeBox() {
+    protected closeBox(): boolean {
         if (!this.box) {
-            return;
+            return false;
         }
         if (this.trigger('closed') == false) {
             console.log('closed stop!');
-            return;
+            return false;
         }
         this._status = DialogStatus.closed;
         if (this._dialogBg) {
@@ -154,6 +169,7 @@ abstract class DialogCore extends Box {
         Dialog.removeItem(this.id); 
         this.box.remove();
         this.box = undefined;
+        return true;
     }
 
     public abstract init();

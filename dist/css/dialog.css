@@ -769,7 +769,9 @@
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     max-width: 66.66%;
+    min-width: 100px;
     padding: 5px 10px;
+    text-align: center;
     animation: dialog-tip 1s both;
     -webkit-animation: dialog-tip 1s both;
     -moz-animation: dialog-tip 1s both;
@@ -782,6 +784,7 @@
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     max-width: 33.33%;
+    min-width: 100px;
     padding: 5px 10px;
     right: 0;
     animation: dialog-message 0.5s;
@@ -938,6 +941,30 @@
     border: none;
     border-bottom: 1px solid #337ab7;
     padding: 5px; }
+  .dialog.dialog-image {
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s; }
+    .dialog.dialog-image .dialog-previous,
+    .dialog.dialog-image .dialog-next,
+    .dialog.dialog-image .dialog-close {
+      position: absolute;
+      font-size: 30px;
+      display: none; }
+    .dialog.dialog-image .dialog-previous,
+    .dialog.dialog-image .dialog-next {
+      top: 50%;
+      margin-top: -15px; }
+    .dialog.dialog-image .dialog-next {
+      right: 0; }
+    .dialog.dialog-image .dialog-close {
+      right: 0;
+      top: 0; }
+    .dialog.dialog-image:hover .dialog-previous,
+    .dialog.dialog-image:hover .dialog-next,
+    .dialog.dialog-image:hover .dialog-close {
+      display: block; }
   .dialog.dialog-closing {
     animation: dialog-closing 0.5s;
     -webkit-animation: dialog-closing 0.5s;

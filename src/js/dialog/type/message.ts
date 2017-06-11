@@ -11,9 +11,12 @@ class DialogMessage extends DialogTip {
     }
 
     protected setProperty(): this {
-        $(document.body).append(this.box);
         this.height;
         this.y = (this.getDialogBottom() || (Dialog.$window.height() * 0.1 - 30)) + 30;
+        return this;
+    }
+
+    protected bindEvent(): this {
         return this;
     }
 

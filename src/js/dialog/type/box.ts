@@ -1,81 +1,107 @@
-interface DialogButton {
-    content: string,
-    tag?: string
-}
-
-interface DialogBoxOption extends DialogOption {
-    url?: string,       // ajax请求
+interface DialogBoxOption extends DialogContentOption {
     ico?: string,       // 标题栏的图标
     title?: string,     // 标题
-    button?: string | string[]| DialogButton[],
-    hasYes?: boolean | string; // 是否有确定按钮
-    hasNo?: boolean | string;  // 是否有取消按钮
-    extra?: string,       //额外的class
-    count?: number, // 动画按钮的个数
-    type?: string | number | DialogType,
     canMove?: boolean,        //是否允许移动
-    width?: number,
-    height?: number,
-    x?: number,
-    y?: number,
-    direction?: DialogDirection | string | number,
-    ondone?: Function        //点确定时触发
 }
 
-class DialogBox extends DialogCore {
+class DialogBox extends DialogContent {
     constructor(
-        option: DialogOption,
+        option: DialogBoxOption,
         id?: number
     ) {
         super(option, id);
     }
 
-    public init() {
-
-    }
-
+    /**
+     * 设置内容
+     */
     protected createContent(): this {
-        throw new Error("Method not implemented.");
+        this.box.html(this.getHeaderHtml() + this.getContentHtml()+ this.getFooterHtml());
+        return this;
     }
+
     protected setProperty(): this {
-        throw new Error("Method not implemented.");
+        let target = this.options.target || Dialog.$window;
+        let maxWidth = target.width();
+        let width = this.box.width();
+        let maxHeight = target.height();
+        let height = this.box.height();
+        if (maxWidth > width && maxHeight > height) {
+            this.css({
+                left: (maxWidth - width) / 2 + 'px',
+                top: (maxHeight - height) / 2 + 'px'
+            });
+            return this;
+        }
+        this.options.type = DialogType.page;
+        this.box.addClass("dialog-page");
+        Dialog.closeBg();
+        return this;
+    }
+
+    protected bindEvent(): this {
+        // 点击标题栏移动
+        let instance = this;
+        let isMove = false;
+        let x, y;
+        this.box.find(".dialog-header .dialog-title").mousedown(function(e) {
+            isMove = true;
+            x = e.pageX - parseInt(instance.box.css('left'));
+            y = e.pageY - parseInt(instance.box.css('top'));
+            instance.box.fadeTo(20, .5);
+        });
+        $(document).mousemove(function(e) {
+            if (!isMove) {
+                return;
+            }
+            instance.box.css({
+                top: e.pageY - y,
+                left: e.pageX - x
+            })
+        }).mouseup(function() {
+            isMove = false;
+            if (instance.box) {
+                instance.box.fadeTo('fast', 1);
+            }
+        });
+        $(window).resize(function() {
+            if (instance.box) {
+                instance.resize();
+                return;
+            }
+        });
+        return super.bindEvent();
+    }
+
+    /**
+     * 重设尺寸
+     */
+    public resize() {
+        this.setProperty();
+        this.trigger('resize');
+    }
+
+    protected getDefaultOption() {
+        return new DefaultDialogBoxOption();
     }
 
     
-    private _isLoading: boolean = false; //加载中 显示时候出现加载动画
-
-    private _loadingDialog: DialogCore;
-
-    public get isLoading(): boolean {
-        return this._isLoading;
-    }
-
-    public set isLoading(arg: boolean) {
-        this._isLoading = arg;
-        this._toggleLoading();
-        // 加载完成时显示元素
-        if (!this._isLoading && this.status == DialogStatus.show) {
-            this._show();
+    protected getHeaderHtml(): string {
+        let html = '<div class="dialog-header"><div class="dialog-title">';
+        if (this.options.ico) {
+            html += '<i class="fa fa-' + this.options.ico + '"></i>';
         }
-    }
-
-        /**
-     * 显示加载动画
-     */
-    private _toggleLoading(arg: DialogStatus = this.status) {
-        if (!this.isLoading || arg != DialogStatus.show) {
-            if (this._loadingDialog) {
-                this._loadingDialog.close();
-                this._loadingDialog = undefined;
-            }
-            return;
+        if (this.options.title) {
+            html += this.options.title;
         }
-        if (this._loadingDialog) {
-            this._loadingDialog.show();
-            return;
-        }
-        this._loadingDialog = Dialog.loading().show();
+        return html + '</div><i class="fa fa-close dialog-close"></i></div>';
     }
-
     
 }
+
+class DefaultDialogBoxOption extends DefaultDialogContentOption implements DialogBoxOption {
+    title: string = '提示';
+    canMove: boolean = true;
+}
+
+Dialog.addMethod(DialogType.box, DialogBox);

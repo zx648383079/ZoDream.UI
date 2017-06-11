@@ -247,7 +247,7 @@ class Dialog {
     /**
      * 显示遮罩
      */
-    public static showBg(target: JQuery = $(document.body)) {
+    public static showBg(target: JQuery = $(document.body), isPublic: boolean = true) {
         let instance = this;
         if (!this._dialogBg) {
             this._dialogBg = $('<div class="dialog-bg"></div>');
@@ -255,9 +255,10 @@ class Dialog {
                 e.stopPropagation();
                 instance.remove();
             });
-            // 更改遮罩的位置
-            target.append(this._dialogBg);
         }
+        // 更改遮罩的位置
+        target.append(this._dialogBg);
+        this._dialogBg.toggleClass('dialog-bg-private', !isPublic);
         this._bgLock ++;
         this._dialogBg.show();
     }

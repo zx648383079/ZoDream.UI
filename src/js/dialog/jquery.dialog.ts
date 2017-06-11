@@ -16,10 +16,13 @@ class DialogPlugin {
 
     private _parseOption(element: JQuery) {
         let option: DialogOption = $.extend({}, this.option);
-        option.type = element.attr('dialog-type') || this.option.type;
+        option.type = Dialog.parseEnum<DialogType>(element.attr('dialog-type') || this.option.type, DialogType);
         option.content = element.attr('dialog-content') || this.option.content;
         option.url = element.attr('dialog-url') || this.option.url;
         option.time = parseInt(element.attr('dialog-time')) || this.option.time;
+        if (option.type == DialogType.pop && !option.target) {
+            option.target = element;
+        }
         return option;
     }
 }

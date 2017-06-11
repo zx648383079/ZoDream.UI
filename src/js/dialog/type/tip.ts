@@ -16,25 +16,75 @@ class DialogTip extends DialogCore {
 
     public init() {
         Dialog.addItem(this);
-        this.createCore().createContent().setProperty();
-        this.addTime();
+        this.createCore().createContent()
+        .appendParent().setProperty().bindEvent()
+        .addTime();
     }
 
     protected getDefaultOption() {
         return new DefaultDialogTipOption();
     }
 
+    /**
+     * 设置内容
+     */
     protected createContent(): this {
         this.box.text(this.options.content);
         return this;
     }
+
+    /**
+     * 添加到容器上
+     */
+    protected appendParent(): this {
+        if (!this.box) {
+            return this;
+        }
+        if (!this.options.target) {
+            $(document.body).append(this.box);
+            return this;
+        }
+        this.options.target.append(this.box);
+        this.box.addClass("dialog-private");
+        return this;
+    }
+
+    /**
+     * 设置属性
+     */
     protected setProperty(): this {
-        $(document.body).append(this.box);
         let maxWidth = Dialog.$window.width();
         let width = this.box.width();
         this.y = (this.getDialogTop() || (Dialog.$window.height() * 0.68 + 30)) - 30 - this.height; 
         this.css('left', (maxWidth - width) / 2 + 'px');
         return this;
+    }
+
+    /**
+     * 绑定事件
+     */
+    protected bindEvent(): this {
+        this.box.click(function(e) {
+            e.stopPropagation();
+        });
+        let instance = this;
+        $(window).resize(function() {
+            if (instance.box) {
+                instance.resize();
+                return;
+            }
+        });
+        return this;
+    }
+
+    /**
+     * 重设尺寸
+     */
+    public resize() {
+        let maxWidth = Dialog.$window.width();
+        let width = this.box.width();
+        this.css('left', (maxWidth - width) / 2 + 'px');
+        this.trigger('resize');
     }
 
     protected addTime() {
@@ -56,21 +106,21 @@ class DialogTip extends DialogCore {
         this._timeHandle = undefined;
     }
 
-    protected closingBox() {
-        super.closingBox();
-        if (this.status != DialogStatus.closing) {
-            return;
+    protected closingBox(): boolean {
+        if (!super.closingBox()) {
+            return false;
         }
         this.stopTime();
+        return true;
     }
 
-    protected closeBox() {
-        super.closeBox();
-        this.changeOther();
-        if (this.status != DialogStatus.closed) {
-            return;
+    protected closeBox(): boolean {
+        if (!super.closeBox()) {
+            return false;
         }
+        this.changeOther();
         this.stopTime();
+        return true;
     }
 
     protected changeOther() {

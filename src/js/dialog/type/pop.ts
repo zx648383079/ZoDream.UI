@@ -1,6 +1,10 @@
-class DialogPop extends DialogCore {
+interface DialogPopOption extends DialogTipOption {
+    direction?: DialogDirection | string | number,
+}
+
+class DialogPop extends DialogTip {
     constructor(
-        option: DialogOption,
+        option: DialogPopOption,
         id?: number
     ) {
         super(option, id);
@@ -8,22 +12,34 @@ class DialogPop extends DialogCore {
             this.options.direction = Dialog.parseEnum<DialogDirection>(this.options.direction, DialogDirection);
         }
     }
-
-    public init() {
-
-    }
-
-    protected createContent(): this {
-        throw new Error("Method not implemented.");
-    }
     
     protected setProperty(): this {
-        throw new Error("Method not implemented.");
+        this._setPopProperty();
+        return this;
+    }
+
+    /**
+     * 添加到容器上
+     */
+    protected appendParent(): this {
+        if (!this.box) {
+            return this;
+        }
+        $(document.body).append(this.box);
+        return this;
+    }
+
+    protected bindEvent(): this {
+        return this;
+    }
+
+    private _getRandomDirection(): DialogDirection {
+        return Math.floor((Math.random() * 8));
     }
 
     private _setPopProperty() {
         if (!this.options.direction) {
-            this.options.direction = DialogDirection.top;
+            this.options.direction = this._getRandomDirection();
         }
         this.box.addClass('dialog-pop-' + DialogDirection[this.options.direction]);
         let offest = this.options.target.offset();
@@ -54,3 +70,5 @@ class DialogPop extends DialogCore {
         }
     }
 }
+
+Dialog.addMethod(DialogType.pop, DialogPop);

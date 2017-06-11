@@ -1,10 +1,4 @@
-class DialogForm extends DialogCore {
-    protected createContent(): this {
-        throw new Error("Method not implemented.");
-    }
-    protected setProperty(): this {
-        throw new Error("Method not implemented.");
-    }
+class DialogForm extends DialogBox {
     constructor(
         option: DialogOption,
         id?: number
@@ -35,8 +29,8 @@ class DialogForm extends DialogCore {
         return this._elements;
     }
 
-    public init() {
-
+    protected getContentHtml(content: string = this.options.content): string {
+        return '<div class="dialog-body">'+ this._createForm(content) +'</div>';
     }
 
     private _createForm(data: any): string {
@@ -177,3 +171,5 @@ class DialogForm extends DialogCore {
     }
     
 }
+
+Dialog.addMethod(DialogType.form, DialogForm);

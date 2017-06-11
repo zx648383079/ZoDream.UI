@@ -57,15 +57,22 @@
          let instance = this;
          this._init();
          $window.scroll(function() {
-            let height = $window.scrollTop();
-            let bottom = $window.height() + height;
-            instance.run(height, bottom);
+            instance.scrollInvote();
          });
+         // 首次执行
+         this.scrollInvote();
      }
 
      public options: LazyOptions;
 
      private _data: Array<LazyItem>;
+
+     public scrollInvote() {
+         let $window = $(window);
+        let height = $window.scrollTop();
+        let bottom = $window.height() + height;
+        this.run(height, bottom);
+     }
 
      public run(height: number, bottom: number) {
         if (!this._data) {

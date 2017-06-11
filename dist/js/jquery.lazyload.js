@@ -52,11 +52,17 @@ var Lazy = (function () {
         var instance = this;
         this._init();
         $window.scroll(function () {
-            var height = $window.scrollTop();
-            var bottom = $window.height() + height;
-            instance.run(height, bottom);
+            instance.scrollInvote();
         });
+        // 首次执行
+        this.scrollInvote();
     }
+    Lazy.prototype.scrollInvote = function () {
+        var $window = $(window);
+        var height = $window.scrollTop();
+        var bottom = $window.height() + height;
+        this.run(height, bottom);
+    };
     Lazy.prototype.run = function (height, bottom) {
         if (!this._data) {
             return;

@@ -116,7 +116,8 @@ class DialogContent extends DialogCore {
         return this;
     }
 
-    protected getContentHtml(content: string = this.options.content): string {
+    protected getContentHtml(): string {
+        let content = this.options.content;
         if (typeof content == 'object') {
             content = JSON.stringify(content);
         }

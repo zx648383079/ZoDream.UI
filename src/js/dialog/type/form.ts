@@ -29,8 +29,8 @@ class DialogForm extends DialogBox {
         return this._elements;
     }
 
-    protected getContentHtml(content: string = this.options.content): string {
-        return '<div class="dialog-body">'+ this._createForm(content) +'</div>';
+    protected getContentHtml(): string {
+        return '<div class="dialog-body">'+ this._createForm(this.options.content) +'</div>';
     }
 
     private _createForm(data: any): string {

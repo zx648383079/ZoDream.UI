@@ -51,6 +51,18 @@
             }
         }
     }
+    .selector-footer {
+        text-align: right;
+        .selector-yes {
+            width:30%;
+            background: #0275d8;
+            color: #fff;
+            padding: 0 8px;
+            border: none;
+            line-height: 25px;
+            display: inline-block;
+        }
+    }
     .fa-close {
         position: absolute;
         top: 0;

@@ -61,14 +61,15 @@ class City extends Box {
             this.options.data = this.options.data.call(this);
         }
         if (typeof this.options.data == 'object') {
-            this._init();
+            this.init();
             return;
         }
         let instance = this;
         if (typeof this.options.data == 'string') {
             $.getJSON(this.options.data, function(data) {
                 if (data.code == 0) {
-                    instance.source(data.data);
+                    this.options.data = data.data;
+                    instance.init();
                 }
             });
         }
@@ -84,37 +85,39 @@ class City extends Box {
 
     private _index: number = -1;
 
-    public source(data: any) {
-        this.options.data = data;
-        this._init();
-    }
-
-    private _setData(id?: string| number, index?: number, selected?: string| number) {
-        if (!id) {
-            this.addTab(this.options.data);
-            selected && this.selectedId(selected);
-            return;
-        }
-        let data = this.options.data;
+    public get val() {
+        let val = '';
         this.map(id => {
-            data = data[id][this.options.children];
-            if (!data) {
-                return false;
-            }
+            val = id;
         });
-        if (!data) {
-            this.trigger('done');
-            return;
-        }
-        this.addTab(data);
-        selected && this.selectedId(selected);
+        return val;
     }
 
-    private _init() {
-        
+    public set val(arg: string) {
+        this._selectedPath(...this.getPath(arg));
+    }
+
+    private _selectedPath(...args: Array<string>) {
+        let data = this.options.data;
+        this._index = -1;
+        this._header.html('');
+        this._body.html('')
+        do {
+            this._index ++;
+            let id = args.shift();
+            if (typeof data != 'object' || !data.hasOwnProperty(id)) {
+                this.addTab(data);
+                return;
+            }
+            this.addTab(data, '请选择', id);
+            data = data[id][this.options.children];
+        } while (args.length > 0);
+    }
+
+    protected init() {
         this._create();
         this._bindEvent();
-        this.selected();
+        this.val = undefined;
     }
 
     /**
@@ -154,7 +157,11 @@ class City extends Box {
 
     private _create() {
         this.box = $('<div class="selector" data-type="selector"></div>');
-        this.box.html('<ul class="selector-header"></ul><div class="selector-body"></div><i class="fa fa-close"></i>');
+        let html = '<ul class="selector-header"></ul><div class="selector-body"></div>';
+        if (!this.options.auto) {
+            html += '<div class="selector-footer"><button class="selector-yes">确定</button></div>';
+        }
+        this.box.html(html + '<i class="fa fa-close"></i>');
         $(document.body).append(this.box);
         this._header = this.box.find('.selector-header');
         this._body = this.box.find('.selector-body');
@@ -178,6 +185,11 @@ class City extends Box {
              .text($this.text());
             instance.selected(id, index);
         });
+        if (!this.options.auto) {
+            this.box.on('click', '.selector-yes', function() {
+                instance.trigger('done');
+            });
+        }
         /** 实现隐藏 */
         this.box.click(function(e) {
             e.stopPropagation();
@@ -185,21 +197,17 @@ class City extends Box {
         this.element.click(function(e) {
             e.stopPropagation();
         });
-        $(document).click(function() {
-            instance.box.hide();
-        });
+        if (this.options.auto) {
+            $(document).click(function() {
+                instance.box.hide();
+            });
+        }
         $(window).scroll(function() {
             instance.setPosition();
         });
         this.element.click(function() {
             instance.show();
         });
-    }
-
-    public setDefault(...args: Array<string| number>) {
-        this.options.default = args;
-        this._index = 0;
-        this.selected();
     }
 
     public bodyMap(callback: (id: string, name: string, index: number) => any, index: number = this._index) {
@@ -215,29 +223,35 @@ class City extends Box {
         });
     }
 
-    private _getSelect(index: number = 0): number | string | undefined {
-        if (this.options.default.length > index) {
-            return this.options.default[index];
-        }
-        this.options.default = [];
-        return undefined;
-    }
 
     /**
      * 加载下一页不进行选择
      */
     public selected(id?: string| number, index: number = this._index) {
         this.remove(index + 1);
-        let data = this.trigger('change', id, index, this._getSelect(index + 1));
+        let data = this._getNextData();
+        this.trigger('change', id, index);
         if (typeof data == 'object') {
-            this.addTab(data, '请选择', this._getSelect(index + 1));
+            this.addTab(data, '请选择');
         }
-        
         if (data == false) {
             this.trigger('done');
             return;
         }
         return this;
+    }
+
+    private _getNextData(): any {
+        let data = this.options.data;
+        let instance = this;
+        this.map(id => {
+            if (typeof data != 'object' || !data.hasOwnProperty(id)) {
+                data = [];
+                return false;
+            }
+            data = data[id][instance.options.children];
+        });
+        return data;
     }
 
     /**
@@ -258,9 +272,7 @@ class City extends Box {
     }
 
     public show() {
-        if (this.options.auto) {
-            return this.showPosition();
-        }
+        this.setPosition();
         this.box.show();
         return this;
     }
@@ -314,14 +326,6 @@ class City extends Box {
         return arg.join(link);
     }
 
-    public val(): string {
-        let val = '';
-        this.map(id => {
-            val = id;
-        });
-        return val;
-    }
-
     public all(): Array<string> {
         let data = [];
         this.map(id => {
@@ -331,7 +335,7 @@ class City extends Box {
     }
 
     public output(element: JQuery = this.element) {
-        element.attr('data-id', this.val());
+        element.attr('data-id', this.val);
         if (element.is('input') || element.is('textarea')) {
             element.val(this.text());
             return;
@@ -389,19 +393,18 @@ class City extends Box {
 }
 
 interface CityOptions {
-    default?: Array<string|number>,
+    [setting: string]: any,
     data?: any,
-    onchange?: (id?: string| number, index?: number, selected?: string| number) => any,
+    onchange?: () => any,
     ondone?: Function,
-    id?: string,
-    name?: string,
-    children?: string,
+    id?: string,   // id的标志
+    name?: string,  // 文字的标志
+    children?: string, // 子代的标志
     line?: string,  //连接符号
-    auto?: boolean // 自动设置位置
+    auto?: boolean // 自动输出
 }
 
 class CityDefaultOptions implements CityOptions {
-    data: string = '';
     id: string = 'id';
     name: string = 'name';
     children: string = 'children';

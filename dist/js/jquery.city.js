@@ -66,48 +66,58 @@ var City = (function (_super) {
             _this.options.data = _this.options.data.call(_this);
         }
         if (typeof _this.options.data == 'object') {
-            _this._init();
+            _this.init();
             return _this;
         }
         var instance = _this;
         if (typeof _this.options.data == 'string') {
             $.getJSON(_this.options.data, function (data) {
                 if (data.code == 0) {
-                    instance.source(data.data);
+                    this.options.data = data.data;
+                    instance.init();
                 }
             });
         }
         return _this;
     }
-    City.prototype.source = function (data) {
-        this.options.data = data;
-        this._init();
-    };
-    City.prototype._setData = function (id, index, selected) {
-        var _this = this;
-        if (!id) {
-            this.addTab(this.options.data);
-            selected && this.selectedId(selected);
-            return;
+    Object.defineProperty(City.prototype, "val", {
+        get: function () {
+            var val = '';
+            this.map(function (id) {
+                val = id;
+            });
+            return val;
+        },
+        set: function (arg) {
+            this._selectedPath.apply(this, this.getPath(arg));
+        },
+        enumerable: true,
+        configurable: true
+    });
+    City.prototype._selectedPath = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
         }
         var data = this.options.data;
-        this.map(function (id) {
-            data = data[id][_this.options.children];
-            if (!data) {
-                return false;
+        this._index = -1;
+        this._header.html('');
+        this._body.html('');
+        do {
+            this._index++;
+            var id = args.shift();
+            if (typeof data != 'object' || !data.hasOwnProperty(id)) {
+                this.addTab(data);
+                return;
             }
-        });
-        if (!data) {
-            this.trigger('done');
-            return;
-        }
-        this.addTab(data);
-        selected && this.selectedId(selected);
+            this.addTab(data, '请选择', id);
+            data = data[id][this.options.children];
+        } while (args.length > 0);
     };
-    City.prototype._init = function () {
+    City.prototype.init = function () {
         this._create();
         this._bindEvent();
-        this.selected();
+        this.val = undefined;
     };
     /**
      * 获取生成标签的头和身体
@@ -145,7 +155,11 @@ var City = (function (_super) {
     };
     City.prototype._create = function () {
         this.box = $('<div class="selector" data-type="selector"></div>');
-        this.box.html('<ul class="selector-header"></ul><div class="selector-body"></div><i class="fa fa-close"></i>');
+        var html = '<ul class="selector-header"></ul><div class="selector-body"></div>';
+        if (!this.options.auto) {
+            html += '<div class="selector-footer"><button class="selector-yes">确定</button></div>';
+        }
+        this.box.html(html + '<i class="fa fa-close"></i>');
         $(document.body).append(this.box);
         this._header = this.box.find('.selector-header');
         this._body = this.box.find('.selector-body');
@@ -167,6 +181,11 @@ var City = (function (_super) {
                 .text($this.text());
             instance.selected(id, index);
         });
+        if (!this.options.auto) {
+            this.box.on('click', '.selector-yes', function () {
+                instance.trigger('done');
+            });
+        }
         /** 实现隐藏 */
         this.box.click(function (e) {
             e.stopPropagation();
@@ -174,24 +193,17 @@ var City = (function (_super) {
         this.element.click(function (e) {
             e.stopPropagation();
         });
-        $(document).click(function () {
-            instance.box.hide();
-        });
+        if (this.options.auto) {
+            $(document).click(function () {
+                instance.box.hide();
+            });
+        }
         $(window).scroll(function () {
             instance.setPosition();
         });
         this.element.click(function () {
             instance.show();
         });
-    };
-    City.prototype.setDefault = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        this.options.default = args;
-        this._index = 0;
-        this.selected();
     };
     City.prototype.bodyMap = function (callback, index) {
         if (index === void 0) { index = this._index; }
@@ -206,29 +218,34 @@ var City = (function (_super) {
             }
         });
     };
-    City.prototype._getSelect = function (index) {
-        if (index === void 0) { index = 0; }
-        if (this.options.default.length > index) {
-            return this.options.default[index];
-        }
-        this.options.default = [];
-        return undefined;
-    };
     /**
      * 加载下一页不进行选择
      */
     City.prototype.selected = function (id, index) {
         if (index === void 0) { index = this._index; }
         this.remove(index + 1);
-        var data = this.trigger('change', id, index, this._getSelect(index + 1));
+        var data = this._getNextData();
+        this.trigger('change', id, index);
         if (typeof data == 'object') {
-            this.addTab(data, '请选择', this._getSelect(index + 1));
+            this.addTab(data, '请选择');
         }
         if (data == false) {
             this.trigger('done');
             return;
         }
         return this;
+    };
+    City.prototype._getNextData = function () {
+        var data = this.options.data;
+        var instance = this;
+        this.map(function (id) {
+            if (typeof data != 'object' || !data.hasOwnProperty(id)) {
+                data = [];
+                return false;
+            }
+            data = data[id][instance.options.children];
+        });
+        return data;
     };
     /**
      * 选中并触发加载下一页 不进行自动关闭
@@ -247,9 +264,7 @@ var City = (function (_super) {
         return this;
     };
     City.prototype.show = function () {
-        if (this.options.auto) {
-            return this.showPosition();
-        }
+        this.setPosition();
         this.box.show();
         return this;
     };
@@ -299,13 +314,6 @@ var City = (function (_super) {
         });
         return arg.join(link);
     };
-    City.prototype.val = function () {
-        var val = '';
-        this.map(function (id) {
-            val = id;
-        });
-        return val;
-    };
     City.prototype.all = function () {
         var data = [];
         this.map(function (id) {
@@ -315,7 +323,7 @@ var City = (function (_super) {
     };
     City.prototype.output = function (element) {
         if (element === void 0) { element = this.element; }
-        element.attr('data-id', this.val());
+        element.attr('data-id', this.val);
         if (element.is('input') || element.is('textarea')) {
             element.val(this.text());
             return;
@@ -367,7 +375,6 @@ var City = (function (_super) {
 }(Box));
 var CityDefaultOptions = (function () {
     function CityDefaultOptions() {
-        this.data = '';
         this.id = 'id';
         this.name = 'name';
         this.children = 'children';

@@ -58,6 +58,16 @@
         .selector .selector-body ul li.selected, .selector .selector-body ul li:hover {
           background: #0275d8;
           color: #fff; }
+  .selector .selector-footer {
+    text-align: right; }
+    .selector .selector-footer .selector-yes {
+      width: 30%;
+      background: #0275d8;
+      color: #fff;
+      padding: 0 8px;
+      border: none;
+      line-height: 25px;
+      display: inline-block; }
   .selector .fa-close {
     position: absolute;
     top: 0;

@@ -24,5 +24,6 @@
     #{$content-name}: $content-txt;
     -webkit-#{$content-name}: $content-txt;
     -moz-#{$content-name}: $content-txt;
+    -ms-#{$content-name}: $content-txt;
     -o-#{$content-name}: $content-txt;
 }

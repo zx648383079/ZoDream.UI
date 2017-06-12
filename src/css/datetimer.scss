@@ -1,14 +1,19 @@
+@import "prefix";
 @import "scrollbar";
 .datetimer {
     width: 350px;
     position: absolute;
     display: none;
     z-index: 999;
+    user-select: none;
+    background: #fff;
+    @include prefix-content(user-select, none);
     .header {
         position: relative;
         text-align: center;
         line-height: 40px;
-        background: #af5d0d;
+        background: #006cff;
+        color: #fff;
         font-size: 20px;
         span {
             width: 60%;
@@ -41,7 +46,7 @@
         }
         .month-grid {
             ol {
-                background: #f9cfa6;
+                background: #eee;
             }
             li {
                 display: inline-block;
@@ -52,8 +57,10 @@
             }
             ul {
                 li {
+                    cursor: pointer;
                     &.active {
-                        background: #af5d0d;
+                        background: #006cff;
+                        color: #fff;
                     }
                     &.disable {
                         color: #ccc;
@@ -69,7 +76,8 @@
                 li {
                     line-height: 30px;
                     &.active {
-                        background: #af5d0d;
+                        background: #006cff;
+                        color: #fff;
                     }
                 }
             }
@@ -101,17 +109,16 @@
         }
     }
     .footer {
-        background: #f9cfa6;
+        background: #eee;
         position: relative;
         height: 30px;
         input {
             width: 30px;
             height: 30px;
-            font-size: 20px;
+            font-size: 16px;
             text-align: center;
             border: none;
             box-sizing: border-box;
-            border-bottom: 1px solid #eee;
             background: transparent;
         }
         button {
@@ -137,5 +144,29 @@
         border: 1px solid #eee;
         @include scrollbar();
     }
-    
+}
+
+@media screen and (max-width: 400px) {
+    .datetimer {
+        position: fixed;
+        width: 100%;
+        left: 0;
+        top: 50px;
+        .body {
+            height: 315px;
+            width: 315px;
+            margin: 0 auto;
+            .month-grid {
+                li {
+                    width: 45px;
+                    line-height: 45px;
+                }
+            }
+            .list-group {
+                ul {
+                    height: 290px;
+                }
+            }
+        }
+    }
 }

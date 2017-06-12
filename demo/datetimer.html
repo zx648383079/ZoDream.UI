@@ -18,6 +18,7 @@
     <input type="text" id="time4">
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
     <script src="../dist/js/jquery.datetimer.js"></script>
     <script>
     $(document).ready(function() {
@@ -35,6 +36,7 @@
             format: 'y-m-d',
             min: d3
         });
+        console.log($("#time4").css('position'));
     });    
     </script>
     </body>

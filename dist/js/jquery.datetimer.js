@@ -204,6 +204,10 @@ var DateTimer = (function (_super) {
      * 显示
      */
     DateTimer.prototype.open = function () {
+        if (this.box.css('position') == 'fixed') {
+            this.box.show();
+            return;
+        }
         this.showPosition();
     };
     /**
@@ -392,41 +396,8 @@ var DateTimer = (function (_super) {
      */
     DateTimer.prototype._bindEvent = function () {
         var instance = this;
-        this.box.find(".body .month-grid ul li").click(function () {
-            var ele = $(this);
-            var day = parseInt(ele.text());
-            var date = new Date(instance._currentDate);
-            if (!ele.hasClass("disable")) {
-                date.setDate(day);
-            }
-            else if (day > ele.index()) {
-                /**点击上月日期 */
-                date.setMonth(date.getMonth() - 1);
-                date.setDate(day);
-            }
-            else {
-                /**
-                 * 点击下月日期
-                 */
-                date.setMonth(date.getMonth() + 1);
-                date.setDate(day);
-            }
-            if (instance.trigger('click', date, ele) == false) {
-                return;
-            }
-            if (!instance.checkDate(date)) {
-                // 超出范围
-                instance.trigger('error', date);
-                return;
-            }
-            if (date.getMonth() == instance._currentDate.getMonth()) {
-                ele.addClass("active").siblings().removeClass("active");
-                instance._currentDate = date;
-            }
-            else {
-                instance.showDate(date);
-            }
-            instance.output();
+        this.box.find('.month-grid li').click(function () {
+            instance._clickDay($(this));
         });
         this.box.find(".previousYear").click(function () {
             instance.previousYear();
@@ -497,6 +468,56 @@ var DateTimer = (function (_super) {
         $(document).click(function () {
             instance.box.hide();
         });
+        if (!$.fn.swipe) {
+            return;
+        }
+        this.box.swipe({
+            swipeLeft: function () {
+                instance.nextMonth();
+            },
+            swipeRight: function () {
+                instance.previousMonth();
+            }
+        });
+    };
+    /**
+     * 点击日期
+     * @param element
+     */
+    DateTimer.prototype._clickDay = function (element) {
+        var day = parseInt(element.text());
+        var date = new Date(this._currentDate);
+        if (!element.hasClass("disable")) {
+            date.setDate(day);
+        }
+        else if (day > element.index()) {
+            /**点击上月日期 */
+            date.setMonth(date.getMonth() - 1);
+            date.setDate(day);
+        }
+        else {
+            /**
+             * 点击下月日期
+             */
+            date.setMonth(date.getMonth() + 1);
+            date.setDate(day);
+        }
+        if (this.trigger('click', date, element) == false) {
+            return;
+        }
+        if (!this.checkDate(date)) {
+            // 超出范围
+            this.trigger('error', date);
+            return;
+        }
+        if (date.getMonth() == this._currentDate.getMonth()) {
+            element.addClass("active").siblings().removeClass("active");
+            this._currentDate = date;
+        }
+        else {
+            this.showDate(date);
+        }
+        this.output();
     };
     /**
      * 获取月中最后一天
@@ -562,6 +583,10 @@ var DateTimer = (function (_super) {
             && typeof month == 'number') {
             return new Date(year, month - 1, 1);
         }
+        // 解决safari 无法识别 - 
+        if (typeof year == 'string' && year.indexOf('-') > 0) {
+            year.replace('-', '/');
+        }
         var date = new Date(year);
         if (isNaN(date.getTime())) {
             return new Date();
@@ -576,8 +601,8 @@ var DateTimer = (function (_super) {
 var DateTimerDefaultOptions = (function () {
     function DateTimerDefaultOptions() {
         this.format = "y-m-d h:i:s"; //日期格式
-        this.min = "1900-01-01 00:00:00"; //最小日期
-        this.max = "2099-12-31 23:59:59"; //最大日期
+        this.min = "1900/01/01 00:00:00"; //最小日期    safari 下自动识别成日期格式 只认 /
+        this.max = "2099/12/31 23:59:59"; //最大日期
         this.title = "y年m月"; // 标题栏的日期格式
     }
     return DateTimerDefaultOptions;

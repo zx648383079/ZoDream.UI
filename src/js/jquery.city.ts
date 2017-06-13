@@ -76,7 +76,7 @@ class City extends Box {
         if (typeof this.options.data == 'string') {
             $.getJSON(this.options.data, function(data) {
                 if (data.code == 0) {
-                    this.options.data = data.data;
+                    instance.options.data = data.data;
                     instance.init();
                 }
             });

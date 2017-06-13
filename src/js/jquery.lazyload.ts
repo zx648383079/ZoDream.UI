@@ -1,3 +1,11 @@
+ /*!
+ * jquery.lazyload - https://github.com/zx648383079/ZoDream.UI
+ * Version - 1.0
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2017 ZoDream
+ */
+
  enum LazyMode {
      once,
      every

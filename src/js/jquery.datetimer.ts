@@ -1,3 +1,11 @@
+/*!
+ * jquery.datetimer - https://github.com/zx648383079/ZoDream.UI
+ * Version - 1.0
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2017 ZoDream
+ */
+
 /**
  * 获取真实的月份
  */

@@ -6,6 +6,62 @@
  * Copyright (c) 2017 ZoDream
  */
 
+class CacheUrl {
+    /**
+     * 缓存的数据
+     */
+    private static _cacheData: {[url: string]: any} = {};
+
+    /**
+     * 缓存的事件
+     */
+    private static _event: {[url: string]: Array<(data: any) => void>} = {};
+
+    public static hasData(url: string): boolean {
+        return this._cacheData.hasOwnProperty(url);
+    }
+
+    public static hasEvent(url: string) {
+        return this._event.hasOwnProperty(url);
+    }
+
+    /**
+     * 获取数据通过回调返回
+     * @param url 
+     * @param callback 
+     */
+    public static getData(url: string, callback: (data: any) => void) {
+        if (this.hasData(url)) {
+            callback(this._cacheData[url]);
+            return;
+        }
+        if (this.hasEvent(url)) {
+            this._event[url].push(callback);
+            return;
+        }
+        this._event[url] = [callback];
+        let instance = this;
+        $.getJSON(url, function(data) {
+            if (data.code == 0) {
+                instance.setData(url, data.data);
+                return;
+            }
+            console.log('URL ERROR! ' + url);
+        });
+    }
+
+    public static setData(url: string, data: any) {
+        this._cacheData[url] = data;
+        if (!this.hasEvent(url)) {
+            return;
+        }
+        this._event[url].forEach(callback=>{
+            callback(data);
+        });
+        delete this._event[url];
+    }
+}
+
 abstract class Box {
 
     public options: any;
@@ -74,11 +130,9 @@ class City extends Box {
         }
         let instance = this;
         if (typeof this.options.data == 'string') {
-            $.getJSON(this.options.data, function(data) {
-                if (data.code == 0) {
-                    instance.options.data = data.data;
-                    instance.init();
-                }
+            CacheUrl.getData(this.options.data, function(data) {
+                instance.options.data = data;
+                instance.init();
             });
         }
     }
@@ -135,7 +189,7 @@ class City extends Box {
     protected init() {
         this._create();
         this._bindEvent();
-        this.val = this._val;
+        this.val = this._val || this.element.attr('data-id');
     }
 
     /**

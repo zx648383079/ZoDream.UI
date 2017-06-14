@@ -1,3 +1,10 @@
+/*!
+ * jquery.city - https://github.com/zx648383079/ZoDream.UI
+ * Version - 1.0
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2017 ZoDream
+ */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,6 +15,54 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var CacheUrl = (function () {
+    function CacheUrl() {
+    }
+    CacheUrl.hasData = function (url) {
+        return this._cacheData.hasOwnProperty(url);
+    };
+    CacheUrl.hasEvent = function (url) {
+        return this._event.hasOwnProperty(url);
+    };
+    CacheUrl.getData = function (url, callback) {
+        if (this.hasData(url)) {
+            callback(this._cacheData[url]);
+            return;
+        }
+        if (this.hasEvent(url)) {
+            this._event[url].push(callback);
+            return;
+        }
+        this._event[url] = [callback];
+        var instance = this;
+        $.getJSON(url, function (data) {
+            if (data.code == 0) {
+                instance.setData(url, data.data);
+                return;
+            }
+            console.log('URL ERROR! ' + url);
+        });
+    };
+    CacheUrl.setData = function (url, data) {
+        this._cacheData[url] = data;
+        if (!this.hasEvent(url)) {
+            return;
+        }
+        this._event[url].forEach(function (callback) {
+            callback(data);
+        });
+        delete this._event[url];
+    };
+    return CacheUrl;
+}());
+/**
+ * 缓存的数据
+ */
+CacheUrl._cacheData = {};
+/**
+ * 缓存的事件
+ */
+CacheUrl._event = {};
 var Box = (function () {
     function Box() {
     }
@@ -71,11 +126,9 @@ var City = (function (_super) {
         }
         var instance = _this;
         if (typeof _this.options.data == 'string') {
-            $.getJSON(_this.options.data, function (data) {
-                if (data.code == 0) {
-                    this.options.data = data.data;
-                    instance.init();
-                }
+            CacheUrl.getData(_this.options.data, function (data) {
+                instance.options.data = data;
+                instance.init();
             });
         }
         return _this;
@@ -125,7 +178,7 @@ var City = (function (_super) {
     City.prototype.init = function () {
         this._create();
         this._bindEvent();
-        this.val = this._val;
+        this.val = this._val || this.element.attr('data-id');
     };
     /**
      * 获取生成标签的头和身体

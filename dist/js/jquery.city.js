@@ -24,6 +24,11 @@ var CacheUrl = (function () {
     CacheUrl.hasEvent = function (url) {
         return this._event.hasOwnProperty(url);
     };
+    /**
+     * 获取数据通过回调返回
+     * @param url
+     * @param callback
+     */
     CacheUrl.getData = function (url, callback) {
         if (this.hasData(url)) {
             callback(this._cacheData[url]);

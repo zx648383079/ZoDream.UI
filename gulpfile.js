@@ -37,7 +37,7 @@ gulp.task('ts', function () {
 });
 
 gulp.task('dialog', function () {
-    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/dialog/*.ts', 'src/js/dialog/type/tip.ts', 'src/js/dialog/type/message.ts', 'src/js/dialog/type/notify.ts', 
+    return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/dialog/*.ts', 'src/js/dialog/type/tip.ts', 'src/js/dialog/type/message.ts', 'src/js/dialog/type/notify.ts', 
     'src/js/dialog/type/pop.ts', 
     'src/js/dialog/type/loading.ts', 
     'src/js/dialog/type/content.ts', 

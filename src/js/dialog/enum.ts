@@ -40,3 +40,8 @@ enum DialogStatus {
     closing,   //关闭中
     closed    //已关闭
 }
+
+enum DialogDiskType {
+    file,
+    directory
+}

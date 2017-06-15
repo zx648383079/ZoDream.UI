@@ -99,7 +99,8 @@
     &.dialog-page,
     &.dialog-content,
     &.dialog-box,
-    &.dialog-form {
+    &.dialog-form,
+    &.dialog-disk {
         background: #fff;
         min-width: 260px;
         @include prefix-animation(dialog-box 0.5s);
@@ -289,6 +290,80 @@
             .dialog-next,
             .dialog-close {
                 display: block;
+            }
+        }
+    }
+    &.dialog-disk {
+        .dialog-body {
+            min-width: 600px;
+            min-height: 500px;
+            position: relative;
+            .dialog-catalog {
+                width: 100px;
+                display: inline-block;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                overflow: auto;
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    li {
+                        list-style: none;
+                    }
+                }
+                .tree {
+                    .tree-item {
+                        .tree-header {
+                            line-height: 30px;
+                            text-align: center;
+                        }
+                        .tree-child {
+                            margin-left: 15px;
+                            display: none;
+                            .tree-item {
+
+                            }
+                        }
+                        &.active,
+                        &:hover {
+                            >.tree-header {
+                                color: #fff;
+                                background: #337ab7;
+                            }
+                        }
+                        &.active {
+                            .tree-child {
+                                display: block;
+                            }
+                        }
+                    }
+                }
+            }
+            .dialog-content {
+                display: inline-block;
+                position: absolute;
+                left: 120px;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                overflow-y: auto;
+                .folder-item,
+                .file-item {
+                    display: inline-block;
+                    width: 100px;
+                    text-align: center;
+                    padding: 20px 5px;
+                    box-sizing: border-box;
+                    .fa {
+                        font-size: 40px;
+                    }
+                    &.active,
+                    &:hover {
+                        border: 1px solid #337ab7;
+                        color: #337ab7;
+                    }
+                }
             }
         }
     }

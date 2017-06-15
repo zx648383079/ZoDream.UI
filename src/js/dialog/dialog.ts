@@ -119,9 +119,9 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static from(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean) {
+    public static form(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean) {
         return this.create({
-            type: DialogType.box,
+            type: DialogType.form,
             content: content,
             title: title,
             hasYes: hasYes,

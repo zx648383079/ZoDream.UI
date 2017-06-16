@@ -175,10 +175,6 @@ class Dialog {
     public static addItem(element: DialogCore) {
         this._data[++this._guid] = element;
         element.id = this._guid;
-        if (this._needBg(element.options.type) 
-        && !element.options.target) {
-            this.showBg();
-        }
     }
 
     public static hasItem(id: number | string = this._guid): boolean {
@@ -201,9 +197,6 @@ class Dialog {
             return;
         }
         this._data[id].close();
-        if (this._needBg(this._data[id].options.type)) {
-            this.closeBg();
-        }
         delete this._data[id];
     }
 
@@ -214,18 +207,6 @@ class Dialog {
         this.map(function(item) {
             item.close();
         });
-    }
-
-    /**
-     * 判断是否需要使用遮罩
-     * @param type 
-     */
-    private static _needBg(type: DialogType | string | number): boolean {
-        return type != DialogType.tip 
-        && type != DialogType.message
-        && type != DialogType.page 
-        && type != DialogType.notify
-        && type != DialogType.pop;
     }
 
     /**
@@ -274,6 +255,7 @@ class Dialog {
         if (this._bgLock > 0) {
             return;
         }
+        this._dialogBg.unbind();
         this._dialogBg.hide();
     }
 

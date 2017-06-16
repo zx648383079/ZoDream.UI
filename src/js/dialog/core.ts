@@ -1,3 +1,7 @@
+/**
+ * 已知问题
+ * 如果一个不能关闭， 多个将出现错乱
+ */
 abstract class DialogCore extends Box {
     constructor(
         option: DialogOption,

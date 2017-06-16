@@ -160,6 +160,7 @@ class DialogContent extends DialogCore {
             this.changeStatus(DialogStatus.show);
             return false;
         }
+        console.log('show', this.status);
         if (!super.showBox()) {
             return false;
         }
@@ -184,6 +185,7 @@ class DialogContent extends DialogCore {
             this.changeStatus(DialogStatus.hide);
             return false;
         }
+        console.log('closeing', this.status);
         if (!super.closingBox()) {
             return false;
         }

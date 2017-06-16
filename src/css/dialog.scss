@@ -62,7 +62,9 @@
             height: 0;
             border: transparent 20px solid;
         }
-        &.dialog-pop-top {
+        &.dialog-pop-top,
+        &.dialog-pop-leftTop,
+        &.dialog-pop-center, {
             &:before {
                 bottom: -40px;
                 left: 50%;
@@ -70,7 +72,8 @@
                 border-top-color:rgba(0, 0, 0, .6);
             }
         }
-        &.dialog-pop-left {
+        &.dialog-pop-left,
+        &.dialog-pop-leftBottom {
             &:before {
                 right: -40px;
                 margin-top: -20px;
@@ -78,7 +81,8 @@
                 border-left-color: rgba(0, 0, 0, 0.6);
             }
         }
-        &.dialog-pop-bottom {
+        &.dialog-pop-bottom,
+        &.dialog-pop-rightBottom {
             &:before {
                 top: -40px;
                 left: 50%;
@@ -86,7 +90,8 @@
                 border-bottom-color:rgba(0, 0, 0, .6);
             }
         }
-        &.dialog-pop-right {
+        &.dialog-pop-right,
+        &.dialog-pop-rightTop {
             &:before {
                 left: -40px;
                 margin-top: -20px;

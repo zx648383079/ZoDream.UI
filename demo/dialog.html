@@ -47,9 +47,9 @@
                 content: '11111111111111111111',
                 time: 5000
             });
-            $("[dialog-type=pop]").dialog({
-                content: '11111111111111111111',
-                time: 0
+            $("[dialog-type=pop]").click(function() {
+                Dialog.pop('1212131231312321', $(this), 5000);
+                i ++;
             });
             $("[dialog-type=loading]").dialog({
                 //time: 2000,

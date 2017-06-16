@@ -18,12 +18,12 @@ class Dialog {
      * 创造弹出框
      * @param option 
      */
-    public static create(option?: DialogOption): DialogCore {
+    public static create<T>(option?: DialogOption): T {
         if (!option.type) {
             option.type = DialogType.tip;
         }
         option.type = this.parseEnum<DialogType>(option.type, DialogType);
-        let method = this.getMethod(option.type);
+        let method: any = this.getMethod(option.type);
         let element = new method(option);
         return element;
     }
@@ -40,12 +40,12 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static tip(content: string | DialogTipOption, time: number = 2000): DialogCore {
+    public static tip(content: string | DialogTipOption, time: number = 2000): DialogTip {
         if (typeof content != 'object') {
             content = {content: content, time: time};
         }
         content.type = DialogType.tip;
-        return this.create(content).show();
+        return this.create<DialogTip>(content).show();
     }
 
     /**
@@ -53,24 +53,32 @@ class Dialog {
      * @param content 
      * @param time 
      */
-    public static message(content: string | DialogMessageOption, time: number = 2000): DialogCore {
+    public static message(content: string | DialogMessageOption, time: number = 2000): DialogMessage {
         if (typeof content != 'object') {
             content = {content: content, time: time};
         }
         content.type = DialogType.message;
-        return this.create(content).show();
+        return this.create<DialogMessage>(content).show();
+    }
+
+    public static pop(content: string | DialogPopOption, target: JQuery, time: number = 2000): DialogPop {
+        if (typeof content != 'object') {
+            content = {content: content, time: time, target: target};
+        }
+        content.type = DialogType.pop;
+        return this.create<DialogPop>(content).show();
     }
 
     /**
      * 加载
      * @param time 
      */
-    public static loading(time: number | DialogOption = 0): DialogCore {
+    public static loading(time: number | DialogOption = 0): DialogLoading {
         if (typeof time != 'object') {
             time = {time: time};
         }
         time.type = DialogType.loading;
-        return this.create(time).show();
+        return this.create<DialogLoading>(time).show();
     }
 
     /**
@@ -79,7 +87,7 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static content(content: string | DialogOption, hasYes?: boolean, hasNo?: boolean) {
+    public static content(content: string | DialogOption, hasYes?: boolean, hasNo?: boolean): DialogContent {
         if (typeof content != 'object') {
             content = {
                 content: content,
@@ -88,7 +96,7 @@ class Dialog {
             };
         }
         content.type = DialogType.content;
-        return this.create(content).show();
+        return this.create<DialogContent>(content).show();
     }
 
     /**
@@ -98,7 +106,7 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static box(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+    public static box(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean): DialogBox {
         if (typeof content != 'object') {
             content = {
                 content: content,
@@ -108,7 +116,7 @@ class Dialog {
             };
         }
         content.type = DialogType.box;
-        return this.create(content).show();
+        return this.create<DialogBox>(content).show();
     }
 
     /**
@@ -119,8 +127,8 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static form(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean) {
-        return this.create({
+    public static form(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean): DialogForm {
+        return this.create<DialogForm>({
             type: DialogType.form,
             content: content,
             title: title,
@@ -137,7 +145,7 @@ class Dialog {
      * @param hasYes 
      * @param hasNo 
      */
-    public static page(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean) {
+    public static page(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean): DialogPage {
         if (typeof content != 'object') {
             content = {
                 content: content,
@@ -147,7 +155,7 @@ class Dialog {
             };
         }
         content.type = DialogType.page;
-        return this.create(content).show();
+        return this.create<DialogPage>(content).show();
     }
 
     /**
@@ -156,7 +164,7 @@ class Dialog {
      * @param content 
      * @param icon 
      */
-    public static notify(title: string  | DialogOption = '通知', content: string = '', icon: string = '') {
+    public static notify(title: string  | DialogOption = '通知', content: string = '', icon: string = ''): DialogNotify {
         if (typeof title != 'object') {
             title = {
                 title: title,
@@ -165,7 +173,7 @@ class Dialog {
             };
         }
         title.type = DialogType.notify;
-        return this.create(title).show();
+        return this.create<DialogNotify>(title).show();
     }
 
     /**

@@ -160,7 +160,6 @@ class DialogContent extends DialogCore {
             this.changeStatus(DialogStatus.show);
             return false;
         }
-        console.log('show', this.status);
         if (!super.showBox()) {
             return false;
         }

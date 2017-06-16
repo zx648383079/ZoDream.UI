@@ -894,22 +894,22 @@
       width: 0;
       height: 0;
       border: transparent 20px solid; }
-    .dialog.dialog-pop.dialog-pop-top:before {
+    .dialog.dialog-pop.dialog-pop-top:before, .dialog.dialog-pop.dialog-pop-leftTop:before, .dialog.dialog-pop.dialog-pop-center:before {
       bottom: -40px;
       left: 50%;
       margin-left: -20px;
       border-top-color: rgba(0, 0, 0, 0.6); }
-    .dialog.dialog-pop.dialog-pop-left:before {
+    .dialog.dialog-pop.dialog-pop-left:before, .dialog.dialog-pop.dialog-pop-leftBottom:before {
       right: -40px;
       margin-top: -20px;
       top: 50%;
       border-left-color: rgba(0, 0, 0, 0.6); }
-    .dialog.dialog-pop.dialog-pop-bottom:before {
+    .dialog.dialog-pop.dialog-pop-bottom:before, .dialog.dialog-pop.dialog-pop-rightBottom:before {
       top: -40px;
       left: 50%;
       margin-left: -20px;
       border-bottom-color: rgba(0, 0, 0, 0.6); }
-    .dialog.dialog-pop.dialog-pop-right:before {
+    .dialog.dialog-pop.dialog-pop-right:before, .dialog.dialog-pop.dialog-pop-rightTop:before {
       left: -40px;
       margin-top: -20px;
       top: 50%;

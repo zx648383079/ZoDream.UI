@@ -255,7 +255,6 @@ class Dialog {
         if (this._bgLock > 0) {
             return;
         }
-        this._dialogBg.unbind();
         this._dialogBg.hide();
     }
 

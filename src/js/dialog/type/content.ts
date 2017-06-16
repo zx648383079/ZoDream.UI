@@ -185,7 +185,6 @@ class DialogContent extends DialogCore {
             this.changeStatus(DialogStatus.hide);
             return false;
         }
-        console.log('closeing', this.status);
         if (!super.closingBox()) {
             return false;
         }

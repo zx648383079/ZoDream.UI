@@ -50,8 +50,10 @@ class DialogBox extends DialogContent {
             y = e.pageY - parseInt(instance.box.css('top'));
             instance.box.fadeTo(20, .5);
         });
+
+        //这里可能导致 突然显示出来
         $(document).mousemove(function(e) {
-            if (!isMove) {
+            if (!isMove || instance.status != DialogStatus.show) {
                 return;
             }
             instance.box.css({
@@ -60,7 +62,7 @@ class DialogBox extends DialogContent {
             })
         }).mouseup(function() {
             isMove = false;
-            if (instance.box) {
+            if (instance.box && instance.status == DialogStatus.show) {
                 instance.box.fadeTo('fast', 1);
             }
         });

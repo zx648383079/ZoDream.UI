@@ -774,7 +774,13 @@ table {
   background: #ff77ff;
   border: none;
   display: inline-block;
-  text-decoration: none; }
+  text-decoration: none;
+  line-height: 30px;
+  margin: 0 8px;
+  vertical-align: middle; }
+  .btn.btn-full {
+    width: 100%;
+    margin: 0; }
 
 .checkbox {
   position: relative;
@@ -923,7 +929,9 @@ i.checkbox {
   .navbar > ul.nav-bottom {
     position: absolute;
     bottom: 0;
-    width: 100%; }
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto; }
   .navbar.min {
     width: 30px; }
     .navbar.min > ul > li > a span {
@@ -972,10 +980,9 @@ i.checkbox {
     .zd-tab .zd-tab-head.has-over > .fa:last-child {
       right: 0;
       top: 0; }
-  .zd-tab .zd-tab-head.has-over ul {
+  .zd-tab .zd-tab-head.has-over .zd-tab-head-content ul {
     padding: 0;
-    margin: 0 30px;
-    overflow: hidden; }
+    margin: 0 30px; }
 
 .zd-tab .zd-tab-body .zd-tab-item {
   display: none;
@@ -1011,6 +1018,8 @@ i.checkbox {
     left: 0;
     right: 0;
     z-index: 98; }
+  .page-header .btn {
+    vertical-align: top; }
 
 .pager li {
   display: inline-block;

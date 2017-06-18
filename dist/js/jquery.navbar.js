@@ -146,9 +146,11 @@ var Tab = (function () {
         this.element = element;
         this.option = option;
         this._data = [];
-        var instance = this;
-        this._head = this.element.find(".zd-tab-head>ul");
+        this._head = this.element.find(".zd-tab-head ul");
         this._body = this.element.find(".zd-tab-body");
+    }
+    Tab.prototype._bindEvent = function () {
+        var instance = this;
         this._head.on("click", ".zd-tab-item", function () {
             instance.showItem($(this).index());
         });
@@ -156,7 +158,12 @@ var Tab = (function () {
             // 当所有标签页关闭时会出错，页面错乱
             instance.removeItem($(this).parent().index());
         });
-    }
+    };
+    Tab.prototype.setProperty = function () {
+        var items = this._head.find('.zd-tab-item');
+        var width = items.width();
+        this._head.width(items.length * width);
+    };
     Tab.prototype.addItem = function (item) {
         if (this.hasItem(item)) {
             this.showItem(item);
@@ -166,6 +173,7 @@ var Tab = (function () {
         this._body.append('<iframe class="zd-tab-item" height="100%" src="' + item.url + '"></iframe>');
         this._data.push(item.clone());
         this.showItem(this._data.length - 1);
+        this.setProperty();
     };
     Tab.prototype.hasItem = function (item) {
         if (typeof item != 'string') {
@@ -232,7 +240,6 @@ var Navbar = (function () {
     function Navbar(element, option) {
         this.element = element;
         this.option = $.extend({}, new NavbarDefaultOption(), option);
-        var instance = this;
         this.tab = this.option.tab.tab({
             active: function (item) {
                 //console.log(item);
@@ -241,6 +248,21 @@ var Navbar = (function () {
         this._bottom = this.element.find('.nav-bottom');
         this._top = this.element.find('.nav-top');
         this.refresh();
+        this._bindEvent();
+        // 刷新浏览器时跳转
+        var url = window.location.href.split('#');
+        if (url.length > 1) {
+            this.open(url[1]);
+        }
+        else if (this.option.default) {
+            this.open(this.option.default);
+        }
+    }
+    /**
+     * 绑定事件
+     */
+    Navbar.prototype._bindEvent = function () {
+        var instance = this;
         this.element.on("click", 'li a', function (e) {
             e.preventDefault();
         });
@@ -253,15 +275,14 @@ var Navbar = (function () {
             var item = e.originalEvent.state;
             instance.tab.showItem(item);
         });
-        // 刷新浏览器时跳转
-        var url = window.location.href.split('#');
-        if (url.length > 1) {
-            this.open(url[1]);
-        }
-        else if (this.option.default) {
-            this.open(this.option.default);
-        }
-    }
+        $(window).resize(function () {
+            instance._setProperty();
+            instance.tab.setProperty();
+        });
+    };
+    Navbar.prototype._setProperty = function () {
+        this._top.height($(window).height() - this._top.offset().top - this._bottom.height());
+    };
     Navbar.prototype.open = function (path, isTop) {
         if (isTop === void 0) { isTop = true; }
         _a = this._pathToId(path, isTop), isTop = _a[0], path = _a[1];
@@ -302,9 +323,11 @@ var Navbar = (function () {
     Navbar.prototype.refresh = function () {
         this._addItem(this._top, this.option.data);
         if (!this.option.bottom) {
+            this._setProperty();
             return;
         }
         this._addItem(this._bottom, this.option.bottom);
+        this._setProperty();
     };
     // 动态添加
     Navbar.prototype.addItem = function (path, item) {

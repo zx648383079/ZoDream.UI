@@ -173,9 +173,19 @@ class Tab {
         public element: JQuery,
         public option: TabOption
     ) {
-        let instance = this;
-        this._head = this.element.find(".zd-tab-head>ul");
+        this._head = this.element.find(".zd-tab-head ul");
         this._body = this.element.find(".zd-tab-body");
+        
+    }
+
+    private _data: Array<NavItem> = [];
+
+    private _head: JQuery;
+
+    private _body: JQuery;
+
+    private _bindEvent() {
+        let instance = this;
         this._head.on("click", ".zd-tab-item", function() {
             instance.showItem($(this).index());
         });
@@ -185,11 +195,11 @@ class Tab {
         });
     }
 
-    private _data: Array<NavItem> = [];
-
-    private _head: JQuery;
-
-    private _body: JQuery;
+    public setProperty() {
+        let items = this._head.find('.zd-tab-item');
+        let width = items.width();
+        this._head.width(items.length * width);
+    }
 
     public addItem(item: NavItem) {
         if (this.hasItem(item)) {
@@ -200,6 +210,7 @@ class Tab {
         this._body.append('<iframe class="zd-tab-item" height="100%" src="' + item.url + '"></iframe>');
         this._data.push(item.clone());
         this.showItem(this._data.length - 1);
+        this.setProperty();
     }
 
     public hasItem(item: NavItem| string): boolean {
@@ -272,7 +283,6 @@ class Navbar {
         option?: NavbarOption
     ) {
         this.option = $.extend({}, new NavbarDefaultOption(), option);
-        let instance = this;
         this.tab = this.option.tab.tab({
             active: function(item: NavItem) {
                 //console.log(item);
@@ -281,18 +291,7 @@ class Navbar {
         this._bottom = this.element.find('.nav-bottom');
         this._top = this.element.find('.nav-top');
         this.refresh();
-        this.element.on("click", 'li a', function(e) {
-            e.preventDefault();
-        });
-        this.element.on("click", 'li', function() {
-            let item: NavItem = $(this).data();
-            instance.openItem(item);
-        });
-        $(window).bind('popstate', function(e) {
-            // 浏览器返回跳转
-            let item: NavItem = e.originalEvent.state;
-            instance.tab.showItem(item);
-        });
+        this._bindEvent();
         // 刷新浏览器时跳转
         let url = window.location.href.split('#');
         if (url.length > 1) {
@@ -308,6 +307,33 @@ class Navbar {
 
     private _bottom: JQuery;
     private _top: JQuery;
+
+    /**
+     * 绑定事件
+     */
+    private _bindEvent() {
+        let instance = this;
+        this.element.on("click", 'li a', function(e) {
+            e.preventDefault();
+        });
+        this.element.on("click", 'li', function() {
+            let item: NavItem = $(this).data();
+            instance.openItem(item);
+        });
+        $(window).bind('popstate', function(e) {
+            // 浏览器返回跳转
+            let item: NavItem = e.originalEvent.state;
+            instance.tab.showItem(item);
+        });
+        $(window).resize(function() {
+            instance._setProperty();
+            instance.tab.setProperty();
+        });
+    }
+
+    private _setProperty() {
+        this._top.height($(window).height() - this._top.offset().top - this._bottom.height());
+    }
 
     public open(path: string| string[], isTop: boolean = true) {
         [isTop, path] = this._pathToId(path, isTop);
@@ -349,9 +375,11 @@ class Navbar {
     public refresh() {
         this._addItem(this._top, this.option.data); 
         if (!this.option.bottom) {
+            this._setProperty();
             return;
         }
         this._addItem(this._bottom, this.option.bottom);
+        this._setProperty();
     }
 
     // 动态添加

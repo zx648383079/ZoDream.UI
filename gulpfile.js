@@ -55,6 +55,17 @@ gulp.task('dialog', function () {
     .pipe(gulp.dest('dist/js'));
 });
 
+gulp.task('page', function () {
+    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/core/uri.ts', 'src/js/jquery.page.ts'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('jquery.page.ts'))
+    .pipe(tsProject())
+    //.pipe(uglify())
+    //.pipe(rename({suffix:'.min'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/js'));
+});
+
 // //合并js文件
  // gulp.task('jsConcat',function(){
  //    gulp.src('prov/js/*.js')

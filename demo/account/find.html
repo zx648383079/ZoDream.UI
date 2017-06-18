@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
     <head>
-        <title>登录</title>
+        <title>找回密码</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="../../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -12,24 +12,12 @@
     <section class="container">
         <div class="login">
             <form class="form-ico" action="index.html" method="POST">
-                <div class="input-group error">
-                    <input type="text" placeholder="请输入手机号" required>
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                </div>
                 <div class="input-group">
-                    <input type="password" placeholder="请输入密码" required>
-                    <i class="fa fa-lock" aria-hidden="true"></i>
+                    <input type="email" placeholder="请输入邮箱" required>
+                    <i class="fa fa-at" aria-hidden="true"></i>
                 </div>
 
-                <div class="input-group">
-                    <div class="checkbox">
-                        <input type="checkbox" id="checkboxInput"/>
-                        <label for="checkboxInput"></label>
-                    </div>
-                    记住我
-                </div>
-
-                <button type="submit" class="btn">登录</button>
+                <button type="submit" class="btn btn-full">发送验证邮件</button>
             </form>
         </div>
     </section>

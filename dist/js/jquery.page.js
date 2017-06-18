@@ -8,90 +8,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Uri = (function () {
-    function Uri(_path, _data) {
-        if (_path === void 0) { _path = ''; }
-        if (_data === void 0) { _data = {}; }
-        this._path = _path;
-        this._data = _data;
-        if (_path.indexOf('?') >= 0) {
-            _a = this._parseUrl(_path), _path = _a[0], _data = _a[1];
-        }
-        var _a;
-    }
-    Uri.prototype.setData = function (key, val) {
-        if (typeof key == 'object') {
-            this._data = $.extend(this._data, key);
-        }
-        else {
-            this._data[key] = val;
-        }
-        return this;
-    };
-    Uri.prototype.clearData = function () {
-        this._data = {};
-        return this;
-    };
-    Uri.prototype.get = function (success, dataType) {
-        $.get(this.toString(), success, dataType);
-    };
-    Uri.prototype.getJson = function (success) {
-        $.getJSON(this.toString(), success);
-    };
-    Uri.prototype.post = function (data, success, dataType) {
-        $.post(this.toString(), data, success, dataType);
-    };
-    Uri.parse = function (url) {
-        if (typeof url == 'object') {
-            return url;
-        }
-        return new Uri(url);
-    };
-    Uri.prototype.toString = function () {
-        var param = Uri.getData(this._data);
-        if (param == '') {
-            return this._path;
-        }
-        return this._path + '?' + param;
-    };
-    Uri.getData = function (args) {
-        if ('object' != typeof args) {
-            return args;
-        }
-        var value = '';
-        $.each(args, function (key, item) {
-            value += Uri._filterValue(item, key);
-        });
-        return value.substring(0, value.length - 1);
-    };
-    Uri._filterValue = function (data, pre) {
-        if (typeof data != 'object') {
-            return pre + "=" + data + "&";
-        }
-        var value = '';
-        var isArray = data instanceof Array;
-        $.each(data, function (key, item) {
-            value += Uri._filterValue(item, pre + (isArray ? "[]" : "[" + key + "]"));
-        });
-        return value;
-    };
-    Uri.prototype._parseUrl = function (url) {
-        var _a = url.split('?', 2), path = _a[0], param = _a[1];
-        if (!param) {
-            return [path, {}];
-        }
-        var ret = {}, seg = param.split('&'), len = seg.length, i = 0, s; //len = 2
-        for (; i < len; i++) {
-            if (!seg[i]) {
-                continue;
-            }
-            s = seg[i].split('=');
-            ret[s[0]] = s[1];
-        }
-        return [path, ret];
-    };
-    return Uri;
-}());
+/**
+ * 分页
+ */
 var Page = (function (_super) {
     __extends(Page, _super);
     function Page(element, option) {

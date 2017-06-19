@@ -6,114 +6,6 @@
  * Copyright (c) 2017 ZoDream
  */
 
-class CacheUrl {
-    /**
-     * 缓存的数据
-     */
-    private static _cacheData: {[url: string]: any} = {};
-
-    /**
-     * 缓存的事件
-     */
-    private static _event: {[url: string]: Array<(data: any) => void>} = {};
-
-    public static hasData(url: string): boolean {
-        return this._cacheData.hasOwnProperty(url);
-    }
-
-    public static hasEvent(url: string) {
-        return this._event.hasOwnProperty(url);
-    }
-
-    /**
-     * 获取数据通过回调返回
-     * @param url 
-     * @param callback 
-     */
-    public static getData(url: string, callback: (data: any) => void) {
-        if (this.hasData(url)) {
-            callback(this._cacheData[url]);
-            return;
-        }
-        if (this.hasEvent(url)) {
-            this._event[url].push(callback);
-            return;
-        }
-        this._event[url] = [callback];
-        let instance = this;
-        $.getJSON(url, function(data) {
-            if (data.code == 0) {
-                instance.setData(url, data.data);
-                return;
-            }
-            console.log('URL ERROR! ' + url);
-        });
-    }
-
-    public static setData(url: string, data: any) {
-        this._cacheData[url] = data;
-        if (!this.hasEvent(url)) {
-            return;
-        }
-        this._event[url].forEach(callback=>{
-            callback(data);
-        });
-        delete this._event[url];
-    }
-}
-
-abstract class Box {
-
-    public options: any;
-
-    public element: JQuery;
-
-    public box: JQuery;
-
-    protected showPosition(): this {
-        this.setPosition();
-        this.box.show();
-        return this;
-    }
-
-    protected setPosition(): this {
-        let offset = this.element.offset();
-        let x = offset.left - $(window).scrollLeft();
-        let y = offset.top + this.element.outerHeight() - $(window).scrollTop();
-        this.box.css({left: x + "px", top: y + "px"});
-        return this;
-    }
-
-    public on(event: string, callback: Function): this {
-        this.options['on' + event] = callback;
-        return this;
-    }
-
-    public hasEvent(event: string): boolean {
-        return this.options.hasOwnProperty('on' + event);
-    }
-
-    public trigger(event: string, ... args: any[]) {
-        let realEvent = 'on' + event;
-        if (!this.hasEvent(event)) {
-            return;
-        }
-        return this.options[realEvent].call(this, ...args);
-    }
-
-    /**
-     * 根据可能是相对值获取绝对值
-     * @param abservable 
-     * @param reltive 
-     */
-    public static getReal(abservable: number, reltive: number): number {
-        if (reltive > 1) {
-            return reltive;
-        }
-        return abservable * reltive;
-    }
-}
-
 class City extends Box {
     constructor(
         public element: JQuery,
@@ -400,6 +292,14 @@ class City extends Box {
             arg.push(name);
         });
         return arg.join(link);
+    }
+
+    public lastText(): string {
+        let arg = '请选择';
+        this.map((id, name) => {
+            arg = name;
+        });
+        return arg;
     }
 
     public all(): Array<string> {

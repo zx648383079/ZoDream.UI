@@ -75,6 +75,9 @@
 
      private _data: Array<LazyItem>;
 
+     /**
+      * 页面滚动触发更新
+      */
      public scrollInvote() {
          let $window = $(window);
         let height = $window.scrollTop();
@@ -106,12 +109,24 @@
         });
     }
 
+    /**
+     * 全局方法集合
+     */
     public static methods: {[name: string]: Function} = {};
 
+    /**
+     * 添加方法
+     * @param name 
+     * @param callback 
+     */
     public static addMethod(name: string, callback: Function) {
         this.methods[name] = callback;
     }
 
+    /**
+     * 获取方法
+     * @param name 
+     */
     public static getMethod(name: string): Function {
         return this.methods[name];
     }

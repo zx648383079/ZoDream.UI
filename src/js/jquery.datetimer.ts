@@ -152,6 +152,9 @@ class DateTimer extends Box {
      */
     private _getMin(): Date {
         let date = this._tD(this.options.min);
+        if (!date) {
+            return undefined;
+        }
         if (!this._hasTime) {
             date.setHours(23, 59, 59, 99);
         }
@@ -163,6 +166,9 @@ class DateTimer extends Box {
      */
     private _getMax(): Date {
         let date = this._tD(this.options.max);
+        if (!date) {
+            return undefined;
+        }
         if (!this._hasTime) {
             date.setHours(0, 0, 0, 0);
         }
@@ -187,7 +193,7 @@ class DateTimer extends Box {
         let html = '<div class="header"><i class="fa fa-backward previousYear"></i><i class="fa fa-chevron-left previousMonth"></i><span></span><i class="fa fa-chevron-right nextMonth"></i><i class="fa fa-forward nextYear"></i></div><div class="body"><div class="month-grid"><ol><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ol><ul>'+
         this._nLi(42, 0, false) 
         +'</ul></div><div class="year-grid"><div class="list-group year"><div class="title">年</div><ul>'+
-        this._nLi(this._getMax().getFullYear() + 1, this._getMin().getFullYear())
+        this._nLi(this.options.maxYear + 1, this.options.minYear)
         +'</ul></div><div class="list-group month"><div class="title">月</div><ul>'+ 
         this._nLi(13, 1) +
         '</ul></div><i class="fa fa-close"></i></div>';
@@ -248,7 +254,8 @@ class DateTimer extends Box {
      */
     public open() {
         if (this.box.css('position') == 'fixed') {
-            this.box.show();
+            // 清除页面上的css
+            this.box.attr('style', '').show();
             return;
         }
         this.showPosition();
@@ -263,6 +270,17 @@ class DateTimer extends Box {
         }
         return this._currentDate = this._tD(this.box.data("date"));
     }
+
+    /**
+     * 获取当前时间
+     */
+    public getDateOrNull() : Date | undefined {
+        if (this._currentDate) {
+            return this._currentDate;
+        }
+        return undefined;
+    }
+
     /**
      * 上一年
      */
@@ -341,7 +359,7 @@ class DateTimer extends Box {
     private _changeYear(y: number) {
         this._currentDate.setFullYear(y);
         this._refreshDay();
-        this._changeListGroup(this._yearBox, y - this._getMin().getFullYear());
+        this._changeListGroup(this._yearBox, y - this.options.minYear);
     }
     /**
      * 改变月
@@ -350,7 +368,7 @@ class DateTimer extends Box {
     private _changeMonth(m: number) {
         this._currentDate.setMonth(m - 1);
         this._refreshDay();
-        this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this._getMin().getFullYear());
+        this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this.options.minYear);
         this._changeListGroup(this._monthBox, this._currentDate.getMonth());
     }
     /**
@@ -517,6 +535,17 @@ class DateTimer extends Box {
         $(document).click(function() {
             instance.box.hide();
         });
+        if (typeof this.options.min == 'object' && this.options.min instanceof DateTimer) {
+            this.options.min.done(function() {
+                instance._currentDate && !instance.checkDate(instance._currentDate) && instance.clear();
+            });
+        }
+        if (typeof this.options.max == 'object' && this.options.max instanceof DateTimer) {
+            this.options.max.done(function() {
+                instance._currentDate && !instance.checkDate(instance._currentDate) && instance.clear();
+            });
+        }
+
         if (!$.fn.swipe) {
             return;
         }
@@ -593,11 +622,25 @@ class DateTimer extends Box {
         return this.getCurrentDate().format(this.options.format);
      }
 
+     /**
+      * 验证Date
+      * @param date 
+      */
      public checkDate(date: Date): boolean {
-         if (this.options.min && date <= this._getMin()) {
+         let min = this._getMin();
+         if (min && date <= min) {
              return false;
          }
-         return !this.options.max || date < this._getMax();
+        let max = this._getMax();
+         return !max || date < max;
+     }
+
+     /**
+      * 清除
+      */
+     public clear() {
+         this._currentDate = undefined;
+         this.element.val('');
      }
 
      /**
@@ -626,7 +669,7 @@ class DateTimer extends Box {
              return new Date();
          }
          if (typeof year == 'object') {
-             return year instanceof DateTimer ? year.getCurrentDate() : year;
+             return year instanceof DateTimer ? year.getDateOrNull() : year;
          }
          if (typeof year == 'number' 
          && typeof month == 'number') {
@@ -652,6 +695,8 @@ interface DateTimerOptions {
     format?: string, //日期格式
     min?: string | Date | DateTimer, //最小日期
     max?: string | Date | DateTimer, //最大日期
+    minYear?: number,     // 做标签用
+    maxYear?: number,
     ondone?: (date: Date, element: JQuery) => any,
     onclick?: (date: Date, element: JQuery) => any,   // 点击事件
     onerror?: (date: Date, element: JQuery) => any,  // 点击错误的
@@ -663,6 +708,8 @@ class DateTimerDefaultOptions implements DateTimerOptions {
     min: string = "1900/01/01 00:00:00"; //最小日期    safari 下自动识别成日期格式 只认 /
     max: string = "2099/12/31 23:59:59"; //最大日期
     title: string = "y年m月";            // 标题栏的日期格式
+    minYear: number = 1900;     // 做标签用
+    maxYear: number = 2099;
 }
  
 ;(function($: any) {

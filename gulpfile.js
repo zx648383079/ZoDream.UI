@@ -56,7 +56,10 @@ gulp.task('dialog', function () {
 });
 
 gulp.task('page', function () {
-    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/core/uri.ts', 'src/js/jquery.page.ts'])
+    return gulp.src(['src/js/core/event.ts', 
+        'src/js/core/box.ts', 
+        'src/js/core/uri.ts', 
+        'src/js/page/jquery.page.ts'])
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.page.ts'))
     .pipe(tsProject())
@@ -67,9 +70,32 @@ gulp.task('page', function () {
 });
 
 gulp.task('city', function () {
-    return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/jquery.city.ts'])
+    return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/city/jquery.city.ts'])
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.city.ts'))
+    .pipe(tsProject())
+    //.pipe(uglify())
+    //.pipe(rename({suffix:'.min'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('date', function () {
+    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/datetimer/jquery.datetimer.ts'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('jquery.datetimer.ts'))
+    .pipe(tsProject())
+    //.pipe(uglify())
+    //.pipe(rename({suffix:'.min'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('navbar', function () {
+    return gulp.src(['src/js/navbar/option.ts', 
+    'src/js/navbar/tabItem.ts', 'src/js/navbar/tab.ts', 'src/js/navbar/jquery.navbar.ts'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('jquery.navbar.ts'))
     .pipe(tsProject())
     //.pipe(uglify())
     //.pipe(rename({suffix:'.min'}))

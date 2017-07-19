@@ -137,12 +137,20 @@
     .list-group ul::-webkit-scrollbar-thumb:window-inactive {
       background: rgba(0, 0, 0, 0.4); }
 
+.datetime-icon::before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  content: "\f073"; }
+
 @media screen and (max-width: 400px) {
   .datetimer {
     position: fixed;
     width: 100%;
     left: 0;
-    top: 50px; }
+    bottom: 0; }
     .datetimer .body {
       height: 315px;
       width: 315px;

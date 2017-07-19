@@ -64,6 +64,9 @@ var Lazy = (function () {
         // 首次执行
         this.scrollInvote();
     }
+    /**
+     * 页面滚动触发更新
+     */
     Lazy.prototype.scrollInvote = function () {
         var $window = $(window);
         var height = $window.scrollTop();
@@ -93,15 +96,27 @@ var Lazy = (function () {
             instance._data.push(item);
         });
     };
+    /**
+     * 添加方法
+     * @param name
+     * @param callback
+     */
     Lazy.addMethod = function (name, callback) {
         this.methods[name] = callback;
     };
+    /**
+     * 获取方法
+     * @param name
+     */
     Lazy.getMethod = function (name) {
         return this.methods[name];
     };
+    /**
+     * 全局方法集合
+     */
+    Lazy.methods = {};
     return Lazy;
 }());
-Lazy.methods = {};
 /**
  * 加载图片，如需加载动画控制请自定义
  */

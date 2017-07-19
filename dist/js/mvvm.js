@@ -229,9 +229,9 @@ var Dep = (function () {
             sub.update();
         });
     };
-    Dep.target = null;
     return Dep;
 }());
+Dep.target = null;
 var Watcher = (function () {
     function Watcher(vm, exp, cb) {
         this.vm = vm;

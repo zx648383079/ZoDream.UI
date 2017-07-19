@@ -111,12 +111,12 @@ var Lazy = (function () {
     Lazy.getMethod = function (name) {
         return this.methods[name];
     };
-    /**
-     * 全局方法集合
-     */
-    Lazy.methods = {};
     return Lazy;
 }());
+/**
+ * 全局方法集合
+ */
+Lazy.methods = {};
 /**
  * 加载图片，如需加载动画控制请自定义
  */

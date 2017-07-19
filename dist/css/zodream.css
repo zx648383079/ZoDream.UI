@@ -930,28 +930,24 @@ i.checkbox {
     position: absolute;
     bottom: 0;
     width: 100%;
-    max-height: 300px;
-    overflow-y: auto; }
+    max-height: 300px; }
   .navbar.min {
     width: 30px; }
     .navbar.min > ul > li > a span {
       display: none; }
     .navbar.min > ul > li > a .fa {
       position: static; }
-    .navbar.min > ul > li:hover > a span, .navbar.min > ul > li.active > a span {
+    .navbar.min > ul > li.active a .fa {
+      position: static; }
+    .navbar.min > ul > li.active a span {
+      display: none; }
+    .navbar.min > ul li:hover > a span {
       width: 270px;
       display: block;
       position: absolute;
-      top: 0;
       background: #ff77ff;
+      top: 0;
       left: 30px; }
-    .navbar.min > ul > li:hover ul, .navbar.min > ul > li.active ul {
-      width: 270px;
-      display: block;
-      position: absolute;
-      left: 30px; }
-      .navbar.min > ul > li:hover ul li a span, .navbar.min > ul > li.active ul li a span {
-        display: block; }
 
 .zd-tab .zd-tab-head {
   position: relative; }

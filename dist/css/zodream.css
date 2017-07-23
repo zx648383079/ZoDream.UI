@@ -913,6 +913,14 @@ i.checkbox {
           position: absolute;
           left: 10px;
           top: 6px; }
+          .navbar ul li a .fa.image-icon {
+            width: 21px;
+            height: 21px;
+            background-size: 100%;
+            border-radius: 50%;
+            background-repeat: no-repeat;
+            top: 5px;
+            left: 8px; }
       .navbar ul li ul {
         display: none; }
         .navbar ul li ul li a {

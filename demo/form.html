@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../dist/css/zodream.css" rel="stylesheet">
+    </head>
+    <body>
+        <form class="test-form">
+            <input type="text" name="name" value="132">
+            <input type="password" name="password" value="">
+            <button>提交</button>
+        </form>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jquery.form.js"></script>
+    <script>
+    $(document).ready(function() {
+        $(".test-form").submit(function() {
+            console.log($(".test-form").serialize());
+            return false;
+        });
+    });    
+    </script>
+    </body>
+</html>

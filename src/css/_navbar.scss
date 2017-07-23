@@ -31,6 +31,15 @@
                     position: absolute;
                     left: 10px;
                     top: 6px;
+                    &.image-icon {
+                        width: 21px;
+                        height: 21px;
+                        background-size: 100%;
+                        border-radius: 50%;
+                        background-repeat: no-repeat;
+                        top: 5px;
+                        left: 8px;
+                    }
                 }
             }
             ul {

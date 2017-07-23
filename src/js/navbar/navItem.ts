@@ -5,7 +5,8 @@ class NavItem {
         public url: string = 'javascript:;',
         public children?: {[id: string]: NavItem},
         public target: TargetMode = TargetMode.tab,
-        public id?: string
+        public id?: string,
+        public image?: string,
     ) {
 
     }
@@ -84,6 +85,9 @@ class NavItem {
         if (this.ico) {
             html += '<i class="fa fa-'+this.ico+'"></i>';
         }
+        if (this.image) {
+            html += '<i class="fa image-icon" style="background-image: url('+ this.image +')"></i>';
+        }
         html += '<span>'+this.name+'</span></a>';
         this.element.append(html);
         this._renderChildren();
@@ -129,6 +133,9 @@ class NavItem {
         let item = new NavItem(data['name']);
         if (data.hasOwnProperty('ico')) {
             item.ico = data['ico'];
+        }
+        if (data.hasOwnProperty('image')) {
+            item.image = data['image'];
         }
         if (data.hasOwnProperty('target')) {
             item.target = typeof data['target'] == 'string' ? TargetMode[data['target']] : data['target'];

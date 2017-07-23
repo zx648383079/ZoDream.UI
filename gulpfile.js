@@ -93,7 +93,7 @@ gulp.task('date', function () {
 
 gulp.task('navbar', function () {
     return gulp.src(['src/js/navbar/option.ts', 
-    'src/js/navbar/tabItem.ts', 'src/js/navbar/tab.ts', 'src/js/navbar/jquery.navbar.ts'])
+    'src/js/navbar/navItem.ts', 'src/js/navbar/tab.ts', 'src/js/navbar/jquery.navbar.ts'])
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.navbar.ts'))
     .pipe(tsProject())

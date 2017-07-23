@@ -4,7 +4,7 @@ class Navbar {
         option?: NavbarOption
     ) {
         this.option = $.extend({}, new NavbarDefaultOption(), option);
-        this.tab = this.option.tab.tab({
+        this.tab = $(this.option.tab).tab({
             active: function(item: NavItem) {
                 //console.log(item);
             }

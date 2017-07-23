@@ -19,8 +19,6 @@ class Page extends Box {
 
     private _searchForm: JQuery;
 
-    private _searchElements: JQuery;
-
     private _checkAll: JQuery;
 
     private _body: JQuery;
@@ -31,7 +29,6 @@ class Page extends Box {
         let instance = this;
         this._body = this.element.find(this.options.pageBody);
         this._searchForm = this.element.find(this.options.searchForm);
-        this._searchElements = this._searchForm.find('input,select,textarea');
         this._pager = $('<ul class="pager"></ul>').pager({
             paginate: function(page: number) {
                 instance.search('page', page);
@@ -93,6 +90,15 @@ class Page extends Box {
         this.refresh();
     }
 
+    public searchForm(form: JQuery) {
+        let data = {};
+        $.each(form.serializeArray(), (i, item) => {
+            
+        });
+        this.options.url.setData(name);
+        this.refresh();
+    }
+
     /**
      * 删除选中
      */
@@ -130,7 +136,7 @@ class Page extends Box {
             return;
         }
         this.options.deleteUrl.setData(this._getIdTag(), data).post({},function(data) {
-            if (data.code == 0) {
+            if (data.code == 200) {
                 instance.refresh();
             }
         }, 'json');
@@ -147,7 +153,7 @@ class Page extends Box {
             if (instance.options.afterQuery) {
                 instance.options.afterQuery.call(this, data);
             }
-            if (data.code != 0) {
+            if (data.code != 200) {
                 console.log(data);
                 return;
             }
@@ -206,8 +212,9 @@ class Page extends Box {
 
     private _bindEvent() {
         let instance = this;
-        this._searchForm.find("[type=submit]").click(function() {
-            instance.search(instance._getSearchFormData());
+        this._searchForm.submit(function() {
+            instance.search($(this).serialize());
+            return false;
         });
         this.element.find(this.options.sortRow+ '>*').click(function() {
             let $this = $(this);
@@ -285,29 +292,6 @@ class Page extends Box {
             html = data;
         }
         this._body.html(html);
-    }
-
-    private _getSearchFormData() {
-        let data = {};
-        let instance = this;
-        this._searchElements.each(function(i, ele) {
-            let element = $(ele);
-            let name = element.attr('name');
-            if (element.is('[type=ridio]')) {
-                if (element.is(':checked')) {
-                    data[name] = element.val();
-                }
-                return;
-            }
-            if (element.is('[type=checkbox]')) {
-                if (element.is(':checked')) {
-                    data[name] = element.val(); // 多选时未解决
-                }
-                return;
-            }
-            data[name] = element.val();
-        });
-        return data;
     }
 
     public delete(callback: (id: string, row: JQuery) => any): this {

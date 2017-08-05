@@ -1,10 +1,10 @@
 /*!
-* jquery.lazyload - https://github.com/zx648383079/ZoDream.UI
-* Version - 1.0
-* Licensed under the MIT license - http://opensource.org/licenses/MIT
-*
-* Copyright (c) 2017 ZoDream
-*/
+ * jquery.lazyload - https://github.com/zx648383079/ZoDream.UI
+ * Version - 1.0
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2017 ZoDream
+ */
 var LazyMode;
 (function (LazyMode) {
     LazyMode[LazyMode["once"] = 0] = "once";
@@ -31,22 +31,21 @@ var LazyItem = (function () {
      * @param bottom
      */
     LazyItem.prototype.canRun = function (height, bottom) {
-        if (this.mode == LazyMode.once && this._lastHeight) {
+        if (this.mode == LazyMode.once && this._lastHeight != undefined) {
             return false;
+        }
+        if (typeof this.diff == 'function') {
+            return this.diff.call(this, height, bottom);
         }
         var top = this.element.offset().top;
         return top + this.diff >= height && top < bottom;
     };
     LazyItem.prototype.run = function (height, bottom) {
-        if (this.mode == LazyMode.once && this._lastHeight) {
-            return false;
-        }
-        var top = this.element.offset().top;
-        if (top + this.diff < height || top >= bottom) {
-            return false;
+        if (this.canRun(height, bottom)) {
+            return;
         }
         this.callback.call(this, this.element);
-        this._lastHeight = height + this.diff;
+        this._lastHeight = height;
         return true;
     };
     return LazyItem;
@@ -86,14 +85,25 @@ var Lazy = (function () {
     };
     // 暂时只做一次
     Lazy.prototype._init = function () {
-        if (typeof this.options.callback != 'function') {
-            this.options.callback = Lazy.getMethod(this.options.callback);
-        }
+        var _this = this;
         this._data = [];
         var instance = this;
         this.element.each(function (i, ele) {
-            var item = new LazyItem($(ele), instance.options.callback, instance.options.mode, instance.options.diff);
+            var item = new LazyItem($(ele), typeof instance.options.callback != 'function' ? Lazy.getMethod(instance.options.callback) : instance.options.callback, instance.options.mode, instance.options.diff);
             instance._data.push(item);
+        });
+        $.each(this.options.data, function (i, item) {
+            if (item instanceof LazyItem) {
+                _this._data.push(item);
+                return;
+            }
+            if (typeof i == 'string') {
+                item['tag'] = i;
+            }
+            $(item.tag).each(function (i, ele) {
+                var lazyItem = new LazyItem($(ele), typeof item.callback != 'function' ? Lazy.getMethod(item.callback) : item.callback, item.mode || LazyMode.once, item.diff || 0);
+                instance._data.push(lazyItem);
+            });
         });
     };
     /**
@@ -141,6 +151,27 @@ Lazy.addMethod('tpl', function (tplEle) {
             data.data = template(templateId, data.data);
         }
         tplEle.html(data.data);
+    });
+});
+/**
+ * 滚动加载模板，需要引用 template 函数
+ */
+Lazy.addMethod('scroll', function (moreEle) {
+    var page = parseInt(moreEle.attr('data-page') || '0') + 1;
+    var url = moreEle.attr('data-url');
+    var templateId = moreEle.attr('data-tpl');
+    var target = moreEle.attr('data-target');
+    $.getJSON(url, {
+        page: page
+    }, function (data) {
+        if (data.code != 0) {
+            return;
+        }
+        if (typeof data.data != 'string') {
+            data.data = template(templateId, data.data);
+        }
+        $(target).html(data.data);
+        moreEle.attr('data-page', page);
     });
 });
 var LazyDefaultOptions = (function () {

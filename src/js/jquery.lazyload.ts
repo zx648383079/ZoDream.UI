@@ -35,7 +35,7 @@
       */
      public canRun(height: number, bottom: number): boolean {
         if (this.mode == LazyMode.once && this._lastHeight != undefined) {
-            return false
+            return false;
         }
         if (typeof this.diff == 'function') {
             return this.diff.call(this, height, bottom);
@@ -45,8 +45,8 @@
      }
 
      public run(height: number, bottom: number): boolean {
-        if (this.canRun(height, bottom)) {
-            return;
+        if (!this.canRun(height, bottom)) {
+            return false;
         }
         this.callback.call(this, this.element);
         this._lastHeight = height;

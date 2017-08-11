@@ -95,12 +95,15 @@ class Upload {
     }
 
     public deal(data: any) {
+        let value = typeof this.option.template == 'function' ? this.option.template.call(this, data) : this.replace(data);
+        if (value == false) {
+            return;
+        }
         let urlFor = this.currentElement.attr("data-grid") || this.option.grid;
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
             return;
         }
         let tags = urlFor.split("|");
-        let value = this.replace(data);
         let instance = this;
         tags.forEach(function(tag) {
             let item = instance.getElement(tag, instance.currentElement);
@@ -144,7 +147,7 @@ class Upload {
     }
 
     public replace(data: Object): string {
-        let html = this.option.template;
+        let html: string = this.option.template;
         for (let i in data) {
             if (data.hasOwnProperty(i)) {
                 html = html.replace(new RegExp("{" + i + "}", 'g'), data[i]);
@@ -159,7 +162,7 @@ interface UploadOption {
     url?: string,         // 上传网址
     name?: string,        // 上传名
     isAppend?: boolean,    //在后面加还是前面加 ，对多个有效
-    template?: string,    // 模板
+    template?: string | Function,    // 模板
     grid?: string,        // 装载容器
     data?: any,           //默认值
     removeTag?: string,   // 删除标志

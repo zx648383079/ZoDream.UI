@@ -156,7 +156,7 @@ var Upload = (function () {
             return;
         }
         var urlFor = this.option.grid;
-        if (this.currentElement && this.currentElement.length > 1) {
+        if (this.currentElement && this.currentElement.length > 0) {
             urlFor = this.currentElement.attr("data-grid") || this.option.grid;
         }
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {

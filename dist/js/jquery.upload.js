@@ -88,12 +88,12 @@ var Upload = (function () {
                     return;
                 }
                 if (data instanceof Array) {
-                    instance.deal($.extend({}, instance.option.data, data));
+                    $.each(data, function (i, item) {
+                        instance.deal($.extend({}, instance.option.data, item));
+                    });
                     return;
                 }
-                $.each(data, function (i, item) {
-                    instance.deal($.extend({}, instance.option.data, item));
-                });
+                instance.deal($.extend({}, instance.option.data, data));
             }
         };
         if (this.option.onUploadProgress) {
@@ -217,7 +217,7 @@ var UploadDefaultOption = (function () {
             $(this).parent().remove();
         };
         this.multiple = false;
-        this.allowMultiple = true;
+        this.allowMultiple = false;
         this.data = {};
         this.fileClass = "zdUploadFile";
         this.filter = "";

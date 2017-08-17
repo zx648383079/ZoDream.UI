@@ -99,13 +99,13 @@ class Upload {
                     console.log('after upload is false');
                     return;
                 }
-                if (data !instanceof Array) {
-                    instance.deal($.extend({}, instance.option.data, data));
+                if (data instanceof Array) {
+                    $.each(data, function(i, item) {
+                        instance.deal($.extend({}, instance.option.data, item));
+                    });
                     return;
                 }
-                $.each(data, function(i, item) {
-                    instance.deal($.extend({}, instance.option.data, item));
-                });
+                instance.deal($.extend({}, instance.option.data, data));
             }
         };
         if (this.option.onUploadProgress) {
@@ -254,7 +254,7 @@ class UploadDefaultOption implements UploadOption {
         $(this).parent().remove();
     };
     multiple: boolean = false;
-    allowMultiple: boolean = true;
+    allowMultiple: boolean = false;
     data: any = {};
     fileClass: string = "zdUploadFile";
     filter: string = "";

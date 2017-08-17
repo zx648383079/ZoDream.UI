@@ -23,45 +23,52 @@ var Upload = (function () {
             this.success = this.option.success.bind(this);
         }
         this.getElement = this.option.getElement.bind(this);
-        this.addEvent();
+        if (this.element) {
+            this.addEvent();
+        }
     }
     Upload.prototype.addEvent = function () {
         var instance = this;
         this.element.click(function () {
             instance.currentElement = $(this);
-            var element = $("." + instance.option.fileClass);
-            if (element.length < 1) {
-                var file = document.createElement("input");
-                file.type = "file";
-                file.className = instance.option.fileClass;
-                file.multiple = instance.option.multiple;
-                file.accept = instance.option.filter;
-                document.body.appendChild(file);
-                element = $(file).bind("change", function () {
-                    instance.uploadFiles(this.files);
-                }).hide();
-            }
-            else {
-                element.val('');
-                element.attr('multiple', instance.option.multiple ? "true" : "false");
-                element.attr('accept', instance.option.filter);
-                if (instance.option.dynamic) {
-                    element.unbind("change").bind("change", function () {
-                        instance.uploadFiles(this.files);
-                    });
-                }
-            }
-            element.click();
+            instance.start();
         });
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
+    };
+    Upload.prototype.start = function () {
+        var instance = this;
+        var element = $("." + this.option.fileClass);
+        if (element.length < 1) {
+            var file = document.createElement("input");
+            file.type = "file";
+            file.className = this.option.fileClass;
+            file.multiple = this.option.multiple;
+            file.accept = this.option.filter;
+            document.body.appendChild(file);
+            element = $(file).bind("change", function () {
+                instance.uploadFiles(this.files);
+            }).hide();
+        }
+        else {
+            element.val('');
+            element.attr('multiple', this.option.multiple ? "true" : "false");
+            element.attr('accept', this.option.filter);
+            if (this.option.dynamic) {
+                element.unbind("change").bind("change", function () {
+                    instance.uploadFiles(this.files);
+                });
+            }
+        }
+        element.click();
     };
     Upload.prototype.uploadFiles = function (files) {
         if (this.option.allowMultiple) {
             this.uploadMany(files);
             return;
         }
+        var instance = this;
         $.each(files, function (i, file) {
-            this.uploadOne(file);
+            instance.uploadOne(file);
         });
     };
     Upload.prototype.uploadMany = function (files) {
@@ -148,7 +155,10 @@ var Upload = (function () {
             console.log('template is false');
             return;
         }
-        var urlFor = this.currentElement.attr("data-grid") || this.option.grid;
+        var urlFor = this.option.grid;
+        if (this.currentElement && this.currentElement.length > 1) {
+            urlFor = this.currentElement.attr("data-grid") || this.option.grid;
+        }
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
             console.log('element or success is false');
             return;
@@ -180,6 +190,9 @@ var Upload = (function () {
         });
     };
     Upload.prototype.getData = function () {
+        if (!this.element || this.element.length < 1) {
+            return {};
+        }
         var data = {};
         var arg = this.element.attr("data-data");
         if (!arg) {

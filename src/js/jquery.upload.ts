@@ -16,7 +16,7 @@
  */
 class Upload {
     constructor(
-        public element: JQuery,
+        public element?: JQuery,
         option?: UploadOption
     ) {
         this.option = $.extend({}, new UploadDefaultOption(), option);
@@ -25,7 +25,9 @@ class Upload {
             this.success = this.option.success.bind(this);
         }
         this.getElement = this.option.getElement.bind(this);
-        this.addEvent();
+        if (this.element) {
+            this.addEvent();
+        }
     }
 
     public option: UploadOption;
@@ -40,30 +42,35 @@ class Upload {
         let instance = this;
         this.element.click(function() {
             instance.currentElement = $(this);
-            let element = $("." + instance.option.fileClass);
-            if (element.length < 1) {
-                let file = document.createElement("input");
-                file.type = "file";
-                file.className = instance.option.fileClass;
-                file.multiple = instance.option.multiple;
-                file.accept = instance.option.filter;
-                document.body.appendChild(file);
-                element = $(file).bind("change", function() {
-                    instance.uploadFiles(this.files);
-                }).hide();
-            } else {
-                element.val('');
-                element.attr('multiple', instance.option.multiple ? "true" : "false");
-                element.attr('accept', instance.option.filter);
-                if (instance.option.dynamic) {
-                    element.unbind("change").bind("change", function() {
-                        instance.uploadFiles(this.files);
-                    });
-                }
-            }
-            element.click();
+            instance.start();
         });
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
+    }
+
+    public start() {
+        let instance = this;
+        let element = $("." + this.option.fileClass);
+        if (element.length < 1) {
+            let file = document.createElement("input");
+            file.type = "file";
+            file.className = this.option.fileClass;
+            file.multiple = this.option.multiple;
+            file.accept = this.option.filter;
+            document.body.appendChild(file);
+            element = $(file).bind("change", function() {
+                instance.uploadFiles(this.files);
+            }).hide();
+        } else {
+            element.val('');
+            element.attr('multiple', this.option.multiple ? "true" : "false");
+            element.attr('accept', this.option.filter);
+            if (this.option.dynamic) {
+                element.unbind("change").bind("change", function() {
+                    instance.uploadFiles(this.files);
+                });
+            }
+        }
+        element.click();
     }
 
     public uploadFiles(files) {
@@ -71,8 +78,9 @@ class Upload {
             this.uploadMany(files);
             return;
         }
+        let instance = this;
         $.each(files, function(i, file) {
-            this.uploadOne(file);
+            instance.uploadOne(file);
         });
     }
 
@@ -162,7 +170,10 @@ class Upload {
             console.log('template is false');
             return;
         }
-        let urlFor = this.currentElement.attr("data-grid") || this.option.grid;
+        let urlFor = this.option.grid;
+        if (this.currentElement && this.currentElement.length > 1) {
+            urlFor = this.currentElement.attr("data-grid") || this.option.grid;
+        }
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
             console.log('element or success is false');
             return;
@@ -194,6 +205,9 @@ class Upload {
     }
 
     public getData(): any {
+        if (!this.element || this.element.length < 1) {
+            return {};
+        }
         let data = {};
         let arg = this.element.attr("data-data");
         if (!arg) {

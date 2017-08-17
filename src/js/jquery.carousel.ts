@@ -21,6 +21,7 @@ class Carousel {
         this.width = items.width() * this._itemLength;
         this._copyItem(items);
         this._init();
+        this._addEvent();
     }
 
     public options: CarouselOptions;
@@ -32,6 +33,10 @@ class Carousel {
     private _itemLength: number = 0;
 
     private _left: number = 0;
+
+    private _handle: number;
+
+    private _stopTime = 0;
 
     get left(): number {
         return this._left;
@@ -47,11 +52,13 @@ class Carousel {
         let instance = this;
         if (this.options.previousTag) {
             this.element.find(this.options.previousTag).click(function() {
+                instance._stopTime = 1;
                 instance.previous();
             });
         }
         if (this.options.nextTag) {
             this.element.find(this.options.nextTag).click(function() {
+                instance._stopTime = 1;
                 instance.next();
             });
         }
@@ -68,7 +75,11 @@ class Carousel {
 
     private _init() {
         let carousel = this;
-        setInterval(function() {
+        this._handle = setInterval(function() {
+            if (carousel._stopTime > 0) {
+                carousel._stopTime --;
+                return;
+            }
             carousel.next();
         }, this.options.spaceTime);
     }
@@ -96,9 +107,6 @@ class Carousel {
             this._left = left;
             this._box.css("left", this._left - this.width + "px");
             return;
-        }
-        if (left > this._left) {
-            left -= this.width;
         }
         this._left = left;
         let carousel = this;
@@ -160,9 +168,12 @@ interface CarouselOptions {
 
 class CarouselDefaultOptions implements CarouselOptions {
      itemTag: string = 'li';
+     boxTag: string = '.carousel-box';
      spaceTime: number = 3000;
      animationTime: string|number = 1000;
      animationMode: string = "swing";
+     previousTag: string = '.carousel-previous';
+     nextTag: string = '.carousel-next';
 }
 
 

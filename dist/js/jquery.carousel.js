@@ -12,6 +12,7 @@ var Carousel = (function () {
         this._itemWidth = 0;
         this._itemLength = 0;
         this._left = 0;
+        this._stopTime = 0;
         this.options = $.extend({}, new CarouselDefaultOptions(), options);
         var items = this.element.find(this.options.itemTag);
         this._itemWidth = items.width();
@@ -23,6 +24,7 @@ var Carousel = (function () {
         this.width = items.width() * this._itemLength;
         this._copyItem(items);
         this._init();
+        this._addEvent();
     }
     Object.defineProperty(Carousel.prototype, "left", {
         get: function () {
@@ -38,11 +40,13 @@ var Carousel = (function () {
         var instance = this;
         if (this.options.previousTag) {
             this.element.find(this.options.previousTag).click(function () {
+                instance._stopTime = 1;
                 instance.previous();
             });
         }
         if (this.options.nextTag) {
             this.element.find(this.options.nextTag).click(function () {
+                instance._stopTime = 1;
                 instance.next();
             });
         }
@@ -57,7 +61,11 @@ var Carousel = (function () {
     };
     Carousel.prototype._init = function () {
         var carousel = this;
-        setInterval(function () {
+        this._handle = setInterval(function () {
+            if (carousel._stopTime > 0) {
+                carousel._stopTime--;
+                return;
+            }
             carousel.next();
         }, this.options.spaceTime);
     };
@@ -84,9 +92,6 @@ var Carousel = (function () {
             this._left = left;
             this._box.css("left", this._left - this.width + "px");
             return;
-        }
-        if (left > this._left) {
-            left -= this.width;
         }
         this._left = left;
         var carousel = this;
@@ -132,9 +137,12 @@ var Carousel = (function () {
 var CarouselDefaultOptions = (function () {
     function CarouselDefaultOptions() {
         this.itemTag = 'li';
+        this.boxTag = '.carousel-box';
         this.spaceTime = 3000;
         this.animationTime = 1000;
         this.animationMode = "swing";
+        this.previousTag = '.carousel-previous';
+        this.nextTag = '.carousel-next';
     }
     return CarouselDefaultOptions;
 }());

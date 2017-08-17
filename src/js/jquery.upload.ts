@@ -49,9 +49,7 @@ class Upload {
                 file.accept = instance.option.filter;
                 document.body.appendChild(file);
                 element = $(file).bind("change", function() {
-                    $.each(this.files, function(i, file) {
-                        instance.uploadOne(file);
-                    });
+                    instance.uploadFiles(this.files);
                 }).hide();
             } else {
                 element.val('');
@@ -59,9 +57,7 @@ class Upload {
                 element.attr('accept', instance.option.filter);
                 if (instance.option.dynamic) {
                     element.unbind("change").bind("change", function() {
-                        $.each(this.files, function(i, file) {
-                            instance.uploadOne(file);
-                        });
+                        instance.uploadFiles(this.files);
                     });
                 }
             }
@@ -70,14 +66,27 @@ class Upload {
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
     }
 
-    public uploadOne(file: File) {
-        let instance = this;
-        let data = new FormData();
-        data.append(this.option.name, file);
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+    public uploadFiles(files) {
+        if (this.option.allowMultiple) {
+            this.uploadMany(files);
             return;
         }
-        $.ajax({
+        $.each(files, function(i, file) {
+            this.uploadOne(file);
+        });
+    }
+
+    public uploadMany(files) {
+        let instance = this;
+        let data = new FormData();
+        $.each(files, function(i, file) {
+            data.append(instance.option.name, file);
+        });
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+            console.log('before upload is false');
+            return;
+        }
+        let opts = {
             url: this.option.url,
             type:'POST',
             data: data,
@@ -86,21 +95,76 @@ class Upload {
             processData: false,    //不可缺
             success: function(data) {
                 data = instance.option.afterUpload.call(instance, data, instance.currentElement);
-                if (data != false) {
+                if (data == false) {
+                    console.log('after upload is false');
+                    return;
+                }
+                if (data !instanceof Array) {
                     instance.deal($.extend({}, instance.option.data, data));
                     return;
                 }
+                $.each(data, function(i, item) {
+                    instance.deal($.extend({}, instance.option.data, item));
+                });
             }
-        });
+        };
+        if (this.option.onUploadProgress) {
+            opts['xhr'] = function(){
+                let xhr = $.ajaxSettings.xhr();
+                if(onprogress && xhr.upload) {
+                    xhr.upload.addEventListener("progress" , this.option.onUploadProgress, false);
+                    return xhr;
+                }
+            };
+        }
+        $.ajax(opts);
+    }
+
+    public uploadOne(file: File) {
+        let instance = this;
+        let data = new FormData();
+        data.append(this.option.name, file);
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+            console.log('before upload is false');
+            return;
+        }
+        let opts = {
+            url: this.option.url,
+            type:'POST',
+            data: data,
+            cache: false,
+            contentType: false,    //不可缺
+            processData: false,    //不可缺
+            success: function(data) {
+                data = instance.option.afterUpload.call(instance, data, instance.currentElement);
+                if (data == false) {
+                    console.log('after upload is false');
+                    return;
+                }
+                instance.deal($.extend({}, instance.option.data, data));
+            }
+        };
+        if (this.option.onUploadProgress) {
+            opts['xhr'] = function(){
+                let xhr = $.ajaxSettings.xhr();
+                if(onprogress && xhr.upload) {
+                    xhr.upload.addEventListener("progress" , this.option.onUploadProgress, false);
+                    return xhr;
+                }
+            };
+        }
+        $.ajax(opts);
     }
 
     public deal(data: any) {
         let value = typeof this.option.template == 'function' ? this.option.template.call(this, data) : this.replace(data);
         if (value == false) {
+            console.log('template is false');
             return;
         }
         let urlFor = this.currentElement.attr("data-grid") || this.option.grid;
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
+            console.log('element or success is false');
             return;
         }
         let tags = urlFor.split("|");
@@ -174,7 +238,9 @@ interface UploadOption {
     afterUpload?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
     success?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
     dynamic?: boolean, //是否动态绑定上传时间
-    getElement?: (tag: string, currentElement: JQuery) => JQuery   //获取容器的方法
+    getElement?: (tag: string, currentElement: JQuery) => JQuery,   //获取容器的方法
+    onUploadProgress?: (data: any) => void, // 上传进度
+    allowMultiple?: boolean,     // 是否允许上传一次多个
 }
 
 class UploadDefaultOption implements UploadOption {
@@ -188,6 +254,7 @@ class UploadDefaultOption implements UploadOption {
         $(this).parent().remove();
     };
     multiple: boolean = false;
+    allowMultiple: boolean = true;
     data: any = {};
     fileClass: string = "zdUploadFile";
     filter: string = "";

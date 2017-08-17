@@ -41,8 +41,8 @@ var LazyItem = (function () {
         return top + this.diff >= height && top < bottom;
     };
     LazyItem.prototype.run = function (height, bottom) {
-        if (this.canRun(height, bottom)) {
-            return;
+        if (!this.canRun(height, bottom)) {
+            return false;
         }
         this.callback.call(this, this.element);
         this._lastHeight = height;

@@ -38,9 +38,7 @@ var Upload = (function () {
                 file.accept = instance.option.filter;
                 document.body.appendChild(file);
                 element = $(file).bind("change", function () {
-                    $.each(this.files, function (i, file) {
-                        instance.uploadOne(file);
-                    });
+                    instance.uploadFiles(this.files);
                 }).hide();
             }
             else {
@@ -49,9 +47,7 @@ var Upload = (function () {
                 element.attr('accept', instance.option.filter);
                 if (instance.option.dynamic) {
                     element.unbind("change").bind("change", function () {
-                        $.each(this.files, function (i, file) {
-                            instance.uploadOne(file);
-                        });
+                        instance.uploadFiles(this.files);
                     });
                 }
             }
@@ -59,14 +55,26 @@ var Upload = (function () {
         });
         $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
     };
-    Upload.prototype.uploadOne = function (file) {
-        var instance = this;
-        var data = new FormData();
-        data.append(this.option.name, file);
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+    Upload.prototype.uploadFiles = function (files) {
+        if (this.option.allowMultiple) {
+            this.uploadMany(files);
             return;
         }
-        $.ajax({
+        $.each(files, function (i, file) {
+            this.uploadOne(file);
+        });
+    };
+    Upload.prototype.uploadMany = function (files) {
+        var instance = this;
+        var data = new FormData();
+        $.each(files, function (i, file) {
+            data.append(instance.option.name, file);
+        });
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+            console.log('before upload is false');
+            return;
+        }
+        var opts = {
             url: this.option.url,
             type: 'POST',
             data: data,
@@ -75,20 +83,77 @@ var Upload = (function () {
             processData: false,
             success: function (data) {
                 data = instance.option.afterUpload.call(instance, data, instance.currentElement);
-                if (data != false) {
+                if (data == false) {
+                    console.log('after upload is false');
+                    return;
+                }
+                if (data instanceof Array) {
                     instance.deal($.extend({}, instance.option.data, data));
                     return;
                 }
+                $.each(data, function (i, item) {
+                    instance.deal($.extend({}, instance.option.data, item));
+                });
             }
-        });
+        };
+        if (this.option.onUploadProgress) {
+            opts['xhr'] = function () {
+                var xhr = $.ajaxSettings.xhr();
+                if (onprogress && xhr.upload) {
+                    xhr.upload.addEventListener("progress", this.option.onUploadProgress, false);
+                    return xhr;
+                }
+            };
+        }
+        $.ajax(opts);
+    };
+    Upload.prototype.uploadOne = function (file) {
+        var instance = this;
+        var data = new FormData();
+        data.append(this.option.name, file);
+        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+            console.log('before upload is false');
+            return;
+        }
+        var opts = {
+            url: this.option.url,
+            type: 'POST',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                data = instance.option.afterUpload.call(instance, data, instance.currentElement);
+                if (data == false) {
+                    console.log('after upload is false');
+                    return;
+                }
+                instance.deal($.extend({}, instance.option.data, data));
+            }
+        };
+        if (this.option.onUploadProgress) {
+            opts['xhr'] = function () {
+                var xhr = $.ajaxSettings.xhr();
+                if (onprogress && xhr.upload) {
+                    xhr.upload.addEventListener("progress", this.option.onUploadProgress, false);
+                    return xhr;
+                }
+            };
+        }
+        $.ajax(opts);
     };
     Upload.prototype.deal = function (data) {
+        var value = typeof this.option.template == 'function' ? this.option.template.call(this, data) : this.replace(data);
+        if (value == false) {
+            console.log('template is false');
+            return;
+        }
         var urlFor = this.currentElement.attr("data-grid") || this.option.grid;
         if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
+            console.log('element or success is false');
             return;
         }
         var tags = urlFor.split("|");
-        var value = this.replace(data);
         var instance = this;
         tags.forEach(function (tag) {
             var item = instance.getElement(tag, instance.currentElement);
@@ -152,6 +217,7 @@ var UploadDefaultOption = (function () {
             $(this).parent().remove();
         };
         this.multiple = false;
+        this.allowMultiple = true;
         this.data = {};
         this.fileClass = "zdUploadFile";
         this.filter = "";

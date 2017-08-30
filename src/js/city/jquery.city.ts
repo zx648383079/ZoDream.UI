@@ -195,7 +195,7 @@ class City extends Box {
         this.remove(index + 1);
         let data = this._getNextData();
         this.trigger('change');
-        if (typeof data == 'object') {
+        if (typeof data == 'object' && (!(data instanceof Array) || data.length > 0)) {
             this.addTab(data, '请选择');
         }
         if (!data || data.length == 0) {

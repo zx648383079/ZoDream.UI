@@ -54,11 +54,6 @@ class DateTimer extends Box {
              this._hasTime = false;
          }
          this.createHtml();
-         let instance = this;
-         this.element.focus(function() {
-            $('[data-type=datetimer]').hide();
-            instance.init($(this).val());
-         });
     }
 
     public options: DateTimerOptions;
@@ -483,9 +478,14 @@ class DateTimer extends Box {
         this.box.click(function(e) {
             e.stopPropagation();
         });
-        this.element.click(function(e) {
-            e.stopPropagation();
-        });
+        if (this.element) {
+            this.element.click(function(e) {
+                e.stopPropagation();
+                $('[data-type=datetimer]').hide();
+                instance.init($(this).val());
+            });
+        }
+
         $(document).click(function() {
             instance.box.hide();
         });

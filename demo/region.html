@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../dist/css/city.css" rel="stylesheet">
+    </head>
+    <body>
+    
+    <div class="region-box">
+        <select></select>
+        <select></select>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jquery.region.js"></script>
+    <script>
+    $(document).ready(function() {
+       var region = $(".region-box").region({
+           data: {
+               1: {
+                   name: 2,
+                   children: {
+                       2: {
+                           name: 3
+                       },
+                       99: {
+                           name: 1001
+                       },
+                   }
+               },
+               4: {
+                   name: 5,
+                   children: {
+                       6: {
+                           name: 8
+                       },
+                       993: {
+                           name: 1001
+                       },
+                   }
+               },
+           }
+       });
+       region.val = [4, 6];
+    });    
+    </script>
+    </body>
+</html>

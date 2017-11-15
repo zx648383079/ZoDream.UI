@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="../dist/css/page_slider.css" rel="stylesheet">
+    </head>
+    <body>
+    
+        <button>打开</button>
+
+        <div class="slider-box">
+            <div class="slider-wraper">
+                <div class="slider-item">
+                    <ul>
+                        <li class="close">
+                            <i class="fa fa-close"></i>
+                        </li>
+                        <li>
+                            <a href="#new-page">new</a>
+                        </li>
+                        <li>
+                            <a href="#new-page">new</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="slider-item new-page page-2">
+                    <ul>
+                        <li class="close">
+                            <i class="fa fa-close"></i>
+                        </li>
+                        <li class="back">
+                            <i class="fa fa-arrow-left"></i>
+                        </li>
+                        <li>
+                            <a href="#hot-page">hot</a>
+                        </li>
+                        <li>
+                            <a href="#brands-page">品牌</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="slider-item hot-page page-3">
+                    <ul>
+                        <li class="close">
+                            <i class="fa fa-close"></i>
+                        </li>
+                        <li class="back">
+                            <i class="fa fa-arrow-left"></i>
+                        </li>
+                        <li>
+                            <a href="#new-page">第三</a>
+                        </li>
+                        <li>
+                            <a href="#new-page">new</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="slider-item brands-page page-3">
+                    <ul class="alphabet">
+                        <li class="close">
+                            <i class="fa fa-close"></i>
+                        </li>
+                        <li class="back">
+                            <i class="fa fa-arrow-left"></i>
+                        </li>
+                        <li><a href="#women_brands_az">A</a></li>
+                        <li><a href="#women_brands_az">B</a></li>
+                        <li><a href="#women_brands_az">C</a></li>
+                        <li><a href="#women_brands_az">D</a></li>
+                        <li><a href="#women_brands_az">E</a></li>
+                        <li><a href="#women_brands_az">F</a></li>
+                        <li><a href="#women_brands_az">G</a></li>
+                        <li><a href="#women_brands_az">H</a></li>
+                        <li><a href="#women_brands_az">I</a></li>
+                        <li><a href="#women_brands_az">J</a></li>
+                        <li><a href="#women_brands_az">K</a></li>
+                        <li><a href="#women_brands_az">L</a></li>
+                        <li><a href="#women_brands_az">M</a></li>
+                        <li><a href="#women_brands_az">N</a></li>
+                        <li><a href="#women_brands_az">O</a></li>
+                        <li><a href="#women_brands_az">P</a></li>
+                        <li><a href="#women_brands_az">J</a></li>
+                        <li><a href="#women_brands_az">Q</a></li>
+                        <li><a href="#women_brands_az">R</a></li>
+                        <li><a href="#women_brands_az">S</a></li>
+                        <li><a href="#women_brands_az">T</a></li>
+                        <li><a href="#women_brands_az">U</a></li>
+                        <li><a href="#women_brands_az">V</a></li>
+                        <li><a href="#women_brands_az">W</a></li>
+                        <li><a href="#women_brands_az">X</a></li>
+                        <li><a href="#women_brands_az">Y</a></li>
+                        <li><a href="#women_brands_az">Z</a></li>
+                        <li><a href="#women_brands_az">#</a></li>
+                    </ul>
+                </div>
+
+                <div class="slider-item women_brands_az page-4">
+                    <ul>
+                        <li class="close">
+                            <i class="fa fa-close"></i>
+                        </li>
+                        <li class="back">
+                            <i class="fa fa-arrow-left"></i>
+                        </li>
+                        <li class="expand expanded" alphabet="A">
+                            <a href="#">A</a>
+                            <ul>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'AETA'">AETA</a></li>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'ALYSSA NORTON'">ALYSSA NORTON</a></li>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'and wander'">and wander</a></li>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'archi'">archi</a></li>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'AURALEE'">AURALEE</a></li>
+                                <li><a href="" data-func="onbrands" data-args="'WOMEN', 'ayame'">ayame</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('button').click(function () { 
+                    $('.slider-box').addClass('open');
+                    page_count = 0;
+                    $('.slider-wraper').css('transform', 'translate(0px, 0px)');
+                });
+                $('.slider-box .close').click(function () { 
+                    $('.slider-box').removeClass('open');
+                 });
+                 var page_count = 0;
+                $('.slider-box a').click(function (e) { 
+                    var url = $(this).attr('href');
+                    if (url[0] != '#') {
+                        return;
+                    }
+                    e.preventDefault();
+                    var li = $(this).parent();
+                    if (li.hasClass('expand')) {
+                        li.toggleClass('expanded');
+                        return;
+                    }
+                    $(".slider-box .slider-item." + url.substr(1)).show();
+                    page_count ++;
+                    $('.slider-wraper').css('transform', 'translate('+( - page_count * 250)+'px, 0px)');
+                });
+                $('.slider-box .back').click(function () { 
+                    $(this).parents('.slider-item').hide();
+                    page_count --;
+                    $('.slider-wraper').css('transform', 'translate('+( - page_count * 250)+'px, 0px)');
+                 });
+            });
+        </script>
+    </body>
+</html>

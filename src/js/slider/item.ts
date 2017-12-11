@@ -51,12 +51,11 @@ class SliderItem extends Eve {
         }
         this.resize();
         // 输出可点击的列表
-        if (instance.options.hasPoint) {
+        if (this._getOption('hasPoint')) {
             this._addListPoint();
         }
         this._bindEvent();
         this._setTime();
-        
     }
 
     private _bindEvent() {
@@ -81,6 +80,15 @@ class SliderItem extends Eve {
                 instance.previous();
             }
         });
+    }
+
+    /**
+     * 获取配置
+     * @param name 
+     */
+    private _getOption(name: string): any {
+        let val = this.element.attr('data-' + name);
+        return val || this.options[name];
     }
 
     private _getWidth(reltive: number): number {

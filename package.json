@@ -6,20 +6,20 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "@types/jquery": "^2.0.48",
-    "bowser": "^1.7.1",
+    "bowser": "^1.8.1",
     "graceful-fs": "^4.1.11",
     "gulp": "^3.9.1",
-    "gulp-clean-css": "^3.7.0",
+    "gulp-clean-css": "^3.9.0",
     "gulp-concat": "^2.6.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
-    "gulp-sourcemaps": "^2.6.0",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-tslint": "^7.1.0",
-    "gulp-typescript": "^3.2.1",
+    "gulp-typescript": "^3.2.3",
     "gulp-uglify": "^2.0.1",
     "minimatch": "^3.0.4",
     "tslint": "^4.5.1",
-    "typescript": "^2.4.2"
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "test": "gulp"

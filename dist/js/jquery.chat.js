@@ -15,7 +15,7 @@ var ChatAnimation;
     ChatAnimation[ChatAnimation["None"] = 0] = "None";
     ChatAnimation[ChatAnimation["Write"] = 1] = "Write";
 })(ChatAnimation || (ChatAnimation = {}));
-var Group = (function () {
+var Group = /** @class */ (function () {
     function Group(text, direction, animation) {
         if (direction === void 0) { direction = ChatDirection.Left; }
         if (animation === void 0) { animation = ChatAnimation.Write; }
@@ -25,7 +25,7 @@ var Group = (function () {
     }
     return Group;
 }());
-var ChatPlayText = (function () {
+var ChatPlayText = /** @class */ (function () {
     function ChatPlayText(element, group, callback, speed) {
         if (speed === void 0) { speed = 100; }
         this.element = element;
@@ -188,7 +188,7 @@ var ChatPlayText = (function () {
     return ChatPlayText;
 }());
 /** 组操作 */
-var ChatPlayGroup = (function () {
+var ChatPlayGroup = /** @class */ (function () {
     function ChatPlayGroup(element, group, callback, options) {
         this.element = element;
         this.callback = callback;
@@ -359,7 +359,7 @@ var ChatPlayGroup = (function () {
  * 总控制器
  * JQuery 拓展类
  */
-var Chat = (function () {
+var Chat = /** @class */ (function () {
     function Chat(element, options) {
         this.element = element;
         /** 当前执行的组 */
@@ -492,7 +492,7 @@ var Chat = (function () {
     };
     return Chat;
 }());
-var ChatDefaultOptions = (function () {
+var ChatDefaultOptions = /** @class */ (function () {
     function ChatDefaultOptions() {
         this.data = [];
         this.wordSpace = 200; //每个字的间隔时间

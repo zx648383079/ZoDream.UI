@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2017 ZoDream
  */
-var Carousel = (function () {
+var Carousel = /** @class */ (function () {
     function Carousel(element, options) {
         this.element = element;
         this.width = 0;
@@ -134,7 +134,7 @@ var Carousel = (function () {
     };
     return Carousel;
 }());
-var CarouselDefaultOptions = (function () {
+var CarouselDefaultOptions = /** @class */ (function () {
     function CarouselDefaultOptions() {
         this.itemTag = 'li';
         this.boxTag = '.carousel-box';

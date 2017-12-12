@@ -1,4 +1,4 @@
-var Fly = (function () {
+var Fly = /** @class */ (function () {
     function Fly(element, options) {
         this.element = element;
         this.setOptions(options);
@@ -74,7 +74,7 @@ var Fly = (function () {
     };
     return Fly;
 }());
-var FlyDefaultOptions = (function () {
+var FlyDefaultOptions = /** @class */ (function () {
     function FlyDefaultOptions() {
         this.autoPlay = true;
         this.vertex_Rtop = 20; // 默认顶点高度top值

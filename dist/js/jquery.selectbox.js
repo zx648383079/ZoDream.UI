@@ -1,11 +1,11 @@
-var SelectBox = (function () {
+var SelectBox = /** @class */ (function () {
     function SelectBox(element, options) {
         this.element = element;
         this.options = $.extend({}, new SelectBoxDefaultOptions(), options);
     }
     return SelectBox;
 }());
-var SelectBoxDefaultOptions = (function () {
+var SelectBoxDefaultOptions = /** @class */ (function () {
     function SelectBoxDefaultOptions() {
     }
     return SelectBoxDefaultOptions;

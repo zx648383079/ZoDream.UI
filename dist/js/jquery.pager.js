@@ -1,4 +1,4 @@
-var Pager = (function () {
+var Pager = /** @class */ (function () {
     function Pager(element, option) {
         this.element = element;
         this.index = 0;
@@ -102,7 +102,7 @@ var Pager = (function () {
     };
     return Pager;
 }());
-var PagerDefaultOption = (function () {
+var PagerDefaultOption = /** @class */ (function () {
     function PagerDefaultOption() {
         this.total = 0;
         this.length = 8;

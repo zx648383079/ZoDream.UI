@@ -1,4 +1,4 @@
-var Compare = (function () {
+var Compare = /** @class */ (function () {
     function Compare(element, option) {
         this.element = element;
         this.option = option;

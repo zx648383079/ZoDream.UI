@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2017 ZoDream
  */
-var Zoom = (function () {
+var Zoom = /** @class */ (function () {
     function Zoom(element, option) {
         this.element = element;
         this._index = 0;
@@ -120,7 +120,7 @@ var Zoom = (function () {
     };
     return Zoom;
 }());
-var ZoomBox = (function () {
+var ZoomBox = /** @class */ (function () {
     function ZoomBox(x, y, z, width, height, opacity) {
         if (opacity === void 0) { opacity = 1; }
         this.x = x;
@@ -163,7 +163,7 @@ var ZoomBox = (function () {
     };
     return ZoomBox;
 }());
-var ZoomDefaultOption = (function () {
+var ZoomDefaultOption = /** @class */ (function () {
     function ZoomDefaultOption() {
         this.scale = .9;
         this.space = .1;

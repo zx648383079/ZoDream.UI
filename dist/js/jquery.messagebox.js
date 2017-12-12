@@ -1,4 +1,4 @@
-var MessageBox = (function () {
+var MessageBox = /** @class */ (function () {
     function MessageBox(element, option) {
         this.element = element;
         this.option = $.extend({}, new MessageBoxDefaultOptions, option);
@@ -49,7 +49,7 @@ var MessageBox = (function () {
     };
     return MessageBox;
 }());
-var MessageBoxDefaultOptions = (function () {
+var MessageBoxDefaultOptions = /** @class */ (function () {
     function MessageBoxDefaultOptions() {
         this.titleTag = '.head';
         this.minTag = '.min';

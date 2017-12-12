@@ -1,4 +1,4 @@
-var SliderItem = (function () {
+var SliderItem = /** @class */ (function () {
     function SliderItem(element, options) {
         this.element = element;
         this.options = options;
@@ -120,7 +120,7 @@ var SliderItem = (function () {
     };
     return SliderItem;
 }());
-var BoxSlider = (function () {
+var BoxSlider = /** @class */ (function () {
     function BoxSlider(element, options) {
         this.element = element;
         this._data = [];
@@ -238,7 +238,7 @@ var BoxSlider = (function () {
     };
     return BoxSlider;
 }());
-var BoxSliderDefaultOptions = (function () {
+var BoxSliderDefaultOptions = /** @class */ (function () {
     function BoxSliderDefaultOptions() {
         this.spaceTime = 3000;
         this.animationTime = 1000;

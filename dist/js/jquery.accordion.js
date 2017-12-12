@@ -1,4 +1,4 @@
-var Accordion = (function () {
+var Accordion = /** @class */ (function () {
     function Accordion(element, options) {
         this.element = element;
         this.width = 0;
@@ -33,7 +33,7 @@ var AccordionDirection;
     AccordionDirection[AccordionDirection["Horizon"] = 0] = "Horizon";
     AccordionDirection[AccordionDirection["Vertical"] = 1] = "Vertical";
 })(AccordionDirection || (AccordionDirection = {}));
-var AccordionDefaultOptions = (function () {
+var AccordionDefaultOptions = /** @class */ (function () {
     function AccordionDefaultOptions() {
         this.itemTag = "li";
         this.activeClass = "active";

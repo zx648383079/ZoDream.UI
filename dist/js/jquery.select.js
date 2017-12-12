@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Select = (function (_super) {
+var Select = /** @class */ (function (_super) {
     __extends(Select, _super);
     function Select(element, options) {
         var _this = _super.call(this) || this;
@@ -94,7 +94,7 @@ var Select = (function (_super) {
     };
     return Select;
 }(Box));
-var SelectDefaultOptions = (function () {
+var SelectDefaultOptions = /** @class */ (function () {
     function SelectDefaultOptions() {
     }
     return SelectDefaultOptions;

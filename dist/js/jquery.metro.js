@@ -1,4 +1,4 @@
-var Metro = (function () {
+var Metro = /** @class */ (function () {
     function Metro(element, options) {
         this.element = element;
         this._elementList = [];
@@ -57,7 +57,7 @@ var Metro = (function () {
     };
     return Metro;
 }());
-var MetroElement = (function () {
+var MetroElement = /** @class */ (function () {
     function MetroElement(item, metro) {
         this.metro = metro;
         this.size = MetroSize.Middle;
@@ -101,13 +101,13 @@ var MetroSize;
     MetroSize[MetroSize["Middle"] = 1] = "Middle";
     MetroSize[MetroSize["Large"] = 2] = "Large";
 })(MetroSize || (MetroSize = {}));
-var MetroItem = (function () {
+var MetroItem = /** @class */ (function () {
     function MetroItem() {
         this.size = MetroSize.Middle;
     }
     return MetroItem;
 }());
-var MetroDefaultOptions = (function () {
+var MetroDefaultOptions = /** @class */ (function () {
     function MetroDefaultOptions() {
         this.data = [];
         this.space = 4;

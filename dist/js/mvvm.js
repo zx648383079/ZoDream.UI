@@ -1,7 +1,7 @@
 /**
  * 更新器
  */
-var Updater = (function () {
+var Updater = /** @class */ (function () {
     function Updater() {
     }
     Updater.text = function (ele, value) {
@@ -24,7 +24,7 @@ var Updater = (function () {
     };
     return Updater;
 }());
-var Compile = (function () {
+var Compile = /** @class */ (function () {
     function Compile(el, $vm) {
         this.$vm = $vm;
         this.$el = this.isElementNode(el) ? el : document.querySelector(el);
@@ -99,7 +99,7 @@ var Compile = (function () {
 }());
 ;
 // 指令处理集合
-var CompileUtil = (function () {
+var CompileUtil = /** @class */ (function () {
     function CompileUtil() {
     }
     CompileUtil.text = function (node, vm, exp) {
@@ -161,7 +161,7 @@ var CompileUtil = (function () {
     return CompileUtil;
 }());
 ;
-var Observer = (function () {
+var Observer = /** @class */ (function () {
     function Observer(data) {
         this.data = data;
     }
@@ -208,7 +208,7 @@ function observe(value) {
 }
 ;
 var uid = 0;
-var Dep = (function () {
+var Dep = /** @class */ (function () {
     function Dep() {
         this.uid = uid++;
     }
@@ -232,7 +232,7 @@ var Dep = (function () {
     Dep.target = null;
     return Dep;
 }());
-var Watcher = (function () {
+var Watcher = /** @class */ (function () {
     function Watcher(vm, exp, cb) {
         this.vm = vm;
         this.exp = exp;
@@ -287,7 +287,7 @@ var Watcher = (function () {
     };
     return Watcher;
 }());
-var MVVM = (function () {
+var MVVM = /** @class */ (function () {
     function MVVM(options) {
         this.options = options;
         this._data = this.options.data;

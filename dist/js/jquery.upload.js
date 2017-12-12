@@ -14,7 +14,7 @@
  *      grid: '.img'
  * });
  */
-var Upload = (function () {
+var Upload = /** @class */ (function () {
     function Upload(element, option) {
         this.element = element;
         this.option = $.extend({}, new UploadDefaultOption(), option);
@@ -219,7 +219,7 @@ var Upload = (function () {
     };
     return Upload;
 }());
-var UploadDefaultOption = (function () {
+var UploadDefaultOption = /** @class */ (function () {
     function UploadDefaultOption() {
         this.name = "file";
         this.isAppend = true;

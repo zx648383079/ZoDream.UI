@@ -9,7 +9,7 @@ var AjaxMethod;
     AjaxMethod[AjaxMethod["GET"] = 0] = "GET";
     AjaxMethod[AjaxMethod["POST"] = 1] = "POST";
 })(AjaxMethod || (AjaxMethod = {}));
-var Ajax = (function () {
+var Ajax = /** @class */ (function () {
     function Ajax() {
     }
     Ajax.request = function (option) {
@@ -137,7 +137,7 @@ var Ajax = (function () {
     };
     return Ajax;
 }());
-var Url = (function () {
+var Url = /** @class */ (function () {
     function Url(source) {
         if (source === void 0) { source = window.location.href; }
         this.source = source;

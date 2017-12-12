@@ -1,4 +1,4 @@
-var Region = (function () {
+var Region = /** @class */ (function () {
     function Region(element, option) {
         var _this = this;
         this.element = element;
@@ -133,7 +133,7 @@ var Region = (function () {
     };
     return Region;
 }());
-var RegionDefaultOption = (function () {
+var RegionDefaultOption = /** @class */ (function () {
     function RegionDefaultOption() {
         this.data = 'region/tree';
         this.tips = '请选择';

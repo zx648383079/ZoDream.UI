@@ -11,10 +11,16 @@ class SliderItem extends Eve {
         if (items.length < 2) {
             return;
         }
+        this.options.width = this._getOption('width');
+        this.options.height = this._getOption('height');
         this._length = items.length;
         this._box = items.parent();
-        this._init(items);
         this.element.attr('data-slider', 1);
+        if (this._length < 2) {
+            this._initOnly(items);
+            return;
+        }
+        this._init(items);
     }
 
     private _data: Array<Point> = [];
@@ -31,6 +37,28 @@ class SliderItem extends Eve {
         if (this.options.auto) {
             this.next();
         }
+    }
+
+    /**
+     * 初始化只有一张
+     */
+    private _initOnly(items: JQuery) {
+        let instance = this;
+        this._resetOnly(items);
+        $(window).resize(function() {
+            instance._resetOnly(items);
+        });
+    }
+
+    /**
+     * 设置一张图的高度
+     * @param item 
+     */
+    private _resetOnly(item: JQuery) {
+        let width = this.options.width > 0 ? this._getWidth(this.options.width) : item.width();
+        let height = this.options.height > 0 ? this._getWidth(this.options.height) : item.height();
+        item.css({height: height, width: width});
+        this.element.css({height: height, width: width});
     }
 
     private _init(items: JQuery) {
@@ -86,7 +114,7 @@ class SliderItem extends Eve {
      * 获取配置
      * @param name 
      */
-    private _getOption(name: string): any {
+    private _getOption<T>(name: string): T {
         let val = this.element.attr('data-' + name);
         return val || this.options[name];
     }
@@ -108,9 +136,8 @@ class SliderItem extends Eve {
      */
     private _addListPoint() {
         let html = '';
-        let count = this._length;
-        for(; count > 0; count --) {
-            html += '<li></i>';
+        for(let i = 1; i <= this._length; i ++) {
+            html += '<li><span>' + i +'</span></i>';
         }
         this.element.append('<ul class="slider-point">'+ html +'</ul>');
         let instance = this;

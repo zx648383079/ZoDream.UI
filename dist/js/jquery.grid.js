@@ -5,7 +5,7 @@
 *
 * Copyright (c) 2017 ZoDream
 */
-var Grid = (function () {
+var Grid = /** @class */ (function () {
     function Grid(element, options) {
         this.element = element;
         this.options = $.extend({}, new GridDefaultOptions(), options);
@@ -36,7 +36,7 @@ var Grid = (function () {
     };
     return Grid;
 }());
-var Size = (function () {
+var Size = /** @class */ (function () {
     function Size(width, height, option) {
         if (option === void 0) { option = {}; }
         this.option = option;
@@ -90,7 +90,7 @@ var Size = (function () {
     };
     return Size;
 }());
-var GridDefaultOptions = (function () {
+var GridDefaultOptions = /** @class */ (function () {
     function GridDefaultOptions() {
     }
     return GridDefaultOptions;

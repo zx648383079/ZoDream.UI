@@ -30,7 +30,7 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 };
-var Dater = (function (_super) {
+var Dater = /** @class */ (function (_super) {
     __extends(Dater, _super);
     function Dater(element, option) {
         var _this = _super.call(this) || this;
@@ -188,7 +188,7 @@ var Dater = (function (_super) {
     };
     return Dater;
 }(Box));
-var DaterDefaultOption = (function () {
+var DaterDefaultOption = /** @class */ (function () {
     function DaterDefaultOption() {
         this.date = new Date();
     }

@@ -49,8 +49,13 @@
             height: 15px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+            font-size: 12px;
             &.active {
                 background: #fff;
+            }
+            span {
+
             }
         }
     }

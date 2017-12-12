@@ -1,4 +1,4 @@
-var Mvvm = (function () {
+var Mvvm = /** @class */ (function () {
     function Mvvm(element, option) {
         this.element = element;
         this.option = option;

@@ -10,7 +10,7 @@ var LazyMode;
     LazyMode[LazyMode["once"] = 0] = "once";
     LazyMode[LazyMode["every"] = 1] = "every";
 })(LazyMode || (LazyMode = {}));
-var LazyItem = (function () {
+var LazyItem = /** @class */ (function () {
     function LazyItem(element, callback, mode, diff) {
         if (mode === void 0) { mode = LazyMode.once; }
         if (diff === void 0) { diff = 0; }
@@ -50,7 +50,7 @@ var LazyItem = (function () {
     };
     return LazyItem;
 }());
-var Lazy = (function () {
+var Lazy = /** @class */ (function () {
     function Lazy(element, options) {
         this.element = element;
         this.options = $.extend({}, new LazyDefaultOptions(), options);
@@ -174,7 +174,7 @@ Lazy.addMethod('scroll', function (moreEle) {
         moreEle.attr('data-page', page);
     });
 });
-var LazyDefaultOptions = (function () {
+var LazyDefaultOptions = /** @class */ (function () {
     function LazyDefaultOptions() {
         this.mode = LazyMode.once;
         this.diff = 0;

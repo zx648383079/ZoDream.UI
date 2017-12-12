@@ -4,7 +4,7 @@ var Mode;
     Mode[Mode["TURN"] = 1] = "TURN";
     Mode[Mode["RANDOM"] = 2] = "RANDOM";
 })(Mode || (Mode = {}));
-var Couplet = (function () {
+var Couplet = /** @class */ (function () {
     function Couplet(title, top, bottom) {
         this.title = title;
         this.top = top;
@@ -27,7 +27,7 @@ var Couplet = (function () {
     };
     return Couplet;
 }());
-var Coupletor = (function () {
+var Coupletor = /** @class */ (function () {
     function Coupletor(element, option) {
         this.element = element;
         this.option = $.extend({}, new CoupletDefaultOption(), option);
@@ -39,7 +39,7 @@ var Coupletor = (function () {
     };
     return Coupletor;
 }());
-var CoupletDefaultOption = (function () {
+var CoupletDefaultOption = /** @class */ (function () {
     function CoupletDefaultOption() {
         this.data = [];
         this.speed = 100;

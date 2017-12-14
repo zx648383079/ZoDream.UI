@@ -31,7 +31,7 @@ class Slider {
             this._data.push(item);
             return;
         }
-        this._data.push(new SliderItem(item, this.options));
+        this._data.push(new SliderItem(item, $.extend({}, this.options)));
     }
 
     /**

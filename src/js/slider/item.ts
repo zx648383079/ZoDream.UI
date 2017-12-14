@@ -13,6 +13,8 @@ class SliderItem extends Eve {
         }
         this.options.width = this._getOption('width');
         this.options.height = this._getOption('height');
+        this.options.animationMode = this._getOption('animationMode');
+        this.element.addClass(this.options.animationMode + '-slider');
         this._length = items.length;
         this._box = items.parent();
         this.element.attr('data-slider', 1);
@@ -34,7 +36,7 @@ class SliderItem extends Eve {
     private _time: number;
 
     private _timeCallback() {
-        if (this.options.auto) {
+        if (this._getOption('auto')) {
             this.next();
         }
     }
@@ -61,6 +63,20 @@ class SliderItem extends Eve {
         this.element.css({height: height, width: width});
     }
 
+    private _needMove(): boolean {
+        return this.options.animationMode != 'fade';
+    }
+
+    private _copyItem(items: JQuery) {
+        for (let j = 0; j < 2; j ++) {
+            for(let i = 0, length = items.length; i < length; i ++) {
+                let newLi = $(items[i].cloneNode(true));
+                this._data[i].elements.push(newLi);
+                this._box.append(newLi);
+            }
+        }
+    }
+
     private _init(items: JQuery) {
         let instance = this;
         items.each((i, item)=> {
@@ -70,12 +86,8 @@ class SliderItem extends Eve {
         /**
          * 复制两次
          */
-        for (let j = 0; j < 2; j ++) {
-            for(let i = 0, length = items.length; i < length; i ++) {
-                let newLi = $(items[i].cloneNode(true));
-                this._data[i].elements.push(newLi);
-                this._box.append(newLi);
-            }
+        if (this._needMove()) {
+            this._copyItem(items);
         }
         this.resize();
         // 输出可点击的列表
@@ -127,10 +139,10 @@ class SliderItem extends Eve {
     }
 
     private _setTime() {
-        this._time = (this.options.spaceTime + this.options.animationTime) / 16;
+        this._time = (this._getOption<number>('spaceTime') + this._getOption<number>('animationTime')) / 16;
     }
 
-       /**
+    /**
      * 添加跳转点
      * @param count 
      */
@@ -142,7 +154,7 @@ class SliderItem extends Eve {
         this.element.append('<ul class="slider-point">'+ html +'</ul>');
         let instance = this;
         this.element.on("click", ".slider-point li", function() {
-            instance.index = $(this).index() + 1;
+            instance.index = $(this).index();
         });
     }
 
@@ -164,12 +176,18 @@ class SliderItem extends Eve {
             width += point.width;
             point.x = -width;
         });
+        if (this._needMove()) {
+            this._applySize(width, maxWidth);
+        }
+        this.index = this._index;
+    }
+
+    private _applySize(width: number, maxWidth: number) {
         $.each(this._data, function(i, point) {
             point.x -= width;
         });
         this._box.css({left: this._data[this._index].getLeft(maxWidth) + "px"});
         this._box.width(width * 3);
-        this.index = this._index;
     }
 
     get index(): number {
@@ -218,6 +236,51 @@ class SliderItem extends Eve {
      */
     public goto(index: number) {
         this._setTime();
+        this._changePoint(index);
+    }
+
+    private _changePoint(index: number) {
+        if (this._needMove()) {
+            return this._movePoint(index);
+        }
+        if (index < 0) {
+            index = this._data.length - 1;
+        } else if (index >= this._data.length) {
+            index = 0;
+        }
+        let instance = this;
+        let time = this._getOption<number>('animationTime');
+        this._data.forEach((point, i) => {
+            if (i == index) {
+                point.elements[0].animate(
+                    {opacity: 1},
+                    time,
+                    'swing',
+                    function() {
+                        instance._showPoint(index);
+                    }
+                );
+                instance.trigger('change', point);
+                return;
+            }
+            point.elements[0].animate(
+                {opacity: 0},
+                time,
+                'swing'
+            );
+        });
+    }
+
+    private _showPoint(index: number) {
+        this._index = index;
+        if (!this.options.hasPoint) {
+            return;
+        }
+        this.element.find(".slider-point li")
+        .eq(index).addClass("active").siblings().removeClass("active");
+    }
+
+    private _movePoint(index: number) {
         let points = this._getPoint(index);
         let width = this.element.width();
         this.element.height(points[0].height);
@@ -226,12 +289,9 @@ class SliderItem extends Eve {
             if (points[0].index != points[1].index) {
                 instance._box.css({left: points[1].getLeft(width) + 'px'});
             }
-            instance._index = points[1].index;
+            instance._showPoint(points[1].index);
         });
         this.trigger('change', ...points);
-        if (this.options.hasPoint) {
-            this.element.find(".slider-point li").eq(index - 1).addClass("active").siblings().removeClass("active");
-        }
     }
 
     /**
@@ -242,7 +302,7 @@ class SliderItem extends Eve {
     private _goAndCallback(left: number, callback: Function) {
         this._box.animate(
             {left: left + "px"}, 
-            this.options.animationTime, 
+            this._getOption<number>('animationTime'), 
             this.options.animationMode, 
             callback
         );

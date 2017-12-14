@@ -23,7 +23,7 @@ class Point {
      * @param width 
      */
     public getLeft(width: number): number {
-        return this.x - (this.width - width) / 2;
+        return this.x - (width - 3 * this.width) / 2;
     }
 
     /**

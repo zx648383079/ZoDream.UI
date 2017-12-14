@@ -46,5 +46,9 @@
       font-size: 12px; }
       .slider .slider-point li.active {
         background: #fff; }
+  .slider.fade-slider .slider-box ul li {
+    position: absolute;
+    top: 0;
+    left: 0; }
 
 /*# sourceMappingURL=slider.css.map */

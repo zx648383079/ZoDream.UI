@@ -59,4 +59,15 @@
             }
         }
     }
+    &.fade-slider {
+        .slider-box {
+            ul {
+                li {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+            }
+        }
+    }
 }

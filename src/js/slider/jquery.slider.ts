@@ -31,7 +31,7 @@ class Slider {
             this._data.push(item);
             return;
         }
-        this._data.push(new SliderItem(item, $.extend({}, this.options)));
+        this._data.push(new SliderItem(item, this.options));
     }
 
     /**
@@ -92,6 +92,7 @@ interface SliderOptions {
     previous?: string,
     next?: string,
     hasPoint?: boolean,   //是否有点击跳转
+    pointEvent?: string,   // 跳转触发事件
     auto?: boolean,  //是否自动播放
     onchange?: (start: Point, end: Point) => any; //切换事件
 }
@@ -104,6 +105,7 @@ class SliderDefaultOptions implements SliderOptions {
     previous: string = ".slider-previous";
     next: string = ".slider-next";
     hasPoint: boolean = true;
+    pointEvent: string = "click";
     auto: boolean = true;
 }
 

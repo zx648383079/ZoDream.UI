@@ -1,12 +1,14 @@
 class SliderItem extends Eve {
     constructor(
         public element: JQuery,
-        public options: SliderOptions
+        options: SliderOptions
     ) {
         super();
-        if (this.element.attr('data-slider')) {
+        let option = this.element.attr('data-slider');
+        if (option == '1') {
             return;
         }
+        this._extendOption(options, option);
         let items = this.element.find(this.options.item);
         if (items.length < 2) {
             return;
@@ -25,6 +27,8 @@ class SliderItem extends Eve {
         this._init(items);
     }
 
+    public options: SliderOptions;
+
     private _data: Array<Point> = [];
 
     private _length: number = 0;
@@ -39,6 +43,15 @@ class SliderItem extends Eve {
         if (this._getOption('auto')) {
             this.next();
         }
+    }
+
+    private _extendOption(options: any, option: string) {
+        try {
+            option = JSON.parse(option);
+        } catch (error) {
+            
+        }
+        this.options = $.extend({}, options, option);
     }
 
     /**
@@ -153,7 +166,7 @@ class SliderItem extends Eve {
         }
         this.element.append('<ul class="slider-point">'+ html +'</ul>');
         let instance = this;
-        this.element.on("click", ".slider-point li", function() {
+        this.element.on(this._getOption('pointEvent'), ".slider-point li", function() {
             instance.index = $(this).index();
         });
     }

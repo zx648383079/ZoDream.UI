@@ -10,7 +10,7 @@ class SliderItem extends Eve {
         }
         this._extendOption(options, option);
         let items = this.element.find(this.options.item);
-        if (items.length < 2) {
+        if (items.length < 1) {
             return;
         }
         this.options.width = this._getOption('width');

@@ -66,7 +66,7 @@
       width: 80px;
       display: inline-block; }
       .datetimer .body .list-group ul {
-        height: 300px; }
+        height: 320px; }
         .datetimer .body .list-group ul li {
           line-height: 30px; }
           .datetimer .body .list-group ul li.active {
@@ -81,7 +81,7 @@
     .datetimer .body .year-grid {
       display: none; }
       .datetimer .body .year-grid .list-group:first-child {
-        margin-left: 90px; }
+        margin-left: 95px; }
     .datetimer .body .year-grid .fa-close,
     .datetimer .body .day-grid .fa-close {
       position: absolute;
@@ -144,13 +144,13 @@
     left: 0;
     bottom: 0; }
     .datetimer .body {
-      height: 315px;
-      width: 315px;
+      height: 350px;
+      width: 350px;
       margin: 0 auto; }
       .datetimer .body .month-grid li {
         width: 45px;
         line-height: 45px; }
       .datetimer .body .list-group ul {
-        height: 290px; } }
+        height: 320px; } }
 
 /*# sourceMappingURL=datetimer.css.map */

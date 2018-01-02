@@ -7,8 +7,15 @@
  */
 @import "prefix";
 @import "scrollbar";
+
+$size: 50px;
+$boxWidth: $size * 7;
+
+$minSize: 45px;
+$minBoxWidth: $size * 7;
+
 .datetimer {
-    width: 350px;
+    width: $boxWidth;
     position: absolute;
     display: none;
     z-index: 999;
@@ -35,7 +42,7 @@
         list-style: none;
     }
     .body {
-        height: 350px;
+        height: $boxWidth;
         position: relative;
         .month-grid, 
         .year-grid, 
@@ -57,8 +64,8 @@
             }
             li {
                 display: inline-block;
-                width: 50px;
-                line-height: 50px;
+                width: $size;
+                line-height: $size;
                 text-align: center;
                 box-sizing: border-box;
             }
@@ -79,7 +86,7 @@
             width: 80px;
             display: inline-block;
             ul {
-                height: 300px;
+                height: $boxWidth - 30px;
                 li {
                     line-height: 30px;
                     &.active {
@@ -94,7 +101,7 @@
             .list-group {
                 width: 60px;
                 &:first-child {
-                    margin-left: 80px;
+                    margin-left: ($boxWidth - 190px) / 2;
                 }
             }
         }
@@ -102,7 +109,7 @@
             display: none;
             .list-group {
                 &:first-child {
-                    margin-left: 90px;
+                    margin-left: ($boxWidth - 160px) / 2;
                 }
             }
         }
@@ -160,18 +167,18 @@
         left: 0;
         bottom: 0;
         .body {
-            height: 315px;
-            width: 315px;
+            height: $minBoxWidth;
+            width: $minBoxWidth;
             margin: 0 auto;
             .month-grid {
                 li {
-                    width: 45px;
-                    line-height: 45px;
+                    width: $minSize;
+                    line-height: $minSize;
                 }
             }
             .list-group {
                 ul {
-                    height: 290px;
+                    height: $minBoxWidth - 30px;
                 }
             }
         }

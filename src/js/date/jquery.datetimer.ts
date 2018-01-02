@@ -53,6 +53,9 @@ class DateTimer extends Box {
          if (this.options.format.indexOf('h') < 0) {
              this._hasTime = false;
          }
+         if (this.options.readonly) {
+             this.element.prop('readonly', true);
+         }
          this.createHtml();
     }
 
@@ -651,6 +654,7 @@ interface DateTimerOptions {
     max?: string | Date | DateTimer, //最大日期
     minYear?: number,     // 做标签用
     maxYear?: number,
+    readonly?: boolean,   // 是否允许输入
     ondone?: (date: Date, element: JQuery) => any,
     onclick?: (date: Date, element: JQuery) => any,   // 点击事件
     onerror?: (date: Date, element: JQuery) => any,  // 点击错误的
@@ -662,6 +666,7 @@ class DateTimerDefaultOptions implements DateTimerOptions {
     min: string = "1900/01/01 00:00:00"; //最小日期    safari 下自动识别成日期格式 只认 /
     max: string = "2099/12/31 23:59:59"; //最大日期
     title: string = "y年m月";            // 标题栏的日期格式
+    readonly: boolean = false;
     minYear: number = 1900;     // 做标签用
     maxYear: number = 2099;
 }

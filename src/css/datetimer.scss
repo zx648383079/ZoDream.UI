@@ -25,17 +25,17 @@ $minBoxWidth: $size * 7;
     .header {
         position: relative;
         text-align: center;
-        line-height: 40px;
+        line-height: $size;
         background: #006cff;
         color: #fff;
-        font-size: 20px;
+        font-size: $size * .5;
         span {
             width: 60%;
             display: inline-block;
         }
         .previousMonth,
         .nextYear {
-            margin-left: 10px;
+            margin-left: $size * .2;
         }
     }
     li {

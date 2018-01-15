@@ -2,7 +2,7 @@
  * 已知问题
  * 如果一个不能关闭， 多个将出现错乱
  */
-abstract class DialogCore extends Box {
+abstract class DialogCore extends Box implements DialogInterfae  {
     constructor(
         option: DialogOption,
         public id?: number
@@ -34,7 +34,7 @@ abstract class DialogCore extends Box {
                 this.hideBox();
                 break;
             case DialogStatus.closing:
-                this.closingBox();
+                this.options.closeAnimate ? this.closingBox() : this.closeBox();
                 break;
             case DialogStatus.closed:
                 this.closeBox();
@@ -80,12 +80,8 @@ abstract class DialogCore extends Box {
      * @param status 
      * @param hasEvent 
      */
-    protected changeStatus(status: DialogStatus, hasEvent: boolean = false) {
-        if (hasEvent) {
-            this._status = status;
-            return;
-        }
-        this.status = status;
+    protected changeStatus(status: DialogStatus) {
+        this._status = status;
     }
 
     /**
@@ -107,9 +103,13 @@ abstract class DialogCore extends Box {
             console.log('show stop!');
             return false;
         }
+        this.doShowStatus();
+        return true;
+    }
+
+    protected doShowStatus() {
         this.box.show();
         this._status = DialogStatus.show;
-        return true;
     }
 
     /**
@@ -123,9 +123,13 @@ abstract class DialogCore extends Box {
             console.log('hide stop!');
             return false;
         }
+        this.doHideStatus();
+        return true;
+    }
+
+    protected doHideStatus() {
         this.box.hide();
         this._status = DialogStatus.hide;
-        return true;
     }
 
     /**
@@ -143,6 +147,11 @@ abstract class DialogCore extends Box {
             console.log('closing stop!');
             return false;
         }
+        this.doClosingStatus();
+        return true;
+    }
+
+    protected doClosingStatus() {
         this._status = DialogStatus.closing;
         let instance = this;
         this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
@@ -151,7 +160,6 @@ abstract class DialogCore extends Box {
                 instance.closeBox();
             }
         });
-        return true;
     }
 
     /**
@@ -165,6 +173,11 @@ abstract class DialogCore extends Box {
             console.log('closed stop!');
             return false;
         }
+        this.doCloseStatus();
+        return true;
+    }
+
+    protected doCloseStatus() {
         this._status = DialogStatus.closed;
         if (this._dialogBg) {
             this._dialogBg.remove();
@@ -173,7 +186,6 @@ abstract class DialogCore extends Box {
         Dialog.removeItem(this.id); 
         this.box.remove();
         this.box = undefined;
-        return true;
     }
 
     public abstract init();
@@ -188,8 +200,9 @@ abstract class DialogCore extends Box {
     protected abstract setProperty(): this;
 
 
-    public css(key: any, value?: string| number): JQuery {
-        return this.box.css(key, value);
+    public css(key: any, value?: string| number): this {
+        this.box.css(key, value);
+        return this;
     }
 
     public show(): this {
@@ -202,17 +215,16 @@ abstract class DialogCore extends Box {
         return this;
     }
 
-    public close(): this {
-        this.status = DialogStatus.closing;
+    public close(hasAnimation: boolean = true): this {
+        this.status = hasAnimation ? DialogStatus.closing : DialogStatus.closed;
         return this;
     }
 
-    public toggle() {
+    public toggle(): this {
         if (this.status == DialogStatus.hide) {
-            this.show();
-            return;
+            return this.show();
         }
-        this.hide();
+        return this.hide();
     }
 
     /**
@@ -302,5 +314,39 @@ abstract class DialogCore extends Box {
             default:
                 return [(boxHeight - width) / 2, (boxHeight - height) / 2];
         }
+    }
+
+    x: number;
+    public top(top?: number): number | this {
+        if (!top) {
+            return this.box.offset().top;
+        }
+        return this.css('top', top + 'px');
+    }
+
+    public left(left?: number): number | this {
+        if (!left) {
+            return this.box.offset().left;
+        }
+        return this.css('left', left + 'px');
+    }
+
+    public width(width?: number): number | this {
+        if (!width) {
+            return this.box.width();
+        }
+        return this.css('width', width + 'px');
+    }
+
+    addClass(name: string): this {
+        this.box.addClass(name);
+        return this;
+    }
+    hasClass(name: string): boolean {
+        return this.box.hasClass(name);
+    }
+    removeClass(name: string): this {
+        this.box.removeClass(name);
+        return this;
     }
 }

@@ -1059,7 +1059,7 @@
     .dialog.dialog-image:hover .dialog-close {
       display: block; }
   .dialog.dialog-disk .dialog-body {
-    min-width: 600px;
+    min-width: 300px;
     min-height: 500px;
     position: relative; }
     .dialog.dialog-disk .dialog-body .dialog-catalog {
@@ -1108,6 +1108,8 @@
         .dialog.dialog-disk .dialog-body .dialog-content .file-item:hover {
           border: 1px solid #337ab7;
           color: #337ab7; }
+  .dialog.dialog-disk .dialog-footer {
+    text-align: center; }
   .dialog.dialog-closing {
     animation: dialog-closing 0.5s;
     -webkit-animation: dialog-closing 0.5s;

@@ -300,7 +300,7 @@
     }
     &.dialog-disk {
         .dialog-body {
-            min-width: 600px;
+            min-width: 300px;
             min-height: 500px;
             position: relative;
             .dialog-catalog {
@@ -370,6 +370,9 @@
                     }
                 }
             }
+        }
+        .dialog-footer {
+            text-align:center
         }
     }
     &.dialog-closing {

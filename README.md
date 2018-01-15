@@ -17,6 +17,7 @@
 | 分页列表 |[jquery.page](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.page.ts) |支持搜索，支持分页，支持删除，支持排序，支持多选|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/admin/list.html)|
 | 弹出框 |[jquery.dialog](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/dialog) |提示、消息、弹出、加载、内容、对话框、表单、页面， 支持元素内弹出框，支持链接弹出框（非iframe, iframe方式请直接输入代码）,支持消息框自动排列对齐|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/dialog.html)|
 | 选择器 |[jquery.city](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.city.ts) |多层选择器，支持动态获取和json|[Demo](http://zx648383079.github.io/ZoDream.UI/demo/city.html)|
+| 弹幕 |[jquery.barrager](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.barrager.ts)| 滚动弹幕 |[Demo](http://zx648383079.github.io/ZoDream.UI/demo/barrager.html)|
 
 
 ## 更新进度

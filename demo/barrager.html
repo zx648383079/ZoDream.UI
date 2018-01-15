@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <!-- <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"> -->
+    <link href="../dist/css/barrager.css" rel="stylesheet">
+</head>
+<body style="height: 500px;">
+    <button>发射</button>
+    <div class="barrage" style="right: 50%">
+        <div class="barrage-box">
+            <div class="barrage-img">
+                <img src="image/avatar.jpg" alt="">
+            </div>
+            <div class="barrage-content">
+                <a href="">133454</a>
+            </div>
+            <div class="barrage-close">
+                <i class="fa fa-close"></i>
+            </div>
+        </div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!-- <script src="../bower_components/jquery/dist/jquery.min.js"></script> -->
+    <script src="../dist/js/jquery.barrager.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('body').barrager({
+            img: 'image/avatar.jpg',
+            content: '这是一条弹幕！'
+        });
+        $('button').click(function () { 
+            $('body').barrager({
+                img: 'image/avatar.jpg',
+                content: '现在时间：' + new Date().toDateString()
+            });
+        });
+    });
+    </script>
+</body>
+</html>

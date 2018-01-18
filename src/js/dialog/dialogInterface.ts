@@ -42,4 +42,8 @@ interface DialogInterfae {
     hasClass(name: string): boolean;
 
     removeClass(name: string): this;
+
+    find(name: string): JQuery;
+
+    on(event: string, callback: Function): this;
 }

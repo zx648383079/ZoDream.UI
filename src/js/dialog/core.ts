@@ -338,15 +338,19 @@ abstract class DialogCore extends Box implements DialogInterfae  {
         return this.css('width', width + 'px');
     }
 
-    addClass(name: string): this {
+    public addClass(name: string): this {
         this.box.addClass(name);
         return this;
     }
-    hasClass(name: string): boolean {
+    public hasClass(name: string): boolean {
         return this.box.hasClass(name);
     }
-    removeClass(name: string): this {
+    public removeClass(name: string): this {
         this.box.removeClass(name);
         return this;
+    }
+
+    public find(name: string): JQuery {
+        return this.box.find(name);
     }
 }

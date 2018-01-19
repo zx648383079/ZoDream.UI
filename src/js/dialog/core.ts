@@ -216,6 +216,9 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     }
 
     public close(hasAnimation: boolean = true): this {
+        if (this.status ==  DialogStatus.closing  || this.status == DialogStatus.closed) {
+            return this;
+        }
         this.status = hasAnimation ? DialogStatus.closing : DialogStatus.closed;
         return this;
     }

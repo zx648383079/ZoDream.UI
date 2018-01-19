@@ -76,6 +76,7 @@
                 },
                 ondone: function() {
                     console.log(this);
+                    this.close();
                 }
             });
             $("[dialog-type=page]").dialog({

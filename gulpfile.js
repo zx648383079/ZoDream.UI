@@ -49,7 +49,7 @@ gulp.task('dialog', function () {
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.dialog.ts'))
     .pipe(tsProject())
-    .pipe(uglify())
+    //.pipe(uglify())
     // .pipe(rename({suffix:'.min'}))
     //.pipe(sourcemaps.write())
     .pipe(gulp.dest('dist/js'));
@@ -96,9 +96,9 @@ gulp.task('date', function () {
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.datetimer.ts'))
     .pipe(tsProject())
-    //.pipe(uglify())
+    .pipe(uglify())
     //.pipe(rename({suffix:'.min'}))
-    .pipe(sourcemaps.write())
+    //.pipe(sourcemaps.write())
     .pipe(gulp.dest('dist/js'));
 });
 

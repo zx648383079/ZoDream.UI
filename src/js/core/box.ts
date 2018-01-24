@@ -10,10 +10,26 @@ abstract class Box extends Eve {
         return this;
     }
 
+    /**
+     * 自适应布局
+     */
     protected setPosition(): this {
         let offset = this.element.offset();
-        let x = offset.left - $(window).scrollLeft();
-        let y = offset.top + this.element.outerHeight() - $(window).scrollTop();
+        let x = offset.left;
+        let boxWidth = this.box.outerWidth();
+        let windowLeft = $(window).scrollLeft();
+        let windowRight = windowLeft + $(window).width();
+        if (windowRight - boxWidth < x && windowRight < x + boxWidth) {
+            x = windowRight - boxWidth;
+        }
+        let boxHeight = this.box.outerHeight();
+        let windowTop = $(window).scrollTop();
+        let windowHeight = $(window).height();
+        let inputHeight = this.element.outerHeight();
+        let y = offset.top + inputHeight;
+        if (y + boxHeight > windowTop + windowHeight && offset.top - boxHeight > windowTop) {
+            y = offset.top - boxHeight;
+        }
         this.box.css({left: x + "px", top: y + "px"});
         return this;
     }

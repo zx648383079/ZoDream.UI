@@ -56,7 +56,10 @@ class DialogForm extends DialogBox {
         let html = '';
         let defaultVal = '';
         if (data.default) {
-            defaultVal = data.defaultVal;
+            defaultVal = data.default;
+        }
+        if (data.value) {
+            defaultVal = data.value;
         }
         if (data.label) {
             html += '<label>'+data.label+'</label>'; 

@@ -103,10 +103,26 @@ var Box = /** @class */ (function (_super) {
         this.box.show();
         return this;
     };
+    /**
+     * 自适应布局
+     */
     Box.prototype.setPosition = function () {
         var offset = this.element.offset();
-        var x = offset.left - $(window).scrollLeft();
-        var y = offset.top + this.element.outerHeight() - $(window).scrollTop();
+        var x = offset.left;
+        var boxWidth = this.box.outerWidth();
+        var windowLeft = $(window).scrollLeft();
+        var windowRight = windowLeft + $(window).width();
+        if (windowRight - boxWidth < x && windowRight < x + boxWidth) {
+            x = windowRight - boxWidth;
+        }
+        var boxHeight = this.box.outerHeight();
+        var windowTop = $(window).scrollTop();
+        var windowHeight = $(window).height();
+        var inputHeight = this.element.outerHeight();
+        var y = offset.top + inputHeight;
+        if (y + boxHeight > windowTop + windowHeight && offset.top - boxHeight > windowTop) {
+            y = offset.top - boxHeight;
+        }
         this.box.css({ left: x + "px", top: y + "px" });
         return this;
     };
@@ -1516,7 +1532,10 @@ var DialogForm = /** @class */ (function (_super) {
         var html = '';
         var defaultVal = '';
         if (data.default) {
-            defaultVal = data.defaultVal;
+            defaultVal = data.default;
+        }
+        if (data.value) {
+            defaultVal = data.value;
         }
         if (data.label) {
             html += '<label>' + data.label + '</label>';

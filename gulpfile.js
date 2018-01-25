@@ -92,11 +92,11 @@ gulp.task('slider', function () {
 });
 
 gulp.task('date', function () {
-    return gulp.src(['src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/date/jquery.datetimer.ts'])
+    return gulp.src(['src/js/core/utils.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/date/jquery.datetimer.ts'])
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.datetimer.ts'))
     .pipe(tsProject())
-    .pipe(uglify())
+    //.pipe(uglify())
     //.pipe(rename({suffix:'.min'}))
     //.pipe(sourcemaps.write())
     .pipe(gulp.dest('dist/js'));

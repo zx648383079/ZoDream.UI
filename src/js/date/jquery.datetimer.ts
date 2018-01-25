@@ -7,34 +7,6 @@
  */
 
 /**
- * 获取真实的月份
- */
-Date.prototype.getRealMonth = function(): number {
-    return this.getMonth() + 1;
-};
-/**
- * 格式化日期
- */
-Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
-    let o = {
-        "y+": this.getFullYear(),
-        "m+": this.getRealMonth(), //月份 
-        "d+": this.getDate(), //日 
-        "h+": this.getHours(), //小时 
-        "i+": this.getMinutes(), //分 
-        "s+": this.getSeconds(), //秒 
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        "S": this.getMilliseconds() //毫秒 
-    };
-    for (let k in o) {
-        if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        }
-    }
-    return fmt;
-}
-
-/**
  * 已知问题当最大值最小值为DateTimer 时无法正确显示
  */
 class DateTimer extends Box {
@@ -354,8 +326,8 @@ class DateTimer extends Box {
      * 刷新日
      */
     private _refreshDay() {
-        this.box.find(".header span").text(this._currentDate.format(this.options.title));
-        let days = this._mLi(this._currentDate.getFullYear(), this._currentDate.getRealMonth());
+        this.box.find(".header span").text(Utils.time.format(this._currentDate, this.options.title));
+        let days = this._mLi(this._currentDate.getFullYear(), Utils.time.getRealMonth(this._currentDate));
         let dayLi = this.box.find(".body .month-grid ul li");
         dayLi.removeClass("active").removeClass("disable");
         let instance = this;
@@ -522,7 +494,7 @@ class DateTimer extends Box {
      */
     private _clickDay(element: JQuery) {
         let day = parseInt(element.text());
-        let date: Date = new Date(this._currentDate);
+        let date: Date = new Date(this._currentDate.getTime());
         if (!element.hasClass("disable")) {
             date.setDate(day);
         } else if (day > element.index()) {
@@ -576,7 +548,7 @@ class DateTimer extends Box {
       * 获取当前时间
       */
      public val(): string {
-        return this.getCurrentDate().format(this.options.format);
+        return Utils.time.format(this.getCurrentDate(), this.options.format);
      }
 
      /**

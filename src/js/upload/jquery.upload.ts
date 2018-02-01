@@ -7,30 +7,28 @@
  */
 /**
  * EXAMPLE:
- * $("#upload").upload({
+ * $('#upload').upload({
  *      url: 'upload.php',
  *      name: 'file',
  *      template: '{url}',
  *      grid: '.img'
  * });
  */
-class Upload {
+class Upload extends Eve {
     constructor(
         public element?: JQuery,
         option?: UploadOption
     ) {
-        this.option = $.extend({}, new UploadDefaultOption(), option);
-        this.option.data = $.extend({}, this.option.data, this.getData());
-        if (this.option.success) {
-            this.success = this.option.success.bind(this);
-        }
-        this.getElement = this.option.getElement.bind(this);
+        super();
+        this.options = $.extend({}, new UploadDefaultOption(), option);
+        this.options.data = $.extend({}, this.options.data, this.getData());
+        this.getElement = this.options.getElement.bind(this);
         if (this.element) {
             this.addEvent();
         }
     }
 
-    public option: UploadOption;
+    public options: UploadOption;
 
     public success: (data: any, currentElement: JQuery) => boolean;
 
@@ -44,28 +42,28 @@ class Upload {
             instance.currentElement = $(this);
             instance.start();
         });
-        $(this.option.grid).on("click", this.option.removeTag, this.option.removeCallback);
+        $(this.options.grid).on('click', this.options.removeTag, this.options.removeCallback);
     }
 
     public start() {
         let instance = this;
-        let element = $("." + this.option.fileClass);
+        let element = $('.' + this.options.fileClass);
         if (element.length < 1) {
-            let file = document.createElement("input");
-            file.type = "file";
-            file.className = this.option.fileClass;
-            file.multiple = this.option.multiple;
-            file.accept = this.option.filter;
+            let file = document.createElement('input');
+            file.type = 'file';
+            file.className = this.options.fileClass;
+            file.multiple = this.options.multiple;
+            file.accept = this.options.filter;
             document.body.appendChild(file);
-            element = $(file).bind("change", function() {
+            element = $(file).bind('change', function() {
                 instance.uploadFiles(this.files);
             }).hide();
         } else {
             element.val('');
-            element.attr('multiple', this.option.multiple ? "true" : "false");
-            element.attr('accept', this.option.filter);
-            if (this.option.dynamic) {
-                element.unbind("change").bind("change", function() {
+            element.attr('multiple', this.options.multiple ? 'true' : 'false');
+            element.attr('accept', this.options.filter);
+            if (this.options.dynamic) {
+                element.unbind('change').bind('change', function() {
                     instance.uploadFiles(this.files);
                 });
             }
@@ -74,7 +72,7 @@ class Upload {
     }
 
     public uploadFiles(files) {
-        if (this.option.allowMultiple) {
+        if (this.options.allowMultiple) {
             this.uploadMany(files);
             return;
         }
@@ -88,39 +86,39 @@ class Upload {
         let instance = this;
         let data = new FormData();
         $.each(files, function(i, file) {
-            data.append(instance.option.name, file);
+            data.append(instance.options.name, file);
         });
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+        if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
             return;
         }
         let opts = {
-            url: this.option.url,
+            url: this.options.url,
             type:'POST',
             data: data,
             cache: false,
             contentType: false,    //不可缺
             processData: false,    //不可缺
             success: function(data) {
-                data = instance.option.afterUpload.call(instance, data, instance.currentElement);
+                data = instance.trigger('after', data, instance.currentElement);
                 if (data == false) {
                     console.log('after upload is false');
                     return;
                 }
                 if (data instanceof Array) {
                     $.each(data, function(i, item) {
-                        instance.deal($.extend({}, instance.option.data, item));
+                        instance.deal($.extend({}, instance.options.data, item));
                     });
                     return;
                 }
-                instance.deal($.extend({}, instance.option.data, data));
+                instance.deal($.extend({}, instance.options.data, data));
             }
         };
-        if (this.option.onUploadProgress) {
+        if (this.hasEvent('progress')) {
             opts['xhr'] = function(){
                 let xhr = $.ajaxSettings.xhr();
                 if(onprogress && xhr.upload) {
-                    xhr.upload.addEventListener("progress" , this.option.onUploadProgress, false);
+                    xhr.upload.addEventListener('progress' , this.options.onprogress, false);
                     return xhr;
                 }
             };
@@ -131,32 +129,32 @@ class Upload {
     public uploadOne(file: File) {
         let instance = this;
         let data = new FormData();
-        data.append(this.option.name, file);
-        if (this.option.beforeUpload && this.option.beforeUpload.call(this, data, this.currentElement) == false) {
+        data.append(this.options.name, file);
+        if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
             return;
         }
         let opts = {
-            url: this.option.url,
+            url: this.options.url,
             type:'POST',
             data: data,
             cache: false,
             contentType: false,    //不可缺
             processData: false,    //不可缺
             success: function(data) {
-                data = instance.option.afterUpload.call(instance, data, instance.currentElement);
+                data = instance.trigger('after', data, instance.currentElement);
                 if (data == false) {
                     console.log('after upload is false');
                     return;
                 }
-                instance.deal($.extend({}, instance.option.data, data));
+                instance.deal($.extend({}, instance.options.data, data));
             }
         };
-        if (this.option.onUploadProgress) {
+        if (this.hasEvent('progress')) {
             opts['xhr'] = function(){
                 let xhr = $.ajaxSettings.xhr();
                 if(onprogress && xhr.upload) {
-                    xhr.upload.addEventListener("progress" , this.option.onUploadProgress, false);
+                    xhr.upload.addEventListener('progress' , this.options.onprogress, false);
                     return xhr;
                 }
             };
@@ -165,20 +163,24 @@ class Upload {
     }
 
     public deal(data: any) {
-        let value = typeof this.option.template == 'function' ? this.option.template.call(this, data) : this.replace(data);
+        let value = typeof this.options.template == 'function' ? this.options.template.call(this, data) : this.replace(data);
         if (value == false) {
             console.log('template is false');
             return;
         }
-        let urlFor = this.option.grid;
-        if (this.currentElement && this.currentElement.length > 0) {
-            urlFor = this.currentElement.attr("data-grid") || this.option.grid;
-        }
-        if (!urlFor || (this.success && false === this.success(data, this.currentElement))) {
-            console.log('element or success is false');
+        if (false === this.trigger('success', data, this.currentElement)) {
+            console.log('success is false');
             return;
         }
-        let tags = urlFor.split("|");
+        let urlFor = this.options.grid;
+        if (this.currentElement && this.currentElement.length > 0) {
+            urlFor = this.currentElement.attr('data-grid') || this.options.grid;
+        }
+        if (!urlFor) {
+            console.log('grid element is false');
+            return;
+        }
+        let tags = urlFor.split('|');
         let instance = this;
         tags.forEach(function(tag) {
             let item = instance.getElement(tag, instance.currentElement);
@@ -192,10 +194,10 @@ class Upload {
                     return;
                 }
                 if (ele.is('img')) {
-                    ele.attr("src", value);
+                    ele.attr('src', value);
                     return;
                 }
-                if (instance.option.isAppend) {
+                if (instance.options.isAppend) {
                     ele.append(value);
                 } else {
                     ele.prepend(value);
@@ -209,13 +211,13 @@ class Upload {
             return {};
         }
         let data = {};
-        let arg = this.element.attr("data-data");
+        let arg = this.element.attr('data-data');
         if (!arg) {
             return data;
         }
-        let args = arg.split(",");
+        let args = arg.split(',');
         args.forEach(function(item) {
-            let keyValue = item.split(":");
+            let keyValue = item.split(':');
             let key = keyValue[0].trim();
             if (key) {
                 data[key] = keyValue[1].trim();
@@ -225,10 +227,10 @@ class Upload {
     }
 
     public replace(data: Object): string {
-        let html: string = this.option.template;
+        let html: string = typeof this.options.template == 'function' ? this.options.template.call(this, data) : this.options.template;
         for (let i in data) {
             if (data.hasOwnProperty(i)) {
-                html = html.replace(new RegExp("{" + i + "}", 'g'), data[i]);
+                html = html.replace(new RegExp('{' + i + '}', 'g'), data[i]);
             }
         }
         return html;
@@ -248,31 +250,31 @@ interface UploadOption {
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
-    beforeUpload?: (data: FormData, currentElement: JQuery) => any,  //验证要上传的文件
-    afterUpload?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
-    success?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
+    onbefore?: (data: FormData, currentElement: JQuery) => any,  //验证要上传的文件
+    onafter?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
+    onsuccess?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
     dynamic?: boolean, //是否动态绑定上传时间
     getElement?: (tag: string, currentElement: JQuery) => JQuery,   //获取容器的方法
-    onUploadProgress?: (data: any) => void, // 上传进度
+    onprogress?: (data: any) => void, // 上传进度
     allowMultiple?: boolean,     // 是否允许上传一次多个
 }
 
 class UploadDefaultOption implements UploadOption {
     [setting: string]: any;
-    name: string = "file";
+    name: string = 'file';
     isAppend: boolean = true;
-    template: string = "<li>{url}</li>";
-    //grid: string = ".zdGrid";
-    removeTag: string = ".delete";
+    template: string = '{url}';
+    //grid: string = '.zdGrid';
+    removeTag: string = '.delete';
     removeCallback: (eventObject: JQueryEventObject, ...eventData: any[]) => any = function() {
         $(this).parent().remove();
     };
     multiple: boolean = false;
     allowMultiple: boolean = false;
     data: any = {};
-    fileClass: string = "zdUploadFile";
-    filter: string = "";
-    afterUpload: (data: any) => any = function(data: any) {
+    fileClass: string = 'zdUploadFile';
+    filter: string = '';
+    onafter: (data: any) => any = function(data: any) {
         // 防止ajax自动转化json
         if (typeof data != 'object') {
             data = JSON.parse(data);

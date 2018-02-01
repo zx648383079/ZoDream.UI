@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     ts = require("gulp-typescript"),
     tslint = require("gulp-tslint"),
+    babel = require('gulp-babel'),
     tsProject = ts.createProject('tsconfig.json');
  
 gulp.task('sass', function () {
@@ -63,6 +64,21 @@ gulp.task('page', function () {
     .pipe(sourcemaps.init())
     .pipe(concat('jquery.page.ts'))
     .pipe(tsProject())
+    //.pipe(uglify())
+    //.pipe(rename({suffix:'.min'}))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('upload', function () {
+    return gulp.src(['src/js/core/event.ts',
+        'src/js/upload/jquery.upload.ts'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('jquery.upload.ts'))
+    .pipe(tsProject())
+    // .pipe(babel({
+    //     presets: ['es2015']
+    // }))
     //.pipe(uglify())
     //.pipe(rename({suffix:'.min'}))
     .pipe(sourcemaps.write())

@@ -39,13 +39,15 @@ class Upload extends Eve {
     public addEvent() {
         let instance = this;
         this.element.click(function() {
-            instance.currentElement = $(this);
-            instance.start();
+            instance.start($(this));
         });
-        $(this.options.grid).on('click', this.options.removeTag, this.options.removeCallback);
+        if (this.options.grid) {
+            $(this.options.grid).on('click', this.options.removeTag, this.options.removeCallback);
+        }
     }
 
-    public start() {
+    public start(currentElement?: JQuery) {
+        this.currentElement = currentElement;
         let instance = this;
         let element = $('.' + this.options.fileClass);
         if (element.length < 1) {

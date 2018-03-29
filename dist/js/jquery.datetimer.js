@@ -434,15 +434,15 @@ var DateTimer = /** @class */ (function (_super) {
         var i;
         if (f > 0) {
             var yc = this._yD(y, m - 1);
-            for (i = yc - f + 2; i <= yc; i++) {
+            for (i = yc - f + 1; i <= yc; i++) {
                 days.push(i);
             }
         }
         for (i = 1; i <= c; i++) {
             days.push(i);
         }
-        if (f + c < 43) {
-            var l = 42 - f - c + 1;
+        if (f + c < 42) {
+            var l = 41 - f - c + 1;
             for (i = 1; i <= l; i++) {
                 days.push(i);
             }

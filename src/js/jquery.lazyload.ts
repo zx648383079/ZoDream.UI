@@ -165,7 +165,7 @@
     let url = tplEle.attr('data-url');
     let templateId = tplEle.attr('data-tpl');
     $.getJSON(url, function (data) {
-        if (data.code != 0) {
+        if (data.code != 200) {
             return;
         }
         if (typeof data.data != 'string') {
@@ -185,7 +185,7 @@ Lazy.addMethod('scroll', function (moreEle: JQuery) {
     $.getJSON(url, {
         page: page
     }, function (data) {
-        if (data.code != 0) {
+        if (data.code != 200) {
             return;
         }
         if (typeof data.data != 'string') {

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"> -->
+    <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../dist/css/dialog.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dialog-chat">
+        <!-- 会员列表 -->
+        <div class="dialog-box dialog-chat-box">
+            <div class="dialog-header">
+                <div class="dialog-action">
+                    <i class="fa fa-plus"></i>
+                    <i class="fa fa-minus"></i>
+                    <i class="fa fa-close"></i>
+                </div>
+            </div>
+            <div class="dialog-info">
+                <div class="dialog-info-avatar">
+                    <img src="" alt="">
+                </div>
+                <div class="dialog-info-name">
+                    <h3>123</h3>
+                    <p>......</p>
+                </div>
+            </div>
+            <div class="dialog-tab">
+                <div class="dialog-tab-header">
+                    <div class="dialog-tab-item active">
+                        <i class="fa fa-comment"></i>
+                    </div>
+                    <div class="dialog-tab-item">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="dialog-tab-item">
+                        <i class="fa fa-comments"></i>
+                    </div>
+                </div>
+                <div class="dialog-tab-box">
+                    <div class="dialog-tab-item active">
+                        <div class="dialog-user">
+                            <div class="dialog-user-avatar">
+                                <img src="" alt="">
+                            </div>
+                            <div class="dialog-user-info">
+                                <p><span class="name">12</span><span class="time">2m ago</span></p>
+                                <p><span class="content">121312312323</span> <span class="count">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dialog-tab-item">
+                        <div class="dialog-panel">
+                            <div class="dialog-panel-header">
+                                <i class="fa fa-caret-down"></i>
+                                <span>my friends (1 / 29)</span>
+                            </div>
+                            <div class="dialog-panel-box">
+                                <div class="dialog-user">
+                                    <div class="dialog-user-avatar">
+                                        <img src="" alt="">
+                                    </div>
+                                    <div class="dialog-user-info">
+                                        <p><span class="name">12</span><span class="time">2m ago</span></p>
+                                        <p><span class="content">121312312323</span> <span class="count">1</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dialog-tab-item active">
+                        <div class="dialog-user">
+                            <div class="dialog-user-avatar">
+                                <img src="" alt="">
+                            </div>
+                            <div class="dialog-user-info">
+                                <p><span class="name">12</span><span class="time">2m ago</span></p>
+                                <p><span class="content">121312312323</span> <span class="count">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 聊天室 -->
+        <div class="dialog-box dialog-chat-room">
+            <div class="dailog-header">
+                <div class="dialog-title">与 xx 聊天中</div>
+                <div class="dialog-action">
+                    <i class="fa fa-minus"></i>
+                    <i class="fa fa-close"></i>
+                </div>
+            </div>
+            <div class="dialog-message-box">
+                <p class="message-more">加载更多</p>
+                <div class="message-left">
+                    <img class="avatar" src="../image/avatar.jpg">
+                    <div class="content">
+                        1312323213213123g754513333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+                    </div>
+                </div>
+                <div class="message-right">
+                    <img class="avatar" src="../image/avatar.jpg">
+                    <div class="content">
+                        1312323213213123
+                    </div>
+                </div>
+                <p class="message-line">2M ago</p>
+            </div>
+            <div class="dialog-message-tools">
+                <i class="fa fa-smile-o"></i>
+                <i class="fa fa-picture-o"></i>
+                <i class="fa fa-camera"></i>
+                <i class="fa fa-video-camera"></i>
+                <i class="fa fa-file"></i>
+                <i class="fa fa-gift"></i>
+            </div>
+            <div class="dialog-message-editor">
+                <div class="dialog-message-text" contenteditable="true">
+
+                </div>
+                <div class="dailog-message-action">
+                    <button>发送</button>
+                </div>
+            </div>
+        </div>
+        <!-- 查找添加用户 -->
+        <div class="dialog-box dialog-search-box">
+            <div class="dailog-header">
+                <div class="dialog-title dialog-tab-header">
+                    <div class="dialog-tab-item active">找人</div>
+                    <div class="dialog-tab-item">找群</div>
+                </div>
+                <div class="dialog-action">
+                    <i class="fa fa-close"></i>
+                </div>
+            </div>
+            <div class="dialog-search">
+                <input type="text">
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="dialog-search-list">
+                <div class="dialog-info">
+                    <div class="dialog-info-avatar">
+                        <img src="" alt="">
+                    </div>
+                    <div class="dialog-info-name">
+                        <h3>123</h3>
+                        <p>......</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 查看会员信息 -->
+        <div class="dialog-box dialog-user-box">
+            <div class="dailog-header">
+                <div class="dialog-action">
+                    <i class="fa fa-close"></i>
+                </div>
+            </div>
+            <div class="dialog-user-avatar">
+                <img src="" alt="">
+            </div>
+            <h3>1231</h3>
+            <div class="dialog-user-info">
+                <p>123123</p>
+                <p>123123</p>
+                <p>123123</p>
+            </div>
+        </div>
+        <!-- 添加为好友 -->
+        <div class="dialog-box dialog-add-box">
+            <div class="dailog-header">
+                <div class="dialog-action">
+                    <i class="fa fa-close"></i>
+                </div>
+            </div>
+            <div class="dialog-user-avatar">
+                <img src="" alt="">
+            </div>
+            <h3>1231</h3>
+            <p>留言</p>
+            <div class="dialog-add-action">
+                <select name="" id="">
+                    <option value="">选择分组</option>
+                </select>
+                <button>同意</button>
+                <button>拒绝</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

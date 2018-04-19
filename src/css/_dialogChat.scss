@@ -1,0 +1,53 @@
+.dialog-chat {
+    .dialog-box {
+        background: #fff;
+        position: absolute;
+        .dialog-header {
+            position: relative;
+            .dialog-action {
+                position: absolute;
+                display: inline-block;
+                top: 0;
+                right: 0;
+            }
+        }
+        .dialog-info {
+            .dialog-info-avatar {
+
+            }
+            .dialog-info-name {
+
+            }
+        }
+        .dialog-tab {
+            .dialog-tab-header {
+                .dialog-tab-item {
+                    .active {
+
+                    }
+                }
+            }
+            .dialog-tab-box {
+                .dialog-tab-item {
+                    display: none;
+                    .active {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+    .dialog-chat-box {
+        width: 200px;
+    }
+    .dialog-chat-room {
+        width: 500px;
+    }
+    .dialog-search-box {
+        width: 500px;
+    }
+    .dialog-user-box ,
+    .dialog-add-box {
+        width: 300px;
+    }
+}

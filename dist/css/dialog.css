@@ -1596,4 +1596,32 @@
     -ms-transform: scale(0.2);
     -o-transform: scale(0.2); } }
 
+.dialog-chat .dialog-box {
+  background: #fff;
+  position: absolute; }
+  .dialog-chat .dialog-box .dialog-header {
+    position: relative; }
+    .dialog-chat .dialog-box .dialog-header .dialog-action {
+      position: absolute;
+      display: inline-block;
+      top: 0;
+      right: 0; }
+  .dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item {
+    display: none; }
+    .dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item .active {
+      display: block; }
+
+.dialog-chat .dialog-chat-box {
+  width: 200px; }
+
+.dialog-chat .dialog-chat-room {
+  width: 500px; }
+
+.dialog-chat .dialog-search-box {
+  width: 500px; }
+
+.dialog-chat .dialog-user-box,
+.dialog-chat .dialog-add-box {
+  width: 300px; }
+
 /*# sourceMappingURL=dialog.css.map */

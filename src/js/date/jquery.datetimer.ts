@@ -326,8 +326,8 @@ class DateTimer extends Box {
      * 刷新日
      */
     private _refreshDay() {
-        this.box.find(".header span").text(Utils.time.format(this._currentDate, this.options.title));
-        let days = this._mLi(this._currentDate.getFullYear(), Utils.time.getRealMonth(this._currentDate));
+        this.box.find(".header span").text(ZUtils.time.format(this._currentDate, this.options.title));
+        let days = this._mLi(this._currentDate.getFullYear(), ZUtils.time.getRealMonth(this._currentDate));
         let dayLi = this.box.find(".body .month-grid ul li");
         dayLi.removeClass("active").removeClass("disable");
         let instance = this;
@@ -548,7 +548,7 @@ class DateTimer extends Box {
       * 获取当前时间
       */
      public val(): string {
-        return Utils.time.format(this.getCurrentDate(), this.options.format);
+        return ZUtils.time.format(this.getCurrentDate(), this.options.format);
      }
 
      /**

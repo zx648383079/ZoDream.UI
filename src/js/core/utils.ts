@@ -1,4 +1,4 @@
-module Utils {
+module ZUtils {
     export class time {
         /**
          * 获取真实的月份

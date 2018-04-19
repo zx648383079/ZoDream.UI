@@ -8,8 +8,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Utils;
-(function (Utils) {
+var ZUtils;
+(function (ZUtils) {
     var time = /** @class */ (function () {
         function time() {
         }
@@ -43,8 +43,8 @@ var Utils;
         };
         return time;
     }());
-    Utils.time = time;
-})(Utils || (Utils = {}));
+    ZUtils.time = time;
+})(ZUtils || (ZUtils = {}));
 var Eve = /** @class */ (function () {
     function Eve() {
     }
@@ -396,8 +396,8 @@ var DateTimer = /** @class */ (function (_super) {
      * 刷新日
      */
     DateTimer.prototype._refreshDay = function () {
-        this.box.find(".header span").text(Utils.time.format(this._currentDate, this.options.title));
-        var days = this._mLi(this._currentDate.getFullYear(), Utils.time.getRealMonth(this._currentDate));
+        this.box.find(".header span").text(ZUtils.time.format(this._currentDate, this.options.title));
+        var days = this._mLi(this._currentDate.getFullYear(), ZUtils.time.getRealMonth(this._currentDate));
         var dayLi = this.box.find(".body .month-grid ul li");
         dayLi.removeClass("active").removeClass("disable");
         var instance = this;
@@ -615,7 +615,7 @@ var DateTimer = /** @class */ (function (_super) {
      * 获取当前时间
      */
     DateTimer.prototype.val = function () {
-        return Utils.time.format(this.getCurrentDate(), this.options.format);
+        return ZUtils.time.format(this.getCurrentDate(), this.options.format);
     };
     /**
      * 验证Date

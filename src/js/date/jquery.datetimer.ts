@@ -103,11 +103,23 @@ class DateTimer extends Box {
      * 初始化
      * @param time 
      */
-    public init(time: string) {
+    public init(time: string | number) {
         this.showDate(time);
         this.open();
         this._refreshTime();
     }
+
+
+    public show(): this {
+        this.init(this.val());
+        return this;
+    }
+
+    public hide(): this {
+        this.box.hide();
+        return this;
+    }
+
     /**
      * 创建元素
      */
@@ -462,8 +474,11 @@ class DateTimer extends Box {
         }
 
         $(document).click(function() {
-            instance.box.hide();
+            if (instance.options.autoHide) {
+                instance.box.hide();
+            }
         });
+
         if (typeof this.options.min == 'object' && this.options.min instanceof DateTimer) {
             this.options.min.done(function() {
                 instance._currentDate && !instance.checkDate(instance._currentDate) && instance.clear();
@@ -630,7 +645,8 @@ interface DateTimerOptions {
     ondone?: (date: Date, element: JQuery) => any,
     onclick?: (date: Date, element: JQuery) => any,   // 点击事件
     onerror?: (date: Date, element: JQuery) => any,  // 点击错误的
-    title?: string
+    title?: string,
+    autoHide: boolean,   // 自动隐藏
  }
 
 class DateTimerDefaultOptions implements DateTimerOptions {
@@ -641,6 +657,7 @@ class DateTimerDefaultOptions implements DateTimerOptions {
     readonly: boolean = false;
     minYear: number = 1900;     // 做标签用
     maxYear: number = 2099;
+    autoHide: boolean = true
 }
  
 ;(function($: any) {

@@ -185,6 +185,14 @@ var DateTimer = /** @class */ (function (_super) {
         this.open();
         this._refreshTime();
     };
+    DateTimer.prototype.show = function () {
+        this.init(this.val());
+        return this;
+    };
+    DateTimer.prototype.hide = function () {
+        this.box.hide();
+        return this;
+    };
     /**
      * 创建元素
      */
@@ -528,7 +536,9 @@ var DateTimer = /** @class */ (function (_super) {
             });
         }
         $(document).click(function () {
-            instance.box.hide();
+            if (instance.options.autoHide) {
+                instance.box.hide();
+            }
         });
         if (typeof this.options.min == 'object' && this.options.min instanceof DateTimer) {
             this.options.min.done(function () {
@@ -692,6 +702,7 @@ var DateTimerDefaultOptions = /** @class */ (function () {
         this.readonly = false;
         this.minYear = 1900; // 做标签用
         this.maxYear = 2099;
+        this.autoHide = true;
     }
     return DateTimerDefaultOptions;
 }());

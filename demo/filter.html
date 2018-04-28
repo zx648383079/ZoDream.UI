@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../dist/css/filter.css" rel="stylesheet">
+</head>
+<body>
+    <div class="filter-box">
+        <div class="">
+            <input type="text" name="keywords" placeholder="搜索">
+        </div>
+        <div class="filter-property">
+            <span>已选择</span>
+            <ul>
+                <li>
+                    <span>分类1</span>
+                    <i class="fa fa-close"></i>
+                </li>
+                <li>
+                    <span>分类1</span>
+                    <i class="fa fa-close"></i>
+                </li>
+            </ul>
+        </div>
+        <div class="property-box">
+            <div class="property-item">
+                <span>分类</span>
+                <ul>
+
+                </ul>
+                <div class="action">
+                    
+                </div>
+            </div>
+        </div>
+    </div>  
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jquery.filter.js"></script>
+    <script>
+        $(function () {
+            $("[data-type=filter]").filterProperty({
+                properties: [
+                    {
+                        key: 'category',
+                        name: '分类',
+                        children: [
+                            {
+                                id: 1,
+                                name: '分类1'
+                            },
+                            {
+                                id: 2,
+                                name: '分类2'
+                            },
+                        ],
+                        multiple: true
+                    },
+                    {
+                        key: 'brand',
+                        name: '品牌',
+                        children: [
+                            {
+                                id: 1,
+                                name: '品牌1'
+                            },
+                            {
+                                id: 2,
+                                name: '品牌2'
+                            },
+                        ],
+                    },
+                    {
+                        key: 'price',
+                        name: '价格',
+                        type: 'range',
+                        children: [
+                            200,
+                            300,
+                            500
+                        ],
+                        editable: true
+                    }
+                ],
+                data: {
+                    keywords: '',
+                    category: [
+                        1,
+                        2
+                    ],
+                    price: [
+                        0,
+                        200
+                    ]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

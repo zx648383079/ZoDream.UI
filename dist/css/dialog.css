@@ -1598,30 +1598,231 @@
 
 .dialog-chat .dialog-box {
   background: #fff;
-  position: absolute; }
+  position: absolute;
+  display: none; }
   .dialog-chat .dialog-box .dialog-header {
     position: relative; }
     .dialog-chat .dialog-box .dialog-header .dialog-action {
       position: absolute;
       display: inline-block;
       top: 0;
-      right: 0; }
+      right: 0;
+      font-size: 20px; }
+      .dialog-chat .dialog-box .dialog-header .dialog-action .fa {
+        padding: 4px; }
+    .dialog-chat .dialog-box .dialog-header .dialog-title {
+      text-align: center;
+      line-height: 30px; }
+  .dialog-chat .dialog-box .dialog-tab .dialog-tab-header {
+    line-height: 30px; }
+    .dialog-chat .dialog-box .dialog-tab .dialog-tab-header .dialog-tab-item {
+      display: inline-block;
+      padding: 0 8px; }
   .dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item {
     display: none; }
-    .dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item .active {
+    .dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item.active {
       display: block; }
+  .dialog-chat .dialog-box .dialog-panel .dialog-panel-header {
+    cursor: pointer; }
+    .dialog-chat .dialog-box .dialog-panel .dialog-panel-header .dialog-panel-icon {
+      display: inline-block;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased; }
+      .dialog-chat .dialog-box .dialog-panel .dialog-panel-header .dialog-panel-icon:before {
+        content: "\f054"; }
+  .dialog-chat .dialog-box .dialog-panel .dialog-panel-box {
+    display: none; }
+  .dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-header .dialog-panel-icon:before {
+    content: "\f078"; }
+  .dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-box {
+    display: block; }
 
 .dialog-chat .dialog-chat-box {
   width: 200px; }
+  .dialog-chat .dialog-chat-box .dialog-info {
+    display: inline-block;
+    padding: 20px 8px 15px; }
+    .dialog-chat .dialog-chat-box .dialog-info .dialog-info-avatar {
+      display: inline-block; }
+      .dialog-chat .dialog-chat-box .dialog-info .dialog-info-avatar img {
+        width: 60px;
+        border-radius: 50%; }
+    .dialog-chat .dialog-chat-box .dialog-info .dialog-info-name {
+      display: inline-block; }
+      .dialog-chat .dialog-chat-box .dialog-info .dialog-info-name * {
+        margin: 0; }
+  .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item {
+    width: 33%;
+    box-sizing: border-box;
+    text-align: center; }
+    .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item.active {
+      color: #f00; }
+  .dialog-chat .dialog-chat-box .dialog-user {
+    position: relative;
+    padding: 8px; }
+    .dialog-chat .dialog-chat-box .dialog-user .dialog-user-avatar {
+      display: inline-block; }
+      .dialog-chat .dialog-chat-box .dialog-user .dialog-user-avatar img {
+        width: 60px;
+        border-radius: 50%; }
+    .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info {
+      display: inline-block; }
+      .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info * {
+        margin: 0; }
+      .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info .time {
+        position: absolute;
+        right: 0; }
+      .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info .count {
+        position: absolute;
+        right: 0;
+        top: 0;
+        color: #fff;
+        display: block;
+        width: 15px;
+        font-size: 12px;
+        background: #f00;
+        border-radius: 50%;
+        text-align: center; }
 
 .dialog-chat .dialog-chat-room {
   width: 500px; }
+  .dialog-chat .dialog-chat-room .dialog-message-box {
+    height: 400px;
+    overflow-y: auto; }
+    .dialog-chat .dialog-chat-room .dialog-message-box * {
+      margin: 0; }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-more,
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-line,
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-tip {
+      text-align: center; }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-left,
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-right {
+      position: relative;
+      margin: 8px 0; }
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-left:after,
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-right:after {
+        content: ' ';
+        clear: both;
+        display: table; }
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-left .avatar,
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-right .avatar {
+        position: absolute;
+        top: 0;
+        height: 40px;
+        width: 40px;
+        border-radius: 50%; }
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-left .content,
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-right .content {
+        max-width: 66%;
+        background: rgba(0, 255, 255, 0.16);
+        line-height: 40px;
+        padding: 0 10px;
+        word-break: break-word; }
+        .dialog-chat .dialog-chat-room .dialog-message-box .message-left .content::before,
+        .dialog-chat .dialog-chat-room .dialog-message-box .message-right .content::before {
+          content: '';
+          position: absolute;
+          z-index: 10;
+          border: 6px solid transparent;
+          top: 15px; }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-left .avatar {
+      left: 0; }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-left .content {
+      margin-left: 52px;
+      float: left; }
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-left .content::before {
+        left: 40px;
+        border-right-color: rgba(0, 255, 255, 0.16); }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-right .avatar {
+      right: 0; }
+    .dialog-chat .dialog-chat-room .dialog-message-box .message-right .content {
+      float: right;
+      margin-right: 52px; }
+      .dialog-chat .dialog-chat-room .dialog-message-box .message-right .content::before {
+        right: 40px;
+        border-left-color: rgba(0, 255, 255, 0.16); }
+  .dialog-chat .dialog-chat-room .dialog-message-tools {
+    font-size: 20px;
+    line-height: 30px; }
+    .dialog-chat .dialog-chat-room .dialog-message-tools .fa {
+      width: 30px;
+      text-align: center; }
+  .dialog-chat .dialog-chat-room .dialog-message-text {
+    height: 80px;
+    overflow-y: auto; }
+  .dialog-chat .dialog-chat-room .dailog-message-action {
+    text-align: right; }
+    .dialog-chat .dialog-chat-room .dailog-message-action button {
+      width: 100px;
+      line-height: 30px; }
 
 .dialog-chat .dialog-search-box {
   width: 500px; }
+  .dialog-chat .dialog-search-box .dialog-tab-header {
+    line-height: 50px;
+    text-align: center; }
+    .dialog-chat .dialog-search-box .dialog-tab-header .dialog-tab-item {
+      display: inline-block;
+      padding: 0 8px;
+      box-sizing: border-box; }
+      .dialog-chat .dialog-search-box .dialog-tab-header .dialog-tab-item.active {
+        border-bottom: 5px solid; }
+  .dialog-chat .dialog-search-box .dialog-search {
+    position: relative;
+    font-size: 20px; }
+    .dialog-chat .dialog-search-box .dialog-search input {
+      height: 30px;
+      width: 100%;
+      box-sizing: border-box;
+      padding-right: 30px; }
+    .dialog-chat .dialog-search-box .dialog-search .fa {
+      position: absolute;
+      right: 8px;
+      top: 7px; }
+  .dialog-chat .dialog-search-box .dialog-search-list .dialog-info {
+    display: inline-block;
+    width: 200px;
+    border: 1px solid;
+    padding: 8px; }
+    .dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-avatar {
+      display: inline-block; }
+      .dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-avatar img {
+        width: 60px;
+        border-radius: 50%; }
+    .dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-name {
+      display: inline-block; }
+      .dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-name * {
+        margin: 0; }
 
 .dialog-chat .dialog-user-box,
 .dialog-chat .dialog-add-box {
-  width: 300px; }
+  width: 300px;
+  text-align: center; }
+  .dialog-chat .dialog-user-box .dialog-user-avatar,
+  .dialog-chat .dialog-add-box .dialog-user-avatar {
+    padding: 8px; }
+    .dialog-chat .dialog-user-box .dialog-user-avatar img,
+    .dialog-chat .dialog-add-box .dialog-user-avatar img {
+      width: 100px;
+      border-radius: 50%; }
+  .dialog-chat .dialog-user-box .dialog-add-action select,
+  .dialog-chat .dialog-add-box .dialog-add-action select {
+    display: block;
+    width: 100%;
+    height: 30px; }
+  .dialog-chat .dialog-user-box .dialog-add-action button,
+  .dialog-chat .dialog-add-box .dialog-add-action button {
+    width: 50%;
+    line-height: 30px; }
+  .dialog-chat .dialog-user-box p,
+  .dialog-chat .dialog-add-box p {
+    margin: 0; }
+
+.dialog-chat.dialog-fixed .dialog-chat-box {
+  position: fixed;
+  bottom: 0;
+  right: 0; }
 
 /*# sourceMappingURL=dialog.css.map */

@@ -2,6 +2,7 @@
     .dialog-box {
         background: #fff;
         position: absolute;
+        display: none;
         .dialog-header {
             position: relative;
             .dialog-action {
@@ -9,6 +10,14 @@
                 display: inline-block;
                 top: 0;
                 right: 0;
+                font-size: 20px;
+                .fa {
+                    padding: 4px;
+                }
+            }
+            .dialog-title {
+                text-align: center;
+                line-height: 30px;
             }
         }
         .dialog-info {
@@ -19,35 +28,297 @@
 
             }
         }
+        
         .dialog-tab {
             .dialog-tab-header {
+                line-height: 30px;
                 .dialog-tab-item {
-                    .active {
-
+                    display: inline-block;
+                    padding: 0 8px;
+                    &.active {
+    
                     }
                 }
             }
             .dialog-tab-box {
                 .dialog-tab-item {
                     display: none;
-                    .active {
+                    &.active {
                         display: block;
                     }
+                }
+            }
+        }
+        .dialog-panel {
+            .dialog-panel-header {
+                cursor: pointer;
+                .dialog-panel-icon {
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    font-size: inherit;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    &:before {
+                        content: "\f054";
+                    }
+                }
+            }
+            .dialog-panel-box {
+                display: none;
+            }
+            &.expanded {
+                .dialog-panel-header {
+                    .dialog-panel-icon {
+                        &:before {
+                            content: "\f078";
+                        }
+                    }
+                }
+                .dialog-panel-box {
+                    display: block;
                 }
             }
         }
     }
     .dialog-chat-box {
         width: 200px;
+        .dialog-info {
+            display: inline-block;
+            padding: 20px 8px 15px;
+            .dialog-info-avatar {
+                display: inline-block;
+                img {
+                    width: 60px;
+                    border-radius: 50%;
+                }
+            }
+            .dialog-info-name {
+                display: inline-block;
+                * {
+                    margin: 0;
+                }
+            }
+        }
+        .dialog-tab {
+            .dialog-tab-header {
+                .dialog-tab-item {
+                    width: 33%;
+                    box-sizing: border-box;
+                    text-align: center;
+                    &.active {
+                        color: #f00;
+                    }
+                }
+            }
+        }
+        .dialog-user {
+            position: relative;
+            padding: 8px;
+            .dialog-user-avatar {
+                display: inline-block;
+                img {
+                    width: 60px;
+                    border-radius: 50%;
+                }
+            }
+            .dialog-user-info {
+                
+                display: inline-block;
+                * {
+                    margin: 0;
+                }
+                .time {
+                    position: absolute;
+                    right: 0;
+                }
+                .count {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    color: #fff;
+                    display: block;
+                    width: 15px;
+                    font-size: 12px;
+                    background: #f00;
+                    border-radius: 50%;
+                    text-align: center;
+                }
+            }
+        }
     }
     .dialog-chat-room {
         width: 500px;
+        .dialog-message-box {
+            height: 400px;
+            overflow-y: auto;
+            * {
+                margin: 0;
+            }
+            .message-more,
+            .message-line,
+            .message-tip {
+                text-align: center;
+            }
+            .message-left, 
+            .message-right {
+                position: relative;
+                margin: 8px 0;
+                &:after {
+                    content: ' ';
+                    clear: both;
+                    display: table;
+                }
+                .avatar {
+                    position: absolute;
+                    top: 0;
+                    height: 40px;
+                    width: 40px;
+                    border-radius: 50%;
+                }
+                .content {
+                    max-width: 66%;
+                    background: rgba(0,255,255,0.16);
+                    line-height: 40px;
+                    padding: 0 10px;
+                    word-break: break-word;
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        z-index: 10;
+                        border: 6px solid transparent;
+                        top: 15px;
+                    }
+                }
+            }
+            .message-left {
+                .avatar {
+                    left: 0;
+                }
+                .content {
+                    margin-left: 52px;
+                    float: left;
+                    &::before {
+                        left: 40px;
+                        border-right-color: rgba(0, 255, 255, 0.16);
+                    }
+                }
+            }
+            .message-right {
+                .avatar {
+                    right: 0;
+                }
+                .content {
+                    float: right;
+                    margin-right: 52px;
+                    &::before {
+                        right: 40px;
+                        border-left-color: rgba(0, 255, 255, 0.16);
+                    }
+                }
+            }
+        }
+        .dialog-message-tools {
+            font-size: 20px;
+            line-height: 30px;
+            .fa {
+                width: 30px;
+                text-align: center;
+            }
+        }
+        .dialog-message-text {
+            height: 80px;
+            overflow-y: auto;
+        }
+        .dailog-message-action {
+            text-align: right;
+            button {
+                width: 100px;
+                line-height: 30px;
+            }
+        }
     }
     .dialog-search-box {
         width: 500px;
+        .dialog-tab-header {
+            line-height: 50px;
+            text-align: center;
+            .dialog-tab-item {
+                display: inline-block;
+                padding: 0 8px;
+                box-sizing: border-box;
+                &.active {
+                    border-bottom: 5px solid;
+                }
+            }
+        }
+        .dialog-search {
+            position: relative;
+            font-size: 20px;
+            input {
+                height: 30px;
+                width: 100%;
+                box-sizing: border-box;
+                padding-right: 30px;
+            }
+            .fa {
+                position: absolute;
+                right: 8px;
+                top: 7px;
+            }
+        }
+        .dialog-search-list {
+            .dialog-info {
+                display: inline-block;
+                width: 200px;
+                border: 1px solid;
+                padding: 8px;
+                .dialog-info-avatar {
+                    display: inline-block;
+                    img {
+                        width: 60px;
+                        border-radius: 50%;
+                    }
+                }
+                .dialog-info-name {
+                    display: inline-block;
+                    * {
+                        margin: 0;
+                    }
+                }
+            }
+        }
     }
     .dialog-user-box ,
     .dialog-add-box {
         width: 300px;
+        text-align: center;
+        .dialog-user-avatar {
+            padding: 8px;
+            img {
+                width: 100px;
+                border-radius: 50%;
+            }
+        }
+        .dialog-add-action {
+            select {
+                display: block;
+                width: 100%;
+                height: 30px;
+            }
+            button {
+                width: 50%;
+                line-height: 30px;
+            }
+        }
+        p {
+            margin: 0;
+        }
+    }
+    &.dialog-fixed {
+        .dialog-chat-box {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+        }
     }
 }

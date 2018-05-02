@@ -51,3 +51,4 @@ dev/
 /*.log
 /demo/*.log
 /package-lock.json
+dist/*.ts

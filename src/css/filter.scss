@@ -1,0 +1,94 @@
+@mixin active() {
+    background: #f00;
+    color: #fff;
+}
+
+.filter-box {
+    ul {
+        margin: 0;
+        padding: 0;
+        li {
+            list-style: none;
+        }
+    }
+    
+    .search-box {
+        .property-header {
+            width: 100px;
+            display: inline-block;
+        }
+        input {
+
+        }
+    }
+    .filter-property {
+        .property-header {
+            width: 100px;
+            display: inline-block;
+        }
+        ul {
+            display: inline-block;
+            li {
+                display: inline-block;
+                padding: 0 8px;
+            }
+        }
+    }
+    .property-box {
+        .property-item {
+            position: relative;
+            .property-header {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            .property-body {
+                margin: 0 100px;
+                li {
+                    display: inline-block;
+                    padding: 0 8px;
+                    &.active {
+                        @include active();
+                    }
+                }
+            }
+            .property-action {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+        }
+    }
+    .sort-box {
+        span {
+            padding: 0 8px;
+            display: inline-block;
+            &.active {
+                @include active();
+            } 
+            &.order-asc,
+            &.order-desc {
+                i {
+                    font: normal normal normal 14px/1 FontAwesome;
+                    font-size: inherit;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                }
+            }
+            &.order-asc {
+                i {
+                    &:before {
+                        content: "\f15d";
+                    }
+                }
+            }
+            &.order-desc {
+                i {
+                    &:before {
+                        content: "\f15e";
+                    } 
+                }
+            }
+        }
+    }
+}

@@ -10,11 +10,12 @@
 </head>
 <body>
     <div class="filter-box">
-        <div class="">
+        <div class="search-box">
+            <span class="property-header">搜索</span>
             <input type="text" name="keywords" placeholder="搜索">
         </div>
         <div class="filter-property">
-            <span>已选择</span>
+            <span class="property-header">已选择</span>
             <ul>
                 <li>
                     <span>分类1</span>
@@ -28,21 +29,38 @@
         </div>
         <div class="property-box">
             <div class="property-item">
-                <span>分类</span>
-                <ul>
-
-                </ul>
-                <div class="action">
-                    
+                <span class="property-header">分类</span>
+                <div class="property-body">
+                    <ul>
+                        <li class="active">分类1</li>
+                        <li>分类2</li>
+                    </ul>
+                </div>
+                <div class="property-action">
+                    <span class="property-more">更多</span>
+                    <span class="property-multiple">多选</span>
                 </div>
             </div>
         </div>
+        <div class="sort-box">
+            <span class="active">
+                默认
+            </span>
+            <span class="order-asc">
+                评价
+                <i></i>
+            </span>
+            <span class="order-desc">
+                评价
+                <i></i>
+            </span>
+        </div>
     </div>  
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="../dist/js/jquery.filter.js"></script>
+    <script src="../dist/js/jquery.filterbox.js"></script>
     <script>
         $(function () {
-            $("[data-type=filter]").filterProperty({
+            $("[data-type=filter]").filterbox({
                 properties: [
                     {
                         key: 'category',
@@ -85,6 +103,11 @@
                         editable: true
                     }
                 ],
+                sorts: {
+                    '': '默认',
+                    price: '价格',
+                    count: '数量'
+                },
                 data: {
                     keywords: '',
                     category: [
@@ -94,7 +117,9 @@
                     price: [
                         0,
                         200
-                    ]
+                    ],
+                    sort: 'price',
+                    order: 'desc'
                 }
             });
         });

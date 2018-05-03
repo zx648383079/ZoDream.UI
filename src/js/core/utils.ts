@@ -29,4 +29,12 @@ module ZUtils {
             return fmt;
         }
     }
+
+    export class str {
+        public static format(arg: string, ...args: any[]) {
+            return arg.replace(/\{(\d+)\}/g, function(m,i) {
+                return args[i];
+            });
+        }
+    }
 }

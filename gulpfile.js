@@ -118,6 +118,17 @@ gulp.task('date', function () {
     .pipe(gulp.dest('dist/js'));
 });
 
+gulp.task('filter', function () {
+    return gulp.src(['src/js/core/utils.ts', 'src/js/filter/jquery.filterbox.ts'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('jquery.filterbox.ts'))
+    .pipe(tsProject())
+    //.pipe(uglify())
+    //.pipe(rename({suffix:'.min'}))
+    //.pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist/js'));
+});
+
 gulp.task('navbar', function () {
     return gulp.src(['src/js/navbar/option.ts', 
     'src/js/navbar/navItem.ts', 'src/js/navbar/tab.ts', 'src/js/navbar/jquery.navbar.ts'])

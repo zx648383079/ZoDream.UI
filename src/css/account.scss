@@ -2,3 +2,47 @@
     max-width: 300px;
     margin: 30vh auto 0;
 }
+
+.slider-input {
+    position: relative;
+    width: 300px;
+    .slider-gird {
+        display: none;
+        position: absolute;
+        top: -157px;
+        background: green;
+        padding: 4px;
+        z-index: 999;
+        .slider-content {
+            
+        }
+        .slider-bottom {
+
+        }
+    }
+    .slider-btn {
+        position: relative;
+        background: green;
+        padding: 4px;
+        .slider-btn-tip {
+            text-align: center;
+            font-size: 12px;
+            line-height: 20px;
+        }
+        .slider-btn-icon {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            border: 1px solid;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f00;
+        }
+    }
+    &.slider-show {
+        .slider-gird {
+            display: block;
+        }
+    }
+}

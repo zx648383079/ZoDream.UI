@@ -28,11 +28,74 @@
                     </div>
                     记住我
                 </div>
+                <div class="slider-input">
+                    <div class="slider-gird">
+                        <div class="slider-content">
 
+                        </div>
+                        <div class="slider-bottom">
+                            <i class="fa fa-refresh"></i>
+                        </div>
+                    </div>
+                    <div class="slider-btn">
+                        <div class="slider-btn-tip">按住左边滑块，拖动完成上方拼图</div>
+                        <div class="slider-btn-icon"></div>
+                    </div>
+                </div>
                 <button type="submit" class="btn">登录</button>
             </form>
         </div>
     </section>
     <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script>
+    function refreshSlider() {
+        $.get('http://zodream.localhost/account.php/captcha/slide', function (html) { 
+            $(".slider-input .slider-content").html(html);
+        });
+    }
+    $(function () {
+        $('.slider-input .fa-refresh').click(function () { 
+            refreshSlider();
+            btn.css('left', '0px');
+        });
+        $(".slider-input").mouseover(function () { 
+            $(this).addClass('slider-show');
+         }).mouseout(function () { 
+            if (is_move) {
+                return;
+            }
+            $(this).removeClass('slider-show');
+         });
+         var is_move = false,
+            left = 0,
+            cutEle = null,
+            x = 0,
+            btn = $(".slider-input .slider-btn-icon").mousedown(function () { 
+            is_move = true;
+            left = $(this).offset().left;
+            cutEle = $(".slider-input .slide-cut");
+        })
+        
+        $(document).mousemove(function (e) { 
+            x = e.pageX - left;
+            if (!is_move  || x < 0 || !cutEle || x > 230) {
+                return;
+            }
+            btn.css('left', x + 'px');
+            cutEle.css('left', x + 'px');
+         }).mouseup(function () { 
+            if (is_move) {
+                $.post('http://zodream.localhost/account.php/captcha/slide_check', {
+                    x: x
+                }, function (data) { 
+
+                 }, 'json');
+            }
+            is_move = false;
+        });
+
+        refreshSlider();
+    });
+    </script>
     </body>
 </html>

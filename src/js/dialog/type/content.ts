@@ -111,6 +111,7 @@ class DialogContent extends DialogCore {
             this.trigger('done');
         });
         this.onClick(".dialog-close", function() {
+            this.loading = false;
             this.close();
         });
         return this;
@@ -130,20 +131,20 @@ class DialogContent extends DialogCore {
         }
         let html = '<div class="dialog-footer">';
         if (this.options.hasYes) {
-            html += '<button class="dialog-yes">'+ (typeof this.options.hasYes == 'string' ? this.options.hasYes : '确认') +'</button>';
+            html += '<button type="button" class="dialog-yes">'+ (typeof this.options.hasYes == 'string' ? this.options.hasYes : '确认') +'</button>';
         }
         if (this.options.hasNo) {
-            html += '<button class="dialog-close">'+ (typeof this.options.hasNo == 'string' ? this.options.hasNo : '取消') +'</button>';
+            html += '<button type="button" class="dialog-close">'+ (typeof this.options.hasNo == 'string' ? this.options.hasNo : '取消') +'</button>';
         }
         if (typeof this.options.button == 'string') {
             this.options.button = [this.options.button];
         }
         $.each(this.options.button, (i, item)=> {
             if (typeof item == 'string') {
-                html += '<button">'+item+'</button>';
+                html += '<button type="button">'+item+'</button>';
                 return;
             }
-            html += '<button class="'+item.tag+'">'+item.content+'</button>';
+            html += '<button type="button" class="'+item.tag+'">'+item.content+'</button>';
         });
         return html += '</div>';
     }

@@ -22,7 +22,7 @@ function sassTask() {
 
 
 function tslintTask() {
-    return gulp.src(jsRoot + '*.ts')
+    return gulp.src('src/js/*.ts')
         .pipe(tslint({
             formatter: 'verbose'
         }))

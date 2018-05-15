@@ -111,7 +111,7 @@ class DialogContent extends DialogCore {
             this.trigger('done');
         });
         this.onClick(".dialog-close", function() {
-            this.loading = false;
+            this.isLoading = false;
             this.close();
         });
         return this;

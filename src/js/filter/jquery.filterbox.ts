@@ -5,11 +5,32 @@ class FilterBox {
     ) {
         this.options = $.extend({}, new FilterDefaultOption(), options);
         this.refresh();
+        this._bindEvent();
     }
 
     public options: FilterOption;
 
     private _selectedProperty: Array<string>;
+
+
+    private _bindEvent() {
+        
+    }
+
+    /**
+     * on
+     */
+    public on(tag: string, event: string, func: Function) {
+        this.element.on(event, tag, func);
+        return this;
+    }
+
+    /**
+     * click
+     */
+    public click(tag: string, func: Function) {
+        return this.on(tag, 'click', func);
+    }
 
     public refresh() {
         this.element.html(this.createHtml());

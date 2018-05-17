@@ -792,14 +792,20 @@ var DialogPlugin = /** @class */ (function () {
         this.option = option;
         var instance = this;
         this.element.click(function () {
-            if (!instance.dialog) {
-                instance.dialog = Dialog.create(instance._parseOption($(this)));
-            }
-            instance.dialog.show();
+            instance.getDialog($(this)).show();
         });
     }
+    DialogPlugin.prototype.getDialog = function (ele) {
+        if (this.dialog && this.dialog.box) {
+            return this.dialog;
+        }
+        return this.dialog = Dialog.create(this._parseOption(ele));
+    };
     DialogPlugin.prototype._parseOption = function (element) {
         var option = $.extend({}, this.option);
+        if (!element) {
+            return option;
+        }
         option.type = Dialog.parseEnum(element.attr('dialog-type') || this.option.type, DialogType);
         option.content = element.attr('dialog-content') || this.option.content;
         option.url = element.attr('dialog-url') || this.option.url;
@@ -808,6 +814,37 @@ var DialogPlugin = /** @class */ (function () {
             option.target = element;
         }
         return option;
+    };
+    /**
+     * close
+     */
+    DialogPlugin.prototype.close = function () {
+        if (this.dialog) {
+            this.dialog.close();
+            this.dialog = undefined;
+        }
+        return this;
+    };
+    /**
+     * show
+     */
+    DialogPlugin.prototype.show = function () {
+        this.getDialog().show();
+        return this;
+    };
+    /**
+     * hide
+     */
+    DialogPlugin.prototype.hide = function () {
+        this.getDialog().hide();
+        return this;
+    };
+    /**
+     * on
+     */
+    DialogPlugin.prototype.on = function (event, func) {
+        this.getDialog().on(event, func);
+        return this;
     };
     return DialogPlugin;
 }());
@@ -1199,7 +1236,7 @@ var DialogContent = /** @class */ (function (_super) {
             _this.isLoading = true;
             $.get(_this.options.url, function (html) {
                 instance_1.options.content = html;
-                this.isLoading = false;
+                instance_1.isLoading = false;
                 instance_1.init();
             });
         }
@@ -1280,7 +1317,7 @@ var DialogContent = /** @class */ (function (_super) {
             this.trigger('done');
         });
         this.onClick(".dialog-close", function () {
-            this.isLoading = false;
+            //this.isLoading = false;
             this.close();
         });
         return this;

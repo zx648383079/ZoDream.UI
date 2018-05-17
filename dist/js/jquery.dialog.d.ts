@@ -325,7 +325,24 @@ declare class DialogPlugin {
     option: DialogOption;
     constructor(element: JQuery, option?: DialogOption);
     dialog: DialogCore;
-    private _parseOption(element);
+    getDialog(ele?: JQuery): DialogCore;
+    private _parseOption(element?);
+    /**
+     * close
+     */
+    close(): this;
+    /**
+     * show
+     */
+    show(): this;
+    /**
+     * hide
+     */
+    hide(): this;
+    /**
+     * on
+     */
+    on(event: string, func: Function): this;
 }
 interface DialogTipOption extends DialogOption {
     time?: number;

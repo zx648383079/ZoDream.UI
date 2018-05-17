@@ -5,17 +5,25 @@ class DialogPlugin {
     ) {
         let instance = this;
         this.element.click(function() {
-            if (!instance.dialog) {
-                instance.dialog = Dialog.create(instance._parseOption($(this)));
-            }
-            instance.dialog.show();
+            instance.getDialog($(this)).show();
         });
     }
 
     public dialog: DialogCore;
 
-    private _parseOption(element: JQuery) {
+
+    public getDialog(ele?: JQuery): DialogCore {
+        if (this.dialog && this.dialog.box) {
+            return this.dialog;
+        }
+        return this.dialog = Dialog.create(this._parseOption(ele));
+    }
+
+    private _parseOption(element?: JQuery) {
         let option: DialogOption = $.extend({}, this.option);
+        if (!element) {
+            return option;
+        }
         option.type = Dialog.parseEnum<DialogType>(element.attr('dialog-type') || this.option.type, DialogType);
         option.content = element.attr('dialog-content') || this.option.content;
         option.url = element.attr('dialog-url') || this.option.url;
@@ -24,6 +32,41 @@ class DialogPlugin {
             option.target = element;
         }
         return option;
+    }
+
+    /**
+     * close
+     */
+    public close() {
+        if (this.dialog) {
+            this.dialog.close();
+            this.dialog = undefined;
+        }
+        return this;
+    }
+
+    /**
+     * show
+     */
+    public show() {
+        this.getDialog().show();
+        return this;
+    }
+
+    /**
+     * hide
+     */
+    public hide() {
+        this.getDialog().hide();
+        return this;
+    }
+
+    /**
+     * on
+     */
+    public on(event: string, func: Function) {
+        this.getDialog().on(event, func);
+        return this;
     }
 }
 

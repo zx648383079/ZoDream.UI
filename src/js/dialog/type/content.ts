@@ -23,7 +23,7 @@ class DialogContent extends DialogCore {
             this.isLoading = true;
             $.get(this.options.url, function(html) {
                 instance.options.content = html;
-                this.isLoading = false;
+                instance.isLoading = false;
                 instance.init();
             });
         }
@@ -111,7 +111,7 @@ class DialogContent extends DialogCore {
             this.trigger('done');
         });
         this.onClick(".dialog-close", function() {
-            this.isLoading = false;
+            //this.isLoading = false;
             this.close();
         });
         return this;

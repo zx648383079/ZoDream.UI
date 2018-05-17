@@ -20,6 +20,7 @@
     <button dialog-type="page">页面</button>
     <button dialog-type="image">图片</button>
     <button dialog-type="disk">文件</button>
+    <button id="toggle-box">显示/隐藏弹出框</button>
 
     
 
@@ -34,6 +35,21 @@
     <script src="../dist/js/jquery.dialog.js"></script>
     <script>
         $(document).ready(function() {
+            var box;
+            $("#toggle-box").click(function () { 
+                if (box) {
+                    box.close();
+                    box = null;
+                } else {
+                    box = Dialog.box('123123123123123').on('done', function () {
+                        setTimeout(function () {
+                            box.close();
+                            box = null;
+                        }, 5000);
+                    });
+                }
+            });
+
             var i = 0;
             $("[dialog-type=tip]").click(function() {
                 Dialog.tip(i, 5000);
@@ -65,7 +81,7 @@
                 content: '11111111111111111111',
             });
             $("[dialog-type=box]").dialog({
-                content: '11111111111111111111'
+                content: '1231231'
             });
             $("[dialog-type=form]").dialog({
                 content: {
@@ -75,7 +91,6 @@
                     }
                 },
                 ondone: function() {
-                    console.log(this);
                     this.close();
                 }
             });

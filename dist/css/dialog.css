@@ -917,6 +917,7 @@
   .dialog.dialog-page, .dialog.dialog-content, .dialog.dialog-box, .dialog.dialog-form, .dialog.dialog-disk {
     background: #fff;
     min-width: 260px;
+    display: none;
     animation: dialog-box 0.5s;
     -webkit-animation: dialog-box 0.5s;
     -moz-animation: dialog-box 0.5s;

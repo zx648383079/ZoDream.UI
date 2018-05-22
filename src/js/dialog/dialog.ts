@@ -28,6 +28,15 @@ class Dialog {
         return element;
     }
 
+    public static bind(box: JQuery): DialogBox {
+        let element = new DialogBox({
+            type: DialogType.box
+        });
+        element.box = box;
+        element.init();
+        return element;
+    }
+
     public static parseEnum<T>(val: any, type: any): T {
         if (typeof val == 'string') {
             return type[val];

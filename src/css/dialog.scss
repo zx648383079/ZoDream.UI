@@ -108,6 +108,7 @@
     &.dialog-disk {
         background: #fff;
         min-width: 260px;
+        display: none;
         @include prefix-animation(dialog-box 0.5s);
         .dialog-header {
             position: relative;

@@ -72,6 +72,9 @@ class DialogPlugin {
 
 ;(function($: any) {
     $.fn.dialog = function(option ?: DialogOption) {
+        if (this.attr('data-type') == 'dialog') {
+            return Dialog.bind(this);
+        }
         return new DialogPlugin(this, option);
     };
 })(jQuery);

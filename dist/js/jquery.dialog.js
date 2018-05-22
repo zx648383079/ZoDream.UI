@@ -338,7 +338,7 @@ var DialogCore = /** @class */ (function (_super) {
         return this;
     };
     DialogCore.prototype.toggle = function () {
-        if (this.status == DialogStatus.hide) {
+        if (this.status != DialogStatus.show) {
             return this.show();
         }
         return this.hide();
@@ -484,6 +484,14 @@ var Dialog = /** @class */ (function () {
         option.type = this.parseEnum(option.type, DialogType);
         var method = this.getMethod(option.type);
         var element = new method(option);
+        return element;
+    };
+    Dialog.bind = function (box) {
+        var element = new DialogBox({
+            type: DialogType.box
+        });
+        element.box = box;
+        element.init();
         return element;
     };
     Dialog.parseEnum = function (val, type) {
@@ -851,6 +859,9 @@ var DialogPlugin = /** @class */ (function () {
 ;
 (function ($) {
     $.fn.dialog = function (option) {
+        if (this.attr('data-type') == 'dialog') {
+            return Dialog.bind(this);
+        }
         return new DialogPlugin(this, option);
     };
 })(jQuery);
@@ -1275,8 +1286,18 @@ var DialogContent = /** @class */ (function (_super) {
         }
         this._loadingDialog = Dialog.loading().show();
     };
+    /**
+     * 是不是固定的
+     */
+    DialogContent.prototype.isFixedBox = function () {
+        return typeof this.options.content == 'undefined';
+    };
     DialogContent.prototype.init = function () {
         Dialog.addItem(this);
+        if (this.isFixedBox()) {
+            this.setProperty().bindEvent();
+            return;
+        }
         this.createCore().createContent()
             .appendParent().setProperty().bindEvent();
         if (this.status == DialogStatus.show) {
@@ -1395,6 +1416,10 @@ var DialogContent = /** @class */ (function (_super) {
         if (this.isLoading) {
             this.changeStatus(DialogStatus.hide);
             return false;
+        }
+        if (this.isFixedBox()) {
+            this.hide();
+            return true;
         }
         var status = this.status;
         if (!_super.prototype.closeBox.call(this)) {

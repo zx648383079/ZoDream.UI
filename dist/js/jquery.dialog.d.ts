@@ -144,6 +144,7 @@ declare class Dialog {
      * @param option
      */
     static create<T>(option?: DialogOption): T;
+    static bind(box: JQuery): DialogBox;
     static parseEnum<T>(val: any, type: any): T;
     /**
      * 提示
@@ -469,6 +470,10 @@ declare class DialogContent extends DialogCore {
      * 显示加载动画
      */
     private _toggleLoading(arg?);
+    /**
+     * 是不是固定的
+     */
+    protected isFixedBox(): boolean;
     init(): void;
     protected getDefaultOption(): DefaultDialogContentOption;
     /**

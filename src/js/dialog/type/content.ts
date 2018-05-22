@@ -64,8 +64,19 @@ class DialogContent extends DialogCore {
         this._loadingDialog = Dialog.loading().show();
     }
 
+    /**
+     * 是不是固定的
+     */
+    protected isFixedBox(): boolean {
+        return typeof this.options.content == 'undefined';
+    }
+
     public init() {
         Dialog.addItem(this);
+        if (this.isFixedBox()) {
+            this.setProperty().bindEvent();
+            return;
+        }
         this.createCore().createContent()
         .appendParent().setProperty().bindEvent();
         if (this.status == DialogStatus.show) {
@@ -81,7 +92,7 @@ class DialogContent extends DialogCore {
      * 设置内容
      */
     protected createContent(): this {
-        this.box.html(this.getContentHtml()+ this.getFooterHtml());
+        this.box.html(this.getContentHtml() + this.getFooterHtml());
         return this;
     }
 
@@ -196,6 +207,10 @@ class DialogContent extends DialogCore {
         if (this.isLoading) {
             this.changeStatus(DialogStatus.hide);
             return false;
+        }
+        if (this.isFixedBox()) {
+            this.hide();
+            return true;
         }
         let status = this.status;
         if (!super.closeBox()) {

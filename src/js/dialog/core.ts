@@ -224,7 +224,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     }
 
     public toggle(): this {
-        if (this.status == DialogStatus.hide) {
+        if (this.status != DialogStatus.show) {
             return this.show();
         }
         return this.hide();

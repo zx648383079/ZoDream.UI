@@ -80,6 +80,7 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
+        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -89,7 +90,6 @@ var Eve = /** @class */ (function () {
             return;
         }
         return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
-        var _a;
     };
     return Eve;
 }());
@@ -846,6 +846,20 @@ var DialogPlugin = /** @class */ (function () {
     DialogPlugin.prototype.hide = function () {
         this.getDialog().hide();
         return this;
+    };
+    /**
+     *
+     */
+    DialogPlugin.prototype.toggle = function () {
+        this.getDialog().toggle();
+        return this;
+    };
+    /**
+     *
+     * @param tag
+     */
+    DialogPlugin.prototype.find = function (tag) {
+        return this.getDialog().find(tag);
     };
     /**
      * on

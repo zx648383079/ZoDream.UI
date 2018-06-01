@@ -62,6 +62,22 @@ class DialogPlugin {
     }
 
     /**
+     * 
+     */
+    public toggle() {
+        this.getDialog().toggle();
+        return this;
+    }
+
+    /**
+     * 
+     * @param tag 
+     */
+    public find(tag: string) {
+        return this.getDialog().find(tag);
+    }
+
+    /**
      * on
      */
     public on(event: string, func: Function) {

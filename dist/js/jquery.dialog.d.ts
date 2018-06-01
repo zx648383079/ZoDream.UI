@@ -52,7 +52,7 @@ declare abstract class Box extends Eve {
  * 如果一个不能关闭， 多个将出现错乱
  */
 declare abstract class DialogCore extends Box implements DialogInterfae {
-    id: number;
+    id?: number;
     constructor(option: DialogOption, id?: number);
     options: DialogOption;
     private _status;
@@ -106,13 +106,13 @@ declare abstract class DialogCore extends Box implements DialogInterfae {
      */
     protected getDialogTop(): number | undefined;
     protected getDialogBottom(): number | undefined;
-    private _getBottom();
-    private _getTop();
-    private _getLeft();
-    private _getRight();
-    private _getWidth();
-    private _getHeight();
-    private _getLeftTop(direction, width, height, boxWidth, boxHeight);
+    private _getBottom;
+    private _getTop;
+    private _getLeft;
+    private _getRight;
+    private _getWidth;
+    private _getHeight;
+    private _getLeftTop;
     x: number;
     top(top?: number): number | this;
     left(left?: number): number | this;
@@ -284,7 +284,7 @@ declare enum DialogType {
     form = 8,
     content = 9,
     box = 10,
-    page = 11,
+    page = 11
 }
 /**
  * 弹出框位置
@@ -298,7 +298,7 @@ declare enum DialogDirection {
     leftTop = 5,
     rightTop = 6,
     rightBottom = 7,
-    leftBottom = 8,
+    leftBottom = 8
 }
 /**
  * 弹出框状态
@@ -307,11 +307,11 @@ declare enum DialogStatus {
     hide = 0,
     show = 1,
     closing = 2,
-    closed = 3,
+    closed = 3
 }
 declare enum DialogDiskType {
     file = 0,
-    directory = 1,
+    directory = 1
 }
 interface DialogOption {
     [setting: string]: any;
@@ -323,11 +323,11 @@ interface DialogOption {
 }
 declare class DialogPlugin {
     element: JQuery;
-    option: DialogOption;
+    option?: DialogOption;
     constructor(element: JQuery, option?: DialogOption);
     dialog: DialogCore;
     getDialog(ele?: JQuery): DialogCore;
-    private _parseOption(element?);
+    private _parseOption;
     /**
      * close
      */
@@ -340,6 +340,15 @@ declare class DialogPlugin {
      * hide
      */
     hide(): this;
+    /**
+     *
+     */
+    toggle(): this;
+    /**
+     *
+     * @param tag
+     */
+    find(tag: string): JQuery<HTMLElement>;
     /**
      * on
      */
@@ -409,8 +418,8 @@ declare class DialogNotify extends DialogTip {
     protected hideBox(): boolean;
     protected closingBox(): boolean;
     protected closeBox(): boolean;
-    private _createNotify();
-    private _closeNotify();
+    private _createNotify;
+    private _closeNotify;
 }
 declare class DefaultDialogNotifyOption extends DefaultDialogTipOption implements DialogNotifyOption {
     title: string;
@@ -426,9 +435,9 @@ declare class DialogPop extends DialogTip {
      */
     protected appendParent(): this;
     protected bindEvent(): this;
-    private _getRandomDirection();
-    private _setPopProperty();
-    private _getPopLeftTop(direction, width, height, x, y, boxWidth, boxHeight);
+    private _getRandomDirection;
+    private _setPopProperty;
+    private _getPopLeftTop;
 }
 interface DialogLoadingOption extends DialogTipOption {
     count?: number;
@@ -439,7 +448,7 @@ declare class DialogLoading extends DialogTip {
     protected getDefaultOption(): DefaultDialogLoadingOption;
     protected createContent(): this;
     protected setProperty(): this;
-    private _getLoading();
+    private _getLoading;
     protected showBox(): boolean;
     protected hideBox(): boolean;
     protected closingBox(): boolean;
@@ -469,7 +478,7 @@ declare class DialogContent extends DialogCore {
     /**
      * 显示加载动画
      */
-    private _toggleLoading(arg?);
+    private _toggleLoading;
     /**
      * 是不是固定的
      */
@@ -547,16 +556,16 @@ declare class DialogForm extends DialogBox {
         [name: string]: JQuery;
     };
     protected getContentHtml(): string;
-    private _createForm(data);
-    private _createInput(name, data);
+    private _createForm;
+    private _createInput;
     /**
      * 获取表单控件
      */
-    private _getFormElement();
+    private _getFormElement;
     /**
      * 获取表单数据
      */
-    private _getFormData();
+    private _getFormData;
 }
 declare class DialogPage extends DialogBox {
     constructor(option: DialogOption, id?: number);
@@ -631,15 +640,15 @@ declare class DialogDisk extends DialogBox {
      * @param data
      */
     protected showFile(data: any): void;
-    private _getFileItem(data);
-    private _getFolderItem(data);
+    private _getFileItem;
+    private _getFolderItem;
     /**
      * 显示目录
      * @param data
      */
     protected showCatalog(data: any): void;
-    private _getCatalogItem(data);
-    private _getCatalogChild(data);
+    private _getCatalogItem;
+    private _getCatalogChild;
 }
 declare class DefaultDialogDiskOption extends DefaultDialogBoxOption implements DialogDiskOption {
     name: string;

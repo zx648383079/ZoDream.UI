@@ -44,6 +44,21 @@ var ZUtils;
         return time;
     }());
     ZUtils.time = time;
+    var str = /** @class */ (function () {
+        function str() {
+        }
+        str.format = function (arg) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            return arg.replace(/\{(\d+)\}/g, function (m, i) {
+                return args[i];
+            });
+        };
+        return str;
+    }());
+    ZUtils.str = str;
 })(ZUtils || (ZUtils = {}));
 var Eve = /** @class */ (function () {
     function Eve() {
@@ -56,6 +71,7 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
+        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -65,7 +81,6 @@ var Eve = /** @class */ (function () {
             return;
         }
         return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
-        var _a;
     };
     return Eve;
 }());
@@ -335,24 +350,29 @@ var DateTimer = /** @class */ (function (_super) {
      */
     DateTimer.prototype._refreshYearGrid = function () {
         this._refreshYearList();
-        this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this._getMin().getFullYear());
-        this._changeListGroup(this._monthBox, this._currentDate.getMonth());
+        var year = this.getCurrentDate().getFullYear();
+        year -= this._getMin() ? this._getMin().getFullYear() : 1900;
+        this._changeListGroup(this._yearBox, year);
+        this._changeListGroup(this._monthBox, this.getCurrentDate().getMonth());
     };
     /**
      * 刷新时间列表
      */
     DateTimer.prototype._refreshDayGrid = function () {
-        this._changeListGroup(this._hourBox, this._currentDate.getHours());
-        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes());
-        this._changeListGroup(this._secondBox, this._currentDate.getSeconds());
+        this._changeListGroup(this._hourBox, this.getCurrentDate().getHours());
+        this._changeListGroup(this._minuteBox, this.getCurrentDate().getMinutes());
+        this._changeListGroup(this._secondBox, this.getCurrentDate().getSeconds());
     };
     /**
      * 改变list-group 中的ul
      */
     DateTimer.prototype._changeListGroup = function (box, index) {
-        var li = box.find("li").eq(index);
-        li.addClass("active").siblings().removeClass("active");
-        box.scrollTop(li.offset().top - box.offset().top + box.scrollTop() - box.height() / 2);
+        var li = box.find("li").eq(index), top = 0;
+        if (li.length > 0) {
+            li.addClass("active").siblings().removeClass("active");
+            top = li.offset().top;
+        }
+        box.scrollTop(top - box.offset().top + box.scrollTop() - box.height() / 2);
     };
     /**
      * 改变年
@@ -458,6 +478,43 @@ var DateTimer = /** @class */ (function (_super) {
         return days;
     };
     /**
+     * 切换年份选择
+     */
+    DateTimer.prototype.toggleYear = function (is_show) {
+        if (typeof is_show == 'undefined') {
+            is_show = this._yearGrid.is(":hidden");
+        }
+        if (!is_show) {
+            this._yearGrid.hide();
+            return this;
+        }
+        if (this._hasTime) {
+            this._dayGrid.hide();
+        }
+        this._yearGrid.show();
+        this._refreshYearGrid();
+        return this;
+    };
+    /**
+     * 切换时间选择
+     */
+    DateTimer.prototype.toggleTime = function (is_show) {
+        if (!this._dayGrid) {
+            return this;
+        }
+        if (typeof is_show == 'undefined') {
+            is_show = this._dayGrid.is(":hidden");
+        }
+        if (is_show) {
+            this._yearGrid.hide();
+            this._dayGrid.show();
+            this._refreshDayGrid();
+            return this;
+        }
+        this._dayGrid.hide();
+        return this;
+    };
+    /**
      * 绑定事件
      */
     DateTimer.prototype._bindEvent = function () {
@@ -478,15 +535,7 @@ var DateTimer = /** @class */ (function (_super) {
             instance.nextYear();
         });
         this.box.find(".header span").click(function () {
-            if (!instance._yearGrid.is(":hidden")) {
-                instance._yearGrid.hide();
-                return;
-            }
-            if (instance._hasTime) {
-                instance._dayGrid.hide();
-            }
-            instance._yearGrid.show();
-            instance._refreshYearGrid();
+            instance.toggleYear();
         });
         this._yearBox.find("li").click(function () {
             instance._changeYear(parseInt($(this).text()));
@@ -496,20 +545,15 @@ var DateTimer = /** @class */ (function (_super) {
         });
         // 关闭面板
         this._yearGrid.find('.fa-close').click(function () {
-            instance._yearGrid.hide();
+            instance.toggleYear(false);
         });
         if (this._hasTime) {
             this.box.find(".footer button").click(function () {
-                instance.output(true);
+                instance.toggleTime(false)
+                    .toggleYear(false).output(true);
             });
             this.box.find(".footer input").click(function () {
-                if (instance._dayGrid.is(":hidden")) {
-                    instance._yearGrid.hide();
-                    instance._dayGrid.show();
-                    instance._refreshDayGrid();
-                    return;
-                }
-                instance._dayGrid.hide();
+                instance.toggleTime();
             });
             this._hourBox.find("li").click(function () {
                 instance._changeHour(parseInt($(this).text()));
@@ -521,7 +565,7 @@ var DateTimer = /** @class */ (function (_super) {
                 instance._changeSecond(parseInt($(this).text()));
             });
             this._dayGrid.find('.fa-close').click(function () {
-                instance._dayGrid.hide();
+                instance.toggleTime(false);
             });
         }
         /** 实现隐藏 */

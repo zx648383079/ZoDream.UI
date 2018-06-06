@@ -47,7 +47,7 @@ function dialogTask() {
         'src/js/dialog/type/page.ts',
         'src/js/dialog/type/image.ts',
         'src/js/dialog/type/disk.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.dialog.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
@@ -145,8 +145,10 @@ exports.sassTask = sassTask;
 exports.tslintTask = tslintTask;
 exports.tsTask = tsTask;
 exports.dialogTask = dialogTask;
+exports.dateTask = dateTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
+gulp.task('date', gulp.series(dateTask));
 gulp.task('default', build);

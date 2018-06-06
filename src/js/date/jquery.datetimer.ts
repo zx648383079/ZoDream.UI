@@ -268,25 +268,31 @@ class DateTimer extends Box {
      */
     private _refreshYearGrid() {
         this._refreshYearList();
-        this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this._getMin().getFullYear());
-        this._changeListGroup(this._monthBox, this._currentDate.getMonth());
+        let year = this.getCurrentDate().getFullYear();
+        year -= this._getMin() ? this._getMin().getFullYear() : 1900;
+        this._changeListGroup(this._yearBox, year);
+        this._changeListGroup(this._monthBox, this.getCurrentDate().getMonth());
     }
     /**
      * 刷新时间列表
      */
     private _refreshDayGrid() {
-        this._changeListGroup(this._hourBox, this._currentDate.getHours());
-        this._changeListGroup(this._minuteBox, this._currentDate.getMinutes());
-        this._changeListGroup(this._secondBox, this._currentDate.getSeconds());
+        this._changeListGroup(this._hourBox, this.getCurrentDate().getHours());
+        this._changeListGroup(this._minuteBox, this.getCurrentDate().getMinutes());
+        this._changeListGroup(this._secondBox, this.getCurrentDate().getSeconds());
     }
 
      /**
       * 改变list-group 中的ul
       */
     private _changeListGroup(box: JQuery, index: number) {
-        let li = box.find("li").eq(index);
-        li.addClass("active").siblings().removeClass("active");
-        box.scrollTop(li.offset().top - box.offset().top + box.scrollTop() - box.height() / 2);
+        let li = box.find("li").eq(index),
+            top = 0;
+        if (li.length > 0) {
+            li.addClass("active").siblings().removeClass("active");
+            top = li.offset().top;
+        }
+        box.scrollTop(top - box.offset().top + box.scrollTop() - box.height() / 2);
     }
     /**
      * 改变年
@@ -390,6 +396,47 @@ class DateTimer extends Box {
         }
         return days;
      }
+
+
+     /**
+      * 切换年份选择
+      */
+     public toggleYear(is_show?: boolean): this {
+        if (typeof is_show == 'undefined') {
+            is_show = this._yearGrid.is(":hidden");
+        }
+        if (!is_show) {
+            this._yearGrid.hide();
+            return this;
+        }
+        if (this._hasTime) {
+            this._dayGrid.hide();
+        }
+        this._yearGrid.show();
+        this._refreshYearGrid();
+        return this;
+     }
+
+     /**
+      * 切换时间选择
+      */
+     public toggleTime(is_show?: boolean): this {
+        if (!this._dayGrid) {
+            return this;
+        }
+        if (typeof is_show == 'undefined') {
+            is_show = this._dayGrid.is(":hidden");
+        }
+        if (is_show) {
+            this._yearGrid.hide();
+            this._dayGrid.show();
+            this._refreshDayGrid();
+            return this;
+        }
+        this._dayGrid.hide();
+        return this;
+    }
+
      /**
       * 绑定事件
       */
@@ -413,16 +460,7 @@ class DateTimer extends Box {
         });
 
         this.box.find(".header span").click(function() {
-            if (!instance._yearGrid.is(":hidden")) {
-                instance._yearGrid.hide();
-                return;
-            }
-            if (instance._hasTime) {
-                instance._dayGrid.hide();
-            }
-            instance._yearGrid.show();
-            instance._refreshYearGrid();
-            
+            instance.toggleYear();
         });
         
         this._yearBox.find("li").click(function() {
@@ -433,20 +471,15 @@ class DateTimer extends Box {
         });
         // 关闭面板
         this._yearGrid.find('.fa-close').click(function() {
-            instance._yearGrid.hide();
+            instance.toggleYear(false);
         });
         if (this._hasTime) {
             this.box.find(".footer button").click(function() {
-                instance.output(true);
+                instance.toggleTime(false)
+                    .toggleYear(false).output(true);
             });
             this.box.find(".footer input").click(function() {
-                if (instance._dayGrid.is(":hidden")) {
-                    instance._yearGrid.hide();
-                    instance._dayGrid.show();
-                    instance._refreshDayGrid();
-                    return;
-                }
-                instance._dayGrid.hide();
+                instance.toggleTime();
             });
             this._hourBox.find("li").click(function() {
                 instance._changeHour(parseInt($(this).text()));
@@ -458,7 +491,7 @@ class DateTimer extends Box {
                 instance._changeSecond(parseInt($(this).text()));
             });
             this._dayGrid.find('.fa-close').click(function() {
-                instance._dayGrid.hide();
+                instance.toggleTime(false);
             });
         }
         /** 实现隐藏 */

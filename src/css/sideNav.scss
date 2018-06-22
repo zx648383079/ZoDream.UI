@@ -1,0 +1,18 @@
+.side-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    li {
+        list-style: none;
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+        &.active {
+            a {
+                color: #f00;
+            }
+        } 
+    }
+}

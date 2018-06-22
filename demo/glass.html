@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>放大镜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        .glass-box {
+            display: block;
+            width: 400px;
+            height: 255px;
+            margin: 50px;
+            position: relative;
+            border: 1px solid #ccc;
+        }
+
+       .glass-box .small-box {
+            position: relative;
+            z-index: 1;
+        }
+
+        .glass-box .small-box .float-box {
+            display: none;
+            width: 160px;
+            height: 120px;
+            position: absolute;
+            background: #ffffcc;
+            border: 1px solid #ccc;
+            filter: alpha(opacity=50);
+            opacity: 0.5;
+        }
+
+        .glass-box .small-box .mark {
+            position: absolute;
+            display: block;
+            width: 400px;
+            height: 255px;
+            background-color: #fff;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .glass-box .small-box img {
+            width: 400px;
+            height: 255px;
+        }
+
+        .glass-box .big-box {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 460px;
+            width: 400px;
+            height: 300px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            z-index: 1;;
+        }
+
+        .glass-box .big-box img {
+            position: absolute;
+            z-index: 5
+        }
+    </style>
+
+</head>
+<body>
+    <div class="glass-box">
+        <div class="small-box">
+            <div class="mark"></div>
+            <div class="float-box"></div>
+            <img src="image/banner1.jpg"/>
+        </div>
+        <div class="big-box">
+            <img src="image/banner1.jpg"/>
+        </div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script>
+
+        $(function () {
+            var box = $('.glass-box'),
+                smallBox = box.find('.small-box'),
+                mark = box.find('.mark'),
+                floatBox = box.find('.float-box'),
+                bigBox = box.find('.big-box'),
+                bigImg = bigBox.find('img');
+            mark.mouseover(function () { 
+                floatBox.show();
+                bigBox.show();
+
+            }).mouseout(function () { 
+                floatBox.hide();
+                bigBox.hide();
+            }).mousemove(function (event) { 
+                var left = event.clientX - box.offset().left - smallBox.offset().left - floatBox.width() / 2,
+                top = event.clientY - box.offset().top - smallBox.offset().top - floatBox.height() / 2;
+
+                //设置边界处理，防止移出小图片
+                if (left < 0) {
+                    left = 0;
+                } else if (left > (mark.width() - floatBox.width())) {
+                    left = mark.width() - floatBox.width();
+                }
+
+                if (top < 0) {
+                    top = 0;
+                } else if (top > (mark.height() - floatBox.height())) {
+                    top = mark.height() - floatBox.height();
+                }
+                floatBox.css({
+                    left: left + 'px',
+                    top: top + 'px'
+                });
+
+                //求其比值
+                var percentX = left / (mark.width() - floatBox.width()),
+                    percentY = top / (mark.height() - floatBox.height());
+                //方向相反，小图片鼠标移动方向与大图片相反，故而是负值
+                bigImg.css({
+                    left: -percentX * (bigImg.width() - bigBox.width()) + 'px',
+                    top: -percentY * (bigImg.height() - bigBox.height()) + 'px'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

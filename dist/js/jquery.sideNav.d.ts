@@ -4,12 +4,29 @@ declare class SideNav {
     constructor(element: JQuery, option?: SideNavOption);
     option: SideNavOption;
     box: JQuery;
+    headers: Array<JQuery>;
+    private _offsets;
+    private _scrollHeight;
+    private _activeId;
+    private _window;
     /**
      * init
      */
     init(): void;
-    private _bindEvent();
-    private _initBox();
+    private _bindEvent;
+    private _getScrollTop;
+    private _getScrollHeight;
+    private _getOffsetHeight;
+    /**
+     * refresh
+     */
+    refresh(): void;
+    /**
+     * setActive
+     */
+    setActive(): void;
+    private _clear;
+    private _initBox;
     fixed(): void;
     /**
      * scrollTo
@@ -26,10 +43,14 @@ interface SideNavOption {
     speed?: number;
     easing?: string;
     target?: string;
+    active?: string;
+    offset?: number;
 }
 declare class SideNavDefaultOption implements SideNavOption {
     maxLength: number;
     fixedTop: number;
     speed: number;
     easing: string;
+    active: string;
+    offset: number;
 }

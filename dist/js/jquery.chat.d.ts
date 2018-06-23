@@ -3,15 +3,15 @@ declare enum ChatStatus {
     STOP = 0,
     PAUSE = 1,
     RUNNING = 2,
-    COMPLETE = 3
+    COMPLETE = 3,
 }
 declare enum ChatDirection {
     Left = 0,
-    Right = 1
+    Right = 1,
 }
 declare enum ChatAnimation {
     None = 0,
-    Write = 1
+    Write = 1,
 }
 interface ChatInterface {
     start(): this;
@@ -27,7 +27,7 @@ declare class Group {
 declare class ChatPlayText implements ChatInterface {
     element: JQuery;
     group: Group;
-    callback?: Function;
+    callback: Function;
     speed: number;
     constructor(element: JQuery, group: Group, callback?: Function, speed?: number);
     init(): void;
@@ -43,11 +43,11 @@ declare class ChatPlayText implements ChatInterface {
     /** 停止 */
     stop(): this;
     /** 根据标记创造元素 */
-    private _createElementByTag;
+    private _createElementByTag(tag);
     /** 无动画效果 */
-    private _createNoneAnimation;
+    private _createNoneAnimation();
     /** 输入效果 */
-    private _createWriteAnimation;
+    private _createWriteAnimation();
     /** 清除 */
     clear(): void;
 }
@@ -78,7 +78,7 @@ declare class ChatPlayGroup implements ChatInterface {
     /** 停止 */
     stop(): this;
     /** 创建新的文本 */
-    private _createText;
+    private _createText();
     /** 清除所有 */
     clear(): void;
 }
@@ -124,7 +124,7 @@ interface ChatOptions {
     space?: number;
     leftClass?: string;
     rightClass?: string;
-    callback?: (ChatPlayGroup: any) => void;
+    callback?: (ChatPlayGroup) => void;
 }
 declare class ChatDefaultOptions implements ChatOptions {
     data: any[];

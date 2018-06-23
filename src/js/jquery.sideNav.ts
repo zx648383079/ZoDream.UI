@@ -29,6 +29,11 @@ class SideNav {
         this._window = $(window);
         this._initBox();
         this.getHeaders();
+        if (this.headers.length < 1) {
+            this.box.hide();
+            return;
+        }
+        this.box.show();
         this._bindEvent();
         this.fixed();
         this.setActive();
@@ -156,6 +161,7 @@ class SideNav {
     public getHeaders() {
         let headers = this.element.find(':header'),
             html: string = '',
+            that = this,
             headers_list: Array<JQuery> = [],
             headers_count = {
                 h1: 0,
@@ -194,13 +200,16 @@ class SideNav {
                 id = 'autoid-' + length;
             xheader.attr('id', id);
             headers_list.push(xheader);
-            if (text.length > 26)  {
-                text = text.substr(0, 26) + "...";
+            if (text.length > that.option.contentLength)  {
+                text = text.substr(0, that.option.contentLength) + '...';
             }
             html += '<li class="nav-level-'+ headers_order.indexOf(key) +'"><a href="#' + id + '" title="' + text + '">' +  text + '</a></li>';
             length ++;
         });
         this.headers = headers_list;
+        if (this.option.title && this.option.title.length > 0) {
+            html = '<li class="nav-title">'+ this.option.title +'</li>' + html;
+        }
         this.box.html('<ul>'+html+'</ul>');
     }
 
@@ -214,6 +223,8 @@ interface SideNavOption {
     target?: string,    //导航保存的位置
     active?: string,     // 当前选中的样式
     offset?: number,     //偏移量
+    title?: string,      // 导航栏标题
+    contentLength?: number,  //导航内容长度
 }
 
 class SideNavDefaultOption implements SideNavOption {
@@ -223,6 +234,8 @@ class SideNavDefaultOption implements SideNavOption {
     easing: string = 'swing';
     active: string = 'active';
     offset: number = 10;
+    title: string = '本文目录';
+    contentLength: number = 26;
 }
 
 

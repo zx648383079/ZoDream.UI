@@ -1,11 +1,11 @@
 declare enum AjaxType {
     JSON = 0,
     XML = 1,
-    TEXT = 2
+    TEXT = 2,
 }
 declare enum AjaxMethod {
     GET = 0,
-    POST = 1
+    POST = 1,
 }
 declare class Ajax {
     static request(option: AjaxOption): any;
@@ -41,7 +41,7 @@ declare class Url {
     data: Object;
     static parserData(arg: string): Object;
     static getData(args: any): string;
-    private static filterValue;
+    private static filterValue(data, pre);
     fragment: string;
     path: string;
     getHost(): string;

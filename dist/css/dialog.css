@@ -1597,6 +1597,20 @@
     -ms-transform: scale(0.2);
     -o-transform: scale(0.2); } }
 
+.dialog-menu {
+  position: fixed;
+  background: #fff;
+  width: 150px; }
+  .dialog-menu ul {
+    margin: 0;
+    padding: 0; }
+    .dialog-menu ul li {
+      list-style: none;
+      padding: 0 8px;
+      line-height: 30px; }
+      .dialog-menu ul li:hover {
+        background: rgba(0, 0, 0, 0.1); }
+
 .dialog-chat .dialog-box {
   background: #fff;
   position: absolute;
@@ -1654,12 +1668,17 @@
       display: inline-block; }
       .dialog-chat .dialog-chat-box .dialog-info .dialog-info-name * {
         margin: 0; }
-  .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item {
-    width: 33%;
-    box-sizing: border-box;
-    text-align: center; }
-    .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item.active {
-      color: #f00; }
+    .dialog-chat .dialog-chat-box .dialog-info .dialog-message-count {
+      display: none; }
+  .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header {
+    border-bottom: 1px solid;
+    border-top: 1px solid; }
+    .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item {
+      width: 33%;
+      box-sizing: border-box;
+      text-align: center; }
+      .dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item.active {
+        color: #f00; }
   .dialog-chat .dialog-chat-box .dialog-user {
     position: relative;
     padding: 8px; }
@@ -1686,9 +1705,38 @@
         background: #f00;
         border-radius: 50%;
         text-align: center; }
+  .dialog-chat .dialog-chat-box.dialog-min .dialog-header,
+  .dialog-chat .dialog-chat-box.dialog-min .dialog-tab {
+    display: none; }
+  .dialog-chat .dialog-chat-box.dialog-min .dialog-info {
+    padding: 0;
+    height: 30px;
+    width: 100%;
+    text-align: center; }
+    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar {
+      position: absolute;
+      left: 0; }
+      .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar img {
+        width: 30px; }
+    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-name {
+      line-height: 30px; }
+      .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-name p {
+        display: none; }
+    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-message-count {
+      display: block;
+      position: absolute;
+      left: -12px;
+      top: -11px;
+      line-height: 20px;
+      background: #f00;
+      color: #fff;
+      border-radius: 50%;
+      min-width: 20px; }
 
 .dialog-chat .dialog-chat-room {
   width: 500px; }
+  .dialog-chat .dialog-chat-room .dialog-header {
+    border-bottom: 1px solid; }
   .dialog-chat .dialog-chat-room .dialog-message-box {
     height: 400px;
     overflow-y: auto; }
@@ -1746,7 +1794,9 @@
         border-left-color: rgba(0, 255, 255, 0.16); }
   .dialog-chat .dialog-chat-room .dialog-message-tools {
     font-size: 20px;
-    line-height: 30px; }
+    line-height: 30px;
+    border-bottom: 1px solid;
+    border-top: 1px solid; }
     .dialog-chat .dialog-chat-room .dialog-message-tools .fa {
       width: 30px;
       text-align: center; }

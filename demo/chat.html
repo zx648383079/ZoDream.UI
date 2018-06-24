@@ -12,7 +12,7 @@
 <body style="background: #767676;">
     <div class="dialog-chat dialog-fixed">
         <!-- 会员列表 -->
-        <div class="dialog-box dialog-chat-box" style="display: block">
+        <div class="dialog-box dialog-chat-box dialog-min" style="display: block">
             <div class="dialog-header">
                 <div class="dialog-action">
                     <i class="fa fa-plus"></i>
@@ -28,6 +28,9 @@
                     <h3>123</h3>
                     <p>......</p>
                 </div>
+                <div class="dialog-message-count">
+                    99
+                </div>
             </div>
             <div class="dialog-tab">
                 <div class="dialog-tab-header">
@@ -40,7 +43,7 @@
                     </div>
                 </div>
                 <div class="dialog-tab-box">
-                    <div class="dialog-tab-item">
+                    <div class="dialog-tab-item active">
                         <div class="dialog-user">
                             <div class="dialog-user-avatar">
                                 <img src="./image/avatar.jpg" alt="">
@@ -51,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="dialog-tab-item active">
+                    <div class="dialog-tab-item">
                         <div class="dialog-panel expanded">
                             <div class="dialog-panel-header">
                                 <i class="dialog-panel-icon"></i>
@@ -99,6 +102,19 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="dialog-menu">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        查看资料</li>
+                    <li>
+                        <i class="fa fa-bookmark"></i>
+                        移动好友</li>
+                    <li>
+                        <i class="fa fa-trash"></i>
+                        删除好友</li>
+                </ul>
             </div>
         </div>
         <!-- 聊天室 -->
@@ -215,5 +231,7 @@
             </div>
         </div>
     </div>
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jquery.chat.js"></script>
 </body>
 </html>

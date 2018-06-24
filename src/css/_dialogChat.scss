@@ -1,3 +1,20 @@
+.dialog-menu {
+    position: fixed;
+    background: #fff;
+    width: 150px;
+    ul {
+        margin: 0;
+        padding: 0;
+        li {
+            list-style: none;
+            padding: 0 8px;
+            line-height: 30px;
+            &:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}
 .dialog-chat {
     .dialog-box {
         background: #fff;
@@ -98,9 +115,14 @@
                     margin: 0;
                 }
             }
+            .dialog-message-count {
+                display: none;
+            }
         }
         .dialog-tab {
             .dialog-tab-header {
+                border-bottom: 1px solid;
+                border-top: 1px solid;
                 .dialog-tab-item {
                     width: 33%;
                     box-sizing: border-box;
@@ -145,9 +167,48 @@
                 }
             }
         }
+        &.dialog-min {
+            .dialog-header,
+            .dialog-tab {
+                display: none;
+            }
+            .dialog-info {
+                padding: 0;
+                height: 30px;
+                width: 100%;
+                text-align: center;
+                .dialog-info-avatar {
+                    position: absolute;
+                    left: 0;
+                    img {
+                        width: 30px;
+                    }
+                }
+                .dialog-info-name {
+                    line-height: 30px;
+                    p {
+                        display: none;
+                    }
+                }
+                .dialog-message-count {
+                    display: block;
+                    position: absolute;
+                    left: -12px;
+                    top: -11px;
+                    line-height: 20px;
+                    background: #f00;
+                    color: #fff;
+                    border-radius: 50%;
+                    min-width: 20px;
+                }
+            }
+        }
     }
     .dialog-chat-room {
         width: 500px;
+        .dialog-header {
+            border-bottom: 1px solid;
+        }
         .dialog-message-box {
             height: 400px;
             overflow-y: auto;
@@ -220,6 +281,8 @@
         .dialog-message-tools {
             font-size: 20px;
             line-height: 30px;
+            border-bottom: 1px solid;
+            border-top: 1px solid;
             .fa {
                 width: 30px;
                 text-align: center;

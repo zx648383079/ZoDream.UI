@@ -146,9 +146,11 @@ exports.tslintTask = tslintTask;
 exports.tsTask = tsTask;
 exports.dialogTask = dialogTask;
 exports.dateTask = dateTask;
+exports.uploadTask = uploadTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
+gulp.task('upload', gulp.series(uploadTask));
 gulp.task('default', build);

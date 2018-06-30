@@ -88,7 +88,7 @@ class Upload extends Eve {
         let instance = this;
         let data = new FormData();
         $.each(files, function(i, file) {
-            data.append(instance.options.name, file);
+            data.append(instance.options.name, instance.options.ondealfile ? instance.options.ondealfile.call(instance, file) : file);
         });
         if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
@@ -131,7 +131,7 @@ class Upload extends Eve {
     public uploadOne(file: File) {
         let instance = this;
         let data = new FormData();
-        data.append(this.options.name, file);
+        data.append(this.options.name, this.options.ondealfile ? this.options.ondealfile.call(this, file) : file);
         if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
             return;
@@ -252,6 +252,7 @@ interface UploadOption {
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
+    ondealfile?: (file: File) => any,
     onbefore?: (data: FormData, currentElement: JQuery) => any,  //验证要上传的文件
     onafter?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
     onsuccess?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉

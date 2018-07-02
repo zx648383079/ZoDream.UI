@@ -85,15 +85,55 @@ class Upload extends Eve {
     }
 
     public uploadMany(files) {
-        let instance = this;
-        let data = new FormData();
-        $.each(files, function(i, file) {
-            data.append(instance.options.name, instance.options.ondealfile ? instance.options.ondealfile.call(instance, file) : file);
-        });
+        let instance = this,
+            data: FormData;
+        if (this.options.ondealfile) {
+            data = this.options.ondealfiles.call(this, files);
+        } else {
+            data = new FormData();
+            $.each(files, function(i, file) {
+                data.append(instance.options.name, file);
+            });
+        }
         if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
             return;
         }
+        this.uploadForm(data, function(data) {
+            if (data instanceof Array) {
+                $.each(data, function(i, item) {
+                    instance.deal($.extend({}, instance.options.data, item));
+                });
+                return;
+            }
+            instance.deal($.extend({}, instance.options.data, data));
+        });
+    }
+
+    public uploadOne(file: File) {
+        let instance = this,
+            data: FormData;
+        if (this.options.ondealfile) {
+            data = this.options.ondealfile.call(this, file);
+        } else {
+            data = new FormData();
+            data.append(this.options.name, file);
+        }
+        if (!data) {
+            console.log('deal file is false');
+            return;
+        }
+        if (this.trigger('before', data, this.currentElement) === false) {
+            console.log('before upload is false');
+            return;
+        }
+        this.uploadForm(data, function(data) {
+            instance.deal($.extend({}, instance.options.data, data));
+        });
+    }
+
+    public uploadForm(data: FormData, cb?: (data: any)=>void) {
+        let instance = this;
         let opts = {
             url: this.options.url,
             type:'POST',
@@ -107,13 +147,7 @@ class Upload extends Eve {
                     console.log('after upload is false');
                     return;
                 }
-                if (data instanceof Array) {
-                    $.each(data, function(i, item) {
-                        instance.deal($.extend({}, instance.options.data, item));
-                    });
-                    return;
-                }
-                instance.deal($.extend({}, instance.options.data, data));
+                cb && cb(data);
             }
         };
         if (this.hasEvent('progress')) {
@@ -128,40 +162,61 @@ class Upload extends Eve {
         $.ajax(opts);
     }
 
-    public uploadOne(file: File) {
-        let instance = this;
-        let data = new FormData();
-        data.append(this.options.name, this.options.ondealfile ? this.options.ondealfile.call(this, file) : file);
-        if (this.trigger('before', data, this.currentElement) === false) {
-            console.log('before upload is false');
-            return;
+    public photoCompress(file: File, options: any, cb: (data: string) => void){
+        let ready = new FileReader(),
+            instance = this;
+        /*开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.*/
+        ready.readAsDataURL(file);
+        ready.onload = function(){
+            let re = this.result;
+            instance._canvasDataURL(re, options, cb)
         }
-        let opts = {
-            url: this.options.url,
-            type:'POST',
-            data: data,
-            cache: false,
-            contentType: false,    //不可缺
-            processData: false,    //不可缺
-            success: function(data) {
-                data = instance.trigger('after', data, instance.currentElement);
-                if (data == false) {
-                    console.log('after upload is false');
-                    return;
-                }
-                instance.deal($.extend({}, instance.options.data, data));
+    }
+    private _canvasDataURL(path: string, obj: any, callback: (data: string) => void){
+        let img = new Image();
+        img.src = path;
+        img.onload = function(){
+            let that: Image = this;
+            // 默认按比例压缩
+            let w = that.width,
+                h = that.height,
+                scale = w / h;
+            w = obj.width || w;
+            h = obj.height || (w / scale);
+            let quality = 0.7;  // 默认图片质量为0.7
+            //生成canvas
+            let canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d');
+            // 创建属性节点
+            let anw = document.createAttribute("width");
+            anw.nodeValue = w;
+            let anh = document.createAttribute("height");
+            anh.nodeValue = h;
+            canvas.setAttributeNode(anw);
+            canvas.setAttributeNode(anh);
+            ctx.drawImage(that, 0, 0, w, h);
+            // 图像质量
+            if(obj.quality && obj.quality <= 1 && obj.quality > 0){
+                quality = obj.quality;
             }
-        };
-        if (this.hasEvent('progress')) {
-            opts['xhr'] = function(){
-                let xhr = $.ajaxSettings.xhr();
-                if(onprogress && xhr.upload) {
-                    xhr.upload.addEventListener('progress' , this.options.onprogress, false);
-                    return xhr;
-                }
-            };
+            // quality值越小，所绘制出的图像越模糊
+            let base64 = canvas.toDataURL('image/jpeg', quality);
+            // 回调函数返回base64的值
+            callback(base64);
         }
-        $.ajax(opts);
+    }
+    /**
+     * 将以base64的图片url数据转换为Blob
+     * @param urlData
+     *            用url方式表示的base64图片数据
+     */
+    public convertBase64UrlToBlob(urlData: string){
+        var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {type:mime});
     }
 
     public deal(data: any) {
@@ -252,7 +307,8 @@ interface UploadOption {
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
-    ondealfile?: (file: File) => any,
+    ondealfile?: (file: File) => FormData | void,
+    ondealfiles?: (file: FileList) => FormData | void,
     onbefore?: (data: FormData, currentElement: JQuery) => any,  //验证要上传的文件
     onafter?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
     onsuccess?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
@@ -290,7 +346,21 @@ class UploadDefaultOption implements UploadOption {
     dynamic: boolean = true;
     getElement: (tag: string, currentElement: JQuery) => JQuery = function(tag: string): JQuery {
         return $(tag);
-    }
+    };
+    // ondealfile: (file: File) => FormData| void = function(file: File) {
+    //     if(file.size/1024 > 1025) { //大于1M，进行压缩上传
+    //         this.photoCompress(file, {
+    //             quality: 0.2
+    //         }, function(base64Codes){
+    //             //console.log("压缩后：" + base.length / 1024 + " " + base);
+    //             let data = new FormData();
+    //             let bl = this.convertBase64UrlToBlob(base64Codes);
+    //             data.append("file", bl, "file_"+new Date().getTime()+".jpg"); // 文件对象
+    //             this.uploadForm(data);
+    //         });
+    //         return;
+    //     }
+    // }
 }
 
 

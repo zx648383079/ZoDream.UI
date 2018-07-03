@@ -30,6 +30,15 @@ class DialogImage extends DialogContent {
         this._img.attr('style', '').attr('src', img);
     }
 
+    public init() {
+        Dialog.addItem(this);
+        this.createCore().createContent()
+        .appendParent().setProperty().bindEvent();
+        if (this.status == DialogStatus.show) {
+            this.showBox();
+        }
+    }
+
     protected createContent(): this {
         this.box.html(this.getContentHtml());
         this._img = this.box.find('.dialog-body img');
@@ -37,6 +46,9 @@ class DialogImage extends DialogContent {
     }
 
     protected setProperty(): this {
+        if (!this._img) {
+            return this;
+        }
         let target = this.options.target || Dialog.$window;
         let maxWidth = target.width();
         let width = this._img.width();

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../dist/css/dialog.css">
+    <link rel="stylesheet" href="../dist/css/dialog-select.css">
+</head>
+<body>
+    
+    <button>打开</button>
+
+ 
+    <select name="11" id="">
+        <option value="">请选择</option>
+        <option value="1">2</option>
+        <option value="3">4</option>
+        <option value="5">6</option>
+    </select>
+
+    <select name="1111111" id="">
+        <option value="">不要选择额</option>
+        <option value="123">123123</option>
+        <option value="1123">1231231231223</option>
+    </select>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
+    <script src="../dist/js/jquery.selectbox.js"></script>
+    <script>
+        $(function () {
+            $('button').select({
+                default: 2,
+                data: [
+                    {
+                        id: 1,
+                        value: 2
+                    },
+                    {
+                        id: 2,
+                        value: 3
+                    }
+                ]
+            });
+            $("select").select();
+        });
+    </script>
+</body>
+</html>

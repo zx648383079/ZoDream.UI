@@ -37,7 +37,7 @@ $(function () {
     $(document).click(function () {
         $(".dialog-menu").hide();
     }).on('selectionchange', function (e) {
-        console.log(e, document.getSelection().anchorNode, document.getSelection().getRangeAt(0));
+        console.log(e);
     });
     mainBox.click(function () {
         if ($(this).hasClass('dialog-min')) {

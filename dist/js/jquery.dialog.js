@@ -1783,12 +1783,23 @@ var DialogImage = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    DialogImage.prototype.init = function () {
+        Dialog.addItem(this);
+        this.createCore().createContent()
+            .appendParent().setProperty().bindEvent();
+        if (this.status == DialogStatus.show) {
+            this.showBox();
+        }
+    };
     DialogImage.prototype.createContent = function () {
         this.box.html(this.getContentHtml());
         this._img = this.box.find('.dialog-body img');
         return this;
     };
     DialogImage.prototype.setProperty = function () {
+        if (!this._img) {
+            return this;
+        }
         var target = this.options.target || Dialog.$window;
         var maxWidth = target.width();
         var width = this._img.width();

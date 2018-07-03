@@ -111,7 +111,8 @@ interface SelectOptions {
  }
 
  class SelectDefaultOptions implements SelectOptions {
-     
+    textTag: string = 'value';
+    valueTag: string = 'id';
  }
  
  ;(function($: any) {

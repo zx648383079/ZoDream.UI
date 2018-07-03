@@ -96,6 +96,8 @@ var Select = /** @class */ (function (_super) {
 }(Box));
 var SelectDefaultOptions = /** @class */ (function () {
     function SelectDefaultOptions() {
+        this.textTag = 'value';
+        this.valueTag = 'id';
     }
     return SelectDefaultOptions;
 }());

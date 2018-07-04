@@ -35,59 +35,84 @@ var Eve = /** @class */ (function () {
 var SelectBox = /** @class */ (function (_super) {
     __extends(SelectBox, _super);
     function SelectBox(element, options) {
-        var _this = _super.call(this) || this;
-        _this.element = element;
-        _this._index = 0;
-        _this._real_index = 0;
-        _this._length = 0;
-        _this.options = $.extend({}, new SelectBoxDefaultOptions(), options);
-        _this._init();
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.element = element;
+        _this_1._index = [];
+        _this_1._real_index = [];
+        _this_1.options = $.extend({}, new SelectBoxDefaultOptions(), options);
+        var _this = _this_1;
+        if (typeof _this_1.options.data == 'function') {
+            _this_1.options.data = _this_1.options.data.call(_this_1, function (data) {
+                _this.options.data = data;
+                _this._init();
+            });
+        }
+        if (typeof _this_1.options.data == 'object') {
+            _this_1._init();
+            return _this_1;
+        }
+        if (typeof _this_1.options.data == 'string') {
+            CacheUrl.getData(_this_1.options.data, function (data) {
+                _this.options.data = data;
+                _this._init();
+            });
+            return _this_1;
+        }
+        return _this_1;
     }
     SelectBox.prototype._init = function () {
-        this.box = $('<div class="dialog dialog-select"></div>');
+        var _this = this;
+        this.box = $('<div class="' + this._getBoxClass() + '" data-type="select"></div>');
         $(document.body).append(this.box);
-        this.box.html('<div class="dialog-header"><div class="dialog-close">取消</div><div class="dialog-title">' + this.options.title + '</div><div class="dialog-yes">确定</div></div><div class="dialog-body"><ul></ul><hr class="dialog-top-hr"><hr class="dialog-bottom-hr"></div>');
-        this._ulBox = this.box.find('.dialog-body ul');
+        this.box.html('<div class="dialog-header"><div class="dialog-close">取消</div><div class="dialog-title">' + this.options.title + '</div><div class="dialog-yes">确定</div></div><div class="dialog-body">' + this._createUl() + '<hr class="dialog-top-hr"><hr class="dialog-bottom-hr"></div>');
+        _this._ulBox = [];
+        this.box.find('.dialog-body ul').each(function () {
+            _this._ulBox.push($(this));
+        });
         this._bindEvent();
         this.refresh();
         if (this.options.default) {
-            this.selectedValue(this.options.default).notify();
-            return;
+            this.applyValue(this.options.default);
         }
-        this.selected(0).notify();
+        this.notify();
     };
     SelectBox.prototype._bindEvent = function () {
-        var instance = this;
+        var _this = this;
         this.element.click(function (e) {
             e.stopPropagation();
-            instance.show();
+            _this.show();
         });
         // $(document).click(function() {
         //    instance.hide();
         // });
         this.box.on('click', '.dialog-close', function () {
-            instance.hide();
+            _this.hide();
         });
         this.box.on('click', '.dialog-yes', function () {
-            instance.notify().hide();
+            _this.notify().hide();
         });
-        this._ulBox.on('click', 'li', function () {
-            instance.selected($(this));
-        });
-        if ($.fn.swipe) {
-            this.box.swipe({
-                swipe: function (event, direction, distance) {
-                    if (direction == $.fn.swipe.directions.UP) {
-                        instance.selectedIndex(instance._index + Math.floor(distance / 30));
-                        return;
-                    }
-                    if (direction == $.fn.swipe.directions.DOWN) {
-                        instance.selectedIndex(instance._index - Math.ceil(distance / 30));
-                        return;
-                    }
-                }
+        var _loop_1 = function (i) {
+            this_1._ulBox[i].on('click', 'li', function () {
+                _this.selected($(this), i);
             });
+            if ($.fn.swipe) {
+                this_1._ulBox[i].swipe({
+                    swipe: function (event, direction, distance) {
+                        if (direction == $.fn.swipe.directions.UP) {
+                            _this.selectedIndex(_this._index[i] + Math.floor(distance / _this.options.lineHeight));
+                            return;
+                        }
+                        if (direction == $.fn.swipe.directions.DOWN) {
+                            _this.selectedIndex(_this._index[i] - Math.ceil(distance / _this.options.lineHeight));
+                            return;
+                        }
+                    }
+                });
+            }
+        };
+        var this_1 = this;
+        for (var i = 0; i < this.options.column; i++) {
+            _loop_1(i);
         }
     };
     SelectBox.prototype.show = function () {
@@ -96,66 +121,227 @@ var SelectBox = /** @class */ (function (_super) {
     };
     SelectBox.prototype.hide = function () {
         this.box.hide();
-        if (this._index != this._real_index) {
-            this.selectedIndex(this._real_index);
+        this.restore();
+        return this;
+    };
+    SelectBox.prototype.restore = function () {
+        var data = this._real_index.slice();
+        for (var i = 0; i < this.options.column; i++) {
+            this.selectedIndex(data[i], i);
         }
         return this;
     };
     SelectBox.prototype.refresh = function () {
+        this._refreshUl(0, this.options.data);
+        for (var i = 0; i < this.options.column; i++) {
+            this._real_index[i] = 0;
+        }
+        this.restore();
+        return this;
+    };
+    SelectBox.prototype.applyValue = function (val) {
+        if (this.options.column < 2) {
+            return this.selectedValue(val);
+        }
+        var data = this.getPath(val);
+        if (data && data.length > 0) {
+            this._real_index = data;
+            this.restore();
+        }
+        return this;
+    };
+    /**
+* 根据ID查找无限树的路径
+* @param id
+*/
+    SelectBox.prototype.getPath = function (id) {
+        if (!id) {
+            return [];
+        }
+        var path = [], found = false, _this = this, findPath = function (data) {
+            if (typeof data != 'object') {
+                return;
+            }
+            var iii = -1;
+            $.each(data, function (key, args) {
+                iii++;
+                if (key == id || args[_this.options.valueTag] == id) {
+                    path.push(iii);
+                    found = true;
+                    return false;
+                }
+                if (!args.hasOwnProperty(_this.options.childrenTag)) {
+                    return;
+                }
+                findPath(args[_this.options.childrenTag]);
+                if (found) {
+                    path.push(iii);
+                    return false;
+                }
+            });
+        }, ii = -1;
+        $.each(this.options.data, function (key, data) {
+            ii++;
+            findPath(data[_this.options.childrenTag]);
+            if (found) {
+                path.push(ii);
+                return false;
+            }
+        });
+        path.reverse();
+        return path;
+    };
+    SelectBox.prototype._createUl = function () {
         var html = '';
-        var instance = this;
-        this._length = 0;
-        $.each(this.options.data, function (i, item) {
-            instance._length++;
-            if (instance.options.textTag) {
-                html += '<li data-value="' + item[instance.options.valueTag] + '">' + item[instance.options.textTag] + '</li>';
+        for (var i = 0; i < this.options.column; i++) {
+            html += '<ul class="dialog-column-' + i + '"></ul>';
+        }
+        return html;
+    };
+    SelectBox.prototype._getBoxClass = function () {
+        if (this.options.column < 2) {
+            return 'dialog dialog-select';
+        }
+        return 'dialog dialog-select dialog-select-column-' + this.options.column;
+    };
+    SelectBox.prototype._getOptionByIndex = function (data, index) {
+        if (index === void 0) { index = 0; }
+        if (data instanceof Array) {
+            return data[index][this.options.childrenTag];
+        }
+        for (var key in data) {
+            if (!data.hasOwnProperty(key)) {
+                continue;
+            }
+            index--;
+            if (index < 0) {
+                return data[key][this.options.childrenTag];
+            }
+        }
+        return null;
+    };
+    SelectBox.prototype._getColumnOption = function (index) {
+        var _this_1 = this;
+        var data = this.options.data;
+        if (index < 1) {
+            return data;
+        }
+        this.mapSelected(function (option, i) {
+            var val = option.attr('data-value');
+            data = _this_1._getChildren(val, data);
+            if (!data || data.length < 1 || i >= index - 1) {
+                return false;
+            }
+        });
+        return data;
+    };
+    SelectBox.prototype._getChildren = function (id, data) {
+        if (typeof data != 'object') {
+            return [];
+        }
+        if (!(data instanceof Array)) {
+            return data.hasOwnProperty(id) ? data[id][this.options.childrenTag] : [];
+        }
+        for (var i = 0; i < data.length; i++) {
+            if (data[i][this.options.valueTag] == id) {
+                return data[i][this.options.childrenTag];
+            }
+        }
+        return [];
+    };
+    SelectBox.prototype._refreshUl = function (index, data) {
+        if (index === void 0) { index = 0; }
+        this._ulBox[index].html(this._createOptionHtml(data));
+    };
+    SelectBox.prototype.refreshColumn = function (column) {
+        if (column === void 0) { column = 0; }
+        var data = this._getColumnOption(column);
+        this._refreshUl(column, data);
+        this.selectedIndex(0, column);
+        return this;
+    };
+    SelectBox.prototype._createOptionHtml = function (data) {
+        var html = '';
+        var _this = this;
+        $.each(data, function (i, item) {
+            if (_this.options.textTag) {
+                html += '<li data-value="' + item[_this.options.valueTag] + '">' + item[_this.options.textTag] + '</li>';
                 return;
             }
             html += '<li data-value="' + i + '">' + item + '</li>';
         });
-        this._ulBox.html(html);
-        return this;
+        return html;
     };
-    SelectBox.prototype.selected = function (option) {
+    SelectBox.prototype.selected = function (option, column) {
+        if (column === void 0) { column = 0; }
         if (typeof option == 'number') {
-            return this.selectedIndex(option);
+            return this.selectedIndex(option, column);
         }
         if (typeof option == 'object') {
-            return this.selectedOption(option);
+            return this.selectedOption(option, column);
         }
-        return this.selectedValue(option);
+        return this.selectedValue(option, column);
     };
-    SelectBox.prototype.selectedIndex = function (index) {
+    SelectBox.prototype.selectedIndex = function (index, column) {
         if (index === void 0) { index = 0; }
+        if (column === void 0) { column = 0; }
         if (index < 0) {
             index = 0;
         }
-        if (index >= this._length) {
-            index = this._length - 1;
+        var lis = this._ulBox[column].find('li');
+        var length = lis.length;
+        if (index >= length) {
+            index = length - 1;
         }
-        var option = this._ulBox.find('li').eq(index);
-        this.selectedOption(option);
+        var option = lis.eq(index);
+        this.selectedOption(option, column);
         return this;
     };
-    SelectBox.prototype.selectedValue = function (id) {
-        var option = this._ulBox.find('li[data-value="' + id + '"]');
-        this.selectedOption(option);
+    SelectBox.prototype.selectedValue = function (id, column) {
+        if (column === void 0) { column = 0; }
+        var option = this._ulBox[column].find('li[data-value="' + id + '"]');
+        this.selectedOption(option, column);
         return this;
     };
-    SelectBox.prototype.selectedOption = function (option) {
+    SelectBox.prototype.selectedOption = function (option, column) {
+        if (column === void 0) { column = 0; }
         option.addClass('active').siblings().removeClass('active');
-        this._index = option.index();
-        var top = 60 - this._index * 30;
-        this._ulBox.css('transform', 'translate(0px, ' + top + 'px) translateZ(0px)');
+        this._index[column] = option.index();
+        var top = 2 * this.options.lineHeight - this._index[column] * this.options.lineHeight;
+        this._ulBox[column].css('transform', 'translate(0px, ' + top + 'px) translateZ(0px)');
+        if (this.options.column > column + 1) {
+            this.refreshColumn(column + 1);
+        }
         return this;
     };
     SelectBox.prototype.val = function () {
-        return this._ulBox.find('li').eq(this._index).attr('data-value');
+        var data = [];
+        for (var i = 0; i < this.options.column; i++) {
+            data.push(this.getSelectedOption(i).attr('data-value'));
+        }
+        return this.options.column > 1 ? data : data[0];
+    };
+    SelectBox.prototype.mapSelected = function (cb) {
+        for (var i = 0; i < this.options.column; i++) {
+            if (cb && cb(this.getSelectedOption(i), i) === false) {
+                break;
+            }
+        }
+        return this;
+    };
+    SelectBox.prototype.getSelectedOption = function (index) {
+        if (index === void 0) { index = 0; }
+        return this._ulBox[index].find('li').eq(this._index[index]);
     };
     SelectBox.prototype.notify = function () {
-        this._real_index = this._index;
-        var option = this._ulBox.find('li').eq(this._index);
-        this.trigger('done', option.attr('data-value'), option, this._index);
+        this._real_index = this._index.slice();
+        var opts = [];
+        var data = [];
+        this.mapSelected(function (option) {
+            opts.push(option);
+            data.push(option.attr('data-value'));
+        });
+        this.trigger.apply(this, ['done'].concat(data, opts, this._index));
         return this;
     };
     return SelectBox;
@@ -163,8 +349,11 @@ var SelectBox = /** @class */ (function (_super) {
 var SelectBoxDefaultOptions = /** @class */ (function () {
     function SelectBoxDefaultOptions() {
         this.title = '请选择';
+        this.column = 1;
         this.textTag = 'value';
         this.valueTag = 'id';
+        this.childrenTag = 'children';
+        this.lineHeight = 30;
     }
     return SelectBoxDefaultOptions;
 }());

@@ -64,5 +64,8 @@
       top: 60px; }
     .dialog.dialog-select .dialog-body .dialog-bottom-hr {
       top: 90px; }
+  .dialog.dialog-select.dialog-select-column-3 .dialog-body ul {
+    width: 33%;
+    float: left; }
 
 /*# sourceMappingURL=dialog-select.css.map */

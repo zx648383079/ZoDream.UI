@@ -10,7 +10,8 @@
 </head>
 <body>
     
-    <button>打开</button>
+    <button class="open-one">打开</button>
+    <button class="open-two">打开</button>
 
  
     <select name="11" id="">
@@ -26,12 +27,14 @@
         <option value="1123">1231231231223</option>
     </select>
 
+
+
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
     <script src="../dist/js/jquery.selectbox.js"></script>
     <script>
         $(function () {
-            $('button').select({
+            $('.open-one').select({
                 default: 2,
                 data: [
                     {
@@ -45,6 +48,55 @@
                 ]
             });
             $("select").select();
+            $('.open-two').select({
+                default: 14,
+                column: 3,
+                data: [
+                    {
+                        id: 1,
+                        value: 1,
+                        children: [
+                            {
+                                id: 2,
+                                value: 2,
+                                children: [
+                                    {
+                                        id: 3,
+                                        value: 3,
+                                    },
+                                    {
+                                        id: 4,
+                                        value: 4,
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                    {
+                        id: 11,
+                        value: 11,
+                        children: [
+                            {
+                                id: 12,
+                                value: 12,
+                                children: [
+                                    {
+                                        id: 13,
+                                        value: 13,
+                                    },
+                                    {
+                                        id: 14,
+                                        value: 14,
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                ],
+                ondone: function () { 
+                    console.log(arguments);
+                 }
+            });
         });
     </script>
 </body>

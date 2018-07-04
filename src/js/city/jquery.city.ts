@@ -12,15 +12,19 @@ class City extends Box {
         options?: CityOptions
     ) {
         super();
+        let instance = this;
         this.options = $.extend({}, new CityDefaultOptions(), options);
         if (typeof this.options.data == 'function') {
-            this.options.data = this.options.data.call(this);
+            this.options.data = this.options.data.call(this, function(data) {
+                instance.options.data = data;
+                instance.init();
+            });
         }
         if (typeof this.options.data == 'object') {
             this.init();
             return;
         }
-        let instance = this;
+        
         if (typeof this.options.data == 'string') {
             CacheUrl.getData(this.options.data, function(data) {
                 instance.options.data = data;

@@ -5,68 +5,91 @@
      ) {
          super();
          this.options = $.extend({}, new SelectBoxDefaultOptions(), options);
-        this._init();
+         let _this = this;
+         if (typeof this.options.data == 'function') {
+            this.options.data = this.options.data.call(this, function(data) {
+                _this.options.data = data;
+                _this._init();
+            });
+        }
+        if (typeof this.options.data == 'object') {
+            this._init();
+            return;
+        }
+        if (typeof this.options.data == 'string') {
+            CacheUrl.getData(this.options.data, function(data) {
+                _this.options.data = data;
+                _this._init();
+            });
+            return;
+        }
      }
 
      public options: SelectBoxOptions;
 
      public box: JQuery;
 
-     private _index: number = 0;
+     private _index: Array<number> = [];
 
-     private _real_index: number = 0;
-
-     private _length: number = 0;
+     private _real_index: Array<number> = [];
      
-     private _ulBox: JQuery;
+     private _ulBox: Array<JQuery>;
 
      private _init() {
-         this.box = $('<div class="dialog dialog-select"></div>');
+         let _this = this;
+         this.box = $('<div class="'+ this._getBoxClass() +'" data-type="select"></div>');
          $(document.body).append(this.box);
-         this.box.html('<div class="dialog-header"><div class="dialog-close">取消</div><div class="dialog-title">'+ this.options.title +'</div><div class="dialog-yes">确定</div></div><div class="dialog-body"><ul></ul><hr class="dialog-top-hr"><hr class="dialog-bottom-hr"></div>');
-         this._ulBox = this.box.find('.dialog-body ul');
+         this.box.html('<div class="dialog-header"><div class="dialog-close">取消</div><div class="dialog-title">'+ this.options.title +'</div><div class="dialog-yes">确定</div></div><div class="dialog-body">' + this._createUl() +'<hr class="dialog-top-hr"><hr class="dialog-bottom-hr"></div>');
+         _this._ulBox = [];
+        this.box.find('.dialog-body ul').each(function() {
+            _this._ulBox.push($(this));
+        });
          this._bindEvent();
          this.refresh();
          if (this.options.default) {
-            this.selectedValue(this.options.default).notify();
-            return;
+            this.applyValue(this.options.default);
          }
-         this.selected(0).notify();
+         this.notify();
      }
 
      private _bindEvent() {
-        let instance = this;
+        let _this = this;
         this.element.click(function(e) {
             e.stopPropagation();
-            instance.show();
+            _this.show();
         });
         // $(document).click(function() {
         //    instance.hide();
         // });
         this.box.on('click', '.dialog-close', function() {
-            instance.hide();
+            _this.hide();
         });
         this.box.on('click', '.dialog-yes', function() {
-            instance.notify().hide();
+            _this.notify().hide();
         });
-        this._ulBox.on('click', 'li', function() {
-            instance.selected($(this));
-        });
-        if ($.fn.swipe) {
-            this.box.swipe({
-                swipe: function(event, direction: string, distance: number) {
-                    if (direction == $.fn.swipe.directions.UP) {
-                        instance.selectedIndex(instance._index + Math.floor(distance / 30));
-                        return;
-                    }
-                    if (direction == $.fn.swipe.directions.DOWN) {
-                        instance.selectedIndex(instance._index - Math.ceil(distance / 30));
-                        return;
-                    }
-                }
+        for (let i = 0; i < this.options.column; i++) {
+            this._ulBox[i].on('click', 'li', function() {
+                _this.selected($(this), i);
             });
+            if ($.fn.swipe) {
+                this._ulBox[i].swipe({
+                    swipe: function(event, direction: string, distance: number) {
+                        if (direction == $.fn.swipe.directions.UP) {
+                            _this.selectedIndex(_this._index[i] + Math.floor(distance / _this.options.lineHeight));
+                            return;
+                        }
+                        if (direction == $.fn.swipe.directions.DOWN) {
+                            _this.selectedIndex(_this._index[i] - Math.ceil(distance / _this.options.lineHeight));
+                            return;
+                        }
+                    }
+                });
+            }
         }
+
     }
+
+
 
     public show() {
         this.box.show();
@@ -75,72 +98,243 @@
 
     public hide() {
         this.box.hide();
-        if (this._index != this._real_index) {
-            this.selectedIndex(this._real_index);
+        this.restore();
+        return this;
+    }
+
+    public restore() {
+        let data = this._real_index.slice();
+        for (let i = 0; i < this.options.column; i++) {
+            this.selectedIndex(data[i], i);
         }
         return this;
     }
 
      public refresh() {
+        this._refreshUl(0, this.options.data);
+        for (let i = 0; i < this.options.column; i++) {
+            this._real_index[i] = 0;
+        }
+        this.restore();
+        return this;
+     }
+
+     public applyValue(val: any) {
+        if (this.options.column < 2) {
+            return this.selectedValue(val);
+        }
+        let data = this.getPath(val);
+        if (data && data.length > 0) {
+            this._real_index = data;
+            this.restore();
+        }
+        return this;
+     }
+
+         /**
+     * 根据ID查找无限树的路径
+     * @param id 
+     */
+    public getPath(id: string): Array<number> {
+        if (!id) {
+            return [];
+        }
+        let path = [],
+            found = false,
+            _this = this,
+            findPath = function(data: any) {
+                if (typeof data != 'object') {
+                    return;
+                }
+                let iii = -1;
+                $.each(data, function(key, args) {
+                    iii ++;
+                    if (key == id || args[_this.options.valueTag] == id) {
+                        path.push(iii);
+                        found = true;
+                        return false;
+                    }
+                    if (!args.hasOwnProperty(_this.options.childrenTag)) {
+                        return;
+                    }
+                    findPath(args[_this.options.childrenTag]);
+                    if (found) {
+                        path.push(iii);
+                        return false;
+                    }
+
+                });
+            },
+            ii = -1;
+        
+        $.each(this.options.data, function(key, data) {
+            ii ++;
+            findPath(data[_this.options.childrenTag]);
+            if (found) {
+                path.push(ii);
+                return false;
+            }
+        });
+        path.reverse();
+        return path;
+    }
+
+     private _createUl() {
+         let html = '';
+         for (let i = 0; i < this.options.column; i++) {
+            html += '<ul class="dialog-column-'+i+'"></ul>';
+         }
+         return html;
+     }
+
+     private _getBoxClass(): string {
+        if (this.options.column < 2) {
+            return 'dialog dialog-select';
+        }
+        return 'dialog dialog-select dialog-select-column-' + this.options.column;
+     }
+
+     private _getOptionByIndex(data: any, index: number = 0) {
+        if (data instanceof Array) {
+            return data[index][this.options.childrenTag];
+        }
+        for (const key in data) {
+            if (!data.hasOwnProperty(key)) {
+                continue;
+            }
+            index --;
+            if (index < 0) {
+                return data[key][this.options.childrenTag];
+            }
+        }
+        return null;
+     }
+
+     private _getColumnOption(index: number) {
+        let data = this.options.data;
+        if (index < 1) {
+            return data;
+        }
+        this.mapSelected((option: JQuery, i: number) => {
+            let val = option.attr('data-value');
+            data = this._getChildren(val, data);
+            if (!data || data.length < 1 || i >= index -1) {
+                return false;
+            }
+        });
+        return data;
+     }
+
+     private _getChildren(id, data: any) {
+        if (typeof data != 'object') {
+            return [];
+        }
+        if (!(data instanceof Array)) {
+            return data.hasOwnProperty(id) ? data[id][this.options.childrenTag] : [];
+        }
+        for (let i = 0; i < data.length; i++) {
+            if (data[i][this.options.valueTag] == id) {
+                return data[i][this.options.childrenTag];
+            }
+        }
+        return [];
+     }
+
+     private _refreshUl(index: number = 0, data: any) {
+        this._ulBox[index].html(this._createOptionHtml(data));
+     }
+
+     public refreshColumn(column: number = 0) {
+         let data = this._getColumnOption(column);
+         this._refreshUl(column, data);
+         this.selectedIndex(0, column);
+         return this;
+     }
+
+     private _createOptionHtml(data: any) {
         let html = '';
-        let instance = this;
-        this._length = 0;
-        $.each(this.options.data, function(i: any, item) {
-            instance._length ++;
-            if (instance.options.textTag) {
-                html += '<li data-value="'+ item[instance.options.valueTag] +'">'+ item[instance.options.textTag]  + '</li>';
+        let _this = this;
+        $.each(data, function(i: any, item) {
+            if (_this.options.textTag) {
+                html += '<li data-value="'+ item[_this.options.valueTag] +'">'+ item[_this.options.textTag]  + '</li>';
                 return;
             }
             html += '<li data-value="'+ i +'">'+ item + '</li>';
         });
-        this._ulBox.html(html);
-        return this;
+        return html;
      }
 
-     public selected(option: JQuery | number) {
+     public selected(option: JQuery | number, column: number = 0) {
          if (typeof option == 'number') {
-             return this.selectedIndex(option);
+             return this.selectedIndex(option, column);
          }
          if (typeof option == 'object') {
-             return this.selectedOption(option);
+             return this.selectedOption(option, column);
          }
-         return this.selectedValue(option);
+         return this.selectedValue(option, column);
      }
      
-     public selectedIndex(index: number = 0) {
+     public selectedIndex(index: number = 0, column: number = 0) {
         if (index < 0) {
             index = 0;
         }
-        if (index >= this._length) {
-            index = this._length - 1;
+        let lis = this._ulBox[column].find('li');
+        let length = lis.length;
+        if (index >= length) {
+            index = length - 1;
         }
-        let option = this._ulBox.find('li').eq(index);
-        this.selectedOption(option);
+        let option = lis.eq(index);
+        this.selectedOption(option, column);
         return this;
      }
 
-     public selectedValue(id: number| string) {
-        let option = this._ulBox.find('li[data-value="'+ id +'"]');
-        this.selectedOption(option);
+     public selectedValue(id: number| string, column: number = 0) {
+        let option = this._ulBox[column].find('li[data-value="'+ id +'"]');
+        this.selectedOption(option, column);
         return this;
      }
 
-     public selectedOption(option: JQuery) {
+     public selectedOption(option: JQuery, column: number = 0) {
         option.addClass('active').siblings().removeClass('active');
-        this._index = option.index();
-        let top = 60 - this._index  * 30;
-        this._ulBox.css('transform', 'translate(0px, ' + top +'px) translateZ(0px)');
+        this._index[column] = option.index();
+        let top = 2 * this.options.lineHeight - this._index[column]  * this.options.lineHeight;
+        this._ulBox[column].css('transform', 'translate(0px, ' + top +'px) translateZ(0px)');
+        if (this.options.column > column + 1) {
+            this.refreshColumn(column + 1);
+        }
         return this;
      }
 
      public val() {
-         return this._ulBox.find('li').eq(this._index).attr('data-value');
+         let data = [];
+         for (let i = 0; i < this.options.column; i++) {
+             data.push(this.getSelectedOption(i).attr('data-value'))
+         }
+         return this.options.column > 1 ? data : data[0];
+     }
+
+     public mapSelected(cb: (option: JQuery, index: number) => any) {
+        for (let i = 0; i < this.options.column; i++) {
+            if (cb && cb(this.getSelectedOption(i), i) === false) {
+                break;
+            }
+        }
+        return this;
+     }
+
+     public getSelectedOption(index: number = 0) {
+        return this._ulBox[index].find('li').eq(this._index[index])
      }
 
      public notify() {
-         this._real_index = this._index;
-        let option = this._ulBox.find('li').eq(this._index);
-        this.trigger('done', option.attr('data-value'), option, this._index);
+        this._real_index = this._index.slice();
+        let opts = [];
+        let data = [];
+        this.mapSelected((option: JQuery) => {
+            opts.push(option);
+            data.push(option.attr('data-value'));
+        })
+        this.trigger('done', ...data, ...opts, ...this._index);
         return this;
      }
 }
@@ -149,16 +343,22 @@ interface SelectBoxOptions {
     title?: string,
     data?: any,
     default?: string | number,
+    column?: number,
     textTag?: string,
     valueTag?: string,
+    childrenTag?: string,
+    lineHeight?: number,
     onclick?: (item: string, element: JQuery) => any,
     ondone?: (val: any, option: JQuery, index: number) => any
  }
 
  class SelectBoxDefaultOptions implements SelectBoxOptions {
      title: string = '请选择';
+     column: number = 1;
      textTag: string = 'value';
      valueTag: string = 'id';
+     childrenTag: string = 'children';
+     lineHeight: number = 30;
  }
 
  class SelectElemnt {

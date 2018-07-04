@@ -75,4 +75,13 @@
             top: 90px;
         }
     }
+    &.dialog-select-column-3 {
+        .dialog-body {
+            ul {
+                width: 33%;
+                float: left;
+            }
+        }
+        
+    }
 }

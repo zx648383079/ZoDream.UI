@@ -1,4 +1,31 @@
 /// <reference types="jquery" />
+/**
+ * 缓存数据
+ */
+declare class CacheUrl {
+    /**
+     * 缓存的数据
+     */
+    private static _cacheData;
+    /**
+     * 缓存的事件
+     */
+    private static _event;
+    static hasData(url: string): boolean;
+    static hasEvent(url: string): boolean;
+    /**
+     * 获取数据通过回调返回
+     * @param url
+     * @param callback
+     */
+    static getData(url: string, callback: (data: any) => void): void;
+    /**
+     * 设置数据并回调
+     * @param url
+     * @param data
+     */
+    static setData(url: string, data: any): void;
+}
 declare abstract class Eve {
     options: any;
     on(event: string, callback: Function): this;
@@ -15,6 +42,13 @@ declare class SelectBox extends Eve {
     private _ulBox;
     private _init;
     private _bindEvent;
+    /**
+     * 滑动
+     * @param distance
+     * @param isUp
+     * @param x
+     */
+    touchMove(distance: number, isUp?: boolean, x?: number): this;
     show(): this;
     hide(): this;
     restore(): this;
@@ -33,6 +67,12 @@ declare class SelectBox extends Eve {
     private _refreshUl;
     refreshColumn(column?: number): this;
     private _createOptionHtml;
+    /**
+     * 获取一个数据的id和显示的文字
+     * @param item
+     * @param i
+     */
+    private _getValueAndText;
     selected(option: JQuery | number, column?: number): this;
     selectedIndex(index?: number, column?: number): this;
     selectedValue(id: number | string, column?: number): this;
@@ -52,7 +92,7 @@ interface SelectBoxOptions {
     childrenTag?: string;
     lineHeight?: number;
     onclick?: (item: string, element: JQuery) => any;
-    ondone?: (val: any, option: JQuery, index: number) => any;
+    ondone?: (val: string | number, text: string, option: JQuery, index: number) => any;
 }
 declare class SelectBoxDefaultOptions implements SelectBoxOptions {
     title: string;

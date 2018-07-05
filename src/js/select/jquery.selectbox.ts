@@ -71,24 +71,63 @@
             this._ulBox[i].on('click', 'li', function() {
                 _this.selected($(this), i);
             });
-            if ($.fn.swipe) {
-                this._ulBox[i].swipe({
-                    swipe: function(event, direction: string, distance: number) {
-                        if (direction == $.fn.swipe.directions.UP) {
-                            _this.selectedIndex(_this._index[i] + Math.floor(distance / _this.options.lineHeight));
-                            return;
-                        }
-                        if (direction == $.fn.swipe.directions.DOWN) {
-                            _this.selectedIndex(_this._index[i] - Math.ceil(distance / _this.options.lineHeight));
-                            return;
-                        }
-                    }
-                });
-            }
         }
-
+        let startPos: any;
+        this.box.on('touchstart', function(event) {
+            let touch = event.targetTouches[0];
+            startPos = {
+                x: touch.pageX,
+                y: touch.pageY,
+                time: new Date()
+            };
+        }).on('touchmove', function(event) {
+            let touch = event.targetTouches[0];
+            if(event.targetTouches.length > 1 || (event.scale && event.scale !== 1)) {
+                return;
+            }
+            event.preventDefault();
+            let y = touch.pageY - startPos.y,
+                diff = Math.abs(y);
+            if (diff >= _this.options.lineHeight) {
+                // 滑动了一个单位就更新起始y 坐标
+                startPos.y = touch.pageY;
+                _this.touchMove(diff, y < 0, startPos.x);
+            }
+        });
+        // if ($.fn.swipe) {
+        //     this.box.swipe({
+        //         swipe: function(event, direction: string, distance: number, duration: number, fingerCount: number, fingerData: any) {
+        //             if (direction == $.fn.swipe.directions.UP) {
+        //                 _this.touchMove(distance, true, fingerData[0].start.x);
+        //                 return;
+        //             }
+        //             if (direction == $.fn.swipe.directions.DOWN) {
+        //                 _this.touchMove(distance, false, fingerData[0].start.x);
+        //                 return;
+        //             }
+        //         }
+        //     });
+        // }
     }
 
+    /**
+     * 滑动
+     * @param distance 
+     * @param isUp 
+     * @param x 
+     */
+    public touchMove(distance: number, isUp: boolean = true, x: number = 0) {
+        let diff: number = isUp ? Math.floor(distance / this.options.lineHeight) : - Math.ceil(distance / this.options.lineHeight),
+            column: number = 0;
+        if (diff == 0) {
+            return this;
+        }
+        if (this.options.column > 1) {
+            column = Math.floor(x / (this.box.width() / this.options.column));
+        }
+        this.selectedIndex(this._index[column] + diff, column);
+        return this;
+    }
 
 
     public show() {
@@ -255,14 +294,27 @@
         let html = '';
         let _this = this;
         $.each(data, function(i: any, item) {
-            if (_this.options.textTag) {
-                html += '<li data-value="'+ item[_this.options.valueTag] +'">'+ item[_this.options.textTag]  + '</li>';
-                return;
-            }
-            html += '<li data-value="'+ i +'">'+ item + '</li>';
+            let [value, text] = _this._getValueAndText(item, i);
+            html += '<li data-value="'+ value +'">'+ text + '</li>';
         });
         return html;
      }
+
+    /**
+     * 获取一个数据的id和显示的文字
+     * @param item 
+     * @param i 
+     */
+    private _getValueAndText(item: any, i: string| number): [string| number, string] {
+        if (typeof item != 'object') {
+            return [i, item];
+        }
+        let name = item[this.options.textTag];
+        if (this.options.valueTag && item.hasOwnProperty(this.options.valueTag)) {
+            return [item[this.options.valueTag], name];
+        }
+        return [i, name];
+    }
 
      public selected(option: JQuery | number, column: number = 0) {
          if (typeof option == 'number') {
@@ -328,13 +380,15 @@
 
      public notify() {
         this._real_index = this._index.slice();
-        let opts = [];
-        let data = [];
+        let opts: Array<JQuery> = [],
+            data: Array<string|number> = [],
+            texts: Array<string> = [];
         this.mapSelected((option: JQuery) => {
             opts.push(option);
+            texts.push(option.text());
             data.push(option.attr('data-value'));
         })
-        this.trigger('done', ...data, ...opts, ...this._index);
+        this.trigger('done', ...data, ...texts, ...opts, ...this._index);
         return this;
      }
 }
@@ -349,7 +403,7 @@ interface SelectBoxOptions {
     childrenTag?: string,
     lineHeight?: number,
     onclick?: (item: string, element: JQuery) => any,
-    ondone?: (val: any, option: JQuery, index: number) => any
+    ondone?: (val: string| number, text: string, option: JQuery, index: number) => any
  }
 
  class SelectBoxDefaultOptions implements SelectBoxOptions {
@@ -380,8 +434,8 @@ interface SelectBoxOptions {
         this.box = new SelectBox(this.selectInput, {
             title: this._getTitle(),
             data: this._getOptions(),
-            ondone: function(val: string, option: JQuery) {
-                instance.selectInput.text(option.text());
+            ondone: function(val: string, text: string) {
+                instance.selectInput.text(text);
                 instance.element.val(val).trigger('change');
             }
         });

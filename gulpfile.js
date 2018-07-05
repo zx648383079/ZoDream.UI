@@ -119,7 +119,7 @@ function dateTask() {
 }
 
 function selectTask() {
-    return gulp.src(['src/js/core/event.ts', 'src/js/select/jquery.selectbox.ts'])
+    return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/select/jquery.selectbox.ts'])
         .pipe(sourcemaps.init())
         .pipe(concat('jquery.selectbox.ts'))
         .pipe(tsProject())

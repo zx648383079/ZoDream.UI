@@ -42,7 +42,8 @@
       line-height: 30px; }
   .dialog.dialog-select .dialog-body {
     height: 150px;
-    position: relative; }
+    position: relative;
+    overflow: hidden; }
     .dialog.dialog-select .dialog-body ul {
       margin: 0;
       padding: 0;

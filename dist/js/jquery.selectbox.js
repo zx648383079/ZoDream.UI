@@ -8,6 +8,67 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+/**
+ * 缓存数据
+ */
+var CacheUrl = /** @class */ (function () {
+    function CacheUrl() {
+    }
+    CacheUrl.hasData = function (url) {
+        return this._cacheData.hasOwnProperty(url);
+    };
+    CacheUrl.hasEvent = function (url) {
+        return this._event.hasOwnProperty(url);
+    };
+    /**
+     * 获取数据通过回调返回
+     * @param url
+     * @param callback
+     */
+    CacheUrl.getData = function (url, callback) {
+        if (this.hasData(url)) {
+            callback(this._cacheData[url]);
+            return;
+        }
+        if (this.hasEvent(url)) {
+            this._event[url].push(callback);
+            return;
+        }
+        this._event[url] = [callback];
+        var instance = this;
+        $.getJSON(url, function (data) {
+            if (data.code == 0) {
+                instance.setData(url, data.data);
+                return;
+            }
+            console.log('URL ERROR! ' + url);
+        });
+    };
+    /**
+     * 设置数据并回调
+     * @param url
+     * @param data
+     */
+    CacheUrl.setData = function (url, data) {
+        this._cacheData[url] = data;
+        if (!this.hasEvent(url)) {
+            return;
+        }
+        this._event[url].forEach(function (callback) {
+            callback(data);
+        });
+        delete this._event[url];
+    };
+    /**
+     * 缓存的数据
+     */
+    CacheUrl._cacheData = {};
+    /**
+     * 缓存的事件
+     */
+    CacheUrl._event = {};
+    return CacheUrl;
+}());
 var Eve = /** @class */ (function () {
     function Eve() {
     }
@@ -95,25 +156,65 @@ var SelectBox = /** @class */ (function (_super) {
             this_1._ulBox[i].on('click', 'li', function () {
                 _this.selected($(this), i);
             });
-            if ($.fn.swipe) {
-                this_1._ulBox[i].swipe({
-                    swipe: function (event, direction, distance) {
-                        if (direction == $.fn.swipe.directions.UP) {
-                            _this.selectedIndex(_this._index[i] + Math.floor(distance / _this.options.lineHeight));
-                            return;
-                        }
-                        if (direction == $.fn.swipe.directions.DOWN) {
-                            _this.selectedIndex(_this._index[i] - Math.ceil(distance / _this.options.lineHeight));
-                            return;
-                        }
-                    }
-                });
-            }
         };
         var this_1 = this;
         for (var i = 0; i < this.options.column; i++) {
             _loop_1(i);
         }
+        var startPos;
+        this.box.on('touchstart', function (event) {
+            var touch = event.targetTouches[0];
+            startPos = {
+                x: touch.pageX,
+                y: touch.pageY,
+                time: new Date()
+            };
+        }).on('touchmove', function (event) {
+            var touch = event.targetTouches[0];
+            if (event.targetTouches.length > 1 || (event.scale && event.scale !== 1)) {
+                return;
+            }
+            event.preventDefault();
+            var y = touch.pageY - startPos.y, diff = Math.abs(y);
+            if (diff >= _this.options.lineHeight) {
+                // 滑动了一个单位就更新起始y 坐标
+                startPos.y = touch.pageY;
+                _this.touchMove(diff, y < 0, startPos.x);
+            }
+        });
+        // if ($.fn.swipe) {
+        //     this.box.swipe({
+        //         swipe: function(event, direction: string, distance: number, duration: number, fingerCount: number, fingerData: any) {
+        //             if (direction == $.fn.swipe.directions.UP) {
+        //                 _this.touchMove(distance, true, fingerData[0].start.x);
+        //                 return;
+        //             }
+        //             if (direction == $.fn.swipe.directions.DOWN) {
+        //                 _this.touchMove(distance, false, fingerData[0].start.x);
+        //                 return;
+        //             }
+        //         }
+        //     });
+        // }
+    };
+    /**
+     * 滑动
+     * @param distance
+     * @param isUp
+     * @param x
+     */
+    SelectBox.prototype.touchMove = function (distance, isUp, x) {
+        if (isUp === void 0) { isUp = true; }
+        if (x === void 0) { x = 0; }
+        var diff = isUp ? Math.floor(distance / this.options.lineHeight) : -Math.ceil(distance / this.options.lineHeight), column = 0;
+        if (diff == 0) {
+            return this;
+        }
+        if (this.options.column > 1) {
+            column = Math.floor(x / (this.box.width() / this.options.column));
+        }
+        this.selectedIndex(this._index[column] + diff, column);
+        return this;
     };
     SelectBox.prototype.show = function () {
         this.box.show();
@@ -264,13 +365,25 @@ var SelectBox = /** @class */ (function (_super) {
         var html = '';
         var _this = this;
         $.each(data, function (i, item) {
-            if (_this.options.textTag) {
-                html += '<li data-value="' + item[_this.options.valueTag] + '">' + item[_this.options.textTag] + '</li>';
-                return;
-            }
-            html += '<li data-value="' + i + '">' + item + '</li>';
+            var _a = _this._getValueAndText(item, i), value = _a[0], text = _a[1];
+            html += '<li data-value="' + value + '">' + text + '</li>';
         });
         return html;
+    };
+    /**
+     * 获取一个数据的id和显示的文字
+     * @param item
+     * @param i
+     */
+    SelectBox.prototype._getValueAndText = function (item, i) {
+        if (typeof item != 'object') {
+            return [i, item];
+        }
+        var name = item[this.options.textTag];
+        if (this.options.valueTag && item.hasOwnProperty(this.options.valueTag)) {
+            return [item[this.options.valueTag], name];
+        }
+        return [i, name];
     };
     SelectBox.prototype.selected = function (option, column) {
         if (column === void 0) { column = 0; }
@@ -335,13 +448,13 @@ var SelectBox = /** @class */ (function (_super) {
     };
     SelectBox.prototype.notify = function () {
         this._real_index = this._index.slice();
-        var opts = [];
-        var data = [];
+        var opts = [], data = [], texts = [];
         this.mapSelected(function (option) {
             opts.push(option);
+            texts.push(option.text());
             data.push(option.attr('data-value'));
         });
-        this.trigger.apply(this, ['done'].concat(data, opts, this._index));
+        this.trigger.apply(this, ['done'].concat(data, texts, opts, this._index));
         return this;
     };
     return SelectBox;
@@ -370,8 +483,8 @@ var SelectElemnt = /** @class */ (function () {
         this.box = new SelectBox(this.selectInput, {
             title: this._getTitle(),
             data: this._getOptions(),
-            ondone: function (val, option) {
-                instance.selectInput.text(option.text());
+            ondone: function (val, text) {
+                instance.selectInput.text(text);
                 instance.element.val(val).trigger('change');
             }
         });

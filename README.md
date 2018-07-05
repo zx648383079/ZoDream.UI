@@ -19,7 +19,7 @@
 | 选择器           | [jquery.city](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.city.ts)               | 多层选择器，支持动态获取和json                                                                                                                   | [Demo](http://zx648383079.github.io/ZoDream.UI/demo/city.html)        |
 | 弹幕             | [jquery.barrager](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.barrager.ts)       | 滚动弹幕                                                                                                                                         | [Demo](http://zx648383079.github.io/ZoDream.UI/demo/barrager.html)    |
 | 自动内容导航     | [jquery.sideNav](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.sideNav.ts)         | 自动生成内容导航, 支持分级，支持导航条数限制，支持滚动识别                                                                                       | [Demo](http://zx648383079.github.io/ZoDream.UI/demo/sideNav.html)     |
-| ios select       | [jquery.select](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/select/jquery.selectbox.ts) | 仿ios 手机版下拉选择框,支持点击、滑动、多级联动                                                                                                  | [Demo](http://zx648383079.github.io/ZoDream.UI/demo/select.html)      |
+| ios select       | [jquery.select](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/select/jquery.selectbox.ts) | 仿ios 手机版下拉选择框,支持点击、滑动、多级联动                                                                                                  | [Demo](http://zx648383079.github.io/ZoDream.UI/demo/select.html) [Doc](http://zx648383079.github.io/ZoDream.UI/doc/select.md)     |
 
 
 ## 更新进度

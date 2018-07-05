@@ -94,27 +94,14 @@
                 _this.touchMove(diff, y < 0, startPos.x);
             }
         });
-        // if ($.fn.swipe) {
-        //     this.box.swipe({
-        //         swipe: function(event, direction: string, distance: number, duration: number, fingerCount: number, fingerData: any) {
-        //             if (direction == $.fn.swipe.directions.UP) {
-        //                 _this.touchMove(distance, true, fingerData[0].start.x);
-        //                 return;
-        //             }
-        //             if (direction == $.fn.swipe.directions.DOWN) {
-        //                 _this.touchMove(distance, false, fingerData[0].start.x);
-        //                 return;
-        //             }
-        //         }
-        //     });
-        // }
+
     }
 
     /**
      * 滑动
-     * @param distance 
-     * @param isUp 
-     * @param x 
+     * @param distance 距离的绝对值
+     * @param isUp 是否是上滑
+     * @param x 触发的位置，自动定位到第几级
      */
     public touchMove(distance: number, isUp: boolean = true, x: number = 0) {
         let diff: number = isUp ? Math.floor(distance / this.options.lineHeight) : - Math.ceil(distance / this.options.lineHeight),
@@ -129,18 +116,26 @@
         return this;
     }
 
-
+    /**
+     * 显示
+     */
     public show() {
         this.box.show();
         return this;
     }
 
+    /**
+     * 隐藏并重置
+     */
     public hide() {
         this.box.hide();
         this.restore();
         return this;
     }
 
+    /**
+     * 重置
+     */
     public restore() {
         let data = this._real_index.slice();
         for (let i = 0; i < this.options.column; i++) {
@@ -149,6 +144,9 @@
         return this;
     }
 
+    /**
+     * 刷新
+     */
      public refresh() {
         this._refreshUl(0, this.options.data);
         for (let i = 0; i < this.options.column; i++) {
@@ -158,6 +156,10 @@
         return this;
      }
 
+     /**
+      * 根据值自动选中
+      * @param val 
+      */
      public applyValue(val: any) {
         if (this.options.column < 2) {
             return this.selectedValue(val);
@@ -170,7 +172,7 @@
         return this;
      }
 
-         /**
+    /**
      * 根据ID查找无限树的路径
      * @param id 
      */
@@ -283,6 +285,10 @@
         this._ulBox[index].html(this._createOptionHtml(data));
      }
 
+     /**
+      * 刷新第几级的数据
+      * @param column 第几级
+      */
      public refreshColumn(column: number = 0) {
          let data = this._getColumnOption(column);
          this._refreshUl(column, data);
@@ -316,6 +322,11 @@
         return [i, name];
     }
 
+    /**
+     * 选中哪一个
+     * @param option 
+     * @param column  第几级
+     */
      public selected(option: JQuery | number, column: number = 0) {
          if (typeof option == 'number') {
              return this.selectedIndex(option, column);
@@ -326,6 +337,11 @@
          return this.selectedValue(option, column);
      }
      
+     /**
+      * 选中第几行
+      * @param index 行号 0 开始
+      * @param column 第几级 
+      */
      public selectedIndex(index: number = 0, column: number = 0) {
         if (index < 0) {
             index = 0;
@@ -340,12 +356,22 @@
         return this;
      }
 
+     /**
+      * 选中哪个值
+      * @param id 值
+      * @param column  第几级
+      */
      public selectedValue(id: number| string, column: number = 0) {
         let option = this._ulBox[column].find('li[data-value="'+ id +'"]');
         this.selectedOption(option, column);
         return this;
      }
 
+     /**
+      * 选中哪一行
+      * @param option 行元素 
+      * @param column 第几级
+      */
      public selectedOption(option: JQuery, column: number = 0) {
         option.addClass('active').siblings().removeClass('active');
         this._index[column] = option.index();
@@ -357,6 +383,9 @@
         return this;
      }
 
+     /**
+      * 获取当前的选中值 一级是单个值，多级是值的集合
+      */
      public val() {
          let data = [];
          for (let i = 0; i < this.options.column; i++) {
@@ -365,6 +394,10 @@
          return this.options.column > 1 ? data : data[0];
      }
 
+     /**
+      * 循环所有选中的项
+      * @param cb (option: JQuery, index: number) => any
+      */
      public mapSelected(cb: (option: JQuery, index: number) => any) {
         for (let i = 0; i < this.options.column; i++) {
             if (cb && cb(this.getSelectedOption(i), i) === false) {
@@ -374,10 +407,17 @@
         return this;
      }
 
-     public getSelectedOption(index: number = 0) {
-        return this._ulBox[index].find('li').eq(this._index[index])
+     /**
+      * 获取当前选中的选项
+      * @param column 第几级
+      */
+     public getSelectedOption(column: number = 0) {
+        return this._ulBox[column].find('li').eq(this._index[column])
      }
 
+     /**
+      * 触发通知
+      */
      public notify() {
         this._real_index = this._index.slice();
         let opts: Array<JQuery> = [],
@@ -402,7 +442,6 @@ interface SelectBoxOptions {
     valueTag?: string,
     childrenTag?: string,
     lineHeight?: number,
-    onclick?: (item: string, element: JQuery) => any,
     ondone?: (val: string| number, text: string, option: JQuery, index: number) => any
  }
 
@@ -430,17 +469,19 @@ interface SelectBoxOptions {
          this.element.hide();
          this.selectInput = $('<div class="dialog-select-input"></div>')
          this.element.after(this.selectInput);
-         let instance = this;
+         let _this = this,
+            val: any = this.element.val();
         this.box = new SelectBox(this.selectInput, {
             title: this._getTitle(),
             data: this._getOptions(),
+            default: val,
             ondone: function(val: string, text: string) {
-                instance.selectInput.text(text);
-                instance.element.val(val).trigger('change');
+                _this.selectInput.text(text);
+                _this.element.val(val).trigger('change');
             }
         });
         this.element.on('optionschange', function() {
-            instance.refresh();
+            _this.refresh();
         });
      }
 
@@ -455,6 +496,9 @@ interface SelectBoxOptions {
         return data;
      }
 
+     /**
+      * 刷新更新数据选项
+      */
      public refresh() {
         this.box.options.data = this._getOptions();
         this.box.refresh();

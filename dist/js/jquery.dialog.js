@@ -1349,11 +1349,17 @@ var DialogContent = /** @class */ (function (_super) {
             e.stopPropagation();
         });
         this.onClick(".dialog-yes", function () {
-            this.trigger('done');
+            if (this.hasEvent('done')) {
+                this.trigger('done');
+                return;
+            }
+            this.close();
         });
         this.onClick(".dialog-close", function () {
-            //this.isLoading = false;
             this.close();
+            if (this.hasEvent('cancel')) {
+                this.trigger('cancel');
+            }
         });
         return this;
     };

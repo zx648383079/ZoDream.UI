@@ -44,20 +44,36 @@ declare class SelectBox extends Eve {
     private _bindEvent;
     /**
      * 滑动
-     * @param distance
-     * @param isUp
-     * @param x
+     * @param distance 距离的绝对值
+     * @param isUp 是否是上滑
+     * @param x 触发的位置，自动定位到第几级
      */
     touchMove(distance: number, isUp?: boolean, x?: number): this;
+    /**
+     * 显示
+     */
     show(): this;
+    /**
+     * 隐藏并重置
+     */
     hide(): this;
+    /**
+     * 重置
+     */
     restore(): this;
+    /**
+     * 刷新
+     */
     refresh(): this;
+    /**
+     * 根据值自动选中
+     * @param val
+     */
     applyValue(val: any): this;
     /**
-* 根据ID查找无限树的路径
-* @param id
-*/
+     * 根据ID查找无限树的路径
+     * @param id
+     */
     getPath(id: string): Array<number>;
     private _createUl;
     private _getBoxClass;
@@ -65,6 +81,10 @@ declare class SelectBox extends Eve {
     private _getColumnOption;
     private _getChildren;
     private _refreshUl;
+    /**
+     * 刷新第几级的数据
+     * @param column 第几级
+     */
     refreshColumn(column?: number): this;
     private _createOptionHtml;
     /**
@@ -73,13 +93,47 @@ declare class SelectBox extends Eve {
      * @param i
      */
     private _getValueAndText;
+    /**
+     * 选中哪一个
+     * @param option
+     * @param column  第几级
+     */
     selected(option: JQuery | number, column?: number): this;
+    /**
+     * 选中第几行
+     * @param index 行号 0 开始
+     * @param column 第几级
+     */
     selectedIndex(index?: number, column?: number): this;
+    /**
+     * 选中哪个值
+     * @param id 值
+     * @param column  第几级
+     */
     selectedValue(id: number | string, column?: number): this;
+    /**
+     * 选中哪一行
+     * @param option 行元素
+     * @param column 第几级
+     */
     selectedOption(option: JQuery, column?: number): this;
+    /**
+     * 获取当前的选中值 一级是单个值，多级是值的集合
+     */
     val(): any;
+    /**
+     * 循环所有选中的项
+     * @param cb (option: JQuery, index: number) => any
+     */
     mapSelected(cb: (option: JQuery, index: number) => any): this;
-    getSelectedOption(index?: number): JQuery<HTMLElement>;
+    /**
+     * 获取当前选中的选项
+     * @param column 第几级
+     */
+    getSelectedOption(column?: number): JQuery<HTMLElement>;
+    /**
+     * 触发通知
+     */
     notify(): this;
 }
 interface SelectBoxOptions {
@@ -91,7 +145,6 @@ interface SelectBoxOptions {
     valueTag?: string;
     childrenTag?: string;
     lineHeight?: number;
-    onclick?: (item: string, element: JQuery) => any;
     ondone?: (val: string | number, text: string, option: JQuery, index: number) => any;
 }
 declare class SelectBoxDefaultOptions implements SelectBoxOptions {
@@ -109,6 +162,9 @@ declare class SelectElemnt {
     box: SelectBox;
     private _init;
     private _getOptions;
+    /**
+     * 刷新更新数据选项
+     */
     refresh(): this;
     private _getTitle;
 }

@@ -182,26 +182,12 @@ var SelectBox = /** @class */ (function (_super) {
                 _this.touchMove(diff, y < 0, startPos.x);
             }
         });
-        // if ($.fn.swipe) {
-        //     this.box.swipe({
-        //         swipe: function(event, direction: string, distance: number, duration: number, fingerCount: number, fingerData: any) {
-        //             if (direction == $.fn.swipe.directions.UP) {
-        //                 _this.touchMove(distance, true, fingerData[0].start.x);
-        //                 return;
-        //             }
-        //             if (direction == $.fn.swipe.directions.DOWN) {
-        //                 _this.touchMove(distance, false, fingerData[0].start.x);
-        //                 return;
-        //             }
-        //         }
-        //     });
-        // }
     };
     /**
      * 滑动
-     * @param distance
-     * @param isUp
-     * @param x
+     * @param distance 距离的绝对值
+     * @param isUp 是否是上滑
+     * @param x 触发的位置，自动定位到第几级
      */
     SelectBox.prototype.touchMove = function (distance, isUp, x) {
         if (isUp === void 0) { isUp = true; }
@@ -216,15 +202,24 @@ var SelectBox = /** @class */ (function (_super) {
         this.selectedIndex(this._index[column] + diff, column);
         return this;
     };
+    /**
+     * 显示
+     */
     SelectBox.prototype.show = function () {
         this.box.show();
         return this;
     };
+    /**
+     * 隐藏并重置
+     */
     SelectBox.prototype.hide = function () {
         this.box.hide();
         this.restore();
         return this;
     };
+    /**
+     * 重置
+     */
     SelectBox.prototype.restore = function () {
         var data = this._real_index.slice();
         for (var i = 0; i < this.options.column; i++) {
@@ -232,6 +227,9 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return this;
     };
+    /**
+     * 刷新
+     */
     SelectBox.prototype.refresh = function () {
         this._refreshUl(0, this.options.data);
         for (var i = 0; i < this.options.column; i++) {
@@ -240,6 +238,10 @@ var SelectBox = /** @class */ (function (_super) {
         this.restore();
         return this;
     };
+    /**
+     * 根据值自动选中
+     * @param val
+     */
     SelectBox.prototype.applyValue = function (val) {
         if (this.options.column < 2) {
             return this.selectedValue(val);
@@ -252,9 +254,9 @@ var SelectBox = /** @class */ (function (_super) {
         return this;
     };
     /**
-* 根据ID查找无限树的路径
-* @param id
-*/
+     * 根据ID查找无限树的路径
+     * @param id
+     */
     SelectBox.prototype.getPath = function (id) {
         if (!id) {
             return [];
@@ -354,6 +356,10 @@ var SelectBox = /** @class */ (function (_super) {
         if (index === void 0) { index = 0; }
         this._ulBox[index].html(this._createOptionHtml(data));
     };
+    /**
+     * 刷新第几级的数据
+     * @param column 第几级
+     */
     SelectBox.prototype.refreshColumn = function (column) {
         if (column === void 0) { column = 0; }
         var data = this._getColumnOption(column);
@@ -385,6 +391,11 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return [i, name];
     };
+    /**
+     * 选中哪一个
+     * @param option
+     * @param column  第几级
+     */
     SelectBox.prototype.selected = function (option, column) {
         if (column === void 0) { column = 0; }
         if (typeof option == 'number') {
@@ -395,6 +406,11 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return this.selectedValue(option, column);
     };
+    /**
+     * 选中第几行
+     * @param index 行号 0 开始
+     * @param column 第几级
+     */
     SelectBox.prototype.selectedIndex = function (index, column) {
         if (index === void 0) { index = 0; }
         if (column === void 0) { column = 0; }
@@ -410,12 +426,22 @@ var SelectBox = /** @class */ (function (_super) {
         this.selectedOption(option, column);
         return this;
     };
+    /**
+     * 选中哪个值
+     * @param id 值
+     * @param column  第几级
+     */
     SelectBox.prototype.selectedValue = function (id, column) {
         if (column === void 0) { column = 0; }
         var option = this._ulBox[column].find('li[data-value="' + id + '"]');
         this.selectedOption(option, column);
         return this;
     };
+    /**
+     * 选中哪一行
+     * @param option 行元素
+     * @param column 第几级
+     */
     SelectBox.prototype.selectedOption = function (option, column) {
         if (column === void 0) { column = 0; }
         option.addClass('active').siblings().removeClass('active');
@@ -427,6 +453,9 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return this;
     };
+    /**
+     * 获取当前的选中值 一级是单个值，多级是值的集合
+     */
     SelectBox.prototype.val = function () {
         var data = [];
         for (var i = 0; i < this.options.column; i++) {
@@ -434,6 +463,10 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return this.options.column > 1 ? data : data[0];
     };
+    /**
+     * 循环所有选中的项
+     * @param cb (option: JQuery, index: number) => any
+     */
     SelectBox.prototype.mapSelected = function (cb) {
         for (var i = 0; i < this.options.column; i++) {
             if (cb && cb(this.getSelectedOption(i), i) === false) {
@@ -442,10 +475,17 @@ var SelectBox = /** @class */ (function (_super) {
         }
         return this;
     };
-    SelectBox.prototype.getSelectedOption = function (index) {
-        if (index === void 0) { index = 0; }
-        return this._ulBox[index].find('li').eq(this._index[index]);
+    /**
+     * 获取当前选中的选项
+     * @param column 第几级
+     */
+    SelectBox.prototype.getSelectedOption = function (column) {
+        if (column === void 0) { column = 0; }
+        return this._ulBox[column].find('li').eq(this._index[column]);
     };
+    /**
+     * 触发通知
+     */
     SelectBox.prototype.notify = function () {
         this._real_index = this._index.slice();
         var opts = [], data = [], texts = [];
@@ -479,17 +519,18 @@ var SelectElemnt = /** @class */ (function () {
         this.element.hide();
         this.selectInput = $('<div class="dialog-select-input"></div>');
         this.element.after(this.selectInput);
-        var instance = this;
+        var _this = this, val = this.element.val();
         this.box = new SelectBox(this.selectInput, {
             title: this._getTitle(),
             data: this._getOptions(),
+            default: val,
             ondone: function (val, text) {
-                instance.selectInput.text(text);
-                instance.element.val(val).trigger('change');
+                _this.selectInput.text(text);
+                _this.element.val(val).trigger('change');
             }
         });
         this.element.on('optionschange', function () {
-            instance.refresh();
+            _this.refresh();
         });
     };
     SelectElemnt.prototype._getOptions = function () {
@@ -502,6 +543,9 @@ var SelectElemnt = /** @class */ (function () {
         });
         return data;
     };
+    /**
+     * 刷新更新数据选项
+     */
     SelectElemnt.prototype.refresh = function () {
         this.box.options.data = this._getOptions();
         this.box.refresh();

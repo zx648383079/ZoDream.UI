@@ -77,8 +77,7 @@
             let touch = event.targetTouches[0];
             startPos = {
                 x: touch.pageX,
-                y: touch.pageY,
-                time: new Date()
+                y: touch.pageY
             };
         }).on('touchmove', function(event) {
             let touch = event.targetTouches[0];

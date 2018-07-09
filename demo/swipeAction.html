@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../dist/css/swipeAction.css">
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+</head>
+<body>
+    
+    <div class="swipe-box box" style="width: 300px;border: 1px solid">
+        <div class="swipe-row">
+            <div class="actions-left">
+                <button>关注111111111</button>
+            </div>
+            <div class="swipe-content">
+                这是一个人问题
+            </div>
+            <div class="actions-right">
+                <button>删除111111</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jquery.swipeAction.js"></script>
+    <script>
+        $(function () {
+            $(".swipe-row").swipeAction();
+        });
+    </script>
+</body>
+</html>

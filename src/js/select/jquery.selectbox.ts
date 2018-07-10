@@ -119,6 +119,8 @@
      * 显示
      */
     public show() {
+        // 隐藏其他的
+        $('.dialog-select[data-type="select"]').hide();
         this.box.show();
         return this;
     }

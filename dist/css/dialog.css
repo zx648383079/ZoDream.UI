@@ -1600,7 +1600,8 @@
 .dialog-menu {
   position: fixed;
   background: #fff;
-  width: 150px; }
+  width: 150px;
+  display: none; }
   .dialog-menu ul {
     margin: 0;
     padding: 0; }
@@ -1688,7 +1689,8 @@
         width: 60px;
         border-radius: 50%; }
     .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info {
-      display: inline-block; }
+      display: inline-block;
+      vertical-align: top; }
       .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info * {
         margin: 0; }
       .dialog-chat .dialog-chat-box .dialog-user .dialog-user-info .time {
@@ -1705,33 +1707,6 @@
         background: #f00;
         border-radius: 50%;
         text-align: center; }
-  .dialog-chat .dialog-chat-box.dialog-min .dialog-header,
-  .dialog-chat .dialog-chat-box.dialog-min .dialog-tab {
-    display: none; }
-  .dialog-chat .dialog-chat-box.dialog-min .dialog-info {
-    padding: 0;
-    height: 30px;
-    width: 100%;
-    text-align: center; }
-    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar {
-      position: absolute;
-      left: 0; }
-      .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar img {
-        width: 30px; }
-    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-name {
-      line-height: 30px; }
-      .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-info-name p {
-        display: none; }
-    .dialog-chat .dialog-chat-box.dialog-min .dialog-info .dialog-message-count {
-      display: block;
-      position: absolute;
-      left: -12px;
-      top: -11px;
-      line-height: 20px;
-      background: #f00;
-      color: #fff;
-      border-radius: 50%;
-      min-width: 20px; }
 
 .dialog-chat .dialog-chat-room {
   width: 500px; }
@@ -1875,5 +1850,51 @@
   position: fixed;
   bottom: 0;
   right: 0; }
+  .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-header,
+  .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-tab {
+    display: none; }
+  .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info {
+    padding: 0;
+    height: 30px;
+    width: 100%;
+    text-align: center; }
+    .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar {
+      position: absolute;
+      left: 0; }
+      .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar img {
+        width: 30px; }
+    .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-name {
+      line-height: 30px; }
+      .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-name p {
+        display: none; }
+    .dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-message-count {
+      display: block;
+      position: absolute;
+      left: -12px;
+      top: -11px;
+      line-height: 20px;
+      background: #f00;
+      color: #fff;
+      border-radius: 50%;
+      min-width: 20px; }
+
+.dialog-chat.dialog-chat-page {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  margin: 0 auto; }
+  .dialog-chat.dialog-chat-page .dialog-chat-box,
+  .dialog-chat.dialog-chat-page .dialog-chat-room {
+    display: block; }
+  .dialog-chat.dialog-chat-page .dialog-chat-box {
+    width: 250px; }
+    .dialog-chat.dialog-chat-page .dialog-chat-box .dialog-header .dialog-action .fa-minus,
+    .dialog-chat.dialog-chat-page .dialog-chat-box .dialog-header .dialog-action .fa-close {
+      display: none; }
+    .dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item {
+      height: 448px;
+      overflow-y: auto; }
+  .dialog-chat.dialog-chat-page .dialog-chat-room {
+    left: 250px; }
 
 /*# sourceMappingURL=dialog.css.map */

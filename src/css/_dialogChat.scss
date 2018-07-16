@@ -2,6 +2,7 @@
     position: fixed;
     background: #fff;
     width: 150px;
+    display: none;
     ul {
         margin: 0;
         padding: 0;
@@ -144,8 +145,8 @@
                 }
             }
             .dialog-user-info {
-                
                 display: inline-block;
+                vertical-align: top;
                 * {
                     margin: 0;
                 }
@@ -164,42 +165,6 @@
                     background: #f00;
                     border-radius: 50%;
                     text-align: center;
-                }
-            }
-        }
-        &.dialog-min {
-            .dialog-header,
-            .dialog-tab {
-                display: none;
-            }
-            .dialog-info {
-                padding: 0;
-                height: 30px;
-                width: 100%;
-                text-align: center;
-                .dialog-info-avatar {
-                    position: absolute;
-                    left: 0;
-                    img {
-                        width: 30px;
-                    }
-                }
-                .dialog-info-name {
-                    line-height: 30px;
-                    p {
-                        display: none;
-                    }
-                }
-                .dialog-message-count {
-                    display: block;
-                    position: absolute;
-                    left: -12px;
-                    top: -11px;
-                    line-height: 20px;
-                    background: #f00;
-                    color: #fff;
-                    border-radius: 50%;
-                    min-width: 20px;
                 }
             }
         }
@@ -382,6 +347,74 @@
             position: fixed;
             bottom: 0;
             right: 0;
+            &.dialog-min {
+                .dialog-header,
+                .dialog-tab {
+                    display: none;
+                }
+                .dialog-info {
+                    padding: 0;
+                    height: 30px;
+                    width: 100%;
+                    text-align: center;
+                    .dialog-info-avatar {
+                        position: absolute;
+                        left: 0;
+                        img {
+                            width: 30px;
+                        }
+                    }
+                    .dialog-info-name {
+                        line-height: 30px;
+                        p {
+                            display: none;
+                        }
+                    }
+                    .dialog-message-count {
+                        display: block;
+                        position: absolute;
+                        left: -12px;
+                        top: -11px;
+                        line-height: 20px;
+                        background: #f00;
+                        color: #fff;
+                        border-radius: 50%;
+                        min-width: 20px;
+                    }
+                }
+            }
+        }
+    }
+    &.dialog-chat-page {
+        width: 100%;
+        max-width: 800px;
+        position: relative;
+        margin: 0 auto;
+        .dialog-chat-box,
+        .dialog-chat-room {
+            display: block;
+        }
+        .dialog-chat-box {
+            width: 250px;
+            .dialog-header {
+                .dialog-action {
+                    .fa-minus,
+                    .fa-close {
+                        display: none;
+                    }
+                }
+            }
+            .dialog-tab {
+                .dialog-tab-box {
+                    .dialog-tab-item{
+                        height: 448px;
+                        overflow-y: auto;
+                    }
+                }
+            }
+        }
+        .dialog-chat-room {
+            left: 250px;
         }
     }
 }

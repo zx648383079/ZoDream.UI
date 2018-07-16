@@ -63,7 +63,7 @@ $(function () {
         $(this).closest('.dialog-panel').toggleClass('expanded');
     });
     mainBox.on('click', '.dialog-tab .dialog-user', function () {
-        chatBox.show();
+        $(this).closest('.dialog-chat').find('.dialog-chat-room').show();
     });
     searchBox.on('click', '.dialog-search-list .dialog-info', function () {
         addBox.show();

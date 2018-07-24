@@ -1,17 +1,42 @@
 .dialog-menu {
     position: fixed;
-    background: #fff;
     width: 150px;
     display: none;
+    z-index: 910;
     ul {
         margin: 0;
         padding: 0;
+        background: #fff;
         li {
             list-style: none;
-            padding: 0 8px;
             line-height: 30px;
+            position: relative;
+            width: 150px;
+            cursor: pointer;
+            span {
+                display: block;
+                padding: 0 8px;
+                i {
+                    &:nth-child(2) {
+                        position: absolute;
+                        right: 10px;
+                        line-height: 30px;
+                    }
+                }
+            }
+            ul {
+                position: absolute;
+                top: 0;
+                left: 150px;
+                display: none;
+            }
             &:hover {
-                background: rgba(0, 0, 0, 0.1);
+                >span {
+                    background: rgba(0, 0, 0, 0.1);
+                }
+                >ul {
+                    display: block;
+                }
             }
         }
     }

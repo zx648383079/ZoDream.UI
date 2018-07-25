@@ -11,7 +11,7 @@ declare class Accordion {
 }
 declare enum AccordionDirection {
     Horizon = 0,
-    Vertical = 1,
+    Vertical = 1
 }
 interface AccordionOptions {
     itemTag?: string;

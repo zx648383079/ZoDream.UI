@@ -1,13 +1,70 @@
-var ChatMenu = /** @class */ (function () {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var ChatType;
+(function (ChatType) {
+    ChatType[ChatType["MESSAGE"] = 0] = "MESSAGE";
+    ChatType[ChatType["MORE"] = 1] = "MORE";
+    ChatType[ChatType["TIP"] = 2] = "TIP";
+    ChatType[ChatType["TIME"] = 3] = "TIME";
+})(ChatType || (ChatType = {}));
+var ChatBaseBox = /** @class */ (function () {
+    function ChatBaseBox() {
+        this.cache_element = {};
+        this.events = {};
+    }
+    ChatBaseBox.prototype.on = function (event, callback) {
+        this.events[event] = callback;
+        return this;
+    };
+    ChatBaseBox.prototype.hasEvent = function (event) {
+        return this.events.hasOwnProperty(event);
+    };
+    ChatBaseBox.prototype.trigger = function (event) {
+        var _a;
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return (_a = this.events[event]).call.apply(_a, [this].concat(args));
+    };
+    ChatBaseBox.prototype.find = function (tag) {
+        if (this.cache_element.hasOwnProperty(tag)) {
+            return this.cache_element[tag];
+        }
+        return this.cache_element[tag] = this.box.find(tag);
+    };
+    ChatBaseBox.prototype.show = function () {
+        this.box.show();
+        return this;
+    };
+    ChatBaseBox.prototype.hide = function () {
+        this.box.hide();
+    };
+    return ChatBaseBox;
+}());
+var ChatMenu = /** @class */ (function (_super) {
+    __extends(ChatMenu, _super);
     /**
      *
      */
     function ChatMenu(box, menus) {
         if (menus === void 0) { menus = []; }
-        this.box = box;
-        this.menus = menus;
-        this.events = {};
-        this.bindEvent();
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.menus = menus;
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatMenu.prototype.bindEvent = function () {
         var _this = this;
@@ -19,29 +76,31 @@ var ChatMenu = /** @class */ (function () {
         var name = li.attr('data-name'), menu;
         if (name && this.menuMap.hasOwnProperty(name)) {
             menu = this.menuMap[name];
-            if (menu && menu.onclick) {
-                menu.onclick(li);
+            if (menu && menu.onclick && menu.onclick(li, this.target, this) === false) {
+                return;
             }
         }
-        if (name && this.hasEvent(name)) {
-            this.trigger(name, li, menu);
+        if (name && this.hasEvent(name) && this.trigger(name, li, menu, this.target, this) === false) {
+            return;
         }
-        this.trigger('click', li, menu);
+        this.trigger('click', li, menu, this.target);
     };
     ChatMenu.prototype.addMenu = function (menu) {
         this.menus.push(menu);
         return this;
     };
-    ChatMenu.prototype.show = function (x, y) {
+    ChatMenu.prototype.showPosition = function (x, y, target) {
         this.refresh();
         this.box.css({
             'left': x + 'px',
             'top': y + 'px'
         }).show();
+        this.target = target;
         return this;
     };
     ChatMenu.prototype.hide = function () {
         this.box.hide();
+        this.target = null;
     };
     ChatMenu.prototype.refresh = function () {
         this.menuMap = {};
@@ -49,10 +108,10 @@ var ChatMenu = /** @class */ (function () {
         this.box.html(html);
     };
     ChatMenu.prototype.getMenuHtml = function (menus) {
-        var _this = this;
+        var _this_1 = this;
         var html = '';
         menus.forEach(function (menu) {
-            html += _this.getMenuItemHtml(menu);
+            html += _this_1.getMenuItemHtml(menu);
         });
         return '<ul>' + html + '</ul>';
     };
@@ -66,73 +125,67 @@ var ChatMenu = /** @class */ (function () {
         return html + '</span></li>';
     };
     ChatMenu.prototype.cleanMenuList = function (menus) {
+        var _this_1 = this;
         if (!menus || menus.length == 0) {
             return null;
         }
         var real_menu = [];
         menus.forEach(function (menu) {
-            if (menu.toggle && menu.toggle() === false) {
+            if (menu.toggle && menu.toggle(_this_1.target, _this_1) === false) {
                 return;
             }
             real_menu.push(menu);
         });
         return real_menu;
     };
-    ChatMenu.prototype.on = function (event, callback) {
-        this.events[event] = callback;
-        return this;
-    };
-    ChatMenu.prototype.hasEvent = function (event) {
-        return this.events.hasOwnProperty(event);
-    };
-    ChatMenu.prototype.trigger = function (event) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        if (!this.hasEvent(event)) {
-            return;
-        }
-        return (_a = this.events[event]).call.apply(_a, [this].concat(args));
-        var _a;
-    };
     return ChatMenu;
-}());
-var ChatAddUserBox = /** @class */ (function () {
+}(ChatBaseBox));
+var ChatAddUserBox = /** @class */ (function (_super) {
+    __extends(ChatAddUserBox, _super);
     /**
      *
      */
     function ChatAddUserBox(box, parent) {
-        this.box = box;
-        this.parent = parent;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        return _this_1;
     }
-    ChatAddUserBox.prototype.show = function () {
-        this.box.show();
-    };
     return ChatAddUserBox;
-}());
-var ChatUserInfoBox = /** @class */ (function () {
+}(ChatBaseBox));
+var ChatUserInfoBox = /** @class */ (function (_super) {
+    __extends(ChatUserInfoBox, _super);
     /**
      *
      */
     function ChatUserInfoBox(box, parent) {
-        this.box = box;
-        this.parent = parent;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        return _this_1;
     }
-    ChatUserInfoBox.prototype.show = function () {
-        this.box.show();
-    };
     return ChatUserInfoBox;
-}());
-var ChatSearchBox = /** @class */ (function () {
+}(ChatBaseBox));
+var ChatSearchBox = /** @class */ (function (_super) {
+    __extends(ChatSearchBox, _super);
     /**
      *
      */
     function ChatSearchBox(box, parent) {
-        this.box = box;
-        this.parent = parent;
-        this.bindEvent();
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.users = [];
+        _this_1.bindEvent();
+        return _this_1;
     }
+    ChatSearchBox.prototype.render = function () {
+        var tpl = "<div class=\"dialog-info\">\n        <div class=\"dialog-info-avatar\">\n            <img src=\"{0}\" alt=\"\">\n        </div>\n        <div class=\"dialog-info-name\">\n            <h3>{1}</h3>\n            <p>{2}</p>\n        </div>\n    </div>", html = '';
+        this.users.forEach(function (user) {
+            html += ZUtils.str.format(tpl, user.avatar, user.name, user.brief);
+        });
+        this.find('.dialog-search-list').html(html);
+    };
     /**
      * bindEvent
      */
@@ -146,16 +199,19 @@ var ChatSearchBox = /** @class */ (function () {
             $this.addClass('active').siblings().removeClass('active');
         });
     };
-    ChatSearchBox.prototype.show = function () {
-        this.box.show();
-    };
     return ChatSearchBox;
-}());
+}(ChatBaseBox));
 var ChatEditor = /** @class */ (function () {
     function ChatEditor(box, parent) {
         this.box = box;
         this.parent = parent;
     }
+    ChatEditor.prototype.html = function () {
+        return this.box.html();
+    };
+    ChatEditor.prototype.text = function () {
+        return this.box.text();
+    };
     ChatEditor.prototype.insertHtmlAtCaret = function (html) {
         var sel, range, editor = this.box;
         if (!editor.is(":focus")) {
@@ -192,18 +248,25 @@ var ChatEditor = /** @class */ (function () {
     };
     return ChatEditor;
 }());
-var ChatMessageBox = /** @class */ (function () {
+var ChatMessageBox = /** @class */ (function (_super) {
+    __extends(ChatMessageBox, _super);
     /**
      *
      */
-    function ChatMessageBox(box, parent) {
-        this.box = box;
-        this.parent = parent;
-        this.refresh();
-        this.bindEvent();
+    function ChatMessageBox(box, parent, send, revice) {
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.send = send;
+        _this_1.revice = revice;
+        _this_1.messages = [];
+        _this_1.refresh();
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatMessageBox.prototype.refresh = function () {
-        this.editor = new ChatEditor(this.box.find('.dialog-message-text'), this);
+        this.editor = new ChatEditor(this.find('.dialog-message-text'), this);
+        this.renderTitle();
     };
     /**
      * bindEvent
@@ -214,20 +277,109 @@ var ChatMessageBox = /** @class */ (function () {
             _this.editor.insertHtmlAtCaret('<img src="./image/avatar.jpg" alt="">');
         });
     };
+    ChatMessageBox.prototype.renderTitle = function () {
+        if (!this.revice) {
+            return;
+        }
+        this.find('.dialog-title').html('与 ' + this.revice.name + ' 聊天中');
+    };
+    ChatMessageBox.prototype.addMessage = function (message) {
+        this.messages.push(message);
+        this.renderMessage();
+    };
+    ChatMessageBox.prototype.prependMessage = function (messages) {
+        this.messages = messages.concat(this.messages);
+        this.renderMessage();
+    };
+    ChatMessageBox.prototype.renderMessage = function () {
+        var _this_1 = this;
+        var html = '', messages = this.cleanMessage();
+        messages.forEach(function (item) {
+            html += _this_1.renderMessageItem(item);
+        });
+        this.find('.dialog-message-box').html(html);
+    };
+    ChatMessageBox.prototype.renderMessageItem = function (item) {
+        switch (item.type) {
+            case ChatType.MORE:
+                return '<p class="message-more">加载更多</p>';
+            case ChatType.TIME:
+                return '<p class="message-line">' + item.content + '</p>';
+            case ChatType.TIP:
+                return '<p class="message-tip">' + item.content + '</p>';
+            case ChatType.MESSAGE:
+            default:
+                break;
+        }
+        if (item.user.id == this.send.id) {
+            return ZUtils.str.format("<div class=\"message-right\">\n            <img class=\"avatar\" src=\"{0}\">\n            <div class=\"content\">\n                {1}\n            </div>\n        </div>", item.user.avatar, item.content);
+        }
+        return ZUtils.str.format("<div class=\"message-left\">\n        <img class=\"avatar\" src=\"{0}\">\n        <div class=\"content\">\n            {1}\n        </div>\n    </div>", item.user.avatar, item.content);
+    };
+    ChatMessageBox.prototype.cleanMessage = function () {
+        var _this_1 = this;
+        var messages = [
+            {
+                type: ChatType.MORE
+            }
+        ], lastTime = 0;
+        this.messages.forEach(function (item) {
+            if (item.time - lastTime > 200) {
+                lastTime = item.time;
+                _this_1.messages.push({
+                    content: ZUtils.time + '',
+                    type: ChatType.TIME
+                });
+            }
+        });
+        return messages;
+    };
     return ChatMessageBox;
-}());
-var ChatUserBox = /** @class */ (function () {
+}(ChatBaseBox));
+var ChatUserBox = /** @class */ (function (_super) {
+    __extends(ChatUserBox, _super);
     /**
      *
      */
     function ChatUserBox(box, parent) {
-        this.box = box;
-        this.parent = parent;
-        this.refresh();
-        this.bindEvent();
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.refresh();
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatUserBox.prototype.refresh = function () {
-        this.menu = new ChatMenu(this.box.find('.dialog-menu'), USER_MENU);
+        this.menu = new ChatMenu(this.find('.dialog-menu'), USER_MENU);
+    };
+    ChatUserBox.prototype.renderGroup = function () {
+        var tpl = "<div class=\"dialog-user\">\n        <div class=\"dialog-user-avatar\">\n            <img src=\"{0}\" alt=\"\">\n        </div>\n        <div class=\"dialog-user-info\">\n            <p>\n                <span class=\"name\">{1}</span>\n            </p>\n            <p>\n                <span class=\"content\">{2}</span>\n            </p>\n        </div>\n    </div>", html = '';
+        this.groups.forEach(function (group) {
+            html += ZUtils.str.format(tpl, group.avatar, group.name, group.brief);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(2).html(html);
+    };
+    ChatUserBox.prototype.renderFriends = function () {
+        var panel = "\n        <div class=\"dialog-panel expanded\">\n        <div class=\"dialog-panel-header\">\n            <i class=\"dialog-panel-icon\"></i>\n            <span>{0} ({1} / {2})</span>\n        </div>\n        <div class=\"dialog-panel-box\">\n            {3}\n        </div>\n    </div>\n        ", tpl = "<div class=\"dialog-user\">\n            <div class=\"dialog-user-avatar\">\n                <img src=\"{0}\" alt=\"\">\n            </div>\n            <div class=\"dialog-user-info\">\n                <p>\n                    <span class=\"name\">{1}</span>\n                </p>\n                <p>\n                    <span class=\"content\">{2}</span>\n                </p>\n            </div>\n        </div>", html = '';
+        this.friends.forEach(function (group) {
+            var groupHtml = '';
+            group.users.forEach(function (user) {
+                groupHtml += ZUtils.str.format(tpl, user.avatar, user.name, user.brief);
+            });
+            html += ZUtils.str.format(panel, group.name, group.online_count, group.count, groupHtml);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(1).html(html);
+    };
+    ChatUserBox.prototype.renderLastFriends = function () {
+        var tpl = "<div class=\"dialog-user\">\n        <div class=\"dialog-user-avatar\">\n            <img src=\"{0}\" alt=\"\">\n        </div>\n        <div class=\"dialog-user-info\">\n            <p>\n                <span class=\"name\">{1}</span>\n                <span class=\"time\">{2}</span>\n            </p>\n            <p>\n                <span class=\"content\">{3}</span>\n                <span class=\"count\">{4}</span>\n            </p>\n        </div>\n    </div>", html = '';
+        this.last_friends.forEach(function (user) {
+            html += ZUtils.str.format(tpl, user.avatar, user.name, user.last_message.time, user.last_message.content, user.new_count);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(0).html(html);
+    };
+    ChatUserBox.prototype.renderUser = function () {
+        var tpl = "<div class=\"dialog-info-avatar\">\n        <img src=\"{0}\" alt=\"\">\n    </div>\n    <div class=\"dialog-info-name\">\n        <h3>{1}</h3>\n        <p>{2}</p>\n    </div>\n    <div class=\"dialog-message-count\">\n    {3}\n    </div>";
+        this.find('.dialog-info').html(ZUtils.str.format(tpl, this.user.avatar, this.user.name, this.user.brief, this.user.new_count));
     };
     ChatUserBox.prototype.bindEvent = function () {
         var _this = this;
@@ -258,7 +410,7 @@ var ChatUserBox = /** @class */ (function () {
             $(this).closest('.dialog-chat').find('.dialog-chat-room').show();
         });
         this.box.on('contextmenu', '.dialog-tab .dialog-user', function (event) {
-            _this.menu.show(event.clientX, event.clientY);
+            _this.menu.showPosition(event.clientX, event.clientY, $(this));
             return false;
         });
         this.menu.on('click', function () {
@@ -267,7 +419,7 @@ var ChatUserBox = /** @class */ (function () {
         });
     };
     return ChatUserBox;
-}());
+}(ChatBaseBox));
 var ChatRoom = /** @class */ (function () {
     function ChatRoom(target) {
         this.target = target;
@@ -296,7 +448,7 @@ var USER_MENU = [
         text: '删除好友'
     },
 ];
-new ChatRoom($('.dialog-chat-page'));
+var room = new ChatRoom($('.dialog-chat-page')), fixed_room = new ChatRoom($('.dialog-fixed'));
 $(function () {
     $('.dialog-box').on('click', '.dialog-header .fa-close', function () {
         $(this).closest('.dialog-box').hide();

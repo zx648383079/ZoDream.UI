@@ -1,7 +1,7 @@
 /// <reference types="jquery" />
 declare class Compare {
     element: JQuery;
-    option: CompareOption;
+    option?: CompareOption;
     constructor(element: JQuery, option?: CompareOption);
     private _dialog;
     private _cookieName;
@@ -11,11 +11,11 @@ declare class Compare {
     init(): void;
     map(callback: (item: any) => any): void;
     addItem(data: any): void;
-    private _bindEvent();
-    private _showData(element, data?);
-    private _getLiHtml(data);
+    private _bindEvent;
+    private _showData;
+    private _getLiHtml;
     removeItem(item: JQuery | number): void;
-    private _setCookie();
+    private _setCookie;
     removeAll(): void;
 }
 interface CompareOption {

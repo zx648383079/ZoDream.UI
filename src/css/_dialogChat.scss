@@ -1,3 +1,4 @@
+@import "scrollbar";
 .dialog-menu {
     position: fixed;
     width: 150px;
@@ -202,6 +203,7 @@
         .dialog-message-box {
             height: 400px;
             overflow-y: auto;
+            @include scrollbar();
             * {
                 margin: 0;
             }
@@ -281,6 +283,7 @@
         .dialog-message-text {
             height: 80px;
             overflow-y: auto;
+            @include scrollbar();
         }
         .dailog-message-action {
             text-align: right;
@@ -434,6 +437,7 @@
                     .dialog-tab-item{
                         height: 448px;
                         overflow-y: auto;
+                        @include scrollbar();
                     }
                 }
             }

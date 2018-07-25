@@ -2,12 +2,80 @@ interface ChatMenuItem {
     name?: string,
     text?: string,
     icon?: string,
-    toggle?: ()=>boolean,
-    onclick?: (menuItem: JQuery) => void,
+    toggle?: (target: JQuery, menu: ChatMenu)=>boolean,
+    onclick?: (menuItem: JQuery, target: JQuery, menu: ChatMenu) => void,
     children?: Array<ChatMenuItem>
 }
 
-class ChatMenu {
+interface ChatGroupItem {
+    name: string,
+    count: number,
+    online_count: number,
+    users: Array<ChatUserItem>
+}
+
+interface ChatUserItem {
+    id: number,
+    name: string,
+    avatar: string,
+    brief: string,
+    new_count?: number,
+    last_message?: ChatMessageItem
+}
+
+enum ChatType {
+    MESSAGE,
+    MORE,
+    TIP,
+    TIME
+}
+
+interface ChatMessageItem {
+    type: ChatType
+    content?: string,
+    time?: number,
+    user?: ChatUserItem
+}
+
+abstract class ChatBaseBox {
+    private cache_element: any = {};
+    public box: JQuery;
+    private events: any = {};
+
+    public on(event: string, callback: Function): this {
+        this.events[event] = callback;
+        return this;
+    }
+
+    public hasEvent(event: string): boolean {
+        return this.events.hasOwnProperty(event);
+    }
+
+    public trigger(event: string, ... args: any[]) {
+        if (!this.hasEvent(event)) {
+            return;
+        }
+        return this.events[event].call(this, ...args);
+    }
+
+    public find(tag: string): JQuery {
+        if (this.cache_element.hasOwnProperty(tag)) {
+            return this.cache_element[tag];
+        }
+        return this.cache_element[tag] = this.box.find(tag);
+    }
+
+    public show() {
+        this.box.show();
+        return this;
+    }
+
+    public hide() {
+        this.box.hide();
+    }
+}
+
+class ChatMenu extends ChatBaseBox {
     /**
      *
      */
@@ -15,11 +83,13 @@ class ChatMenu {
         private box: JQuery,
         private menus: Array<ChatMenuItem> = []
     ) {
+        super();
         this.bindEvent();
     }
 
-    private events: any = {};
+
     private menuMap: any;
+    private target: JQuery;
 
     public bindEvent() {
         let _this = this;
@@ -33,14 +103,14 @@ class ChatMenu {
             menu: ChatMenuItem;
         if (name && this.menuMap.hasOwnProperty(name)) {
             menu = this.menuMap[name];
-            if (menu && menu.onclick) {
-                menu.onclick(li);
+            if (menu && menu.onclick && menu.onclick(li, this.target, this) === false) {
+                return;
             }
         }
-        if (name && this.hasEvent(name)) {
-            this.trigger(name, li, menu);
+        if (name && this.hasEvent(name) && this.trigger(name, li, menu, this.target, this) === false) {
+            return;
         }
-        this.trigger('click', li, menu);
+        this.trigger('click', li, menu, this.target);
     }
 
     public addMenu(menu: ChatMenuItem | any) {
@@ -48,17 +118,19 @@ class ChatMenu {
         return this;
     }
 
-    public show(x: number, y: number) {
+    public showPosition(x: number, y: number, target?: JQuery) {
         this.refresh();
         this.box.css({
             'left': x + 'px',
             'top': y + 'px'
         }).show();
+        this.target = target;
         return this;
     }
 
     public hide() {
         this.box.hide();
+        this.target = null;
     }
 
     public refresh() {
@@ -94,7 +166,7 @@ class ChatMenu {
         }
         let real_menu = [];
         menus.forEach(menu => {
-            if (menu.toggle && menu.toggle() === false) {
+            if (menu.toggle && menu.toggle(this.target, this) === false) {
                 return;
             }
             real_menu.push(menu);
@@ -102,24 +174,10 @@ class ChatMenu {
         return real_menu;
     }
 
-    public on(event: string, callback: Function): this {
-        this.events[event] = callback;
-        return this;
-    }
 
-    public hasEvent(event: string): boolean {
-        return this.events.hasOwnProperty(event);
-    }
-
-    public trigger(event: string, ... args: any[]) {
-        if (!this.hasEvent(event)) {
-            return;
-        }
-        return this.events[event].call(this, ...args);
-    }
 }
 
-class ChatAddUserBox {
+class ChatAddUserBox extends ChatBaseBox {
     /**
      *
      */
@@ -127,15 +185,11 @@ class ChatAddUserBox {
         public box: JQuery,
         private parent: ChatRoom
     ) {
-        
-    }
-
-    public show() {
-        this.box.show();
+        super();
     }
 }
 
-class ChatUserInfoBox {
+class ChatUserInfoBox extends ChatBaseBox {
     /**
      *
      */
@@ -143,15 +197,11 @@ class ChatUserInfoBox {
         public box: JQuery,
         private parent: ChatRoom
     ) {
-        
-    }
-
-    public show() {
-        this.box.show();
+        super();
     }
 }
 
-class ChatSearchBox {
+class ChatSearchBox extends ChatBaseBox {
     /**
      *
      */
@@ -159,7 +209,27 @@ class ChatSearchBox {
         public box: JQuery,
         private parent: ChatRoom
     ) {
+        super();
         this.bindEvent();
+    }
+
+    private users: Array<ChatUserItem> = [];
+
+    private render() {
+        let tpl = `<div class="dialog-info">
+        <div class="dialog-info-avatar">
+            <img src="{0}" alt="">
+        </div>
+        <div class="dialog-info-name">
+            <h3>{1}</h3>
+            <p>{2}</p>
+        </div>
+    </div>`,
+        html = '';
+        this.users.forEach(user => {
+            html += ZUtils.str.format(tpl, user.avatar, user.name, user.brief);
+        });
+        this.find('.dialog-search-list').html(html);
     }
 
     /**
@@ -176,9 +246,6 @@ class ChatSearchBox {
         });
     }
 
-    public show() {
-        this.box.show();
-    }
 }
 
 class ChatEditor {
@@ -187,6 +254,14 @@ class ChatEditor {
         private parent: ChatMessageBox
     ) {
         
+    }
+
+    public html(): string {
+        return this.box.html();
+    }
+
+    public text(): string {
+        return this.box.text();
     }
 
     public insertHtmlAtCaret(html: string) {
@@ -226,22 +301,28 @@ class ChatEditor {
     }
 }
 
-class ChatMessageBox {
+class ChatMessageBox extends ChatBaseBox {
     /**
      *
      */
     constructor(
         public box: JQuery,
-        private parent: ChatRoom
+        private parent: ChatRoom,
+        private send?: ChatUserItem,
+        public revice?: ChatUserItem
     ) {
+        super();
         this.refresh();
         this.bindEvent();
     }
 
     public editor: ChatEditor;
 
+    private messages: Array<ChatMessageItem> = [];
+
     public refresh() {
-        this.editor = new ChatEditor(this.box.find('.dialog-message-text'), this);
+        this.editor = new ChatEditor(this.find('.dialog-message-text'), this);
+        this.renderTitle();
     }
 
     /**
@@ -253,9 +334,84 @@ class ChatMessageBox {
             _this.editor.insertHtmlAtCaret('<img src="./image/avatar.jpg" alt="">');
         });
     }
+
+    private renderTitle() {
+        if (!this.revice) {
+            return;
+        }
+        this.find('.dialog-title').html('与 '+ this.revice.name +' 聊天中');
+    }
+
+    public addMessage(message: ChatMessageItem) {
+        this.messages.push(message);
+        this.renderMessage();
+    }
+
+    public prependMessage(messages: Array<ChatMessageItem>) {
+        this.messages = messages.concat(this.messages);
+        this.renderMessage();
+    }
+
+    private renderMessage() {
+        let html = '',
+            messages = this.cleanMessage();
+        messages.forEach(item => {
+            html += this.renderMessageItem(item);
+        });
+        this.find('.dialog-message-box').html(html);
+    }
+
+    private renderMessageItem(item: ChatMessageItem) {
+        switch (item.type) {
+            case ChatType.MORE:
+                return '<p class="message-more">加载更多</p>';
+            case ChatType.TIME:
+                return '<p class="message-line">' + item.content +'</p>';
+            case ChatType.TIP:
+                return '<p class="message-tip">' + item.content +'</p>';
+            case ChatType.MESSAGE:
+            default:
+                break;
+        }
+        if (item.user.id == this.send.id) {
+            return ZUtils.str.format(`<div class="message-right">
+            <img class="avatar" src="{0}">
+            <div class="content">
+                {1}
+            </div>
+        </div>`, item.user.avatar, item.content);
+        }
+        return ZUtils.str.format(`<div class="message-left">
+        <img class="avatar" src="{0}">
+        <div class="content">
+            {1}
+        </div>
+    </div>`, item.user.avatar, item.content);
+    }
+
+    private cleanMessage(): Array<ChatMessageItem> {
+        let messages: Array<ChatMessageItem> = [
+            {
+                type: ChatType.MORE
+            }
+        ],
+            lastTime: number = 0;
+        this.messages.forEach(item => {
+            if (item.time - lastTime > 200) {
+                lastTime = item.time;
+                this.messages.push({
+                    content: ZUtils.time + '',
+                    type: ChatType.TIME
+                });
+            }
+        });
+        return messages;
+    }
+
+
 }
 
-class ChatUserBox {
+class ChatUserBox extends ChatBaseBox {
     /**
      *
      */
@@ -263,14 +419,113 @@ class ChatUserBox {
         public box: JQuery,
         private parent: ChatRoom
     ) {
+        super();
         this.refresh();
         this.bindEvent();
     }
 
+    private user: ChatUserItem;
+    private last_friends: Array<ChatUserItem>;
+    private friends: Array<ChatGroupItem>;
+    private groups: Array<ChatUserItem>;
     public menu: ChatMenu;
 
     public refresh() {
-        this.menu = new ChatMenu(this.box.find('.dialog-menu'), USER_MENU);
+        this.menu = new ChatMenu(this.find('.dialog-menu'), USER_MENU);
+    }
+
+    private renderGroup() {
+        let tpl = `<div class="dialog-user">
+        <div class="dialog-user-avatar">
+            <img src="{0}" alt="">
+        </div>
+        <div class="dialog-user-info">
+            <p>
+                <span class="name">{1}</span>
+            </p>
+            <p>
+                <span class="content">{2}</span>
+            </p>
+        </div>
+    </div>`,
+        html = '';
+        this.groups.forEach(group => {
+            html += ZUtils.str.format(tpl, group.avatar, group.name, group.brief);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(2).html(html);
+    }
+
+    private renderFriends() {
+        let panel = `
+        <div class="dialog-panel expanded">
+        <div class="dialog-panel-header">
+            <i class="dialog-panel-icon"></i>
+            <span>{0} ({1} / {2})</span>
+        </div>
+        <div class="dialog-panel-box">
+            {3}
+        </div>
+    </div>
+        `,
+            tpl = `<div class="dialog-user">
+            <div class="dialog-user-avatar">
+                <img src="{0}" alt="">
+            </div>
+            <div class="dialog-user-info">
+                <p>
+                    <span class="name">{1}</span>
+                </p>
+                <p>
+                    <span class="content">{2}</span>
+                </p>
+            </div>
+        </div>`,
+        html = '';
+        this.friends.forEach(group => {
+            let groupHtml = '';
+            group.users.forEach(user => {
+                groupHtml += ZUtils.str.format(tpl, user.avatar, user.name, user.brief);
+            });
+            html += ZUtils.str.format(panel, group.name, group.online_count, group.count, groupHtml);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(1).html(html);
+    }
+
+    private renderLastFriends() {
+        let tpl = `<div class="dialog-user">
+        <div class="dialog-user-avatar">
+            <img src="{0}" alt="">
+        </div>
+        <div class="dialog-user-info">
+            <p>
+                <span class="name">{1}</span>
+                <span class="time">{2}</span>
+            </p>
+            <p>
+                <span class="content">{3}</span>
+                <span class="count">{4}</span>
+            </p>
+        </div>
+    </div>`,
+        html = '';
+        this.last_friends.forEach(user => {
+            html += ZUtils.str.format(tpl, user.avatar, user.name, user.last_message.time, user.last_message.content, user.new_count);
+        });
+        this.find('.dialog-tab-box .dialog-tab-item').eq(0).html(html);
+    }
+
+    private renderUser() {
+        let tpl = `<div class="dialog-info-avatar">
+        <img src="{0}" alt="">
+    </div>
+    <div class="dialog-info-name">
+        <h3>{1}</h3>
+        <p>{2}</p>
+    </div>
+    <div class="dialog-message-count">
+    {3}
+    </div>`;
+        this.find('.dialog-info').html(ZUtils.str.format(tpl, this.user.avatar, this.user.name, this.user.brief, this.user.new_count));
     }
 
     public bindEvent() {
@@ -303,7 +558,7 @@ class ChatUserBox {
             $(this).closest('.dialog-chat').find('.dialog-chat-room').show();
         });
         this.box.on('contextmenu', '.dialog-tab .dialog-user', function(event) {
-            _this.menu.show(event.clientX, event.clientY);
+            _this.menu.showPosition(event.clientX, event.clientY, $(this));
             return false;
         });
         this.menu.on('click', function() {
@@ -350,7 +605,10 @@ const USER_MENU: Array<ChatMenuItem> = [
     },
 ];
 
-new ChatRoom($('.dialog-chat-page'));
+let room = new ChatRoom($('.dialog-chat-page')),
+    fixed_room = new ChatRoom($('.dialog-fixed'));
+
+
 
 $(function() {
     $('.dialog-box').on('click', '.dialog-header .fa-close', function() {

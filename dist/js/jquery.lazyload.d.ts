@@ -1,4 +1,3 @@
-/// <reference types="jquery" />
 /*!
  * jquery.lazyload - https://github.com/zx648383079/ZoDream.UI
  * Version - 1.0
@@ -6,9 +5,10 @@
  *
  * Copyright (c) 2017 ZoDream
  */
+/// <reference types="jquery" />
 declare enum LazyMode {
     once = 0,
-    every = 1,
+    every = 1
 }
 declare class LazyItem {
     element: JQuery;
@@ -39,7 +39,7 @@ declare class Lazy {
      */
     scrollInvote(): void;
     run(height: number, bottom: number): void;
-    private _init();
+    private _init;
     /**
      * 全局方法集合
      */

@@ -1,4 +1,11 @@
 /// <reference types="jquery" />
+/*!
+ * jquery.carousel - https://github.com/zx648383079/ZoDream.UI
+ * Version - 1.0
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2017 ZoDream
+ */
 declare class Carousel {
     element: JQuery;
     constructor(element: JQuery, options?: CarouselOptions);
@@ -11,9 +18,9 @@ declare class Carousel {
     private _stopTime;
     left: number;
     private _box;
-    private _addEvent();
-    private _copyItem(items);
-    private _init();
+    private _addEvent;
+    private _copyItem;
+    private _init;
     next(range?: number): void;
     previous(range?: number): void;
     goto(index: number): void;

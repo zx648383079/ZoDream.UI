@@ -555,7 +555,7 @@ var Dialog = /** @class */ (function () {
     Dialog.content = function (content, hasYes, hasNo) {
         if (typeof content != 'object') {
             content = {
-                content: content,
+                content: content + '',
                 hasYes: hasYes,
                 hasNo: hasNo
             };
@@ -572,9 +572,9 @@ var Dialog = /** @class */ (function () {
      */
     Dialog.box = function (content, title, hasYes, hasNo) {
         if (title === void 0) { title = '提示'; }
-        if (typeof content != 'object') {
+        if (typeof content != 'object' || content instanceof Array) {
             content = {
-                content: content,
+                content: content + '',
                 title: title,
                 hasYes: hasYes,
                 hasNo: hasNo
@@ -595,7 +595,7 @@ var Dialog = /** @class */ (function () {
         if (title === void 0) { title = '提示'; }
         return this.create({
             type: DialogType.form,
-            content: content,
+            content: content ? content : '',
             title: title,
             hasYes: hasYes,
             hasNo: hasNo,
@@ -613,7 +613,7 @@ var Dialog = /** @class */ (function () {
         if (title === void 0) { title = '提示'; }
         if (typeof content != 'object') {
             content = {
-                content: content,
+                content: content + '',
                 title: title,
                 hasYes: hasYes,
                 hasNo: hasNo
@@ -816,6 +816,9 @@ var DialogPlugin = /** @class */ (function () {
         }
         option.type = Dialog.parseEnum(element.attr('dialog-type') || this.option.type, DialogType);
         option.content = element.attr('dialog-content') || this.option.content;
+        if (!option.content) {
+            option.content = '';
+        }
         option.url = element.attr('dialog-url') || this.option.url;
         option.time = parseInt(element.attr('dialog-time')) || this.option.time;
         if (option.type == DialogType.pop && !option.target) {

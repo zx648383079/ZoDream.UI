@@ -99,7 +99,7 @@ class Dialog {
     public static content(content: string | DialogOption, hasYes?: boolean, hasNo?: boolean): DialogContent {
         if (typeof content != 'object') {
             content = {
-                content: content,
+                content: content + '',
                 hasYes: hasYes,
                 hasNo: hasNo
             };
@@ -116,9 +116,9 @@ class Dialog {
      * @param hasNo 
      */
     public static box(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean): DialogBox {
-        if (typeof content != 'object') {
+        if (typeof content != 'object' || content instanceof Array) {
             content = {
-                content: content,
+                content: content + '',
                 title: title,
                 hasYes: hasYes,
                 hasNo: hasNo
@@ -139,7 +139,7 @@ class Dialog {
     public static form(content: any, title: string = '提示', done?: Function, hasYes?: boolean, hasNo?: boolean): DialogForm {
         return this.create<DialogForm>({
             type: DialogType.form,
-            content: content,
+            content: content ? content : '',
             title: title,
             hasYes: hasYes,
             hasNo: hasNo,
@@ -157,7 +157,7 @@ class Dialog {
     public static page(content: string | DialogOption, title: string = '提示', hasYes?: boolean, hasNo?: boolean): DialogPage {
         if (typeof content != 'object') {
             content = {
-                content: content,
+                content: content + '',
                 title: title,
                 hasYes: hasYes,
                 hasNo: hasNo

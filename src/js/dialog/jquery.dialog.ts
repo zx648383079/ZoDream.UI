@@ -26,6 +26,9 @@ class DialogPlugin {
         }
         option.type = Dialog.parseEnum<DialogType>(element.attr('dialog-type') || this.option.type, DialogType);
         option.content = element.attr('dialog-content') || this.option.content;
+        if (!option.content) {
+            option.content = '';
+        }
         option.url = element.attr('dialog-url') || this.option.url;
         option.time = parseInt(element.attr('dialog-time')) || this.option.time;
         if (option.type == DialogType.pop && !option.target) {

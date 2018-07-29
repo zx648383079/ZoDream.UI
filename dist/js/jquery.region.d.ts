@@ -15,6 +15,7 @@ declare class Region {
     getOptionHtml(id: string | number, text: string, isSelected?: boolean): string;
 }
 interface RegionOption {
+    default?: Array<string>;
     data?: any;
     tips?: string | Array<string>;
 }

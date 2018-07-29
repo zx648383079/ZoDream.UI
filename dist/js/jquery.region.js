@@ -30,7 +30,16 @@ var Region = /** @class */ (function () {
         }
     };
     Region.prototype.init = function () {
-        this.showOption(this.selectList[0], 0);
+        var _this = this;
+        if (this.option.default) {
+            this.map(function (item, i) {
+                if (_this.option.default.length > i) {
+                    item.attr('data-value', _this.option.default[i]);
+                    return;
+                }
+                return false;
+            });
+        }
         var instance = this;
         this.map(function (item, i, count) {
             if (i >= count - 1) {
@@ -45,6 +54,7 @@ var Region = /** @class */ (function () {
                 instance.showOption(element, i + 1);
             });
         });
+        this.showOption(this.selectList[0], 0);
     };
     Object.defineProperty(Region.prototype, "val", {
         get: function () {

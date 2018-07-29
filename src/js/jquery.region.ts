@@ -35,7 +35,15 @@
      }
 
      public init() {
-        this.showOption(this.selectList[0], 0);
+        if (this.option.default) {
+            this.map((item, i) => {
+                if (this.option.default.length > i) {
+                    item.attr('data-value', this.option.default[i]);
+                    return;
+                }
+                return false;
+            });
+        }
         let instance = this;
         this.map((item, i, count) => {
             if (i >= count - 1) {
@@ -50,6 +58,7 @@
                 instance.showOption(element, i + 1);
             });
         });
+        this.showOption(this.selectList[0], 0);
      }
 
      
@@ -146,6 +155,7 @@
 }
 
 interface RegionOption {
+    default?: Array<string>,
     data?: any,
     tips?: string | Array<string>
 }

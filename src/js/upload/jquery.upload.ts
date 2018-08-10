@@ -112,17 +112,19 @@ class Upload extends Eve {
 
     public uploadOne(file: File) {
         let instance = this,
-            data: FormData;
-        if (this.options.ondealfile) {
-            data = this.options.ondealfile.call(this, file);
+            data: FormData,
+            deal_data = this.trigger('dealfile', file);
+        if (deal_data === false) {
+            console.log('deal file is false');
+            return;
+        }
+        if (deal_data) {
+            data = deal_data;
         } else {
             data = new FormData();
             data.append(this.options.name, file);
         }
-        if (!data) {
-            console.log('deal file is false');
-            return;
-        }
+        
         if (this.trigger('before', data, this.currentElement) === false) {
             console.log('before upload is false');
             return;
@@ -150,6 +152,9 @@ class Upload extends Eve {
                 cb && cb(data);
             }
         };
+        if (this.options.timeout) {
+            opts['timeout'] = this.options.timeout;
+        }
         if (this.hasEvent('progress')) {
             opts['xhr'] = function(){
                 let xhr = $.ajaxSettings.xhr();
@@ -161,6 +166,53 @@ class Upload extends Eve {
         }
         $.ajax(opts);
     }
+
+    public formatFileSize(fileSize): string {
+        let sizeUnitArr = ['Byte','KB','MB','GB'];
+        if (fileSize == 0) {
+            return "0 KB";
+        }
+        let i = Math.floor(Math.log(fileSize) / Math.log(1024));
+        if (i == 0) {
+            return fileSize + sizeUnitArr[i];
+        }
+        return (fileSize / Math.pow(1024, i)).toFixed(1) + sizeUnitArr[i];
+    }
+
+
+    public sliceUpload(file: File) {
+        let maxLength = 1024 * 1024,
+            _this = this,
+            totalSize = file.size,
+            name: string,
+            chunks = Math.ceil(totalSize / maxLength),
+            chunk = 0,
+            startUpload = function() {
+                let blobFrom = chunk * maxLength,
+                    blobTo = Math.min((chunk + 1) * maxLength, totalSize),
+                    data = new FormData();
+                data.append(_this.options.name, file.slice(blobFrom, blobTo));
+                if (name) {
+                    data.append('name', name);
+                }
+                data.append('real_name', file.name);
+                data.append('total', totalSize + '');
+                data.append('status', (chunk == (chunks - 1) ? 2 : (chunk == 0 ? 0 : 1)) + '');
+                _this.uploadForm(data, (res) => {
+                    if (chunk === (chunks - 1)) {
+                        _this.deal($.extend({}, _this.options.data, res));
+                        return;
+                    }
+                    name = res.name;
+                    chunk ++;
+                    startUpload();
+                });
+            };
+        startUpload();
+    }
+
+
+    /** 图片压缩 start  */
 
     public photoCompress(file: File, options: any, cb: (data: string) => void){
         let ready = new FileReader(),
@@ -218,6 +270,8 @@ class Upload extends Eve {
         }
         return new Blob([u8arr], {type:mime});
     }
+
+    /** 压缩处理end  */
 
     public deal(data: any) {
         let value = typeof this.options.template == 'function' ? this.options.template.call(this, data) : this.replace(data);
@@ -302,6 +356,7 @@ interface UploadOption {
     template?: string | Function,    // 模板
     grid?: string,        // 装载容器
     data?: any,           //默认值
+    timeout?: number,
     removeTag?: string,   // 删除标志
     removeCallback?: (eventObject: JQueryEventObject, ...eventData: any[]) => any,  //删除触发事件
     multiple?: boolean,   // 是否允许上传多个

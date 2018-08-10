@@ -35,7 +35,7 @@ declare class Upload extends Eve {
     uploadOne(file: File): void;
     uploadForm(data: FormData, cb?: (data: any) => void): void;
     formatFileSize(fileSize: any): string;
-    sliceUpload(file: File): void;
+    sliceUpload(file: File, cb?: (data: any, currentElement: JQuery) => void): void;
     /** 图片压缩 start  */
     photoCompress(file: File, options: any, cb: (data: string) => void): void;
     private _canvasDataURL;

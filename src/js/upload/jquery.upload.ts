@@ -180,7 +180,7 @@ class Upload extends Eve {
     }
 
 
-    public sliceUpload(file: File) {
+    public sliceUpload(file: File, cb?: (data: any, currentElement: JQuery) => void) {
         let maxLength = 1024 * 1024,
             _this = this,
             totalSize = file.size,
@@ -199,6 +199,10 @@ class Upload extends Eve {
                 data.append('total', totalSize + '');
                 data.append('status', (chunk == (chunks - 1) ? 2 : (chunk == 0 ? 0 : 1)) + '');
                 _this.uploadForm(data, (res) => {
+                    cb && cb({
+                        total: totalSize,
+                        size: blobTo
+                    }, _this.currentElement);
                     if (chunk === (chunks - 1)) {
                         _this.deal($.extend({}, _this.options.data, res));
                         return;

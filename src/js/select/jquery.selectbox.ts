@@ -300,8 +300,11 @@
      private _createOptionHtml(data: any) {
         let html = '';
         let _this = this;
-        $.each(data, function(i: any, item) {
+        $.each(data, function(i: string| number, item: any) {
             let [value, text] = _this._getValueAndText(item, i);
+            if (_this.options.createOption) {
+                text = _this.options.createOption(item, i);
+            }
             html += '<li data-value="'+ value +'">'+ text + '</li>';
         });
         return html;
@@ -442,6 +445,7 @@ interface SelectBoxOptions {
     textTag?: string,
     valueTag?: string,
     childrenTag?: string,
+    createOption?: (item: any, key: string| number) => string,
     lineHeight?: number,
     ondone?: (val: string| number, text: string, option: JQuery, index: number) => any
  }

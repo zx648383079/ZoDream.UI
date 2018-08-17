@@ -37,9 +37,9 @@ class Upload extends Eve {
     private currentElement: JQuery;
 
     public addEvent() {
-        let instance = this;
+        let _this = this;
         this.element.click(function() {
-            instance.start($(this));
+            _this.start($(this));
         });
         if (this.options.grid) {
             $(this.options.grid).on('click', this.options.removeTag, this.options.removeCallback);
@@ -48,7 +48,7 @@ class Upload extends Eve {
 
     public start(currentElement?: JQuery) {
         this.currentElement = currentElement;
-        let instance = this;
+        let _this = this;
         let element = $('.' + this.options.fileClass);
         if (element.length < 1) {
             let file = document.createElement('input');
@@ -58,7 +58,7 @@ class Upload extends Eve {
             file.accept = this.options.filter;
             document.body.appendChild(file);
             element = $(file).bind('change', function() {
-                instance.uploadFiles(this.files);
+                _this.uploadFiles(this.files);
             }).hide();
         } else {
             element.val('');
@@ -66,7 +66,7 @@ class Upload extends Eve {
             element.attr('accept', this.options.filter);
             if (this.options.dynamic) {
                 element.unbind('change').bind('change', function() {
-                    instance.uploadFiles(this.files);
+                    _this.uploadFiles(this.files);
                 });
             }
         }
@@ -78,21 +78,21 @@ class Upload extends Eve {
             this.uploadMany(files);
             return;
         }
-        let instance = this;
+        let _this = this;
         $.each(files, function(i, file) {
-            instance.uploadOne(file);
+            _this.uploadOne(file);
         });
     }
 
     public uploadMany(files) {
-        let instance = this,
+        let _this = this,
             data: FormData;
         if (this.options.ondealfile) {
             data = this.options.ondealfiles.call(this, files);
         } else {
             data = new FormData();
             $.each(files, function(i, file) {
-                data.append(instance.options.name, file);
+                data.append(_this.options.name, file);
             });
         }
         if (this.trigger('before', data, this.currentElement) === false) {
@@ -102,16 +102,16 @@ class Upload extends Eve {
         this.uploadForm(data, function(data) {
             if (data instanceof Array) {
                 $.each(data, function(i, item) {
-                    instance.deal($.extend({}, instance.options.data, item));
+                    _this.deal($.extend({}, _this.options.data, item));
                 });
                 return;
             }
-            instance.deal($.extend({}, instance.options.data, data));
+            _this.deal($.extend({}, _this.options.data, data));
         });
     }
 
     public uploadOne(file: File) {
-        let instance = this,
+        let _this = this,
             data: FormData,
             deal_data = this.trigger('dealfile', file);
         if (deal_data === false) {
@@ -130,12 +130,12 @@ class Upload extends Eve {
             return;
         }
         this.uploadForm(data, function(data) {
-            instance.deal($.extend({}, instance.options.data, data));
+            _this.deal($.extend({}, _this.options.data, data));
         });
     }
 
     public uploadForm(data: FormData, cb?: (data: any)=>void) {
-        let instance = this;
+        let _this = this;
         let opts = {
             url: this.options.url,
             type:'POST',
@@ -144,7 +144,7 @@ class Upload extends Eve {
             contentType: false,    //不可缺
             processData: false,    //不可缺
             success: function(data) {
-                data = instance.trigger('after', data, instance.currentElement);
+                data = _this.trigger('after', data, _this.currentElement);
                 if (data == false) {
                     console.log('after upload is false');
                     return;
@@ -155,13 +155,13 @@ class Upload extends Eve {
         if (this.options.timeout) {
             opts['timeout'] = this.options.timeout;
         }
-        if (this.hasEvent('progress')) {
+        if (_this.options.onprogress) {
             opts['xhr'] = function(){
                 let xhr = $.ajaxSettings.xhr();
-                if(onprogress && xhr.upload) {
-                    xhr.upload.addEventListener('progress' , this.options.onprogress, false);
-                    return xhr;
+                if(_this.options.onprogress && xhr.upload) {
+                    xhr.upload.addEventListener('progress' , _this.options.onprogress, false);
                 }
+                return xhr;
             };
         }
         $.ajax(opts);
@@ -220,12 +220,12 @@ class Upload extends Eve {
 
     public photoCompress(file: File, options: any, cb: (data: string) => void){
         let ready = new FileReader(),
-            instance = this;
+            _this = this;
         /*开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.*/
         ready.readAsDataURL(file);
         ready.onload = function(){
             let re = this.result;
-            instance._canvasDataURL(re, options, cb)
+            _this._canvasDataURL(re, options, cb)
         }
     }
     private _canvasDataURL(path: string, obj: any, callback: (data: string) => void){
@@ -296,9 +296,9 @@ class Upload extends Eve {
             return;
         }
         let tags = urlFor.split('|');
-        let instance = this;
+        let _this = this;
         tags.forEach(function(tag) {
-            let item = instance.getElement(tag, instance.currentElement);
+            let item = _this.getElement(tag, _this.currentElement);
             if (item.length == 0) {
                 return;
             }
@@ -312,7 +312,7 @@ class Upload extends Eve {
                     ele.attr('src', value);
                     return;
                 }
-                if (instance.options.isAppend) {
+                if (_this.options.isAppend) {
                     ele.append(value);
                 } else {
                     ele.prepend(value);

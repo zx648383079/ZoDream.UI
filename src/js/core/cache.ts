@@ -20,6 +20,14 @@ class CacheUrl {
         return this._event.hasOwnProperty(url);
     }
 
+    public static addEvent(url: string, callback: (data: any) => void) {
+        if (!this.hasEvent(url)) {
+            this._event[url] = [callback];
+            return;
+        }
+        this._event[url].push(callback);
+    }
+
     /**
      * 获取数据通过回调返回
      * @param url 

@@ -129,6 +129,17 @@ function selectTask() {
         .pipe(gulp.dest('dist/js'));
 }
 
+function regionTask() {
+    return gulp.src(['src/js/core/cache.ts', 'src/js/select/jquery.region.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('jquery.region.ts'))
+        .pipe(tsProject())
+        //.pipe(uglify())
+        //.pipe(rename({suffix:'.min'}))
+        //.pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/js'));
+}
+
 function filterTask() {
     return gulp.src(['src/js/core/utils.ts', 'src/js/filter/jquery.filterbox.ts'])
         .pipe(sourcemaps.init())
@@ -159,11 +170,13 @@ exports.dialogTask = dialogTask;
 exports.dateTask = dateTask;
 exports.uploadTask = uploadTask;
 exports.selectTask = selectTask;
+exports.regionTask = regionTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
 gulp.task('select', gulp.series(selectTask));
+gulp.task('region', gulp.series(regionTask));
 gulp.task('upload', gulp.series(uploadTask));
 gulp.task('default', build);

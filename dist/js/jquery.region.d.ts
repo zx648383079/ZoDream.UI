@@ -1,4 +1,32 @@
 /// <reference types="jquery" />
+/**
+ * 缓存数据
+ */
+declare class CacheUrl {
+    /**
+     * 缓存的数据
+     */
+    private static _cacheData;
+    /**
+     * 缓存的事件
+     */
+    private static _event;
+    static hasData(url: string): boolean;
+    static hasEvent(url: string): boolean;
+    static addEvent(url: string, callback: (data: any) => void): void;
+    /**
+     * 获取数据通过回调返回
+     * @param url
+     * @param callback
+     */
+    static getData(url: string, callback: (data: any) => void): void;
+    /**
+     * 设置数据并回调
+     * @param url
+     * @param data
+     */
+    static setData(url: string, data: any): void;
+}
 declare class Region {
     element: JQuery;
     constructor(element: JQuery, option?: RegionOption);

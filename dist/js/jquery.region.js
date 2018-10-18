@@ -1,3 +1,77 @@
+/**
+ * 缓存数据
+ */
+var CacheUrl = /** @class */ (function () {
+    function CacheUrl() {
+    }
+    CacheUrl.hasData = function (url) {
+        return this._cacheData.hasOwnProperty(url);
+    };
+    CacheUrl.hasEvent = function (url) {
+        return this._event.hasOwnProperty(url);
+    };
+    CacheUrl.addEvent = function (url, callback) {
+        if (!this.hasEvent(url)) {
+            this._event[url] = [callback];
+            return;
+        }
+        this._event[url].push(callback);
+    };
+    /**
+     * 获取数据通过回调返回
+     * @param url
+     * @param callback
+     */
+    CacheUrl.getData = function (url, callback) {
+        if (this.hasData(url)) {
+            callback(this._cacheData[url]);
+            return;
+        }
+        if (this.hasEvent(url)) {
+            this._event[url].push(callback);
+            return;
+        }
+        this._event[url] = [callback];
+        var instance = this;
+        $.getJSON(url, function (data) {
+            if (data.code == 0) {
+                instance.setData(url, data.data);
+                return;
+            }
+            console.log('URL ERROR! ' + url);
+        });
+    };
+    /**
+     * 设置数据并回调
+     * @param url
+     * @param data
+     */
+    CacheUrl.setData = function (url, data) {
+        this._cacheData[url] = data;
+        if (!this.hasEvent(url)) {
+            return;
+        }
+        this._event[url].forEach(function (callback) {
+            callback(data);
+        });
+        delete this._event[url];
+    };
+    /**
+     * 缓存的数据
+     */
+    CacheUrl._cacheData = {};
+    /**
+     * 缓存的事件
+     */
+    CacheUrl._event = {};
+    return CacheUrl;
+}());
+/*
+ * @Author: zodream
+ * @Date: 2018-10-18 17:29:42
+ * @Last Modified by:   zodream
+ * @Last Modified time: 2018-10-18 17:29:42
+ */
 var Region = /** @class */ (function () {
     function Region(element, option) {
         var _this = this;
@@ -13,11 +87,9 @@ var Region = /** @class */ (function () {
             return;
         }
         var instance = this;
-        $.getJSON(this.option.data, function (data) {
-            if (data.code == 0) {
-                instance.option.data = data.data;
-                instance.init();
-            }
+        CacheUrl.getData(this.option.data, function (data) {
+            instance.option.data = data;
+            instance.init();
         });
     }
     Region.prototype.map = function (callback, start) {
@@ -153,6 +225,13 @@ var RegionDefaultOption = /** @class */ (function () {
 ;
 (function ($) {
     $.fn.region = function (options) {
-        return new Region(this, options);
+        if (this.length == 1) {
+            return new Region(this, options);
+        }
+        var args = [];
+        this.each(function () {
+            args.push(new Region(this, options));
+        });
+        return args;
     };
 })(jQuery);

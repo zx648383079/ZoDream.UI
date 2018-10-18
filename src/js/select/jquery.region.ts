@@ -1,4 +1,10 @@
- class Region {
+/*
+ * @Author: zodream 
+ * @Date: 2018-10-18 17:29:42 
+ * @Last Modified by:   zodream 
+ * @Last Modified time: 2018-10-18 17:29:42 
+ */
+class Region {
      constructor(
          public element: JQuery,
          option?: RegionOption
@@ -13,11 +19,9 @@
              return;
          }
          let instance = this;
-         $.getJSON(this.option.data, function(data) {
-            if (data.code == 0) {
-                instance.option.data = data.data;
-                instance.init();
-            }
+         CacheUrl.getData(this.option.data, function(data) {
+            instance.option.data = data;
+            instance.init();
          });
      }
 
@@ -167,6 +171,13 @@ class RegionDefaultOption implements RegionOption  {
  
  ;(function($: any) {
   $.fn.region = function(options ?: RegionOption) {
-    return new Region(this, options); 
+    if (this.length == 1) {
+        return new Region(this, options); 
+    }
+    let args = [];
+    this.each(function() {
+        args.push(new Region(this, options)); 
+    });
+    return args;
   };
 })(jQuery);

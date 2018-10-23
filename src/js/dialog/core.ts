@@ -191,6 +191,9 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     public abstract init();
 
     protected createCore(): this {
+        if (this.box && this.box.length > 0) {
+            return this;
+        }
         this.box = $('<div class="dialog dialog-'+ DialogType[this.options.type] +'" data-type="dialog" dialog-id='+ this.id +'></div>');
         return this;
     }

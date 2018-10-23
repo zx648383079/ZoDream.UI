@@ -20,6 +20,13 @@ var CacheUrl = /** @class */ (function () {
     CacheUrl.hasEvent = function (url) {
         return this._event.hasOwnProperty(url);
     };
+    CacheUrl.addEvent = function (url, callback) {
+        if (!this.hasEvent(url)) {
+            this._event[url] = [callback];
+            return;
+        }
+        this._event[url].push(callback);
+    };
     /**
      * 获取数据通过回调返回
      * @param url
@@ -314,6 +321,9 @@ var DialogCore = /** @class */ (function (_super) {
         this.box = undefined;
     };
     DialogCore.prototype.createCore = function () {
+        if (this.box && this.box.length > 0) {
+            return this;
+        }
         this.box = $('<div class="dialog dialog-' + DialogType[this.options.type] + '" data-type="dialog" dialog-id=' + this.id + '></div>');
         return this;
     };
@@ -680,6 +690,10 @@ var Dialog = /** @class */ (function () {
         this.map(function (item) {
             item.close();
         });
+        if (this._bgLock > 0) {
+            this._bgLock = 0;
+            this.closeBg();
+        }
     };
     /**
      * 循环所有弹出框
@@ -728,6 +742,7 @@ var Dialog = /** @class */ (function () {
             return;
         }
         this._dialogBg.hide();
+        this._bgLock = 0;
     };
     Dialog.addMethod = function (type, dialog) {
         this.methods[type] = dialog;
@@ -1278,9 +1293,10 @@ var DialogContent = /** @class */ (function (_super) {
             this._isLoading = arg;
             this._toggleLoading();
             // 加载完成时显示元素
-            if (!this._isLoading && this.status == DialogStatus.show) {
-                this.showBox();
-            }
+            // if (!this._isLoading 
+            //     && this.status == DialogStatus.show) {
+            //     this.showBox();
+            // }
         },
         enumerable: true,
         configurable: true

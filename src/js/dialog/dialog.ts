@@ -224,6 +224,10 @@ class Dialog {
         this.map(function(item) {
             item.close();
         });
+        if (this._bgLock > 0) {
+            this._bgLock = 0;
+            this.closeBg();
+        }
     }
 
     /**
@@ -273,6 +277,7 @@ class Dialog {
             return;
         }
         this._dialogBg.hide();
+        this._bgLock = 0;
     }
 
     public static addMethod(type: DialogType, dialog: Function) {

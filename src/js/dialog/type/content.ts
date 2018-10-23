@@ -41,9 +41,10 @@ class DialogContent extends DialogCore {
         this._isLoading = arg;
         this._toggleLoading();
         // 加载完成时显示元素
-        if (!this._isLoading && this.status == DialogStatus.show) {
-            this.showBox();
-        }
+        // if (!this._isLoading 
+        //     && this.status == DialogStatus.show) {
+        //     this.showBox();
+        // }
     }
 
     /**

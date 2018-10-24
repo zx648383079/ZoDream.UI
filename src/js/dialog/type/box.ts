@@ -30,11 +30,14 @@ class DialogBox extends DialogContent {
             this.css({
                 left: (maxWidth - width) / 2 + 'px',
                 top: (maxHeight - height) / 2 + 'px'
-            });
+            }).removeClass('dialog-page');
             return this;
         }
         this.options.type = DialogType.page;
-        this.box.addClass("dialog-page");
+        this.box.addClass("dialog-page").css({
+            left: 0,
+            top: 0
+        });
         Dialog.closeBg();
         return this;
     }

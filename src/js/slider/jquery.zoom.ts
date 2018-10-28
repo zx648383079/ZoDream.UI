@@ -40,6 +40,7 @@ class Zoom {
         }
         this._initLeft();
         this._initRight();
+        this.option.onchange && this.option.onchange.call(this, this._index);
     }
 
     get index(): number {
@@ -196,7 +197,8 @@ interface ZoomOption {
     item?: string,
     previous?: string,
     next?: string,
-    auto?: boolean
+    auto?: boolean,
+    onchange?: (index: number) => void; //切换事件
 }
 
 class ZoomDefaultOption implements ZoomOption {

@@ -359,4 +359,8 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     public find(name: string): JQuery {
         return this.box.find(name);
     }
+
+    public isElement(content: any) {
+        return typeof content == 'object' && (content instanceof $ || content instanceof HTMLDivElement);
+    }
 }

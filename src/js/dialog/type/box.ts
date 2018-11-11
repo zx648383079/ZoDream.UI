@@ -86,6 +86,12 @@ class DialogBox extends DialogContent {
         this.trigger('resize');
     }
 
+    public showCenter() {
+        let x = Math.max(($(window).width() - this.box.width()) / 2, 0),
+            y = Math.max(($(window).height()/ this.box.height()) / 2, 0)
+        return this.css({left: x + "px", top: y + "px"}).show();
+    }
+
     protected getDefaultOption() {
         return new DefaultDialogBoxOption();
     }

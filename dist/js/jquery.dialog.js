@@ -466,6 +466,9 @@ var DialogCore = /** @class */ (function (_super) {
     DialogCore.prototype.find = function (name) {
         return this.box.find(name);
     };
+    DialogCore.prototype.isElement = function (content) {
+        return typeof content == 'object' && (content instanceof $ || content instanceof HTMLDivElement);
+    };
     return DialogCore;
 }(Box));
 var DefaultDialogOption = /** @class */ (function () {
@@ -1333,6 +1336,9 @@ var DialogContent = /** @class */ (function (_super) {
         }
         this.createCore().createContent()
             .appendParent().setProperty().bindEvent();
+        if (this.isElement(this.options.content)) {
+            this.box.find('.dialog-body').empty().append(this.options.content);
+        }
         if (this.status == DialogStatus.show) {
             this.showBox();
         }
@@ -1392,7 +1398,7 @@ var DialogContent = /** @class */ (function (_super) {
         return this;
     };
     DialogContent.prototype.getContentHtml = function () {
-        var content = this.options.content;
+        var content = this.isElement(this.options.content) ? '' : this.options.content;
         if (typeof content == 'object') {
             content = JSON.stringify(content);
         }
@@ -1564,6 +1570,10 @@ var DialogBox = /** @class */ (function (_super) {
     DialogBox.prototype.resize = function () {
         this.setProperty();
         this.trigger('resize');
+    };
+    DialogBox.prototype.showCenter = function () {
+        var x = Math.max(($(window).width() - this.box.width()) / 2, 0), y = Math.max(($(window).height() / this.box.height()) / 2, 0);
+        return this.css({ left: x + "px", top: y + "px" }).show();
     };
     DialogBox.prototype.getDefaultOption = function () {
         return new DefaultDialogBoxOption();

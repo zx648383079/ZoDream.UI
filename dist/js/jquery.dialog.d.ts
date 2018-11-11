@@ -122,6 +122,7 @@ declare abstract class DialogCore extends Box implements DialogInterfae {
     hasClass(name: string): boolean;
     removeClass(name: string): this;
     find(name: string): JQuery;
+    isElement(content: any): boolean;
 }
 declare class DefaultDialogOption implements DialogOption {
     title: string;
@@ -533,6 +534,7 @@ declare class DialogBox extends DialogContent {
      * 重设尺寸
      */
     resize(): void;
+    showCenter(): this;
     protected getDefaultOption(): DefaultDialogBoxOption;
     protected getHeaderHtml(): string;
 }

@@ -80,6 +80,9 @@ class DialogContent extends DialogCore {
         }
         this.createCore().createContent()
         .appendParent().setProperty().bindEvent();
+        if (this.isElement(this.options.content)) {
+            this.box.find('.dialog-body').empty().append(this.options.content);
+        }
         if (this.status == DialogStatus.show) {
             this.showBox();
         }
@@ -145,7 +148,7 @@ class DialogContent extends DialogCore {
     }
 
     protected getContentHtml(): string {
-        let content = this.options.content;
+        let content: any = this.isElement(this.options.content) ? '' : this.options.content;
         if (typeof content == 'object') {
             content = JSON.stringify(content);
         }

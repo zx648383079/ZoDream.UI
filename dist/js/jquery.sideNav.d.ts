@@ -13,10 +13,10 @@ declare class SideNav {
      * init
      */
     init(): void;
-    private _bindEvent;
-    private _getScrollTop;
-    private _getScrollHeight;
-    private _getOffsetHeight;
+    private _bindEvent();
+    private _getScrollTop();
+    private _getScrollHeight();
+    private _getOffsetHeight();
     /**
      * refresh
      */
@@ -25,8 +25,8 @@ declare class SideNav {
      * setActive
      */
     setActive(): void;
-    private _clear;
-    private _initBox;
+    private _clear();
+    private _initBox();
     fixed(): void;
     /**
      * scrollTo

@@ -12,9 +12,9 @@ declare class Pager {
     next(): void;
     change(index?: number | string, total?: number | string): void;
     refresh(): void;
-    private _initPage;
-    private _addHtml;
-    private _replace;
+    private _initPage();
+    private _addHtml();
+    private _replace(page, template);
 }
 interface PagerOption {
     total?: number;

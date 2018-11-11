@@ -116,8 +116,18 @@ class DialogContent extends DialogCore {
      * 绑定事件
      */
     protected bindEvent(): this {
+        let that = this;
         this.box.click(function(e) {
             e.stopPropagation();
+        }).on('dialog-done', function(event, data: any, cb: (dialog: DialogCore) => void) {
+            if (that.hasEvent('done')) {
+                that.trigger('done', data, cb);
+                return;
+            }
+            cb(that);
+            that.close();
+        }).on('dialog-async', function(event, cb: (dialog: DialogCore) => void) {
+            cb(that);
         });
         this.onClick(".dialog-yes", function() {
             if (this.hasEvent('done')) {
@@ -125,8 +135,7 @@ class DialogContent extends DialogCore {
                 return;
             }
             this.close();
-        });
-        this.onClick(".dialog-close", function() {
+        }).onClick(".dialog-close", function() {
             this.close();
             if (this.hasEvent('cancel')) {
                 this.trigger('cancel');
@@ -172,6 +181,7 @@ class DialogContent extends DialogCore {
         this.box.on('click', tag, function(e) {
             callback.call(instance, $(this));
         });
+        return this;
     }
 
     protected showBox(): boolean {

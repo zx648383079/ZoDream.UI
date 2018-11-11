@@ -87,7 +87,6 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
-        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -97,6 +96,7 @@ var Eve = /** @class */ (function () {
             return;
         }
         return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        var _a;
     };
     return Eve;
 }());
@@ -1364,8 +1364,18 @@ var DialogContent = /** @class */ (function (_super) {
      * 绑定事件
      */
     DialogContent.prototype.bindEvent = function () {
+        var that = this;
         this.box.click(function (e) {
             e.stopPropagation();
+        }).on('dialog-done', function (event, data, cb) {
+            if (that.hasEvent('done')) {
+                that.trigger('done', data, cb);
+                return;
+            }
+            cb(that);
+            that.close();
+        }).on('dialog-async', function (event, cb) {
+            cb(that);
         });
         this.onClick(".dialog-yes", function () {
             if (this.hasEvent('done')) {
@@ -1373,8 +1383,7 @@ var DialogContent = /** @class */ (function (_super) {
                 return;
             }
             this.close();
-        });
-        this.onClick(".dialog-close", function () {
+        }).onClick(".dialog-close", function () {
             this.close();
             if (this.hasEvent('cancel')) {
                 this.trigger('cancel');
@@ -1417,6 +1426,7 @@ var DialogContent = /** @class */ (function (_super) {
         this.box.on('click', tag, function (e) {
             callback.call(instance, $(this));
         });
+        return this;
     };
     DialogContent.prototype.showBox = function () {
         if (this.isLoading) {

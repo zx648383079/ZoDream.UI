@@ -1671,6 +1671,9 @@ var DialogForm = /** @class */ (function (_super) {
         if (data.class) {
             attr += ' class="' + data.class + '"';
         }
+        if (data.style) {
+            attr += ' style="' + data.style + '"';
+        }
         if (data.required) {
             attr += ' required="required"';
         }

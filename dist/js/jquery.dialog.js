@@ -87,6 +87,7 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
+        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -96,7 +97,6 @@ var Eve = /** @class */ (function () {
             return;
         }
         return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
-        var _a;
     };
     return Eve;
 }());
@@ -1572,7 +1572,7 @@ var DialogBox = /** @class */ (function (_super) {
         this.trigger('resize');
     };
     DialogBox.prototype.showCenter = function () {
-        var x = Math.max(($(window).width() - this.box.width()) / 2, 0), y = Math.max(($(window).height() / this.box.height()) / 2, 0);
+        var x = Math.max(($(window).width() - this.box.width()) / 2, 0), y = Math.max(($(window).height() - this.box.height()) / 2, 0);
         return this.css({ left: x + "px", top: y + "px" }).show();
     };
     DialogBox.prototype.getDefaultOption = function () {

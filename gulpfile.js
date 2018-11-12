@@ -8,12 +8,16 @@ var gulp = require('gulp'),
     ts = require("gulp-typescript"),
     tslint = require("gulp-tslint"),
     babel = require('gulp-babel'),
+    autoprefixer = require('gulp-autoprefixer'),
     tsProject = ts.createProject('tsconfig.json');
+
+// process.argv && process.argv.length > 2 获取参数
  
 function sassTask() {
     return gulp.src("src/css/*.scss")
         .pipe(sourcemaps.init())
         .pipe(sass())
+        .pipe(autoprefixer())
         .pipe(sourcemaps.write('./'))
         //.pipe(minCss())
         //.pipe(rename({suffix:'.min'}))

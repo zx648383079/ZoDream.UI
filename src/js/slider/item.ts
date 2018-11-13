@@ -140,8 +140,7 @@ class SliderItem extends Eve {
      * @param name 
      */
     private _getOption<T>(name: string): T {
-        let val = this.element.attr('data-' + name);
-        return val || this.options[name];
+        return this.element.data(name) || this.options[name];
     }
 
     private _getWidth(reltive: number): number {

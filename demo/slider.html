@@ -32,12 +32,25 @@
        <div class="slider-next">&gt;</div>
    </div>
 
-    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>     <!-- <script src="../bower_components/jquery/dist/jquery.min.js"></script> -->
+   <div class="slider slider1" data-height="400" data-width="300" data-auto="false" data-haspoint="false">
+    <div class="slider-previous">&lt;</div>
+   <div class="slider-box">
+       <ul>
+           <li><img src="image/banner1.jpg" width="100%" alt=""></li>
+           <li><img src="image/banner2.jpg" width="100%" alt=""></li>
+           <li><img src="image/banner3.jpeg" width="100%" alt=""></li>
+       </ul>
+   </div>
+   <div class="slider-next">&gt;</div>
+</div>
+
+    <!-- <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>  -->
+        <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../bower_components/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
     <script src="../dist/js/jquery.slider.js"></script>
     <script>
         $(document).ready(function() {
-            var silder = $(".slider").slider({
+            var silder = $(".slider1").slider({
                 width: 1,
                 height: 200
             });

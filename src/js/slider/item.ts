@@ -15,8 +15,9 @@ class SliderItem extends Eve {
         }
         this.options.width = this._getOption('width');
         this.options.height = this._getOption('height');
-        this.options.animationMode = this._getOption('animationMode');
-        this.element.addClass(this.options.animationMode + '-slider');
+        this.options.animationmode = this._getOption('animationmode');
+        this.options.haspoint = this._getOption('haspoint');
+        this.element.addClass(this.options.animationmode + '-slider');
         this._length = items.length;
         this._box = items.parent();
         this.element.attr('data-slider', 1);
@@ -77,7 +78,7 @@ class SliderItem extends Eve {
     }
 
     private _needMove(): boolean {
-        return this.options.animationMode != 'fade';
+        return this.options.animationmode != 'fade';
     }
 
     private _copyItem(items: JQuery) {
@@ -104,7 +105,7 @@ class SliderItem extends Eve {
         }
         this.resize();
         // 输出可点击的列表
-        if (this._getOption('hasPoint')) {
+        if (this.options.haspoint) {
             this._addListPoint();
         }
         this._bindEvent();
@@ -140,7 +141,17 @@ class SliderItem extends Eve {
      * @param name 
      */
     private _getOption<T>(name: string): T {
-        return this.element.data(name) || this.options[name];
+        let val = this.element.data(name);
+        if (val == 'false') {
+            return false;
+        }
+        if (val == 'true') {
+            return true;
+        }
+        if (typeof val == 'boolean') {
+            return val;
+        }
+        return val || this.options[name];
     }
 
     private _getWidth(reltive: number): number {
@@ -285,7 +296,7 @@ class SliderItem extends Eve {
 
     private _showPoint(index: number) {
         this._index = index;
-        if (!this.options.hasPoint) {
+        if (!this.options.haspoint) {
             return;
         }
         this.element.find(".slider-point li")
@@ -314,8 +325,8 @@ class SliderItem extends Eve {
     private _goAndCallback(left: number, callback: Function) {
         this._box.animate(
             {left: left + "px"}, 
-            this._getOption<number>('animationTime'), 
-            this.options.animationMode, 
+            this._getOption<number>('animationtime'), 
+            this.options.animationmode, 
             callback
         );
     }

@@ -175,6 +175,7 @@ exports.dateTask = dateTask;
 exports.uploadTask = uploadTask;
 exports.selectTask = selectTask;
 exports.regionTask = regionTask;
+exports.sliderTask = sliderTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
@@ -182,5 +183,6 @@ gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
 gulp.task('select', gulp.series(selectTask));
 gulp.task('region', gulp.series(regionTask));
+gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));
 gulp.task('default', build);

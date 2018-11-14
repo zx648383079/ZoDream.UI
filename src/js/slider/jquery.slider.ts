@@ -86,26 +86,26 @@ interface SliderOptions {
     box?: string,
     width?: number,   //统一指定宽度
     height?: number,  //统一指定高度， 小数时已box的宽度为准
-    spaceTime?: number,
-    animationTime?: number,
-    animationMode?: string,
+    spacetime?: number,
+    animationtime?: number,
+    animationmode?: string,
     previous?: string,
     next?: string,
-    hasPoint?: boolean,   //是否有点击跳转
-    pointEvent?: string,   // 跳转触发事件
+    haspoint?: boolean,   //是否有点击跳转
+    pointevent?: string,   // 跳转触发事件
     auto?: boolean,  //是否自动播放
     onchange?: (start: Point, end: Point) => any; //切换事件
 }
 
 class SliderDefaultOptions implements SliderOptions {
     item: string = 'li';
-    spaceTime: number = 3000;
-    animationTime: number = 1000;
-    animationMode: string = "swing";
+    spacetime: number = 3000;
+    animationtime: number = 1000;
+    animationmode: string = "swing";
     previous: string = ".slider-previous";
     next: string = ".slider-next";
-    hasPoint: boolean = true;
-    pointEvent: string = "click";
+    haspoint: boolean = true;
+    pointevent: string = "click";
     auto: boolean = true;
 }
 

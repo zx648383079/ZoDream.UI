@@ -18,7 +18,7 @@ declare class Metro {
     removeElement(): void;
 }
 declare class MetroElement {
-    metro: Metro;
+    metro?: Metro;
     constructor(item?: MetroItem, metro?: Metro);
     element: HTMLElement;
     size: MetroSize;
@@ -27,7 +27,7 @@ declare class MetroElement {
 declare enum MetroSize {
     Small = 0,
     Middle = 1,
-    Large = 2,
+    Large = 2
 }
 declare class MetroItem {
     size: MetroSize;

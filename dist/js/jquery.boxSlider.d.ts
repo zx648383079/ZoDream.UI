@@ -12,7 +12,7 @@ declare class SliderItem {
     status: boolean;
     maxHeight: number;
     private _animation;
-    private _init();
+    private _init;
     refresh(): void;
     run(): void;
     /**
@@ -23,7 +23,7 @@ declare class SliderItem {
     setMinAndMax(min: number, max?: number): this;
     play(): void;
     stop(): void;
-    private _setTime();
+    private _setTime;
     /**
      * 下一个
      */
@@ -33,7 +33,7 @@ declare class SliderItem {
      * @param left
      * @param callback
      */
-    private _goAndCallback(end, callback);
+    private _goAndCallback;
 }
 declare class BoxSlider {
     element: JQuery;
@@ -41,11 +41,11 @@ declare class BoxSlider {
     options: BoxSliderOptions;
     private _data;
     private _timer;
-    private _timeCallback();
-    private _init();
-    private _startTimer();
-    private _runTimer();
-    private _cancelTimer();
+    private _timeCallback;
+    private _init;
+    private _startTimer;
+    private _runTimer;
+    private _cancelTimer;
     /**
      * 倒序循环
      * @param callback 返回false 结束循环，返回 true 删除

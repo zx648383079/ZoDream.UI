@@ -7,6 +7,15 @@
  */
 @import "prefix";
 @import "loading";
+
+.fa {
+    &.fa-close {
+        &::before {
+            content: "\f00d";
+        }
+    }
+}
+
 .dialog-bg {
     position: fixed;
     top: 0;

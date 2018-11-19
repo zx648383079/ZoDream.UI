@@ -124,10 +124,8 @@
     transition: all 0.3s ease-in-out;
     border-radius: 0px; }
   .list-group ul::-webkit-scrollbar-track {
-    -webkit-border-radius: 0px;
     border-radius: 0px; }
   .list-group ul::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 0px;
     border-radius: 0px;
     background: rgba(0, 0, 0, 0.5); }
     .list-group ul::-webkit-scrollbar-thumb:hover {

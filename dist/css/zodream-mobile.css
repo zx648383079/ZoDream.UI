@@ -235,10 +235,6 @@ footer,
     display: block;
     width: 20px;
     height: 20px;
-    -webkit-transition: all .5s ease;
-    -moz-transition: all .5s ease;
-    -o-transition: all .5s ease;
-    -ms-transition: all .5s ease;
     transition: all .5s ease;
     cursor: pointer;
     position: absolute;
@@ -315,9 +311,6 @@ footer,
       background: rgba(255, 255, 255, 0.4);
       cursor: pointer;
       text-indent: 9999px;
-      -webkit-border-radius: 20px;
-      -moz-border-radius: 20px;
-      -o-border-radius: 20px;
       border-radius: 20px; }
       .carousel .link span.active {
         background: #fff; }
@@ -670,8 +663,6 @@ footer,
     float: left;
     height: 200px;
     width: 30px;
-    -webkit-transition: width 1s;
-    -moz-transition: width 1s;
     transition: width 1s; }
     .accordion .accordionItem.active .content {
       display: block; }
@@ -696,8 +687,6 @@ footer,
   position: fixed;
   background: rgba(0, 255, 255, 0.4);
   padding: 10px 20px;
-  -webkit-transition: all 1s;
-  -moz-transition: all 1s;
   transition: all 1s;
   z-index: 9999;
   box-sizing: border-box; }

@@ -28,6 +28,7 @@ var ChatBaseBox = /** @class */ (function () {
         return this.events.hasOwnProperty(event);
     };
     ChatBaseBox.prototype.trigger = function (event) {
+        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -36,7 +37,6 @@ var ChatBaseBox = /** @class */ (function () {
             return;
         }
         return (_a = this.events[event]).call.apply(_a, [this].concat(args));
-        var _a;
     };
     ChatBaseBox.prototype.find = function (tag) {
         if (this.cache_element.hasOwnProperty(tag)) {
@@ -60,11 +60,11 @@ var ChatMenu = /** @class */ (function (_super) {
      */
     function ChatMenu(box, menus) {
         if (menus === void 0) { menus = []; }
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.menus = menus;
-        _this.bindEvent();
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.menus = menus;
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatMenu.prototype.bindEvent = function () {
         var _this = this;
@@ -108,10 +108,10 @@ var ChatMenu = /** @class */ (function (_super) {
         this.box.html(html);
     };
     ChatMenu.prototype.getMenuHtml = function (menus) {
-        var _this = this;
+        var _this_1 = this;
         var html = '';
         menus.forEach(function (menu) {
-            html += _this.getMenuItemHtml(menu);
+            html += _this_1.getMenuItemHtml(menu);
         });
         return '<ul>' + html + '</ul>';
     };
@@ -125,13 +125,13 @@ var ChatMenu = /** @class */ (function (_super) {
         return html + '</span></li>';
     };
     ChatMenu.prototype.cleanMenuList = function (menus) {
-        var _this = this;
+        var _this_1 = this;
         if (!menus || menus.length == 0) {
             return null;
         }
         var real_menu = [];
         menus.forEach(function (menu) {
-            if (menu.toggle && menu.toggle(_this.target, _this) === false) {
+            if (menu.toggle && menu.toggle(_this_1.target, _this_1) === false) {
                 return;
             }
             real_menu.push(menu);
@@ -146,10 +146,10 @@ var ChatAddUserBox = /** @class */ (function (_super) {
      *
      */
     function ChatAddUserBox(box, parent) {
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.parent = parent;
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        return _this_1;
     }
     return ChatAddUserBox;
 }(ChatBaseBox));
@@ -159,10 +159,10 @@ var ChatUserInfoBox = /** @class */ (function (_super) {
      *
      */
     function ChatUserInfoBox(box, parent) {
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.parent = parent;
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        return _this_1;
     }
     return ChatUserInfoBox;
 }(ChatBaseBox));
@@ -172,12 +172,12 @@ var ChatSearchBox = /** @class */ (function (_super) {
      *
      */
     function ChatSearchBox(box, parent) {
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.parent = parent;
-        _this.users = [];
-        _this.bindEvent();
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.users = [];
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatSearchBox.prototype.render = function () {
         var tpl = "<div class=\"dialog-info\">\n        <div class=\"dialog-info-avatar\">\n            <img src=\"{0}\" alt=\"\">\n        </div>\n        <div class=\"dialog-info-name\">\n            <h3>{1}</h3>\n            <p>{2}</p>\n        </div>\n    </div>", html = '';
@@ -254,15 +254,15 @@ var ChatMessageBox = /** @class */ (function (_super) {
      *
      */
     function ChatMessageBox(box, parent, send, revice) {
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.parent = parent;
-        _this.send = send;
-        _this.revice = revice;
-        _this.messages = [];
-        _this.refresh();
-        _this.bindEvent();
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.send = send;
+        _this_1.revice = revice;
+        _this_1.messages = [];
+        _this_1.refresh();
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatMessageBox.prototype.refresh = function () {
         this.editor = new ChatEditor(this.find('.dialog-message-text'), this);
@@ -292,10 +292,10 @@ var ChatMessageBox = /** @class */ (function (_super) {
         this.renderMessage();
     };
     ChatMessageBox.prototype.renderMessage = function () {
-        var _this = this;
+        var _this_1 = this;
         var html = '', messages = this.cleanMessage();
         messages.forEach(function (item) {
-            html += _this.renderMessageItem(item);
+            html += _this_1.renderMessageItem(item);
         });
         this.find('.dialog-message-box').html(html);
     };
@@ -317,7 +317,7 @@ var ChatMessageBox = /** @class */ (function (_super) {
         return ZUtils.str.format("<div class=\"message-left\">\n        <img class=\"avatar\" src=\"{0}\">\n        <div class=\"content\">\n            {1}\n        </div>\n    </div>", item.user.avatar, item.content);
     };
     ChatMessageBox.prototype.cleanMessage = function () {
-        var _this = this;
+        var _this_1 = this;
         var messages = [
             {
                 type: ChatType.MORE
@@ -326,7 +326,7 @@ var ChatMessageBox = /** @class */ (function (_super) {
         this.messages.forEach(function (item) {
             if (item.time - lastTime > 200) {
                 lastTime = item.time;
-                _this.messages.push({
+                _this_1.messages.push({
                     content: ZUtils.time + '',
                     type: ChatType.TIME
                 });
@@ -342,12 +342,12 @@ var ChatUserBox = /** @class */ (function (_super) {
      *
      */
     function ChatUserBox(box, parent) {
-        var _this = _super.call(this) || this;
-        _this.box = box;
-        _this.parent = parent;
-        _this.refresh();
-        _this.bindEvent();
-        return _this;
+        var _this_1 = _super.call(this) || this;
+        _this_1.box = box;
+        _this_1.parent = parent;
+        _this_1.refresh();
+        _this_1.bindEvent();
+        return _this_1;
     }
     ChatUserBox.prototype.refresh = function () {
         this.menu = new ChatMenu(this.find('.dialog-menu'), USER_MENU);

@@ -3,9 +3,9 @@ declare class Darrager {
     element: JQuery;
     constructor(element: JQuery, options?: DarragerOptions);
     options: DarragerOptions;
-    private _init();
-    private _createElement();
-    private _bindEvent(element);
+    private _init;
+    private _createElement;
+    private _bindEvent;
     /**
      * remove
      */

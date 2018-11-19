@@ -25,7 +25,7 @@ declare enum ChatType {
     MESSAGE = 0,
     MORE = 1,
     TIP = 2,
-    TIME = 3,
+    TIME = 3
 }
 interface ChatMessageItem {
     type: ChatType;
@@ -59,9 +59,9 @@ declare class ChatMenu extends ChatBaseBox {
     showPosition(x: number, y: number, target?: JQuery): this;
     hide(): void;
     refresh(): void;
-    private getMenuHtml(menus);
-    private getMenuItemHtml(menu);
-    private cleanMenuList(menus?);
+    private getMenuHtml;
+    private getMenuItemHtml;
+    private cleanMenuList;
 }
 declare class ChatAddUserBox extends ChatBaseBox {
     box: JQuery;
@@ -87,7 +87,7 @@ declare class ChatSearchBox extends ChatBaseBox {
      */
     constructor(box: JQuery, parent: ChatRoom);
     private users;
-    private render();
+    private render;
     /**
      * bindEvent
      */
@@ -104,8 +104,8 @@ declare class ChatEditor {
 declare class ChatMessageBox extends ChatBaseBox {
     box: JQuery;
     private parent;
-    private send;
-    revice: ChatUserItem;
+    private send?;
+    revice?: ChatUserItem;
     /**
      *
      */
@@ -117,12 +117,12 @@ declare class ChatMessageBox extends ChatBaseBox {
      * bindEvent
      */
     bindEvent(): void;
-    private renderTitle();
+    private renderTitle;
     addMessage(message: ChatMessageItem): void;
     prependMessage(messages: Array<ChatMessageItem>): void;
-    private renderMessage();
-    private renderMessageItem(item);
-    private cleanMessage();
+    private renderMessage;
+    private renderMessageItem;
+    private cleanMessage;
 }
 declare class ChatUserBox extends ChatBaseBox {
     box: JQuery;
@@ -137,10 +137,10 @@ declare class ChatUserBox extends ChatBaseBox {
     private groups;
     menu: ChatMenu;
     refresh(): void;
-    private renderGroup();
-    private renderFriends();
-    private renderLastFriends();
-    private renderUser();
+    private renderGroup;
+    private renderFriends;
+    private renderLastFriends;
+    private renderUser;
     bindEvent(): void;
 }
 declare class ChatRoom {

@@ -152,7 +152,7 @@
   * 加载图片，如需加载动画控制请自定义
   */
  Lazy.addMethod('img', function (imgEle: JQuery) {
-    let img = imgEle.attr('data-original');
+    let img = imgEle.attr('data-src');
     $("<img />")
         .bind("load", function () {
             imgEle.attr('src', img);

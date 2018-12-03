@@ -1,4 +1,3 @@
-/// <reference types="jquery" />
 declare abstract class Eve {
     options: any;
     on(event: string, callback: Function): this;

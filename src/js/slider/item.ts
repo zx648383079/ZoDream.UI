@@ -162,7 +162,7 @@ class SliderItem extends Eve {
     }
 
     private _setTime() {
-        this._time = (this._getOption<number>('spaceTime') + this._getOption<number>('animationTime')) / 16;
+        this._time = (this._getOption<number>('spacetime') + this._getOption<number>('animationtime')) / 16;
     }
 
     /**
@@ -272,7 +272,7 @@ class SliderItem extends Eve {
             index = 0;
         }
         let instance = this;
-        let time = this._getOption<number>('animationTime');
+        let time = this._getOption<number>('animationtime');
         this._data.forEach((point, i) => {
             if (i == index) {
                 point.elements[0].animate(

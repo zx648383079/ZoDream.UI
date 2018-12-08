@@ -28,9 +28,20 @@ class Dialog {
         return element;
     }
 
-    public static bind(box: JQuery): DialogBox {
-        let element = new DialogBox({
-            type: DialogType.box
+    public static bind(box: JQuery): DialogContent {
+        let type = DialogType.box;
+        if (box.hasClass('dialog-content')) {
+            type = DialogType.content;
+        } else if (box.hasClass('dialog-form')) {
+            type = DialogType.form;
+        } else if (box.hasClass('dialog-image')) {
+            type = DialogType.image;
+        } else if (!box.hasClass('dialog-box') && box.hasClass('dialog-page')) {
+            type = DialogType.page;
+        }
+        let method: any = this.getMethod(type);
+        let element = new method({
+            type: type
         });
         element.box = box;
         element.init();

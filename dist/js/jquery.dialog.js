@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -87,11 +90,11 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
-        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
+        var _a;
         var realEvent = 'on' + event;
         if (!this.hasEvent(event)) {
             return;
@@ -500,8 +503,22 @@ var Dialog = /** @class */ (function () {
         return element;
     };
     Dialog.bind = function (box) {
-        var element = new DialogBox({
-            type: DialogType.box
+        var type = DialogType.box;
+        if (box.hasClass('dialog-content')) {
+            type = DialogType.content;
+        }
+        else if (box.hasClass('dialog-form')) {
+            type = DialogType.form;
+        }
+        else if (box.hasClass('dialog-image')) {
+            type = DialogType.image;
+        }
+        else if (!box.hasClass('dialog-box') && box.hasClass('dialog-page')) {
+            type = DialogType.page;
+        }
+        var method = this.getMethod(type);
+        var element = new method({
+            type: type
         });
         element.box = box;
         element.init();

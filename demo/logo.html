@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Logo</title>
+    <style>
+        body {
+            background-color: #000;
+        }
+        .logo {
+            position: relative;
+        }
+        .logo div {
+            display: block;
+            position: absolute;
+            transition: all 1s;
+        }
+        .logo div:first-child {
+            width: 80px;
+            height: 180px;
+            left: 100px;
+            background: #000;
+            z-index: 2;
+            border-top: 20px solid #af5d0d;
+        }
+        .logo div:nth-child(2) {
+            width: 200px;
+            height: 20px;
+            top: 200px;
+            background-color: #af5d0d;
+        }
+        .logo div:nth-child(3) {
+            width: 20px;
+            height: 200px;
+            left: 80px;
+            background-color: #af5d0d;
+        }
+        .logo div:nth-child(4) {
+            width: 20px;
+            height: 200px;
+            left: 180px;
+            background-color: #af5d0d;
+        }
+        .logo div:last-child {
+            width: 180px;
+            height: 180px;
+            left: 80px;
+            border-radius: 50%;
+            border: 20px solid #af5d0d;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</body>
+</html>

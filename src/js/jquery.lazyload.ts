@@ -48,11 +48,11 @@
         return top + this.diff >= height && top < bottom;
      }
 
-     public run(height: number, bottom: number): boolean {
-        if (!this.canRun(height, bottom)) {
-            return false;
-        }
-        this.callback.call(this, this.element);
+     public run(height: number, bottom: number, index: number = 0): boolean {
+        // if (!this.canRun(height, bottom)) {
+        //     return false;
+        // }
+        this.callback.call(this, this.element, height, bottom, index);
         this._lastHeight = height;
         return true;
      }
@@ -76,7 +76,7 @@
 
      public options: LazyOptions;
 
-     private _data: Array < LazyItem > ;
+     private _data: Array<LazyItem>;
 
      /**
       * 页面滚动触发更新
@@ -92,11 +92,15 @@
         if (!this._data) {
             return;
         }
-        for (let i = this._data.length - 1; i >= 0; i--) {
+        let index: number = 0;
+        for (let i = 0, length = this._data.length; i < length; i ++) {
             let item = this._data[i];
-            if (item.run(height, bottom) && item.mode == LazyMode.once) {
-                this._data.splice(i, 1);
+            if (item.canRun(height, bottom)) {
+                item.run(height, bottom, index ++);
             }
+            // if (item.run(height, bottom) && item.mode == LazyMode.once) {
+            //     this._data.splice(i, 1);
+            // }
         }
      }
      // 暂时只做一次
@@ -111,7 +115,7 @@
                 instance.options.diff);
             instance._data.push(item);
         });
-        $.each(this.options.data, (i, item) => {
+        $.each(this.options.data, (i, item: any) => {
             if (item instanceof LazyItem) {
                 this._data.push(item);
                 return;

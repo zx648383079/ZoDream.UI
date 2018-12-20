@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            font-size: 55px;
+            overflow: hidden;
+            position: relative;
+        }
+        .box span {
+            display: inline-block;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .box span:first-child {
+            color: #666;
+        }
+        .box span:nth-child(2) {
+            color: #daa520;
+        }
+        .box span:nth-child(2)::before {
+            bottom: 105%;
+            color: #666;
+        }
+        .box span:first-child::before {
+            top: 105%;
+            color: #daa520;
+        }
+        .box span:first-child::before,
+        .box span:nth-child(2)::before {
+            position: absolute;
+            content: attr(data-hover);
+        }
+        .box:hover span:first-child {
+            transform: translate3d(0, -105%, 0);
+        }
+        .box:hover span:nth-child(2) {
+            transform: translate3d(0, 105%, 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <span data-hover="my">my</span>
+        <span data-hover="friend">friend</span>
+    </div>
+</body>
+</html>

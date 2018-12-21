@@ -33,11 +33,13 @@ export class Time {
 
 export class Timer {
     constructor(
-        callback: Function,
+        callback?: Function,
         space: number = 16,
         time: number = 0
     ) {
-        this.add(callback, space, time);
+        if (callback) {
+            this.add(callback, space, time);
+        }
         if (this.isAuto) {
             this.start();
         }

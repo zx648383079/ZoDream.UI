@@ -167,6 +167,18 @@ function navTask() {
         .pipe(gulp.dest('dist/js'));
 }
 
+function christmasTask() {
+    return gulp.src(['src/js/core/requestAnimationFrame.ts', 'src/js/core/timer.ts', 
+        'src/js/christmas/*.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('jquery.christmas.ts'))
+        .pipe(tsProject())
+        //.pipe(uglify())
+        //.pipe(rename({suffix:'.min'}))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/js'));
+}
+
 exports.sassTask = sassTask;
 exports.tslintTask = tslintTask;
 exports.tsTask = tsTask;
@@ -176,6 +188,7 @@ exports.uploadTask = uploadTask;
 exports.selectTask = selectTask;
 exports.regionTask = regionTask;
 exports.sliderTask = sliderTask;
+exports.christmasTask = christmasTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
@@ -185,4 +198,5 @@ gulp.task('select', gulp.series(selectTask));
 gulp.task('region', gulp.series(regionTask));
 gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));
+gulp.task('crsms', gulp.series(christmasTask));
 gulp.task('default', build);

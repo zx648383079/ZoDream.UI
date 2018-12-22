@@ -171,7 +171,7 @@ function christmasTask() {
     return gulp.src(['src/js/core/requestAnimationFrame.ts', 'src/js/core/timer.ts', 
         'src/js/christmas/*.ts'])
         .pipe(sourcemaps.init())
-        .pipe(concat('jquery.christmas.ts'))
+        .pipe(concat('christmas.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))

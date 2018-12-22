@@ -30,6 +30,15 @@ class Storyboard {
         return true;
     }
 
+    /**
+     * fullScreen
+     */
+    public fullScreen() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        return this;
+    }
+
     public static create(width: number, height: number): Storyboard {
         let canvas = document.createElement("canvas");
         canvas.width = width;

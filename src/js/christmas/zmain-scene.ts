@@ -1,0 +1,4 @@
+class MainScene extends Scene {
+
+    
+}

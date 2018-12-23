@@ -35,7 +35,6 @@ class SideNav {
         }
         this.box.show();
         this._bindEvent();
-        this.fixed();
         this.setActive();
     }
 
@@ -50,6 +49,7 @@ class SideNav {
         });
         this._window.scroll(function(){
             that.setActive();
+            that.fixed();
         });
     }
 
@@ -129,16 +129,23 @@ class SideNav {
    }
 
     public fixed() {
-        let top = this._window.scrollTop();
+        let top = this._window.scrollTop(),
+            isFixed = false;
         if(top >= this.option.fixedTop){
-            this.box.css({
-                "position": "fixed",
-            });
-            return;
+            if (!this.option.maxFixedTop) {
+                isFixed = true;
+            } else {
+                let maxFixedTop = typeof this.option.maxFixedTop == 'function' 
+                ? this.option.maxFixedTop.call(this, this.box, top) : this.option.maxFixedTop;
+                if (typeof maxFixedTop == 'boolean') {
+                    isFixed = maxFixedTop;
+                } else {
+                    isFixed = top < maxFixedTop;
+                }
+            }
+            
         }
-        this.box.css({
-            "position": "absolute",
-        });
+        this.box.css('position', isFixed ? 'fixed' : 'absolute');
     }
 
     /**
@@ -218,6 +225,7 @@ class SideNav {
 interface SideNavOption {
     maxLength?: number, // 导航个数
     fixedTop?: number, // 固定高度
+    maxFixedTop?: Function | number,
     speed?: number,     // 滚动速度
     easing?: string,  
     target?: string,    //导航保存的位置

@@ -10,6 +10,10 @@ class MainStage extends Stage {
      * init
      */
     public init() {
-        this.nevigate(new MainScene());
+        Preloader.loadImg('snow', 'image/snow.png', () => {
+            this.nevigate(new MainScene());
+            super.init();
+        });
+        
     }
 }

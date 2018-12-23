@@ -70,7 +70,7 @@ class Timer {
                 }
             });
 
-            if (instance.isAuto) {
+            if (isEnd && instance.isAuto) {
                 instance.stop();
                 return;
             }

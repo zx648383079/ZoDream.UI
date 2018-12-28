@@ -4,7 +4,7 @@ class Navbar {
         option?: NavbarOption
     ) {
         this.option = $.extend({}, new NavbarDefaultOption(), option);
-        this.tab = $(this.option.tab).tab({
+        this.tab = ($(this.option.tab) as any).tab({
             active: function(item: NavItem) {
                 //console.log(item);
             }
@@ -38,12 +38,12 @@ class Navbar {
             e.preventDefault();
         });
         this.element.on("click", 'li', function() {
-            let item: NavItem = $(this).data();
+            let item: NavItem = $(this).data() as NavItem;
             instance.openItem(item);
         });
         $(window).bind('popstate', function(e) {
             // 浏览器返回跳转
-            let item: NavItem = e.originalEvent.state;
+            let item: NavItem = (e.originalEvent as any).state;
             instance.tab.showItem(item);
         });
         $(window).resize(function() {
@@ -104,7 +104,7 @@ class Navbar {
     }
 
     // 动态添加
-    public addItem(path: string, item: NavItem| Object) {
+    public addItem(path: string, item: NavItem| any) {
         let [isTop, allId] = this._pathToId(path);
         let id = allId.pop();
         if (allId.length > 0) {

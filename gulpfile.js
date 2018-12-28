@@ -158,12 +158,12 @@ function filterTask() {
 function navTask() {
     return gulp.src(['src/js/navbar/option.ts', 
         'src/js/navbar/navItem.ts', 'src/js/navbar/tab.ts', 'src/js/navbar/jquery.navbar.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.navbar.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))
-        .pipe(sourcemaps.write())
+        //.pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 }
 
@@ -189,6 +189,7 @@ exports.selectTask = selectTask;
 exports.regionTask = regionTask;
 exports.sliderTask = sliderTask;
 exports.christmasTask = christmasTask;
+exports.navTask = navTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
@@ -199,4 +200,5 @@ gulp.task('region', gulp.series(regionTask));
 gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));
 gulp.task('crsms', gulp.series(christmasTask));
+gulp.task('nav', gulp.series(navTask));
 gulp.task('default', build);

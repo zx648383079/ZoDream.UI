@@ -971,7 +971,7 @@ i.checkbox {
       color: #fff; }
       .zd-tab .zd-tab-head .zd-tab-item.active .fa, .zd-tab .zd-tab-head .zd-tab-item:hover .fa {
         display: block; }
-    .zd-tab .zd-tab-head .zd-tab-item .fa-close {
+    .zd-tab .zd-tab-head .zd-tab-item .fa-times {
       position: absolute;
       right: 10px;
       top: 6px;

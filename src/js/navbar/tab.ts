@@ -19,7 +19,7 @@ class Tab {
         this._head.on("click", ".zd-tab-item", function() {
             instance.showItem($(this).index());
         });
-        this._head.on("click", ".zd-tab-item .fa-close", function() {
+        this._head.on("click", ".zd-tab-item .fa-times", function() {
             // 当所有标签页关闭时会出错，页面错乱
             instance.removeItem($(this).parent().index());
         });
@@ -36,7 +36,7 @@ class Tab {
             this.showItem(item);
             return;
         }
-        this._head.append('<li class="zd-tab-item"><span>' + item.name + '</span><i class="fa fa-close"></i></li>');
+        this._head.append('<li class="zd-tab-item"><span>' + item.name + '</span><i class="fa fa-times"></i></li>');
         this._body.append('<iframe class="zd-tab-item" height="100%" src="' + item.url + '"></iframe>');
         this._data.push(item.clone());
         this.showItem(this._data.length - 1);

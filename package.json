@@ -21,7 +21,7 @@
     "minimatch": "^3.0.4",
     "node-sass": "^4.11.0",
     "tslint": "^5.12.1",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.4"
   },
   "scripts": {
     "test": "gulp"

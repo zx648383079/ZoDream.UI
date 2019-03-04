@@ -40,6 +40,10 @@ class ReaderPager {
         ReaderPager.drawCanvasWithFonts(context, this.getOnePage(page, fontSize,lineSpace, letterSpace, width, height, left, top), fontSize +'px ' + fontFamily, color);
     }
 
+    public toHtml(page: number, fontSize: number, lineSpace: number, letterSpace: number, width: number, height: number, left: number = 0, top: number = 0, color: string = '#000', fontFamily: string = '微软雅黑'): void {
+        ReaderPager.toHtmlWithFonts(this.getOnePage(page, fontSize,lineSpace, letterSpace, width, height, left, top), fontSize +'px ' + fontFamily, color);
+    }
+
     /**
      * 获取一页数据（包括每一个字及坐标位置）
      * @param page 第几页
@@ -72,6 +76,19 @@ class ReaderPager {
             }
         }
         return fonts;
+    }
+
+    /**
+     * 获取总页数
+     * @param lineLength 
+     * @param lineCount 
+     */
+    public getPageCount(lineLength : number, lineCount: number): number {
+        let count = 0;
+        for (let i = 0; i < this.lines.length; i++) {
+            count += ReaderPager.toLineCount(this.lines[i], lineLength);
+        }
+        return Math.ceil(count / lineCount);
     }
 
     /**
@@ -175,6 +192,15 @@ class ReaderPager {
             const font = fonts[i];
             context.fillText(font.code, font.x, font.y);
         }
+    }
+
+    public static toHtmlWithFonts(fonts: IFont[], font: string, color: string = '#000'): string {
+        let html = '';
+        for (let i = 0; i < fonts.length; i++) {
+            const font = fonts[i];
+            html += '<span style="position: absolute;top: '+font.y+'px;left: '+font.x+'px;font: '+font+';color: '+color+';">'+ font.code +'</span>';
+        }
+        return '<div style="position: relative;">' + html + '</div>'
     }
 
     /**

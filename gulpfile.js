@@ -179,6 +179,18 @@ function christmasTask() {
         .pipe(gulp.dest('dist/js'));
 }
 
+function readerTask() {
+    return gulp.src([
+        'src/js/reader/*.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('reader.ts'))
+        .pipe(tsProject())
+        //.pipe(uglify())
+        //.pipe(rename({suffix:'.min'}))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/js'));
+}
+
 exports.sassTask = sassTask;
 exports.tslintTask = tslintTask;
 exports.tsTask = tsTask;
@@ -190,6 +202,7 @@ exports.regionTask = regionTask;
 exports.sliderTask = sliderTask;
 exports.christmasTask = christmasTask;
 exports.navTask = navTask;
+exports.readerTask = readerTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
@@ -201,4 +214,5 @@ gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));
 gulp.task('crsms', gulp.series(christmasTask));
 gulp.task('nav', gulp.series(navTask));
+gulp.task('reader', gulp.series(readerTask));
 gulp.task('default', build);

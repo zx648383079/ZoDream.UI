@@ -11,7 +11,7 @@
 
 <link rel="stylesheet" href="/assets/css/dialog-select.css">
 
- <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>  
+ <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>  
 <script type="text/javascript" src="/assets/js/jquery.selectbox.js"></script>
 
 ```

@@ -100,6 +100,17 @@ function cityTask() {
         .pipe(gulp.dest('dist/js'));
 }
 
+function multiSelectTask() {
+    return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/select/jquery.multi-select.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('jquery.multi-select.ts'))
+        .pipe(tsProject())
+        //.pipe(uglify())
+        //.pipe(rename({suffix:'.min'}))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/js'));
+}
+
 function sliderTask(params) {
     return gulp.src(['src/js/core/event.ts', 'src/js/slider/point.ts', 'src/js/slider/item.ts', 'src/js/slider/jquery.slider.ts'])
         .pipe(sourcemaps.init())
@@ -113,7 +124,7 @@ function sliderTask(params) {
 
 function dateTask() {
     return gulp.src(['src/js/core/utils.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/date/jquery.datetimer.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.datetimer.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
@@ -203,12 +214,13 @@ exports.sliderTask = sliderTask;
 exports.christmasTask = christmasTask;
 exports.navTask = navTask;
 exports.readerTask = readerTask;
+exports.multiSelectTask = multiSelectTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
-gulp.task('select', gulp.series(selectTask));
+gulp.task('select', gulp.series(multiSelectTask));
 gulp.task('region', gulp.series(regionTask));
 gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));

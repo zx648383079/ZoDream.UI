@@ -502,7 +502,7 @@ class DateTimer extends Box {
             this.element.click(function(e) {
                 e.stopPropagation();
                 $('[data-type=datetimer]').hide();
-                instance.init($(this).val());
+                instance.init($(this).val() + '');
             });
         }
 

@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -36,7 +39,8 @@ var ZUtils;
             };
             for (var k in o) {
                 if (new RegExp("(" + k + ")").test(fmt)) {
-                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    var len = ("" + o[k]).length;
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1 || RegExp.$1.length == len) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
                 }
             }
             return fmt;
@@ -576,7 +580,7 @@ var DateTimer = /** @class */ (function (_super) {
             this.element.click(function (e) {
                 e.stopPropagation();
                 $('[data-type=datetimer]').hide();
-                instance.init($(this).val());
+                instance.init($(this).val() + '');
             });
         }
         $(document).click(function () {

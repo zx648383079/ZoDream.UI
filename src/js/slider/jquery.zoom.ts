@@ -209,7 +209,7 @@ class ZoomDefaultOption implements ZoomOption {
     animationMode: string = "swing";
     item: string = '.zoom-item';
     previous: string = '.zoom-previous';
-    next: string = '.zoom-previous';
+    next: string = '.zoom-next';
     auto: boolean = true;
 }
 

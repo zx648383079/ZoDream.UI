@@ -234,7 +234,7 @@ var SliderItem = /** @class */ (function (_super) {
         }
         this.element.append('<ul class="slider-point">' + html + '</ul>');
         var instance = this;
-        this.element.on(this._getOption('pointEvent'), ".slider-point li", function () {
+        this.element.on(this._getOption('pointevent'), ".slider-point li", function () {
             instance.index = $(this).index();
         });
     };

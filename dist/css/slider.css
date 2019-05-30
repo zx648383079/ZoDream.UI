@@ -43,7 +43,7 @@
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.3);
       text-align: center;
-      font-size: 12px; }
+      font-size: 12px; cursor: pointer;}
       .slider .slider-point li.active {
         background: #fff; }
   .slider.fade-slider .slider-box ul li {

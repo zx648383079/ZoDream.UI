@@ -113,12 +113,12 @@ function multiSelectTask() {
 
 function sliderTask(params) {
     return gulp.src(['src/js/core/event.ts', 'src/js/slider/point.ts', 'src/js/slider/item.ts', 'src/js/slider/jquery.slider.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.slider.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))
-        .pipe(sourcemaps.write())
+        //.pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 }
 

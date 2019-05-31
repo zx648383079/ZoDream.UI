@@ -22,7 +22,13 @@ class Point {
      * 取元素的x
      * @param width 
      */
-    public getLeft(width: number): number {
+    public getLeft(width: number, align: string): number {
+        if (align === 'left') {
+            return this.x;
+        }
+        if (align === 'right') {
+            return this.x - this.width + width;
+        }
         return this.x - (width - 3 * this.width) / 2;
     }
 

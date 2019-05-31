@@ -94,6 +94,7 @@ interface SliderOptions {
     haspoint?: boolean,   //是否有点击跳转
     pointevent?: string,   // 跳转触发事件
     auto?: boolean,  //是否自动播放
+    align?: string,   // 对齐方式
     onchange?: (start: Point, end: Point) => any; //切换事件
 }
 
@@ -107,6 +108,7 @@ class SliderDefaultOptions implements SliderOptions {
     haspoint: boolean = true;
     pointevent: string = "click";
     auto: boolean = true;
+    align: string = 'center';
 }
 
 

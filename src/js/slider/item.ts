@@ -17,6 +17,7 @@ class SliderItem extends Eve {
         this.options.height = this._getOption('height');
         this.options.animationmode = this._getOption('animationmode');
         this.options.haspoint = this._getOption('haspoint');
+        this.options.align = this._getOption('align');
         this.element.addClass(this.options.animationmode + '-slider');
         this._length = items.length;
         this._box = items.parent();
@@ -84,7 +85,7 @@ class SliderItem extends Eve {
     private _copyItem(items: JQuery) {
         for (let j = 0; j < 2; j ++) {
             for(let i = 0, length = items.length; i < length; i ++) {
-                let newLi = $(items[i].cloneNode(true));
+                let newLi = $(items[i].cloneNode(true))  as JQuery<HTMLElement>;
                 this._data[i].elements.push(newLi);
                 this._box.append(newLi);
             }
@@ -143,13 +144,13 @@ class SliderItem extends Eve {
     private _getOption<T>(name: string): T {
         let val = this.element.data(name);
         if (val == 'false') {
-            return false;
+            return false as any;
         }
         if (val == 'true') {
-            return true;
+            return true as any;
         }
         if (typeof val == 'boolean') {
-            return val;
+            return val as any;
         }
         return val || this.options[name];
     }
@@ -176,7 +177,7 @@ class SliderItem extends Eve {
         }
         this.element.append('<ul class="slider-point">'+ html +'</ul>');
         let instance = this;
-        this.element.on(this._getOption('pointevent'), ".slider-point li", function() {
+        this.element.on(this._getOption<string>('pointevent'), ".slider-point li", function() {
             instance.index = $(this).index();
         });
     }
@@ -209,7 +210,7 @@ class SliderItem extends Eve {
         $.each(this._data, function(i, point) {
             point.x -= width;
         });
-        this._box.css({left: this._data[this._index].getLeft(maxWidth) + "px"});
+        this._box.css({left: this._data[this._index].getLeft(maxWidth, this.options.align) + "px"});
         this._box.width(width * 3);
     }
 
@@ -308,9 +309,9 @@ class SliderItem extends Eve {
         let width = this.element.width();
         this.element.height(points[0].height);
         let instance = this;
-        this._goAndCallback(points[0].getLeft(width), function() {
+        this._goAndCallback(points[0].getLeft(width, this.options.align), function() {
             if (points[0].index != points[1].index) {
-                instance._box.css({left: points[1].getLeft(width) + 'px'});
+                instance._box.css({left: points[1].getLeft(width, instance.options.align) + 'px'});
             }
             instance._showPoint(points[1].index);
         });
@@ -322,7 +323,7 @@ class SliderItem extends Eve {
      * @param left 
      * @param callback 
      */
-    private _goAndCallback(left: number, callback: Function) {
+    private _goAndCallback(left: number, callback: () => void) {
         this._box.animate(
             {left: left + "px"}, 
             this._getOption<number>('animationtime'), 

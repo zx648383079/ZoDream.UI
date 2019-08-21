@@ -25,7 +25,7 @@ class DialogDisk extends DialogBox {
         this.catalogBox = this.box.find('.dialog-body .dialog-catalog');
         this.fileBox = this.box.find('.dialog-body .dialog-content');
         let instance = this;
-        if (typeof this.options.catalog == 'object') {
+        if (typeof this.options.catalog != 'string') {
             this.showCatalog(this.options.catalog);
         } else {
             $.getJSON(this.options.catalog, function(data) {
@@ -34,7 +34,7 @@ class DialogDisk extends DialogBox {
                 }
             });
         }
-        if (typeof this.options.content == 'object') {
+        if (typeof this.options.content != 'string') {
             this.showFile(this.options.content);
         } else {
             $.getJSON(this.options.content, function(data) {
@@ -137,23 +137,29 @@ class DialogDisk extends DialogBox {
      */
     protected showFile(data: any) {
         let html = '';
-        $.each(data, (i, item) => {
-            item.type = Dialog.parseEnum<DialogDiskType>(item.type, DialogDiskType);
-            if (item.type == DialogDiskType.file) {
-                html += this._getFileItem(item);
-                return;
-            }
-            html += this._getFolderItem(item);
-        });
+        if (data) {
+            $.each(data, (i, item) => {
+                item.type = Dialog.parseEnum<DialogDiskType>(item.type, DialogDiskType);
+                if (item.type == DialogDiskType.file) {
+                    html += this._getFileItem(item);
+                    return;
+                }
+                html += this._getFolderItem(item);
+            });
+        }
         this.fileBox.html(html)
     }
 
-    private _getFileItem(data) {
-        return '<div class="file-item" data-url="' + data[this.options.url] +'"><i class="fa fa-file-o"></i><div class="file-name">'+data[this.options.name]+'</div></div>';
+    private _getFileItem(data: any) {
+        let icon = '<i class="fa fa-file"></i>';
+        if (data.thumb) {
+            icon = '<img class="file-thumb" src="' + data.thumb +'">';
+        }
+        return '<div class="file-item" data-url="' + data[this.options.url] +'">'+ icon +'<div class="file-name">'+data[this.options.name]+'</div></div>';
     }
 
     private _getFolderItem(data) {
-        return '<div class="folder-item" data-url="' + data[this.options.url] +'"><i class="fa fa-folder-o"></i><div class="file-name">'+data[this.options.name]+'</div></div>';
+        return '<div class="folder-item" data-url="' + data[this.options.url] +'"><i class="fa fa-folder"></i><div class="file-name">'+data[this.options.name]+'</div></div>';
     }
 
     /**
@@ -162,11 +168,13 @@ class DialogDisk extends DialogBox {
      */
     protected showCatalog(data: any) {
         let html = '';
-        $.each(data, (i, item) => {
-            html += this._getCatalogItem(item);
-        });
+        if (data) {
+            $.each(data, (i, item) => {
+                html += this._getCatalogItem(item);
+            });
+        }
+        this.box.toggleClass('no-catalog', html == '');
         if (html == '') {
-            this.catalogBox.hide();
             return;
         }
         this.catalogBox.html('<ul class="tree">' + html +'</ul>')

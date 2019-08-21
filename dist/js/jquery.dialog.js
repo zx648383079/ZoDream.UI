@@ -90,11 +90,11 @@ var Eve = /** @class */ (function () {
         return this.options.hasOwnProperty('on' + event);
     };
     Eve.prototype.trigger = function (event) {
+        var _a;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        var _a;
         var realEvent = 'on' + event;
         if (!this.hasEvent(event)) {
             return;
@@ -1984,7 +1984,7 @@ var DialogDisk = /** @class */ (function (_super) {
         this.catalogBox = this.box.find('.dialog-body .dialog-catalog');
         this.fileBox = this.box.find('.dialog-body .dialog-content');
         var instance = this;
-        if (typeof this.options.catalog == 'object') {
+        if (typeof this.options.catalog != 'string') {
             this.showCatalog(this.options.catalog);
         }
         else {
@@ -1994,7 +1994,7 @@ var DialogDisk = /** @class */ (function (_super) {
                 }
             });
         }
-        if (typeof this.options.content == 'object') {
+        if (typeof this.options.content != 'string') {
             this.showFile(this.options.content);
         }
         else {
@@ -2094,21 +2094,27 @@ var DialogDisk = /** @class */ (function (_super) {
     DialogDisk.prototype.showFile = function (data) {
         var _this = this;
         var html = '';
-        $.each(data, function (i, item) {
-            item.type = Dialog.parseEnum(item.type, DialogDiskType);
-            if (item.type == DialogDiskType.file) {
-                html += _this._getFileItem(item);
-                return;
-            }
-            html += _this._getFolderItem(item);
-        });
+        if (data) {
+            $.each(data, function (i, item) {
+                item.type = Dialog.parseEnum(item.type, DialogDiskType);
+                if (item.type == DialogDiskType.file) {
+                    html += _this._getFileItem(item);
+                    return;
+                }
+                html += _this._getFolderItem(item);
+            });
+        }
         this.fileBox.html(html);
     };
     DialogDisk.prototype._getFileItem = function (data) {
-        return '<div class="file-item" data-url="' + data[this.options.url] + '"><i class="fa fa-file-o"></i><div class="file-name">' + data[this.options.name] + '</div></div>';
+        var icon = '<i class="fa fa-file"></i>';
+        if (data.thumb) {
+            icon = '<img class="file-thumb" src="' + data.thumb + '">';
+        }
+        return '<div class="file-item" data-url="' + data[this.options.url] + '">' + icon + '<div class="file-name">' + data[this.options.name] + '</div></div>';
     };
     DialogDisk.prototype._getFolderItem = function (data) {
-        return '<div class="folder-item" data-url="' + data[this.options.url] + '"><i class="fa fa-folder-o"></i><div class="file-name">' + data[this.options.name] + '</div></div>';
+        return '<div class="folder-item" data-url="' + data[this.options.url] + '"><i class="fa fa-folder"></i><div class="file-name">' + data[this.options.name] + '</div></div>';
     };
     /**
      * 显示目录
@@ -2117,11 +2123,13 @@ var DialogDisk = /** @class */ (function (_super) {
     DialogDisk.prototype.showCatalog = function (data) {
         var _this = this;
         var html = '';
-        $.each(data, function (i, item) {
-            html += _this._getCatalogItem(item);
-        });
+        if (data) {
+            $.each(data, function (i, item) {
+                html += _this._getCatalogItem(item);
+            });
+        }
+        this.box.toggleClass('no-catalog', html == '');
         if (html == '') {
-            this.catalogBox.hide();
             return;
         }
         this.catalogBox.html('<ul class="tree">' + html + '</ul>');

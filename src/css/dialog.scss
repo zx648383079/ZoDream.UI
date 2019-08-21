@@ -373,6 +373,10 @@
                     .fa {
                         font-size: 40px;
                     }
+                    img {
+                        width: 100%;
+                        height: 100%;
+                    }
                     &.active,
                     &:hover {
                         border: 1px solid #337ab7;
@@ -383,6 +387,16 @@
         }
         .dialog-footer {
             text-align:center
+        }
+        &.no-catalog {
+            .dialog-catalog {
+                display: none;
+            }
+            .dialog-content {
+                display: block;
+                position: static;
+                left: 0;
+            }
         }
     }
     &.dialog-closing {

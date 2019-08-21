@@ -855,6 +855,10 @@
         .dialog.dialog-disk .dialog-body .dialog-content .folder-item .fa,
         .dialog.dialog-disk .dialog-body .dialog-content .file-item .fa {
           font-size: 40px; }
+        .dialog.dialog-disk .dialog-body .dialog-content .folder-item img,
+        .dialog.dialog-disk .dialog-body .dialog-content .file-item img {
+          width: 100%;
+          height: 100%; }
         .dialog.dialog-disk .dialog-body .dialog-content .folder-item.active, .dialog.dialog-disk .dialog-body .dialog-content .folder-item:hover,
         .dialog.dialog-disk .dialog-body .dialog-content .file-item.active,
         .dialog.dialog-disk .dialog-body .dialog-content .file-item:hover {
@@ -862,6 +866,12 @@
           color: #337ab7; }
   .dialog.dialog-disk .dialog-footer {
     text-align: center; }
+  .dialog.dialog-disk.no-catalog .dialog-catalog {
+    display: none; }
+  .dialog.dialog-disk.no-catalog .dialog-content {
+    display: block;
+    position: static;
+    left: 0; }
   .dialog.dialog-closing {
     animation: dialog-closing 0.5s;
     -webkit-animation: dialog-closing 0.5s;

@@ -383,7 +383,11 @@ var DateTimer = /** @class */ (function (_super) {
      * @param y
      */
     DateTimer.prototype._changeYear = function (y) {
+        var m = this._currentDate.getMonth();
         this._currentDate.setFullYear(y);
+        if (this._currentDate.getMonth() != m) {
+            this._currentDate.setDate(0);
+        }
         this._refreshDay();
         this._changeListGroup(this._yearBox, y - this.options.minYear);
     };
@@ -393,6 +397,10 @@ var DateTimer = /** @class */ (function (_super) {
      */
     DateTimer.prototype._changeMonth = function (m) {
         this._currentDate.setMonth(m - 1);
+        // 考虑到当前天数大于月份最大天数导致加一月了
+        if (this._currentDate.getMonth() != m - 1) {
+            this._currentDate.setDate(0);
+        }
         this._refreshDay();
         this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this.options.minYear);
         this._changeListGroup(this._monthBox, this._currentDate.getMonth());

@@ -299,7 +299,11 @@ class DateTimer extends Box {
      * @param y 
      */
     private _changeYear(y: number) {
+        const m = this._currentDate.getMonth();
         this._currentDate.setFullYear(y);
+        if (this._currentDate.getMonth() != m) {
+            this._currentDate.setDate(0);
+        }
         this._refreshDay();
         this._changeListGroup(this._yearBox, y - this.options.minYear);
     }
@@ -309,6 +313,10 @@ class DateTimer extends Box {
      */
     private _changeMonth(m: number) {
         this._currentDate.setMonth(m - 1);
+        // 考虑到当前天数大于月份最大天数导致加一月了
+        if (this._currentDate.getMonth() != m - 1) {
+            this._currentDate.setDate(0);
+        }
         this._refreshDay();
         this._changeListGroup(this._yearBox, this._currentDate.getFullYear() - this.options.minYear);
         this._changeListGroup(this._monthBox, this._currentDate.getMonth());

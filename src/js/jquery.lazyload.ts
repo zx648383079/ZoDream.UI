@@ -163,7 +163,11 @@
     let img = imgEle.attr('data-src');
     $("<img />")
         .bind("load", function () {
-            imgEle.attr('src', img);
+            if (imgEle.is('img') || imgEle.is('video')) {
+                imgEle.attr('src', img);
+                return;
+            }
+            imgEle.css('background-image', 'url(' + img + ')');
         }).attr('src', img);
  });
  /**

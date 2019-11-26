@@ -176,6 +176,7 @@
  Lazy.addMethod('tpl', function (tplEle: JQuery) {
     let url = tplEle.attr('data-url');
     let templateId = tplEle.attr('data-tpl');
+    tplEle.addClass('lazy-loading');
     $.getJSON(url, function (data) {
         if (data.code != 200) {
             return;
@@ -183,7 +184,9 @@
         if (typeof data.data != 'string') {
             data.data = template(templateId, data.data);
         }
+        tplEle.removeClass('lazy-loading');
         tplEle.html(data.data);
+        tplEle.trigger('lazyLoaded');
     });
  });
  /**

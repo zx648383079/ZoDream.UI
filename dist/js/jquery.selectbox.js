@@ -1,13 +1,23 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 /**
  * 缓存数据
  */
@@ -19,6 +29,13 @@ var CacheUrl = /** @class */ (function () {
     };
     CacheUrl.hasEvent = function (url) {
         return this._event.hasOwnProperty(url);
+    };
+    CacheUrl.addEvent = function (url, callback) {
+        if (!this.hasEvent(url)) {
+            this._event[url] = [callback];
+            return;
+        }
+        this._event[url].push(callback);
     };
     /**
      * 获取数据通过回调返回
@@ -89,7 +106,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArrays([this], args));
     };
     return Eve;
 }());
@@ -100,13 +117,16 @@ var SelectBox = /** @class */ (function (_super) {
         _this_1.element = element;
         _this_1._index = [];
         _this_1._real_index = [];
+        _this_1.booted = false;
         _this_1.options = $.extend({}, new SelectBoxDefaultOptions(), options);
         var _this = _this_1;
         if (typeof _this_1.options.data == 'function') {
-            _this_1.options.data = _this_1.options.data.call(_this_1, function (data) {
-                _this.options.data = data;
-                _this._init();
-            });
+            _this_1._init();
+            return _this_1;
+            // this.options.data = this.options.data.call(this, function(data) {
+            //     _this.options.data = data;
+            //     _this._init();
+            // });
         }
         if (typeof _this_1.options.data == 'object') {
             _this_1._init();
@@ -131,10 +151,11 @@ var SelectBox = /** @class */ (function (_super) {
             _this._ulBox.push($(this));
         });
         this._bindEvent();
-        this.refresh();
-        if (this.options.default) {
-            this.applyValue(this.options.default);
+        if (typeof this.options.data === 'function') {
+            this.triggerChange(0);
+            return;
         }
+        this.triggerChange(0);
         this.notify();
     };
     SelectBox.prototype._bindEvent = function () {
@@ -166,8 +187,7 @@ var SelectBox = /** @class */ (function (_super) {
             var touch = event.targetTouches[0];
             startPos = {
                 x: touch.pageX,
-                y: touch.pageY,
-                time: new Date()
+                y: touch.pageY
             };
         }).on('touchmove', function (event) {
             var touch = event.targetTouches[0];
@@ -182,6 +202,40 @@ var SelectBox = /** @class */ (function (_super) {
                 _this.touchMove(diff, y < 0, startPos.x);
             }
         });
+    };
+    SelectBox.prototype.triggerChange = function (index) {
+        var _a;
+        if (index === void 0) { index = 0; }
+        if (typeof this.options.data !== 'function') {
+            this.drawColum(this._getColumnOption(index), index);
+            return;
+        }
+        var _this = this;
+        var next = function (data, column) {
+            if (column === void 0) { column = index; }
+            _this.drawColum(data, column);
+        };
+        var args = [];
+        var error = false;
+        if (index > 0) {
+            this.mapSelected(function (option, i) {
+                if (option.length < 1) {
+                    error = true;
+                    return false;
+                }
+                args.push(option.attr('data-value'));
+                if (i >= index - 1) {
+                    return false;
+                }
+            });
+        }
+        if (error) {
+            return;
+        }
+        var data = (_a = this.options.data).call.apply(_a, __spreadArrays([this, next, index], args));
+        if (typeof data === 'object') {
+            next(data, index);
+        }
     };
     /**
      * 滑动
@@ -206,6 +260,8 @@ var SelectBox = /** @class */ (function (_super) {
      * 显示
      */
     SelectBox.prototype.show = function () {
+        // 隐藏其他的
+        $('.dialog-select[data-type="select"]').hide();
         this.box.show();
         return this;
     };
@@ -356,12 +412,28 @@ var SelectBox = /** @class */ (function (_super) {
         if (index === void 0) { index = 0; }
         this._ulBox[index].html(this._createOptionHtml(data));
     };
+    SelectBox.prototype.drawColum = function (data, index) {
+        this._refreshUl(index, data);
+        if (!this.booted && this.options.default && this.options.default[index]) {
+            this.selectedValue(this.options.default[index], index);
+        }
+        else {
+            this.selectedIndex(0, index);
+        }
+        if (!this.booted && index >= this.options.column - 1) {
+            this.booted = true;
+        }
+    };
     /**
      * 刷新第几级的数据
      * @param column 第几级
      */
     SelectBox.prototype.refreshColumn = function (column) {
         if (column === void 0) { column = 0; }
+        if (typeof this.options.data === 'function') {
+            this.triggerChange(column);
+            return this;
+        }
         var data = this._getColumnOption(column);
         this._refreshUl(column, data);
         this.selectedIndex(0, column);
@@ -372,6 +444,9 @@ var SelectBox = /** @class */ (function (_super) {
         var _this = this;
         $.each(data, function (i, item) {
             var _a = _this._getValueAndText(item, i), value = _a[0], text = _a[1];
+            if (_this.options.createOption) {
+                text = _this.options.createOption(item, i);
+            }
             html += '<li data-value="' + value + '">' + text + '</li>';
         });
         return html;
@@ -383,7 +458,7 @@ var SelectBox = /** @class */ (function (_super) {
      */
     SelectBox.prototype._getValueAndText = function (item, i) {
         if (typeof item != 'object') {
-            return [i, item];
+            return !this.options.valueTag ? [item, item] : [i, item];
         }
         var name = item[this.options.textTag];
         if (this.options.valueTag && item.hasOwnProperty(this.options.valueTag)) {
@@ -434,6 +509,9 @@ var SelectBox = /** @class */ (function (_super) {
     SelectBox.prototype.selectedValue = function (id, column) {
         if (column === void 0) { column = 0; }
         var option = this._ulBox[column].find('li[data-value="' + id + '"]');
+        if (option.length < 1) {
+            this.selectedIndex(0, column);
+        }
         this.selectedOption(option, column);
         return this;
     };
@@ -458,9 +536,9 @@ var SelectBox = /** @class */ (function (_super) {
      */
     SelectBox.prototype.val = function () {
         var data = [];
-        for (var i = 0; i < this.options.column; i++) {
-            data.push(this.getSelectedOption(i).attr('data-value'));
-        }
+        this.mapSelected(function (option) {
+            data.push(option.data('value'));
+        });
         return this.options.column > 1 ? data : data[0];
     };
     /**
@@ -492,10 +570,28 @@ var SelectBox = /** @class */ (function (_super) {
         this.mapSelected(function (option) {
             opts.push(option);
             texts.push(option.text());
-            data.push(option.attr('data-value'));
+            data.push(option.data('value'));
         });
-        this.trigger.apply(this, ['done'].concat(data, texts, opts, this._index));
+        this.trigger.apply(this, __spreadArrays(['done'], data, texts, opts, this._index));
         return this;
+    };
+    /**
+     * range
+     */
+    SelectBox.prototype.range = function (start, end, step) {
+        var data = [];
+        if (typeof step === 'undefined' || step === 0) {
+            step = start > end ? -1 : 1;
+        }
+        while (true) {
+            if ((step > 0 && start > end)
+                || (step < 0 && start < end)) {
+                break;
+            }
+            data.push(start);
+            start += step;
+        }
+        return data;
     };
     return SelectBox;
 }(Eve));

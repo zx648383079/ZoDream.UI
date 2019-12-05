@@ -7,10 +7,12 @@
          this.options = $.extend({}, new SelectBoxDefaultOptions(), options);
          let _this = this;
          if (typeof this.options.data == 'function') {
-            this.options.data = this.options.data.call(this, function(data) {
-                _this.options.data = data;
-                _this._init();
-            });
+            this._init();
+            return;
+            // this.options.data = this.options.data.call(this, function(data) {
+            //     _this.options.data = data;
+            //     _this._init();
+            // });
         }
         if (typeof this.options.data == 'object') {
             this._init();
@@ -35,6 +37,8 @@
      
      private _ulBox: Array<JQuery>;
 
+     private booted: boolean = false;
+
      private _init() {
          let _this = this;
          this.box = $('<div class="'+ this._getBoxClass() +'" data-type="select"></div>');
@@ -44,12 +48,13 @@
         this.box.find('.dialog-body ul').each(function() {
             _this._ulBox.push($(this));
         });
-         this._bindEvent();
-         this.refresh();
-         if (this.options.default) {
-            this.applyValue(this.options.default);
-         }
-         this.notify();
+        this._bindEvent();
+        if (typeof this.options.data === 'function') {
+            this.triggerChange(0);
+            return;
+        }
+        this.triggerChange(0);
+        this.notify();
      }
 
      private _bindEvent() {
@@ -79,7 +84,7 @@
                 x: touch.pageX,
                 y: touch.pageY
             };
-        }).on('touchmove', function(event) {
+        }).on('touchmove', function(event: any) {
             let touch = event.targetTouches[0];
             if(event.targetTouches.length > 1 || (event.scale && event.scale !== 1)) {
                 return;
@@ -93,7 +98,38 @@
                 _this.touchMove(diff, y < 0, startPos.x);
             }
         });
+    }
 
+    private triggerChange(index: number = 0) {
+        if (typeof this.options.data !== 'function') {
+            this.drawColum(this._getColumnOption(index), index);
+            return;
+        }
+        let _this = this;
+        const next = (data: any, column = index) => {
+            _this.drawColum(data, column);
+        };
+        let args: Array<string|number> = [];
+        let error = false;
+        if (index > 0) {
+            this.mapSelected((option: JQuery, i) => {
+                if (option.length < 1) {
+                    error = true;
+                    return false;
+                }
+                args.push(option.attr('data-value'));
+                if (i >= index - 1) {
+                    return false;
+                }
+            });
+        }
+        if (error) {
+            return;
+        }
+        let data = this.options.data.call(this, next, index, ...args);
+        if (typeof data === 'object') {
+            next(data, index);
+        }
     }
 
     /**
@@ -286,11 +322,27 @@
         this._ulBox[index].html(this._createOptionHtml(data));
      }
 
+     public drawColum(data: any, index: number) {
+        this._refreshUl(index, data);
+        if (!this.booted && this.options.default && this.options.default[index]) {
+            this.selectedValue(this.options.default[index], index); 
+        } else {
+            this.selectedIndex(0, index);
+        }
+        if (!this.booted && index >= this.options.column - 1) {
+            this.booted = true;
+        }
+     }
+
      /**
       * 刷新第几级的数据
       * @param column 第几级
       */
      public refreshColumn(column: number = 0) {
+        if (typeof this.options.data === 'function') {
+            this.triggerChange(column);
+            return this;
+        }
          let data = this._getColumnOption(column);
          this._refreshUl(column, data);
          this.selectedIndex(0, column);
@@ -317,7 +369,7 @@
      */
     private _getValueAndText(item: any, i: string| number): [string| number, string] {
         if (typeof item != 'object') {
-            return [i, item];
+            return !this.options.valueTag ? [item, item] : [i, item];
         }
         let name = item[this.options.textTag];
         if (this.options.valueTag && item.hasOwnProperty(this.options.valueTag)) {
@@ -367,6 +419,9 @@
       */
      public selectedValue(id: number| string, column: number = 0) {
         let option = this._ulBox[column].find('li[data-value="'+ id +'"]');
+        if (option.length < 1) {
+            this.selectedIndex(0, column);
+        }
         this.selectedOption(option, column);
         return this;
      }
@@ -392,9 +447,9 @@
       */
      public val() {
          let data = [];
-         for (let i = 0; i < this.options.column; i++) {
-             data.push(this.getSelectedOption(i).attr('data-value'))
-         }
+         this.mapSelected(option => {
+            data.push(option.data('value'));
+         })
          return this.options.column > 1 ? data : data[0];
      }
 
@@ -430,11 +485,32 @@
         this.mapSelected((option: JQuery) => {
             opts.push(option);
             texts.push(option.text());
-            data.push(option.attr('data-value'));
-        })
+            data.push(option.data('value'));
+        });
         this.trigger('done', ...data, ...texts, ...opts, ...this._index);
         return this;
-     }
+    }
+
+    /**
+     * range
+     */
+    public range(start: number, end: number, step?: number): number[] {
+        let data: number[] = [];
+        if (typeof step === 'undefined' || step === 0) {
+            step = start > end ? -1 : 1;
+        }
+        while (true) {
+            if (
+                (step > 0 && start > end)
+                || (step < 0 && start < end)
+                ) {
+                break;
+            }
+            data.push(start);
+            start += step;
+        }
+        return data;
+    }
 }
 
 interface SelectBoxOptions {

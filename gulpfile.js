@@ -220,7 +220,7 @@ var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
-gulp.task('select', gulp.series(multiSelectTask));
+gulp.task('select', gulp.series(selectTask));
 gulp.task('region', gulp.series(regionTask));
 gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));

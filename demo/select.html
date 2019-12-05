@@ -12,6 +12,7 @@
     
     <button class="open-one">打开</button>
     <button class="open-two">打开</button>
+    <button class="open-date">选择日期</button>
 
  
     <select name="11" id="">
@@ -92,6 +93,34 @@
                         ],
                     },
                 ],
+                ondone: function () { 
+                    console.log(arguments);
+                 }
+            });
+        var twoPad = function (i) { 
+            return i < 10 && i >= 0 ? '0' + i : i;
+        };
+        var mapPad = function (data) { 
+            var items = [];
+            for (var i = 0; i < data.length; i++) {
+                items.push(twoPad(data[i]));
+            }
+            return items;
+        };
+        $('.open-date').select({
+                default: '2017-09-20'.split('-'),
+                column: 3,
+                valueTag: null,
+                data: function(next, i, y, m) {
+                    if (i < 1) {
+                        var y = new Date().getFullYear();
+                        return this.range(y, y - 100);
+                    }
+                    if (i === 1) {
+                        return mapPad(this.range(1, 12));
+                    }
+                    return mapPad(this.range(1, new Date(y, m, 0).getDate()));
+                },
                 ondone: function () { 
                     console.log(arguments);
                  }

@@ -217,6 +217,9 @@
         if (!id) {
             return [];
         }
+        if (typeof this.options.data !== 'function') {
+            return [];
+        }
         let path = [],
             found = false,
             _this = this,
@@ -433,6 +436,7 @@
       */
      public selectedOption(option: JQuery, column: number = 0) {
         option.addClass('active').siblings().removeClass('active');
+        this.trigger('change', column, option.data('value'), option.text(), option);
         this._index[column] = option.index();
         let top = 2 * this.options.lineHeight - this._index[column]  * this.options.lineHeight;
         this._ulBox[column].css('transform', 'translate(0px, ' + top +'px) translateZ(0px)');

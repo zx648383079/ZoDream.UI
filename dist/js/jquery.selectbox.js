@@ -317,6 +317,9 @@ var SelectBox = /** @class */ (function (_super) {
         if (!id) {
             return [];
         }
+        if (typeof this.options.data !== 'function') {
+            return [];
+        }
         var path = [], found = false, _this = this, findPath = function (data) {
             if (typeof data != 'object') {
                 return;
@@ -523,6 +526,9 @@ var SelectBox = /** @class */ (function (_super) {
     SelectBox.prototype.selectedOption = function (option, column) {
         if (column === void 0) { column = 0; }
         option.addClass('active').siblings().removeClass('active');
+        if (this.booted) {
+            this.trigger('change', column, option.data('value'), option.text(), option);
+        }
         this._index[column] = option.index();
         var top = 2 * this.options.lineHeight - this._index[column] * this.options.lineHeight;
         this._ulBox[column].css('transform', 'translate(0px, ' + top + 'px) translateZ(0px)');

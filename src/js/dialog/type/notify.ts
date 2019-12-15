@@ -52,7 +52,7 @@ class DialogNotify extends DialogTip {
         || this.status == DialogStatus.closed) {
             return false;
         }
-        if (false == this.trigger('closed')) {
+        if (false == this.trigger(_DIALOG_CLOSE)) {
             console.log('closed stop!');
             return false;
         }
@@ -76,7 +76,7 @@ class DialogNotify extends DialogTip {
                     icon: instance.options.ico,
                 });
                 instance.notify.addEventListener("click", event => {
-                    instance.trigger('done');
+                    instance.trigger(_DIALOG_DONE);
                 });
             });
             return;

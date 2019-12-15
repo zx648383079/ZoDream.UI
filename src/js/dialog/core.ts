@@ -99,7 +99,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
         if (!this.box) {
             this.init();
         }
-        if (false == this.trigger('show')) {
+        if (false == this.trigger(_DIALOG_SHOW)) {
             console.log('show stop!');
             return false;
         }
@@ -110,6 +110,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     protected doShowStatus() {
         this.box.show();
         this._status = DialogStatus.show;
+        this.box.trigger(DIALOG_SHOW, this);
     }
 
     /**
@@ -119,7 +120,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
         if (!this.box) {
             this.init();
         }
-        if (false == this.trigger('hide')) {
+        if (false == this.trigger(_DIALOG_HIDE)) {
             console.log('hide stop!');
             return false;
         }
@@ -130,6 +131,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
     protected doHideStatus() {
         this.box.hide();
         this._status = DialogStatus.hide;
+        this.box.trigger(DIALOG_HIDE);
     }
 
     /**
@@ -143,7 +145,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
         || this.status == DialogStatus.closed) {
             return false;
         }
-        if (false == this.trigger('closing')) {
+        if (false == this.trigger(_DIALOG_CLOSING)) {
             console.log('closing stop!');
             return false;
         }
@@ -153,6 +155,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
 
     protected doClosingStatus() {
         this._status = DialogStatus.closing;
+        this.box.trigger(DIALOG_CLOSING, this);
         let instance = this;
         this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
             if (instance.status == DialogStatus.closing) {
@@ -169,7 +172,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
         if (!this.box) {
             return false;
         }
-        if (this.trigger('closed') == false) {
+        if (this.trigger(_DIALOG_CLOSE) == false) {
             console.log('closed stop!');
             return false;
         }
@@ -184,6 +187,7 @@ abstract class DialogCore extends Box implements DialogInterfae  {
             this._dialogBg = undefined;
         }
         Dialog.removeItem(this.id); 
+        this.box.trigger(DIALOG_CLOSE);
         this.box.remove();
         this.box = undefined;
     }

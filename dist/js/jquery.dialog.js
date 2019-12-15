@@ -11,6 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 /**
  * 缓存数据
  */
@@ -99,7 +106,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArrays([this], args));
     };
     return Eve;
 }());
@@ -242,7 +249,7 @@ var DialogCore = /** @class */ (function (_super) {
         if (!this.box) {
             this.init();
         }
-        if (false == this.trigger('show')) {
+        if (false == this.trigger(_DIALOG_SHOW)) {
             console.log('show stop!');
             return false;
         }
@@ -252,6 +259,7 @@ var DialogCore = /** @class */ (function (_super) {
     DialogCore.prototype.doShowStatus = function () {
         this.box.show();
         this._status = DialogStatus.show;
+        this.box.trigger(DIALOG_SHOW, this);
     };
     /**
      * 创建并隐藏控件
@@ -260,7 +268,7 @@ var DialogCore = /** @class */ (function (_super) {
         if (!this.box) {
             this.init();
         }
-        if (false == this.trigger('hide')) {
+        if (false == this.trigger(_DIALOG_HIDE)) {
             console.log('hide stop!');
             return false;
         }
@@ -270,6 +278,7 @@ var DialogCore = /** @class */ (function (_super) {
     DialogCore.prototype.doHideStatus = function () {
         this.box.hide();
         this._status = DialogStatus.hide;
+        this.box.trigger(DIALOG_HIDE);
     };
     /**
      * 动画关闭，有关闭动画
@@ -282,7 +291,7 @@ var DialogCore = /** @class */ (function (_super) {
             || this.status == DialogStatus.closed) {
             return false;
         }
-        if (false == this.trigger('closing')) {
+        if (false == this.trigger(_DIALOG_CLOSING)) {
             console.log('closing stop!');
             return false;
         }
@@ -291,6 +300,7 @@ var DialogCore = /** @class */ (function (_super) {
     };
     DialogCore.prototype.doClosingStatus = function () {
         this._status = DialogStatus.closing;
+        this.box.trigger(DIALOG_CLOSING, this);
         var instance = this;
         this.box.addClass('dialog-closing').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
             if (instance.status == DialogStatus.closing) {
@@ -306,7 +316,7 @@ var DialogCore = /** @class */ (function (_super) {
         if (!this.box) {
             return false;
         }
-        if (this.trigger('closed') == false) {
+        if (this.trigger(_DIALOG_CLOSE) == false) {
             console.log('closed stop!');
             return false;
         }
@@ -320,6 +330,7 @@ var DialogCore = /** @class */ (function (_super) {
             this._dialogBg = undefined;
         }
         Dialog.removeItem(this.id);
+        this.box.trigger(DIALOG_CLOSE);
         this.box.remove();
         this.box = undefined;
     };
@@ -829,6 +840,19 @@ var DialogDiskType;
     DialogDiskType[DialogDiskType["file"] = 0] = "file";
     DialogDiskType[DialogDiskType["directory"] = 1] = "directory";
 })(DialogDiskType || (DialogDiskType = {}));
+var DIALOG_SHOW = 'dialog_show';
+var DIALOG_HIDE = 'dialog_hide';
+var DIALOG_CLOSE = 'dialog_close';
+var DIALOG_CLOSING = 'dialog_closing';
+var DIALOG_LOADED = 'dialog_loaded';
+var DIALOG_ASYNC = 'dialog_async';
+var DIALOG_DONE = 'dialog_done';
+var _DIALOG_DONE = 'done';
+var _DIALOG_CANCEL = 'cancel';
+var _DIALOG_SHOW = 'show';
+var _DIALOG_HIDE = 'hide';
+var _DIALOG_CLOSE = 'closed';
+var _DIALOG_CLOSING = 'closing';
 var DialogPlugin = /** @class */ (function () {
     function DialogPlugin(element, option) {
         this.element = element;
@@ -1099,7 +1123,7 @@ var DialogNotify = /** @class */ (function (_super) {
             || this.status == DialogStatus.closed) {
             return false;
         }
-        if (false == this.trigger('closed')) {
+        if (false == this.trigger(_DIALOG_CLOSE)) {
             console.log('closed stop!');
             return false;
         }
@@ -1122,7 +1146,7 @@ var DialogNotify = /** @class */ (function (_super) {
                     icon: instance.options.ico,
                 });
                 instance.notify.addEventListener("click", function (event) {
-                    instance.trigger('done');
+                    instance.trigger(_DIALOG_DONE);
                 });
             });
             return;
@@ -1301,6 +1325,7 @@ var DialogContent = /** @class */ (function (_super) {
                 instance_1.options.content = html;
                 instance_1.isLoading = false;
                 instance_1.init();
+                instance_1.find('.dialog-body').children().trigger(DIALOG_LOADED, instance_1);
             });
         }
         return _this;
@@ -1387,29 +1412,30 @@ var DialogContent = /** @class */ (function (_super) {
      * 绑定事件
      */
     DialogContent.prototype.bindEvent = function () {
+        this.trigger('init', this);
         var that = this;
         this.box.click(function (e) {
             e.stopPropagation();
-        }).on('dialog-done', function (event, data, cb) {
-            if (that.hasEvent('done')) {
-                that.trigger('done', data, cb);
+        }).on(DIALOG_DONE, function (event, data, cb) {
+            if (that.hasEvent(_DIALOG_DONE)) {
+                that.trigger(_DIALOG_DONE, data, cb);
                 return;
             }
             cb(that);
             that.close();
-        }).on('dialog-async', function (event, cb) {
+        }).on(DIALOG_ASYNC, function (event, cb) {
             cb(that);
         });
         this.onClick(".dialog-yes", function () {
-            if (this.hasEvent('done')) {
-                this.trigger('done');
+            if (this.hasEvent(_DIALOG_DONE)) {
+                this.trigger(_DIALOG_DONE);
                 return;
             }
             this.close();
         }).onClick(".dialog-close", function () {
             this.close();
-            if (this.hasEvent('cancel')) {
-                this.trigger('cancel');
+            if (this.hasEvent(_DIALOG_CANCEL)) {
+                this.trigger(_DIALOG_CANCEL);
             }
         });
         return this;
@@ -1975,197 +2001,3 @@ var DefaultDialogImageOption = /** @class */ (function () {
     return DefaultDialogImageOption;
 }());
 Dialog.addMethod(DialogType.image, DialogImage);
-var DialogDisk = /** @class */ (function (_super) {
-    __extends(DialogDisk, _super);
-    function DialogDisk(option, id) {
-        return _super.call(this, option, id) || this;
-    }
-    DialogDisk.prototype.bindEvent = function () {
-        this.catalogBox = this.box.find('.dialog-body .dialog-catalog');
-        this.fileBox = this.box.find('.dialog-body .dialog-content');
-        var instance = this;
-        if (typeof this.options.catalog != 'string') {
-            this.showCatalog(this.options.catalog);
-        }
-        else {
-            $.getJSON(this.options.catalog, function (data) {
-                if (data.code == 0) {
-                    instance.showCatalog(data.data);
-                }
-            });
-        }
-        if (typeof this.options.content != 'string') {
-            this.showFile(this.options.content);
-        }
-        else {
-            $.getJSON(this.options.content, function (data) {
-                if (data.code == 0) {
-                    instance.showFile(data.data);
-                }
-            });
-        }
-        this.catalogBox.on('click', '.tree-item', function () {
-            var file = $(this);
-            file.addClass('active').siblings().removeClass('active');
-            instance.open(file.attr('data-url'));
-        });
-        this.fileBox.on('click', '.folder-item', function () {
-            var file = $(this);
-            file.addClass('active').siblings().removeClass('active');
-            instance.open(file.attr('data-url'));
-        });
-        this.fileBox.on('click', '.file-item', function () {
-            var file = $(this);
-            file.addClass('active');
-            if (!instance.options.multiple) {
-                file.siblings().removeClass('active');
-            }
-            instance.trigger('openFile', file.attr('data-url'), file);
-        });
-        return _super.prototype.bindEvent.call(this);
-    };
-    DialogDisk.prototype.getContentHtml = function () {
-        return '<div class="dialog-body"><div class="dialog-catalog"></div><div class="dialog-content"></div></div>';
-    };
-    DialogDisk.prototype.getDefaultOption = function () {
-        return new DefaultDialogDiskOption();
-    };
-    DialogDisk.prototype.open = function (url) {
-        var _this = this;
-        if (!url) {
-            console.log('url is empty');
-            return;
-        }
-        CacheUrl.getData(url, function (data) {
-            _this.showFile(data);
-        });
-    };
-    /**
-     * 获取选中的文件路径
-     */
-    DialogDisk.prototype.val = function () {
-        if (!this.options.multiple) {
-            return this.fileBox.find('.file-item.active').attr('data-url');
-        }
-        var data = [];
-        this.mapSelectedFile(function (url) {
-            data.push(url);
-        });
-        return data;
-    };
-    /**
-     * 循环选中的文件
-     * @param callback
-     */
-    DialogDisk.prototype.mapSelectedFile = function (callback) {
-        this.fileBox.find('.file-item.active').each(function (i, ele) {
-            var item = $(ele);
-            var url = item.attr('data-url');
-            if (callback.call(item, url, item, i) == false) {
-                return false;
-            }
-        });
-        return this;
-    };
-    /**
-     * 循环所有
-     * @param callback
-     * @param hasFolder 是否包含文件夹
-     */
-    DialogDisk.prototype.map = function (callback, hasFolder) {
-        if (hasFolder === void 0) { hasFolder = false; }
-        var tag = '.file-item';
-        if (hasFolder) {
-            tag = '.folder-item,' + tag;
-        }
-        this.fileBox.find(tag).each(function (i, ele) {
-            var item = $(ele);
-            var url = item.attr('data-url');
-            if (callback.call(item, url, item, i) == false) {
-                return false;
-            }
-        });
-        return this;
-    };
-    /**
-     * 显示文件
-     * @param data
-     */
-    DialogDisk.prototype.showFile = function (data) {
-        var _this = this;
-        var html = '';
-        if (data) {
-            $.each(data, function (i, item) {
-                item.type = Dialog.parseEnum(item.type, DialogDiskType);
-                if (item.type == DialogDiskType.file) {
-                    html += _this._getFileItem(item);
-                    return;
-                }
-                html += _this._getFolderItem(item);
-            });
-        }
-        this.fileBox.html(html);
-    };
-    DialogDisk.prototype._getFileItem = function (data) {
-        var icon = '<i class="fa fa-file"></i>';
-        if (data.thumb) {
-            icon = '<img class="file-thumb" src="' + data.thumb + '">';
-        }
-        return '<div class="file-item" data-url="' + data[this.options.url] + '">' + icon + '<div class="file-name">' + data[this.options.name] + '</div></div>';
-    };
-    DialogDisk.prototype._getFolderItem = function (data) {
-        return '<div class="folder-item" data-url="' + data[this.options.url] + '"><i class="fa fa-folder"></i><div class="file-name">' + data[this.options.name] + '</div></div>';
-    };
-    /**
-     * 显示目录
-     * @param data
-     */
-    DialogDisk.prototype.showCatalog = function (data) {
-        var _this = this;
-        var html = '';
-        if (data) {
-            $.each(data, function (i, item) {
-                html += _this._getCatalogItem(item);
-            });
-        }
-        this.box.toggleClass('no-catalog', html == '');
-        if (html == '') {
-            return;
-        }
-        this.catalogBox.html('<ul class="tree">' + html + '</ul>');
-    };
-    DialogDisk.prototype._getCatalogItem = function (data) {
-        var html = '<li class="tree-item" data-url="' + data[this.options.url] + '"><div class="tree-header">' + data[this.options.name] + '</div>';
-        if (data.hasOwnProperty(this.options.children)) {
-            html += this._getCatalogChild(data[this.options.children]);
-        }
-        return html + '</li>';
-    };
-    DialogDisk.prototype._getCatalogChild = function (data) {
-        var _this = this;
-        var html = '';
-        $.each(data, function (i, item) {
-            html += _this._getCatalogItem(item);
-        });
-        return '<ul class="tree-child">' + html + '</ul>';
-    };
-    return DialogDisk;
-}(DialogBox));
-var DefaultDialogDiskOption = /** @class */ (function (_super) {
-    __extends(DefaultDialogDiskOption, _super);
-    function DefaultDialogDiskOption() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.name = 'name';
-        _this.title = '文件管理';
-        _this.children = 'children';
-        _this.url = 'url';
-        _this.multiple = false;
-        _this.onclosing = function () {
-            this.hide();
-            return false;
-        };
-        return _this;
-    }
-    return DefaultDialogDiskOption;
-}(DefaultDialogBoxOption));
-Dialog.addMethod(DialogType.disk, DialogDisk);

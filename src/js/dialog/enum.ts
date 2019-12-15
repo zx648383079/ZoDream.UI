@@ -45,3 +45,17 @@ enum DialogDiskType {
     file,
     directory
 }
+
+const DIALOG_SHOW = 'dialog_show';
+const DIALOG_HIDE = 'dialog_hide';
+const DIALOG_CLOSE = 'dialog_close';
+const DIALOG_CLOSING = 'dialog_closing';
+const DIALOG_LOADED = 'dialog_loaded';
+const DIALOG_ASYNC = 'dialog_async';
+const DIALOG_DONE = 'dialog_done';
+const _DIALOG_DONE = 'done';
+const _DIALOG_CANCEL = 'cancel';
+const _DIALOG_SHOW = 'show';
+const _DIALOG_HIDE = 'hide';
+const _DIALOG_CLOSE = 'closed';
+const _DIALOG_CLOSING = 'closing';

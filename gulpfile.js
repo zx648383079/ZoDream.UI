@@ -50,7 +50,8 @@ function dialogTask() {
         'src/js/dialog/type/form.ts',
         'src/js/dialog/type/page.ts',
         'src/js/dialog/type/image.ts',
-        'src/js/dialog/type/disk.ts'])
+        //'src/js/dialog/type/disk.ts'
+    ])
         //.pipe(sourcemaps.init())
         .pipe(concat('jquery.dialog.ts'))
         .pipe(tsProject())

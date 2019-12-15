@@ -85,7 +85,7 @@ class DialogForm extends DialogBox {
                 break;
             case 'select':
                 let option = '';
-                $.each(data.item, function(val, label) {
+                $.each(data.item, function(val: string, label) {
                     if (val == defaultVal) {
                         val += '" selected="selected';
                     }
@@ -96,7 +96,7 @@ class DialogForm extends DialogBox {
             case 'radio':
             case 'checkbox':
                 html += '<div'+attr+'>'
-                $.each(data.item, function(val, label) {
+                $.each(data.item, function(val: string, label) {
                     if (val == defaultVal) {
                         val += '" checked="checked';
                     }

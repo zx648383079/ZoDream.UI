@@ -25,6 +25,7 @@ class DialogContent extends DialogCore {
                 instance.options.content = html;
                 instance.isLoading = false;
                 instance.init();
+                instance.find('.dialog-body').children().trigger(DIALOG_LOADED, instance);
             });
         }
     }
@@ -119,29 +120,30 @@ class DialogContent extends DialogCore {
      * 绑定事件
      */
     protected bindEvent(): this {
+        this.trigger('init', this);
         let that = this;
         this.box.click(function(e) {
             e.stopPropagation();
-        }).on('dialog-done', function(event, data: any, cb: (dialog: DialogCore) => void) {
-            if (that.hasEvent('done')) {
-                that.trigger('done', data, cb);
+        }).on(DIALOG_DONE, function(event, data: any, cb: (dialog: DialogCore) => void) {
+            if (that.hasEvent(_DIALOG_DONE)) {
+                that.trigger(_DIALOG_DONE, data, cb);
                 return;
             }
             cb(that);
             that.close();
-        }).on('dialog-async', function(event, cb: (dialog: DialogCore) => void) {
+        }).on(DIALOG_ASYNC, function(event, cb: (dialog: DialogCore) => void) {
             cb(that);
         });
         this.onClick(".dialog-yes", function() {
-            if (this.hasEvent('done')) {
-                this.trigger('done');
+            if (this.hasEvent(_DIALOG_DONE)) {
+                this.trigger(_DIALOG_DONE);
                 return;
             }
             this.close();
         }).onClick(".dialog-close", function() {
             this.close();
-            if (this.hasEvent('cancel')) {
-                this.trigger('cancel');
+            if (this.hasEvent(_DIALOG_CANCEL)) {
+                this.trigger(_DIALOG_CANCEL);
             }
         });
         return this;

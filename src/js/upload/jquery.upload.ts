@@ -57,7 +57,7 @@ class Upload extends Eve {
             file.multiple = this.options.multiple;
             file.accept = this.options.filter;
             document.body.appendChild(file);
-            element = $(file).bind('change', function() {
+            element = $(file).bind('change', function(this: HTMLInputElement) {
                 _this.uploadFiles(this.files);
             }).hide();
         } else {
@@ -65,7 +65,7 @@ class Upload extends Eve {
             element.attr('multiple', this.options.multiple ? 'true' : 'false');
             element.attr('accept', this.options.filter);
             if (this.options.dynamic) {
-                element.unbind('change').bind('change', function() {
+                element.unbind('change').bind('change', function(this: HTMLInputElement) {
                     _this.uploadFiles(this.files);
                 });
             }
@@ -164,7 +164,7 @@ class Upload extends Eve {
                 return xhr;
             };
         }
-        $.ajax(opts);
+        $.ajax(opts as any);
     }
 
     public formatFileSize(fileSize): string {
@@ -225,14 +225,14 @@ class Upload extends Eve {
         ready.readAsDataURL(file);
         ready.onload = function(){
             let re = this.result;
-            _this._canvasDataURL(re, options, cb)
+            _this._canvasDataURL(re as string, options, cb)
         }
     }
     private _canvasDataURL(path: string, obj: any, callback: (data: string) => void){
         let img = new Image();
         img.src = path;
-        img.onload = function(){
-            let that: Image = this;
+        img.onload = function(this: HTMLImageElement){
+            let that = this;
             // 默认按比例压缩
             let w = that.width,
                 h = that.height,
@@ -245,9 +245,9 @@ class Upload extends Eve {
                 ctx = canvas.getContext('2d');
             // 创建属性节点
             let anw = document.createAttribute("width");
-            anw.nodeValue = w;
+            anw.nodeValue = w + '';
             let anh = document.createAttribute("height");
-            anh.nodeValue = h;
+            anh.nodeValue = h + '';
             canvas.setAttributeNode(anw);
             canvas.setAttributeNode(anh);
             ctx.drawImage(that, 0, 0, w, h);

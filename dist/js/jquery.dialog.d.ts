@@ -613,6 +613,8 @@ declare class DialogImage extends DialogContent {
      * 绑定事件
      */
     protected bindEvent(): this;
+    showIndex(index: number): void;
+    showImg(src: string): void;
     /**
      * 重设尺寸
      */
@@ -622,6 +624,5 @@ declare class DialogImage extends DialogContent {
     protected getContentHtml(): string;
 }
 declare class DefaultDialogImageOption implements DialogImageOption {
-    onnext: (index: number) => string;
-    onprevious: (index: number) => string;
+    onrequest: (index: number) => string;
 }

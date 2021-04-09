@@ -12,7 +12,7 @@ class DialogImage extends DialogContent {
         super(option, id);
     }
 
-    private _index: number = 0;
+    private _index: number = -1;
 
     private _img: JQuery;
 
@@ -126,6 +126,16 @@ class DialogImage extends DialogContent {
         return this;
     }
 
+    public showIndex(index: number) {
+        this.show();
+        this.src = this.trigger('request', this._index = index);
+    }
+
+    public showImg(src: string) {
+        this.show();
+        this.src = src;
+    }
+
     /**
      * 重设尺寸
      */
@@ -135,26 +145,23 @@ class DialogImage extends DialogContent {
     }
 
     public previous() {
-        this.src = this.trigger('previous', -- this._index);
+        this.src = this.trigger('request', -- this._index);
     }
 
     public next() {
-        this.src = this.trigger('next', ++ this._index);
+        this.src = this.trigger('request', ++ this._index);
     }
 
     protected getContentHtml(): string {
         if (!this.options.content) {
-            this.options.content = this.trigger('next', ++ this._index);
+            this.options.content = this.trigger('request', ++ this._index);
         }
         return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"><img src="'+ this.options.content +'"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
     }
 }
 
 class DefaultDialogImageOption implements DialogImageOption {
-    onnext: (index: number) => string = function(index) {
-        return $(document.body).find('img').eq(index).attr('src');
-    };
-    onprevious: (index: number) => string = function(index) {
+    onrequest: (index: number) => string = function(index) {
         return $(document.body).find('img').eq(index).attr('src');
     };
 }

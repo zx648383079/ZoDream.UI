@@ -4,16 +4,18 @@
   line-height: 36px;
   position: relative;
   border: 1px solid #eee;
-  cursor: pointer; }
-  .dialog-select-input::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    margin-top: -2px;
-    border-top: 5px solid #666;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent; }
+  cursor: pointer;
+}
+.dialog-select-input::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: -2px;
+  border-top: 5px solid #666;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
 
 .dialog.dialog-select {
   position: fixed;
@@ -22,51 +24,62 @@
   width: 100%;
   display: none;
   z-index: 998;
-  background: #fff; }
-  .dialog.dialog-select .dialog-header {
-    position: relative;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    background: #fff;
-    border-bottom: 1px solid #ccc;
-    z-index: 999; }
-    .dialog.dialog-select .dialog-header .dialog-close {
-      position: absolute;
-      left: 15px;
-      line-height: 30px; }
-    .dialog.dialog-select .dialog-header .dialog-yes {
-      position: absolute;
-      right: 15px;
-      top: 0;
-      line-height: 30px; }
-  .dialog.dialog-select .dialog-body {
-    height: 150px;
-    position: relative;
-    overflow: hidden; }
-    .dialog.dialog-select .dialog-body ul {
-      margin: 0;
-      padding: 0;
-      transition: all .3s; }
-      .dialog.dialog-select .dialog-body ul li {
-        list-style: none;
-        line-height: 30px;
-        color: rgba(0, 0, 0, 0.3);
-        text-align: center; }
-        .dialog.dialog-select .dialog-body ul li.active {
-          color: #000; }
-    .dialog.dialog-select .dialog-body .dialog-top-hr,
-    .dialog.dialog-select .dialog-body .dialog-bottom-hr {
-      position: absolute;
-      width: 100%;
-      margin: 0;
-      padding: 0; }
-    .dialog.dialog-select .dialog-body .dialog-top-hr {
-      top: 60px; }
-    .dialog.dialog-select .dialog-body .dialog-bottom-hr {
-      top: 90px; }
-  .dialog.dialog-select.dialog-select-column-3 .dialog-body ul {
-    width: 33%;
-    float: left; }
-
+  background: #fff;
+}
+.dialog.dialog-select .dialog-header {
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  z-index: 999;
+}
+.dialog.dialog-select .dialog-header .dialog-close {
+  position: absolute;
+  left: 15px;
+  line-height: 30px;
+}
+.dialog.dialog-select .dialog-header .dialog-yes {
+  position: absolute;
+  right: 15px;
+  top: 0;
+  line-height: 30px;
+}
+.dialog.dialog-select .dialog-body {
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+}
+.dialog.dialog-select .dialog-body ul {
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s;
+}
+.dialog.dialog-select .dialog-body ul li {
+  list-style: none;
+  line-height: 30px;
+  color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+.dialog.dialog-select .dialog-body ul li.active {
+  color: #000;
+}
+.dialog.dialog-select .dialog-body .dialog-top-hr,
+.dialog.dialog-select .dialog-body .dialog-bottom-hr {
+  position: absolute;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.dialog.dialog-select .dialog-body .dialog-top-hr {
+  top: 60px;
+}
+.dialog.dialog-select .dialog-body .dialog-bottom-hr {
+  top: 90px;
+}
+.dialog.dialog-select.dialog-select-column-3 .dialog-body ul {
+  width: 33%;
+  float: left;
+}
 /*# sourceMappingURL=dialog-select.css.map */

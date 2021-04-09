@@ -4,54 +4,63 @@
   right: -500px;
   display: inline-block;
   width: 500px;
-  z-index: 999; }
-  .barrage .barrage-box {
-    background-color: rgba(0, 0, 0, 0.5);
-    padding-right: 8px;
-    height: 40px;
-    display: inline-block;
-    border-radius: 25px;
-    transition: all .3s; }
-    .barrage .barrage-box .barrage-img {
-      margin-top: 4px;
-      margin-left: 4px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      overflow: hidden;
-      float: left; }
-      .barrage .barrage-box .barrage-img img {
-        width: 100%;
-        height: 100%; }
-    .barrage .barrage-box .barrage-content {
-      float: left; }
-      .barrage .barrage-box .barrage-content a {
-        margin-right: 2px;
-        font-size: 14px;
-        color: #fff;
-        line-height: 40px;
-        margin-left: 18px;
-        text-decoration: none; }
-        .barrage .barrage-box .barrage-content a:hover {
-          text-decoration: underline; }
-    .barrage .barrage-box .barrage-close {
-      visibility: hidden;
-      opacity: 0;
-      text-align: center;
-      width: 25px;
-      height: 25px;
-      margin-left: 20px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      margin-top: 8px;
-      display: inline-block; }
-      .barrage .barrage-box .barrage-close .fa-close {
-        font-size: 14px;
-        color: #fff;
-        display: inline-block;
-        margin-top: 7px; }
-    .barrage .barrage-box:hover .barrage-close {
-      visibility: visible;
-      opacity: 1; }
-
+  z-index: 999;
+}
+.barrage .barrage-box {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding-right: 8px;
+  height: 40px;
+  display: inline-block;
+  border-radius: 25px;
+  transition: all 0.3s;
+}
+.barrage .barrage-box .barrage-img {
+  margin-top: 4px;
+  margin-left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  float: left;
+}
+.barrage .barrage-box .barrage-img img {
+  width: 100%;
+  height: 100%;
+}
+.barrage .barrage-box .barrage-content {
+  float: left;
+}
+.barrage .barrage-box .barrage-content a {
+  margin-right: 2px;
+  font-size: 14px;
+  color: #fff;
+  line-height: 40px;
+  margin-left: 18px;
+  text-decoration: none;
+}
+.barrage .barrage-box .barrage-content a:hover {
+  text-decoration: underline;
+}
+.barrage .barrage-box .barrage-close {
+  visibility: hidden;
+  opacity: 0;
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  margin-left: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+  display: inline-block;
+}
+.barrage .barrage-box .barrage-close .fa-close {
+  font-size: 14px;
+  color: #fff;
+  display: inline-block;
+  margin-top: 7px;
+}
+.barrage .barrage-box:hover .barrage-close {
+  visibility: visible;
+  opacity: 1;
+}
 /*# sourceMappingURL=barrager.css.map */

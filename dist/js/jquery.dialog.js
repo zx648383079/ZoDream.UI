@@ -2,21 +2,21 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 /**
  * 缓存数据
@@ -106,7 +106,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, __spreadArrays([this], args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args));
     };
     return Eve;
 }());
@@ -197,7 +197,7 @@ var DialogCore = /** @class */ (function (_super) {
                     throw "status error:" + arg;
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(DialogCore.prototype, "y", {
@@ -211,7 +211,7 @@ var DialogCore = /** @class */ (function (_super) {
             this._y = y;
             this.css('top', y + 'px');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(DialogCore.prototype, "height", {
@@ -225,7 +225,7 @@ var DialogCore = /** @class */ (function (_super) {
             this._height = height;
             this.box.height(height);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -1343,7 +1343,7 @@ var DialogContent = /** @class */ (function (_super) {
             //     this.showBox();
             // }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -1659,7 +1659,7 @@ var DialogForm = /** @class */ (function (_super) {
             }
             return this._data;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(DialogForm.prototype, "elements", {
@@ -1672,7 +1672,7 @@ var DialogForm = /** @class */ (function (_super) {
             }
             return this._elements;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     DialogForm.prototype.getContentHtml = function () {
@@ -1860,7 +1860,7 @@ var DialogImage = /** @class */ (function (_super) {
     __extends(DialogImage, _super);
     function DialogImage(option, id) {
         var _this = _super.call(this, option, id) || this;
-        _this._index = 0;
+        _this._index = -1;
         return _this;
     }
     Object.defineProperty(DialogImage.prototype, "src", {
@@ -1874,7 +1874,7 @@ var DialogImage = /** @class */ (function (_super) {
             this._src = img;
             this._img.attr('style', '').attr('src', img);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     DialogImage.prototype.init = function () {
@@ -1968,6 +1968,14 @@ var DialogImage = /** @class */ (function (_super) {
         });
         return this;
     };
+    DialogImage.prototype.showIndex = function (index) {
+        this.show();
+        this.src = this.trigger('request', this._index = index);
+    };
+    DialogImage.prototype.showImg = function (src) {
+        this.show();
+        this.src = src;
+    };
     /**
      * 重设尺寸
      */
@@ -1976,14 +1984,14 @@ var DialogImage = /** @class */ (function (_super) {
         this.trigger('resize');
     };
     DialogImage.prototype.previous = function () {
-        this.src = this.trigger('previous', --this._index);
+        this.src = this.trigger('request', --this._index);
     };
     DialogImage.prototype.next = function () {
-        this.src = this.trigger('next', ++this._index);
+        this.src = this.trigger('request', ++this._index);
     };
     DialogImage.prototype.getContentHtml = function () {
         if (!this.options.content) {
-            this.options.content = this.trigger('next', ++this._index);
+            this.options.content = this.trigger('request', ++this._index);
         }
         return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"><img src="' + this.options.content + '"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
     };
@@ -1991,10 +1999,7 @@ var DialogImage = /** @class */ (function (_super) {
 }(DialogContent));
 var DefaultDialogImageOption = /** @class */ (function () {
     function DefaultDialogImageOption() {
-        this.onnext = function (index) {
-            return $(document.body).find('img').eq(index).attr('src');
-        };
-        this.onprevious = function (index) {
+        this.onrequest = function (index) {
             return $(document.body).find('img').eq(index).attr('src');
         };
     }

@@ -90,14 +90,24 @@
             $("[dialog-type=page]").dialog({
                 content: '11111111111111111111'
             });
-            $("[dialog-type=image]").dialog({
-                title: false,
-                onnext: function() {
+            // $("[dialog-type=image]").dialog({
+            //     title: false,
+            //     onnext: function() {
+            //         return 'image/avatar.jpg';
+            //     },
+            //     onprevious: function() {
+            //         return 'image/banner1.jpg';
+            //     }
+            // });
+            var imageDialog = Dialog.create({
+                type: 'image',
+                onrequest: function() {
+                    console.log(arguments);
                     return 'image/avatar.jpg';
                 },
-                onprevious: function() {
-                    return 'image/banner1.jpg';
-                }
+            })
+            $("[dialog-type=image]").click(function () {
+                imageDialog.show();
             });
             $("[dialog-type=disk]").dialog({
                 url: 'file',

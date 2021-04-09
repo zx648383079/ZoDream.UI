@@ -4,24 +4,23 @@
   "description": "zodream UI",
   "main": "gulpfile.js",
   "dependencies": {
-    "@babel/core": "^7.7.4",
+    "@babel/core": "^7.13.15",
     "@types/axios": "^0.14.0",
-    "@types/jquery": "^3.3.31",
-    "bowser": "^2.7.0",
-    "graceful-fs": "^4.2.3",
+    "@types/jquery": "^3.5.5",
+    "bowser": "^2.11.0",
+    "graceful-fs": "^4.2.6",
     "gulp": "^4.0.2",
-    "gulp-clean-css": "^4.2.0",
+    "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
-    "gulp-rename": "^1.4.0",
-    "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.5",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^3.0.0",
     "gulp-tslint": "^8.1.4",
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
+    "gulp-vue2mini": "^1.1.14",
     "minimatch": "^3.0.4",
-    "node-sass": "^4.13.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.3"
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.4"
   },
   "scripts": {
     "test": "gulp"
@@ -43,7 +42,7 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-es2015": "^6.24.1",
-    "gulp-autoprefixer": "^6.1.0",
+    "gulp-autoprefixer": "^7.0.1",
     "gulp-babel": "^8.0.0"
   }
 }

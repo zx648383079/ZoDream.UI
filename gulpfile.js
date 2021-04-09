@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
     minCss = require('gulp-clean-css'),
-    sass = require("gulp-sass"),
+    vue2mini = require("gulp-vue2mini"),
     sourcemaps = require('gulp-sourcemaps'),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
@@ -16,7 +16,9 @@ var gulp = require('gulp'),
 function sassTask() {
     return gulp.src("src/css/*.scss")
         .pipe(sourcemaps.init())
-        .pipe(sass())
+        .pipe(vue2mini.gulpSass({
+            sourcemaps: true,
+        }))
         .pipe(autoprefixer())
         .pipe(sourcemaps.write('./'))
         //.pipe(minCss())

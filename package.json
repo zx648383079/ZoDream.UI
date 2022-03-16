@@ -4,7 +4,7 @@
   "description": "zodream UI",
   "main": "gulpfile.js",
   "dependencies": {
-    "@babel/core": "^7.13.15",
+    "@babel/core": "^7.14.3",
     "@types/axios": "^0.14.0",
     "@types/jquery": "^3.5.5",
     "bowser": "^2.11.0",
@@ -17,10 +17,10 @@
     "gulp-tslint": "^8.1.4",
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
-    "gulp-vue2mini": "^1.1.14",
+    "gulp-vue2mini": "^1.1.19",
     "minimatch": "^3.0.4",
     "tslint": "^6.1.3",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.2"
   },
   "scripts": {
     "test": "gulp"
@@ -42,7 +42,7 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-preset-es2015": "^6.24.1",
-    "gulp-autoprefixer": "^7.0.1",
+    "gulp-autoprefixer": "^8.0.0",
     "gulp-babel": "^8.0.0"
   }
 }

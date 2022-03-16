@@ -30,11 +30,11 @@ declare class Upload extends Eve {
     private currentElement;
     addEvent(): void;
     start(currentElement?: JQuery): void;
-    uploadFiles(files: any): void;
-    uploadMany(files: any): void;
+    uploadFiles(files: FileList): void;
+    uploadMany(files: FileList): void;
     uploadOne(file: File): void;
     uploadForm(data: FormData, cb?: (data: any) => void): void;
-    formatFileSize(fileSize: any): string;
+    formatFileSize(fileSize: number): string;
     sliceUpload(file: File, cb?: (data: any, currentElement: JQuery) => void): void;
     /** 图片压缩 start  */
     photoCompress(file: File, options: any, cb: (data: string) => void): void;
@@ -60,7 +60,7 @@ interface UploadOption {
     data?: any;
     timeout?: number;
     removeTag?: string;
-    removeCallback?: (eventObject: JQueryEventObject, ...eventData: any[]) => any;
+    removeCallback?: (eventObject: JQuery.Event, ...eventData: any[]) => any;
     multiple?: boolean;
     fileClass?: string;
     filter?: string;
@@ -80,7 +80,7 @@ declare class UploadDefaultOption implements UploadOption {
     isAppend: boolean;
     template: string;
     removeTag: string;
-    removeCallback: (eventObject: JQueryEventObject, ...eventData: any[]) => any;
+    removeCallback: (eventObject: JQuery.Event, ...eventData: any[]) => any;
     multiple: boolean;
     allowMultiple: boolean;
     data: any;

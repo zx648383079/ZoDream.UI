@@ -80,15 +80,15 @@ function pageTask() {
 function uploadTask() {
     return gulp.src(['src/js/core/event.ts',
         'src/js/upload/jquery.upload.ts'])
-        .pipe(sourcemaps.init())
+        // .pipe(sourcemaps.init())
         .pipe(concat('jquery.upload.ts'))
         .pipe(tsProject())
         // .pipe(babel({
         //     presets: ['es2015']
         // }))
-        //.pipe(uglify())
-        //.pipe(rename({suffix:'.min'}))
-        .pipe(sourcemaps.write())
+        // .pipe(uglify())
+        // .pipe(rename({suffix:'.min'}))
+        // .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 }
 

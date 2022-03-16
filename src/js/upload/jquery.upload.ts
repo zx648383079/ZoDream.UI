@@ -38,7 +38,7 @@ class Upload extends Eve {
 
     public addEvent() {
         let _this = this;
-        this.element.click(function() {
+        this.element.on('click', function() {
             _this.start($(this));
         });
         if (this.options.grid) {
@@ -57,7 +57,7 @@ class Upload extends Eve {
             file.multiple = this.options.multiple;
             file.accept = this.options.filter;
             document.body.appendChild(file);
-            element = $(file).bind('change', function(this: HTMLInputElement) {
+            element = $(file).on('change', function(this: HTMLInputElement) {
                 _this.uploadFiles(this.files);
             }).hide();
         } else {
@@ -65,15 +65,15 @@ class Upload extends Eve {
             element.attr('multiple', this.options.multiple ? 'true' : 'false');
             element.attr('accept', this.options.filter);
             if (this.options.dynamic) {
-                element.unbind('change').bind('change', function(this: HTMLInputElement) {
+                element.off('change').on('change', function(this: HTMLInputElement) {
                     _this.uploadFiles(this.files);
                 });
             }
         }
-        element.click();
+        element.trigger('click');
     }
 
-    public uploadFiles(files) {
+    public uploadFiles(files: FileList) {
         if (this.options.allowMultiple) {
             this.uploadMany(files);
             return;
@@ -84,7 +84,7 @@ class Upload extends Eve {
         });
     }
 
-    public uploadMany(files) {
+    public uploadMany(files: FileList) {
         let _this = this,
             data: FormData;
         if (this.options.ondealfile) {
@@ -143,7 +143,7 @@ class Upload extends Eve {
             cache: false,
             contentType: false,    //不可缺
             processData: false,    //不可缺
-            success: function(data) {
+            success: function(data: any) {
                 data = _this.trigger('after', data, _this.currentElement);
                 if (data == false) {
                     console.log('after upload is false');
@@ -157,7 +157,7 @@ class Upload extends Eve {
         }
         if (_this.options.onprogress) {
             opts['xhr'] = function(){
-                let xhr = $.ajaxSettings.xhr();
+                let xhr = $.ajaxSetup({}).xhr();
                 if(_this.options.onprogress && xhr.upload) {
                     xhr.upload.addEventListener('progress' , _this.options.onprogress, false);
                 }
@@ -167,7 +167,7 @@ class Upload extends Eve {
         $.ajax(opts as any);
     }
 
-    public formatFileSize(fileSize): string {
+    public formatFileSize(fileSize: number): string {
         let sizeUnitArr = ['Byte','KB','MB','GB'];
         if (fileSize == 0) {
             return "0 KB";
@@ -362,7 +362,7 @@ interface UploadOption {
     data?: any,           //默认值
     timeout?: number,
     removeTag?: string,   // 删除标志
-    removeCallback?: (eventObject: JQueryEventObject, ...eventData: any[]) => any,  //删除触发事件
+    removeCallback?: (eventObject: JQuery.Event, ...eventData: any[]) => any,  //删除触发事件
     multiple?: boolean,   // 是否允许上传多个
     fileClass?: string,   // 上传文件Class 名
     filter?: string,       // 文件过滤
@@ -384,7 +384,7 @@ class UploadDefaultOption implements UploadOption {
     template: string = '{url}';
     //grid: string = '.zdGrid';
     removeTag: string = '.delete';
-    removeCallback: (eventObject: JQueryEventObject, ...eventData: any[]) => any = function() {
+    removeCallback: (eventObject: JQuery.Event, ...eventData: any[]) => any = function() {
         $(this).parent().remove();
     };
     multiple: boolean = false;

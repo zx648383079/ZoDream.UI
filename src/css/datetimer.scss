@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2017 ZoDream
  */
+@use"sass:math";
 @import "prefix";
 @import "scrollbar";
 
@@ -101,7 +102,7 @@ $minBoxWidth: $size * 7;
             .list-group {
                 width: 60px;
                 &:first-child {
-                    margin-left: ($boxWidth - 190px) / 2;
+                    margin-left: math.div($boxWidth - 190px, 2);
                 }
             }
         }
@@ -109,7 +110,7 @@ $minBoxWidth: $size * 7;
             display: none;
             .list-group {
                 &:first-child {
-                    margin-left: ($boxWidth - 160px) / 2;
+                    margin-left: math.div($boxWidth - 160px, 2);
                 }
             }
         }

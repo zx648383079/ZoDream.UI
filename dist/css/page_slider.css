@@ -1,0 +1,106 @@
+* {
+  margin: 0;
+  padding: 0;
+  word-break: break-all;
+}
+
+.slider-box {
+  position: fixed;
+  top: 0;
+  left: -251px;
+  width: 250px;
+  height: 100vh;
+  z-index: 100;
+  transition: left 0.2s;
+  transition: transform 0.5s;
+  transform: translateX(0);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+}
+.slider-box .slider-wraper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9999px;
+  height: 100vh;
+  transition: transform 0.5s;
+  transform: translate(0px, 0px);
+}
+.slider-box .slider-item {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+.slider-box .slider-item ul {
+  position: absolute;
+  width: 250px;
+  height: 100%;
+  left: 0;
+  overflow: visible;
+  transition: margin-left 0.25s;
+  border-right: 1px solid #d6d6d6;
+  list-style-type: none;
+}
+.slider-box .slider-item ul li {
+  box-sizing: border-box;
+  font-size: 125%;
+}
+.slider-box .slider-item ul li a {
+  box-sizing: border-box;
+  padding: 12px 30px;
+  width: 100%;
+  font-size: 100%;
+  display: inline-block;
+  border-bottom: 1px solid #dddddd;
+}
+.slider-box .slider-item ul li.expand ul {
+  position: relative;
+  width: 250px;
+  height: 100%;
+  margin-left: 0;
+  display: none;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  z-index: 10;
+}
+.slider-box .slider-item ul li.expand.expanded ul {
+  display: block;
+  opacity: 1;
+}
+.slider-box .slider-item ul.alphabet li:nth-child(n+2) {
+  width: 50px;
+  float: left;
+  border-right: 1px solid #dddddd;
+}
+.slider-box .slider-item ul.alphabet li.back {
+  width: 100%;
+  float: none;
+}
+.slider-box .slider-item:first-child {
+  display: block;
+}
+.slider-box .slider-item.page-2 {
+  left: 250px;
+}
+.slider-box .slider-item.page-3 {
+  left: 500px;
+}
+.slider-box .slider-item.page-4 {
+  left: 750px;
+}
+.slider-box .slider-item.page-5 {
+  left: 1000px;
+}
+.slider-box .slider-item.page-6 {
+  left: 1250px;
+}
+.slider-box.open {
+  transform: translateX(250px);
+}
+/*# sourceMappingURL=page_slider.css.map */

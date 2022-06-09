@@ -1,32 +1,38 @@
 #weight .zd-tab .zd-tab-head .zd-tab-item {
   width: auto;
-  padding: 0 8px; }
-
+  padding: 0 8px;
+}
 #weight .zd-list-view .zd-list-item {
-  width: 100px; }
-  #weight .zd-list-view .zd-list-item > .preview img {
-    width: 100%; }
-  #weight .zd-list-view .zd-list-item > .action,
-  #weight .zd-list-view .zd-list-item > .view {
-    display: none; }
+  width: 100px;
+}
+#weight .zd-list-view .zd-list-item > .preview img {
+  width: 100%;
+}
+#weight .zd-list-view .zd-list-item > .action,
+#weight .zd-list-view .zd-list-item > .view {
+  display: none;
+}
 
 .edit-mode #main .weight-list {
-  padding-bottom: 50px; }
-
+  padding-bottom: 50px;
+}
 .edit-mode #main .weight-list {
-  background: rgba(255, 50, 50, 0.2); }
-
+  background: rgba(255, 50, 50, 0.2);
+}
 .edit-mode #main .zd-list-item {
-  position: relative; }
-  .edit-mode #main .zd-list-item > .action,
-  .edit-mode #main .zd-list-item > .preview {
-    display: none; }
-  .edit-mode #main .zd-list-item > .action {
-    position: absolute;
-    right: 0;
-    top: -20px;
-    z-index: 799; }
-  .edit-mode #main .zd-list-item:hover > .action {
-    display: block; }
-
+  position: relative;
+}
+.edit-mode #main .zd-list-item > .action,
+.edit-mode #main .zd-list-item > .preview {
+  display: none;
+}
+.edit-mode #main .zd-list-item > .action {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  z-index: 799;
+}
+.edit-mode #main .zd-list-item:hover > .action {
+  display: block;
+}
 /*# sourceMappingURL=ui.css.map */

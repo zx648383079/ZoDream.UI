@@ -1,33 +1,38 @@
 .swipe-box {
-  overflow: hidden; }
-  .swipe-box .swipe-row {
-    width: 100%;
-    position: relative;
-    height: 80px;
-    padding: 0;
-    margin: 0;
-    transition: left .5s; }
-    .swipe-box .swipe-row .swipe-content {
-      width: 100%;
-      display: block;
-      height: 80px; }
-    .swipe-box .swipe-row .actions-left,
-    .swipe-box .swipe-row .actions-right {
-      position: absolute;
-      height: 80px;
-      min-height: 80px;
-      max-height: 80px;
-      text-align: center;
-      font-size: 22px;
-      top: 0;
-      white-space: nowrap; }
-    .swipe-box .swipe-row .actions-left {
-      color: #FFF;
-      background-color: #00bb48;
-      right: 100%; }
-    .swipe-box .swipe-row .actions-right {
-      color: #FFF;
-      background-color: #BB0000;
-      left: 100%; }
-
+  overflow: hidden;
+}
+.swipe-box .swipe-row {
+  width: 100%;
+  position: relative;
+  height: 80px;
+  padding: 0;
+  margin: 0;
+  transition: left 0.5s;
+}
+.swipe-box .swipe-row .swipe-content {
+  width: 100%;
+  display: block;
+  height: 80px;
+}
+.swipe-box .swipe-row .actions-left,
+.swipe-box .swipe-row .actions-right {
+  position: absolute;
+  height: 80px;
+  min-height: 80px;
+  max-height: 80px;
+  text-align: center;
+  font-size: 22px;
+  top: 0;
+  white-space: nowrap;
+}
+.swipe-box .swipe-row .actions-left {
+  color: #FFF;
+  background-color: rgb(0, 187, 72);
+  right: 100%;
+}
+.swipe-box .swipe-row .actions-right {
+  color: #FFF;
+  background-color: #BB0000;
+  left: 100%;
+}
 /*# sourceMappingURL=swipeAction.css.map */

@@ -2,13 +2,16 @@
   position: fixed;
   right: 0;
   bottom: 0;
-  background: #fff; }
-  .side-nav li {
-    list-style: none; }
-    .side-nav li a {
-      text-decoration: none;
-      color: #333; }
-    .side-nav li.active a {
-      color: #f00; }
-
+  background: #fff;
+}
+.side-nav li {
+  list-style: none;
+}
+.side-nav li a {
+  text-decoration: none;
+  color: #333;
+}
+.side-nav li.active a {
+  color: #f00;
+}
 /*# sourceMappingURL=sideNav.css.map */

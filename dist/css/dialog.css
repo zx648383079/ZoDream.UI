@@ -671,7 +671,7 @@
   }
 }
 .fa.fa-close::before {
-  content: "";
+  content: "\f00d";
 }
 
 .dialog-bg {
@@ -1393,13 +1393,13 @@
   -webkit-font-smoothing: antialiased;
 }
 .dialog-chat .dialog-box .dialog-panel .dialog-panel-header .dialog-panel-icon:before {
-  content: "";
+  content: "\f054";
 }
 .dialog-chat .dialog-box .dialog-panel .dialog-panel-box {
   display: none;
 }
 .dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-header .dialog-panel-icon:before {
-  content: "";
+  content: "\f078";
 }
 .dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-box {
   display: block;

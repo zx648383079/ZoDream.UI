@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../dist/css/jsonformatter.css">
+</head>
+<body>
+    
+    <div class="inner-box">
+        <div class="formatter-bar">
+            <span class="btn-plain">Raw</span>
+            <span class="btn-format">Parsed</span>
+        </div>
+        <pre class="raw-body"></pre>
+        <div class="format-body">
+            
+        </div>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/js/jsonformatter.js"></script>
+    <script>
+        $('.inner-box').jsonformatter({
+            a: 1,
+            b: [1,2,3],
+            d: true,
+            n: undefined
+        });
+    </script>
+</body>
+</html>

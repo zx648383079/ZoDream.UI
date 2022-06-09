@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     tslint = require("gulp-tslint"),
     babel = require('gulp-babel'),
     autoprefixer = require('gulp-autoprefixer'),
-    tsProject = ts.createProject('tsconfig.json');
+    tsProject = ts.createProject('tsconfig.json'),
+    plumber = require('gulp-plumber');;
 
 // process.argv && process.argv.length > 2 获取参数
  
@@ -38,6 +39,11 @@ function tslintTask() {
 function tsTask() {
     return gulp.src('src/js/*.ts')
         .pipe(tsProject())
+        .pipe(plumber({
+            errorHandler() {
+                this.emit('end');
+            }
+        }))
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))
         .pipe(gulp.dest('dist/js'));
@@ -219,7 +225,7 @@ exports.navTask = navTask;
 exports.readerTask = readerTask;
 exports.multiSelectTask = multiSelectTask;
 
-var build = gulp.series(gulp.parallel(sassTask, tslintTask, tsTask));
+var build = gulp.series(gulp.parallel(sassTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));

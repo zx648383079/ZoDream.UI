@@ -54,7 +54,7 @@ class Darrager {
             });
         });
 
-        element.find('.barrage-close').click(function() {
+        element.find('.barrage-close').on('click', function() {
             element.remove();
         });
     }

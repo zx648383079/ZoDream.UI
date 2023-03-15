@@ -10,14 +10,14 @@ class MessageBox {
 
     public addMoveEvent() {
         let iDiffX: number,iDiffY: number, instance = this;
-        this.element.find(this.option.titleTag).mousedown(function(e) {
+        this.element.find(this.option.titleTag).on('mousedown', function(e) {
             $(this).css({"cursor":"move"});
             iDiffX = e.pageX - $(this).offset().left;
             iDiffY = e.pageY - $(this).offset().top;
-            $(document).mousemove(function(e){
+            $(document).on('mousemove', function(e){
                 instance.element.css({"left":(e.pageX - iDiffX),"top":(e.pageY - iDiffY)});
             });	
-        }).mouseup(function() {
+        }).on('mouseup', function() {
             $(document).unbind("mousemove");
 		    $(this).css({"cursor":"auto"});
         });
@@ -25,7 +25,7 @@ class MessageBox {
 
     public addCloseEvent() {
         let instance = this;
-        this.element.find(this.option.closeTag).click(function() {
+        this.element.find(this.option.closeTag).on('click', function() {
             instance.element.hide();
         });
     }

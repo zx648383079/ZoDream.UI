@@ -159,21 +159,21 @@ class City extends Box {
             });
         }
         /** 实现隐藏 */
-        this.box.click(function(e) {
+        this.box.on('click', function(e) {
             e.stopPropagation();
         });
-        this.element.click(function(e) {
+        this.element.on('click', function(e) {
             e.stopPropagation();
         });
         if (this.options.auto) {
-            $(document).click(function() {
+            $(document).on('click', function() {
                 instance.box.hide();
             });
         }
         $(window).scroll(function() {
             instance.setPosition();
         });
-        this.element.click(function() {
+        this.element.on('click', function() {
             instance.show();
         });
     }

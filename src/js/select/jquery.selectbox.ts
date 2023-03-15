@@ -59,11 +59,11 @@
 
      private _bindEvent() {
         let _this = this;
-        this.element.click(function(e) {
+        this.element.on('click', function(e) {
             e.stopPropagation();
             _this.show();
         });
-        // $(document).click(function() {
+        // $(document).on('click', function() {
         //    instance.hide();
         // });
         this.box.on('click', '.dialog-close', function() {

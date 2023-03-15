@@ -97,7 +97,7 @@ class DialogImage extends DialogContent {
      * 绑定事件
      */
     protected bindEvent(): this {
-        this.box.click(function(e) {
+        this.box.on('click', function(e) {
             e.stopPropagation();
         });
 
@@ -111,7 +111,7 @@ class DialogImage extends DialogContent {
             this.next();
         });
         let instance = this;
-        $(window).resize(function() {
+        $(window).on('resize', function() {
             if (instance.box) {
                 instance.resize();
                 return;

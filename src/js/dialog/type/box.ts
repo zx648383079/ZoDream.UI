@@ -47,7 +47,7 @@ class DialogBox extends DialogContent {
         let instance = this;
         let isMove = false;
         let x, y;
-        this.box.find(".dialog-header .dialog-title").mousedown(function(e) {
+        this.box.find(".dialog-header .dialog-title").on('mousedown', function(e) {
             isMove = true;
             x = e.pageX - parseInt(instance.box.css('left'));
             y = e.pageY - parseInt(instance.box.css('top'));
@@ -55,7 +55,7 @@ class DialogBox extends DialogContent {
         });
 
         //这里可能导致 突然显示出来
-        $(document).mousemove(function(e) {
+        $(document).on('mousemove', function(e) {
             if (!isMove || instance.status != DialogStatus.show) {
                 return;
             }
@@ -63,13 +63,13 @@ class DialogBox extends DialogContent {
                 top: e.pageY - y,
                 left: e.pageX - x
             })
-        }).mouseup(function() {
+        }).on('mouseup', function() {
             isMove = false;
             if (instance.box && instance.status == DialogStatus.show) {
                 instance.box.fadeTo('fast', 1);
             }
         });
-        $(window).resize(function() {
+        $(window).on('resize', function() {
             if (instance.box) {
                 instance.resize();
                 return;

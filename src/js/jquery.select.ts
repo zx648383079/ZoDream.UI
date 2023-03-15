@@ -66,13 +66,13 @@
 
      private _bindEvent() {
          let instance = this;
-         this.element.click(function() {
+         this.element.on('click', function() {
              instance.show();
          });
-         $(document).click(function() {
+         $(document).on('click', function() {
             instance.hide();
          });
-         this._select.click(function(e) {
+         this._select.on('click', function(e) {
              if (e.stopPropagation) {
                 e.stopPropagation();
                 return;

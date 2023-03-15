@@ -122,7 +122,7 @@ class DialogContent extends DialogCore {
     protected bindEvent(): this {
         this.trigger('init', this);
         let that = this;
-        this.box.click(function(e) {
+        this.box.on('click', function(e) {
             e.stopPropagation();
         }).on(DIALOG_DONE, function(event, data: any, cb: (dialog: DialogCore) => void) {
             if (that.hasEvent(_DIALOG_DONE)) {

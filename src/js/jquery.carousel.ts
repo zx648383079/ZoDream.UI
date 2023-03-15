@@ -51,13 +51,13 @@ class Carousel {
     private _addEvent() {
         let instance = this;
         if (this.options.previousTag) {
-            this.element.find(this.options.previousTag).click(function() {
+            this.element.find(this.options.previousTag).on('click', function() {
                 instance._stopTime = 1;
                 instance.previous();
             });
         }
         if (this.options.nextTag) {
-            this.element.find(this.options.nextTag).click(function() {
+            this.element.find(this.options.nextTag).on('click', function() {
                 instance._stopTime = 1;
                 instance.next();
             });

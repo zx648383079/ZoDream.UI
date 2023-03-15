@@ -530,10 +530,10 @@ class ChatUserBox extends ChatBaseBox {
 
     public bindEvent() {
         let _this = this;
-        $(document).click(function() {
+        $(document).on('click', function() {
             _this.menu.hide();
         });
-        this.box.click(function() {
+        this.box.on('click', function() {
             if ($(this).hasClass('dialog-min')) {
                 $(this).removeClass('dialog-min');
             }

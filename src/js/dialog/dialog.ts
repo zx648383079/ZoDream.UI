@@ -264,7 +264,7 @@ class Dialog {
         let instance = this;
         if (!this._dialogBg) {
             this._dialogBg = $('<div class="dialog-bg"></div>');
-            this._dialogBg.click(function(e) {
+            this._dialogBg.on('click', function(e) {
                 e.stopPropagation();
                 instance.remove();
             });

@@ -101,7 +101,7 @@ class Zoom {
 
     private _bindEvent() {
         let instance = this;
-        this._li.click(function() {
+        this._li.on('click', function() {
             instance.index = $(this).index();
         });
         this.element.on("click", this.option.previous, function() {

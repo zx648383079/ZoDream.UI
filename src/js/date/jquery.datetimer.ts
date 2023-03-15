@@ -450,71 +450,71 @@ class DateTimer extends Box {
       */
      private _bindEvent() {
         let instance = this;
-        this.box.find('.month-grid li').click(function() {
+        this.box.find('.month-grid li').on('click', function() {
             instance._clickDay($(this));
         });
 
-        this.box.find(".previousYear").click(function() {
+        this.box.find(".previousYear").on('click', function() {
             instance.previousYear();
         });
-        this.box.find(".previousMonth").click(function() {
+        this.box.find(".previousMonth").on('click', function() {
             instance.previousMonth();
         });
-        this.box.find(".nextMonth").click(function() {
+        this.box.find(".nextMonth").on('click', function() {
             instance.nextMonth();
         });
-        this.box.find(".nextYear").click(function() {
+        this.box.find(".nextYear").on('click', function() {
             instance.nextYear();
         });
 
-        this.box.find(".header span").click(function() {
+        this.box.find(".header span").on('click', function() {
             instance.toggleYear();
         });
         
-        this._yearBox.find("li").click(function() {
+        this._yearBox.find("li").on('click', function() {
             instance._changeYear(parseInt($(this).text()));
         });
-        this._monthBox.find("li").click(function() {
+        this._monthBox.find("li").on('click', function() {
             instance._changeMonth(parseInt($(this).text()));
         });
         // 关闭面板
-        this._yearGrid.find('.fa-close').click(function() {
+        this._yearGrid.find('.fa-close').on('click', function() {
             instance.toggleYear(false);
         });
         if (this._hasTime) {
-            this.box.find(".footer button").click(function() {
+            this.box.find(".footer button").on('click', function() {
                 instance.toggleTime(false)
                     .toggleYear(false).output(true);
             });
-            this.box.find(".footer input").click(function() {
+            this.box.find(".footer input").on('click', function() {
                 instance.toggleTime();
             });
-            this._hourBox.find("li").click(function() {
+            this._hourBox.find("li").on('click', function() {
                 instance._changeHour(parseInt($(this).text()));
             });
-            this._minuteBox.find("li").click(function() {
+            this._minuteBox.find("li").on('click', function() {
                 instance._changeMinute(parseInt($(this).text()));
             });
-            this._secondBox.find("li").click(function() {
+            this._secondBox.find("li").on('click', function() {
                 instance._changeSecond(parseInt($(this).text()));
             });
-            this._dayGrid.find('.fa-close').click(function() {
+            this._dayGrid.find('.fa-close').on('click', function() {
                 instance.toggleTime(false);
             });
         }
         /** 实现隐藏 */
-        this.box.click(function(e) {
+        this.box.on('click', function(e) {
             e.stopPropagation();
         });
         if (this.element) {
-            this.element.click(function(e) {
+            this.element.on('click', function(e) {
                 e.stopPropagation();
                 $('[data-type=datetimer]').hide();
                 instance.init($(this).val() + '');
             });
         }
 
-        $(document).click(function() {
+        $(document).on('click', function() {
             if (instance.options.autoHide) {
                 instance.box.hide();
             }

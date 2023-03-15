@@ -46,7 +46,7 @@ class Navbar {
             let item: NavItem = (e.originalEvent as any).state;
             instance.tab.showItem(item);
         });
-        $(window).resize(function() {
+        $(window).on('resize', function() {
             instance._setProperty();
             instance.tab.setProperty();
         });

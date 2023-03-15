@@ -13,7 +13,7 @@
          this.options = $.extend({}, new GridDefaultOptions(), options);
          this.refresh();
          let instance = this;
-         $(window).resize(function() {
+         $(window).on('resize', function() {
             instance.refresh();
          });
      }

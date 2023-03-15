@@ -62,7 +62,7 @@ class SliderItem extends Eve {
     private _initOnly(items: JQuery) {
         let instance = this;
         this._resetOnly(items);
-        $(window).resize(function() {
+        $(window).on('resize', function() {
             instance._resetOnly(items);
         });
     }
@@ -115,13 +115,13 @@ class SliderItem extends Eve {
 
     private _bindEvent() {
         let instance = this;
-        this.element.find(this.options.previous).click(function() {
+        this.element.find(this.options.previous).on('click', function() {
             instance.previous();
         });
-        this.element.find(this.options.next).click(function() {
+        this.element.find(this.options.next).on('click', function() {
             instance.next();
         });
-        $(window).resize(function() {
+        $(window).on('resize', function() {
             instance.resize();
         });
         if (!$.fn.swipe) {

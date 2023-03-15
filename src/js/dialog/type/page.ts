@@ -21,7 +21,7 @@ class DialogPage extends DialogBox {
      * 绑定事件
      */
     protected bindEvent(): this {
-        this.box.click(function(e) {
+        this.box.on('click', function(e) {
             e.stopPropagation();
         });
         this.onClick(".dialog-header .fa-arrow-left", function() {

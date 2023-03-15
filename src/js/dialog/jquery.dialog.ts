@@ -4,7 +4,7 @@ class DialogPlugin {
         public option?: DialogOption
     ) {
         let instance = this;
-        this.element.click(function() {
+        this.element.on('click', function() {
             instance.getDialog($(this)).show();
         });
     }

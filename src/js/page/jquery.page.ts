@@ -216,7 +216,7 @@ class Page extends Box {
             instance.search($(this).serialize());
             return false;
         });
-        this.element.find(this.options.sortRow+ '>*').click(function() {
+        this.element.find(this.options.sortRow+ '>*').on('click', function() {
             let $this = $(this);
             let name = $this.attr('data-name');
             if (instance._checkEmpty(name)) {
@@ -230,7 +230,7 @@ class Page extends Box {
                 instance.sort(name, 'asc');
             }
         });
-        this._checkAll.click(function() {
+        this._checkAll.on('click', function() {
             let $this = $(this);
             if ($this.hasClass('checked')) {
                 $this.removeClass('checked');
@@ -239,7 +239,7 @@ class Page extends Box {
             instance._checkAll.addClass('checked');
             instance._body.find('.checkbox').addClass('checked');
         });
-        this.element.find('.deleteAll').click(function() {
+        this.element.find('.deleteAll').on('click', function() {
             let $this = $(this);
             let tip = $this.attr('data-tip') || instance.options.deleteTip;
             if (confirm(tip)) {

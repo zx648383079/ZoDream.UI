@@ -133,7 +133,7 @@ class Dater extends Box {
 
     private _bindEvent() {
         let instance = this;
-        this.daysElement.click(function() {
+        this.daysElement.on('click', function() {
             let ele = $(this);
             let day = parseInt(ele.text());
             if (day > 0 && instance.hasEvent('click')) {
@@ -142,10 +142,10 @@ class Dater extends Box {
                 instance.trigger('click', date, ele, instance.element);
             }
         });
-        this.element.find(".previousMonth").click(function() {
+        this.element.find(".previousMonth").on('click', function() {
             instance.previousMonth();
         });
-        this.element.find(".nextMonth").click(function() {
+        this.element.find(".nextMonth").on('click', function() {
             instance.nextMonth();
         });
     }

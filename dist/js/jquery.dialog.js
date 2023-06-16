@@ -13,10 +13,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * 缓存数据
@@ -106,7 +110,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args, false));
     };
     return Eve;
 }());
@@ -750,7 +754,7 @@ var Dialog = /** @class */ (function () {
         var instance = this;
         if (!this._dialogBg) {
             this._dialogBg = $('<div class="dialog-bg"></div>');
-            this._dialogBg.click(function (e) {
+            this._dialogBg.on('click', function (e) {
                 e.stopPropagation();
                 instance.remove();
             });
@@ -858,7 +862,7 @@ var DialogPlugin = /** @class */ (function () {
         this.element = element;
         this.option = option;
         var instance = this;
-        this.element.click(function () {
+        this.element.on('click', function () {
             instance.getDialog($(this)).show();
         });
     }
@@ -991,11 +995,11 @@ var DialogTip = /** @class */ (function (_super) {
      * 绑定事件
      */
     DialogTip.prototype.bindEvent = function () {
-        this.box.click(function (e) {
+        this.box.on('click', function (e) {
             e.stopPropagation();
         });
         var instance = this;
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             if (instance.box) {
                 instance.resize();
                 return;
@@ -1414,7 +1418,7 @@ var DialogContent = /** @class */ (function (_super) {
     DialogContent.prototype.bindEvent = function () {
         this.trigger('init', this);
         var that = this;
-        this.box.click(function (e) {
+        this.box.on('click', function (e) {
             e.stopPropagation();
         }).on(DIALOG_DONE, function (event, data, cb) {
             if (that.hasEvent(_DIALOG_DONE)) {
@@ -1578,14 +1582,14 @@ var DialogBox = /** @class */ (function (_super) {
         var instance = this;
         var isMove = false;
         var x, y;
-        this.box.find(".dialog-header .dialog-title").mousedown(function (e) {
+        this.box.find(".dialog-header .dialog-title").on('mousedown', function (e) {
             isMove = true;
             x = e.pageX - parseInt(instance.box.css('left'));
             y = e.pageY - parseInt(instance.box.css('top'));
             instance.box.fadeTo(20, .5);
         });
         //这里可能导致 突然显示出来
-        $(document).mousemove(function (e) {
+        $(document).on('mousemove', function (e) {
             if (!isMove || instance.status != DialogStatus.show) {
                 return;
             }
@@ -1593,13 +1597,13 @@ var DialogBox = /** @class */ (function (_super) {
                 top: e.pageY - y,
                 left: e.pageX - x
             });
-        }).mouseup(function () {
+        }).on('mouseup', function () {
             isMove = false;
             if (instance.box && instance.status == DialogStatus.show) {
                 instance.box.fadeTo('fast', 1);
             }
         });
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             if (instance.box) {
                 instance.resize();
                 return;
@@ -1839,7 +1843,7 @@ var DialogPage = /** @class */ (function (_super) {
      * 绑定事件
      */
     DialogPage.prototype.bindEvent = function () {
-        this.box.click(function (e) {
+        this.box.on('click', function (e) {
             e.stopPropagation();
         });
         this.onClick(".dialog-header .fa-arrow-left", function () {
@@ -1941,7 +1945,7 @@ var DialogImage = /** @class */ (function (_super) {
      * 绑定事件
      */
     DialogImage.prototype.bindEvent = function () {
-        this.box.click(function (e) {
+        this.box.on('click', function (e) {
             e.stopPropagation();
         });
         this.onClick(".dialog-close", function () {
@@ -1954,7 +1958,7 @@ var DialogImage = /** @class */ (function (_super) {
             this.next();
         });
         var instance = this;
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             if (instance.box) {
                 instance.resize();
                 return;

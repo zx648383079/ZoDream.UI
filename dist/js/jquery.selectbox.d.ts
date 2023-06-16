@@ -1,4 +1,5 @@
 /// <reference types="jquery" />
+/// <reference types="jquery" />
 /**
  * 缓存数据
  */
@@ -134,7 +135,7 @@ declare class SelectBox extends Eve {
      * 获取当前选中的选项
      * @param column 第几级
      */
-    getSelectedOption(column?: number): JQuery<HTMLElement>;
+    getSelectedOption(column?: number): JQuery<HTMLLIElement>;
     /**
      * 触发通知
      */

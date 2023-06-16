@@ -2,15 +2,26 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var Eve = /** @class */ (function () {
     function Eve() {
     }
@@ -31,7 +42,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args, false));
     };
     return Eve;
 }());
@@ -138,7 +149,7 @@ var SliderItem = /** @class */ (function (_super) {
     SliderItem.prototype._initOnly = function (items) {
         var instance = this;
         this._resetOnly(items);
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             instance._resetOnly(items);
         });
     };
@@ -186,13 +197,16 @@ var SliderItem = /** @class */ (function (_super) {
     };
     SliderItem.prototype._bindEvent = function () {
         var instance = this;
-        this.element.find(this.options.previous).click(function () {
+        this.element.find(this.options.previous).on('click', function () {
             instance.previous();
         });
-        this.element.find(this.options.next).click(function () {
+        this.element.find(this.options.next).on('click', function () {
             instance.next();
         });
-        $(window).resize(function () {
+        this.element.on(this._getOption('pointevent'), ".slider-point li", function () {
+            instance.index = $(this).index();
+        });
+        $(window).on('resize', function () {
             instance.resize();
         });
         if (!$.fn.swipe) {
@@ -243,10 +257,6 @@ var SliderItem = /** @class */ (function (_super) {
             html += '<li><span>' + i + '</span></i>';
         }
         this.element.append('<ul class="slider-point">' + html + '</ul>');
-        var instance = this;
-        this.element.on(this._getOption('pointevent'), ".slider-point li", function () {
-            instance.index = $(this).index();
-        });
     };
     /**
      * 浏览器尺寸变化
@@ -285,7 +295,7 @@ var SliderItem = /** @class */ (function (_super) {
         set: function (index) {
             this.goto(index);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**
@@ -350,9 +360,6 @@ var SliderItem = /** @class */ (function (_super) {
     };
     SliderItem.prototype._showPoint = function (index) {
         this._index = index;
-        if (!this.options.haspoint) {
-            return;
-        }
         this.element.find(".slider-point li")
             .eq(index).addClass("active").siblings().removeClass("active");
     };
@@ -367,7 +374,7 @@ var SliderItem = /** @class */ (function (_super) {
             }
             instance._showPoint(points[1].index);
         });
-        this.trigger.apply(this, ['change'].concat(points));
+        this.trigger.apply(this, __spreadArray(['change'], points, false));
     };
     /**
      * 移动动画及回调
@@ -465,7 +472,7 @@ var Slider = /** @class */ (function () {
 }());
 var SliderDefaultOptions = /** @class */ (function () {
     function SliderDefaultOptions() {
-        this.item = 'li';
+        this.item = '.slider-box li';
         this.spacetime = 3000;
         this.animationtime = 1000;
         this.animationmode = "swing";

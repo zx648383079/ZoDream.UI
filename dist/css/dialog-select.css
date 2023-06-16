@@ -1,7 +1,7 @@
 .dialog-select-input {
-  padding: 0 20px 0 10px;
-  height: 36px;
-  line-height: 36px;
+  padding: 0 1.25rem 0 0.625rem;
+  height: 2.25rem;
+  line-height: 2.25rem;
   position: relative;
   border: 1px solid #eee;
   cursor: pointer;
@@ -10,7 +10,7 @@
   content: "";
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 0.625rem;
   margin-top: -2px;
   border-top: 5px solid #666;
   border-right: 5px solid transparent;
@@ -23,31 +23,31 @@
   left: 0;
   width: 100%;
   display: none;
-  z-index: 998;
+  z-index: 992;
   background: #fff;
 }
 .dialog.dialog-select .dialog-header {
   position: relative;
-  height: 30px;
-  line-height: 30px;
+  height: 2.25rem;
+  line-height: 2.25rem;
   text-align: center;
   background: #fff;
   border-bottom: 1px solid #ccc;
-  z-index: 999;
+  z-index: 993;
 }
 .dialog.dialog-select .dialog-header .dialog-close {
   position: absolute;
-  left: 15px;
-  line-height: 30px;
+  left: 0.9375rem;
+  line-height: 2.25rem;
 }
 .dialog.dialog-select .dialog-header .dialog-yes {
   position: absolute;
-  right: 15px;
+  right: 0.9375rem;
   top: 0;
-  line-height: 30px;
+  line-height: 2.25rem;
 }
 .dialog.dialog-select .dialog-body {
-  height: 150px;
+  height: 9.375rem;
   position: relative;
   overflow: hidden;
 }
@@ -58,7 +58,7 @@
 }
 .dialog.dialog-select .dialog-body ul li {
   list-style: none;
-  line-height: 30px;
+  line-height: 2.25rem;
   color: rgba(0, 0, 0, 0.3);
   text-align: center;
 }
@@ -73,13 +73,96 @@
   padding: 0;
 }
 .dialog.dialog-select .dialog-body .dialog-top-hr {
-  top: 60px;
+  top: 4.5rem;
 }
 .dialog.dialog-select .dialog-body .dialog-bottom-hr {
-  top: 90px;
+  top: 6.75rem;
 }
 .dialog.dialog-select.dialog-select-column-3 .dialog-body ul {
   width: 33%;
   float: left;
+}
+
+.select--with-search {
+  line-height: 2.25rem;
+  display: inline-block;
+  width: 15.75rem;
+  position: relative;
+}
+.select--with-search .select-input {
+  border: 1px solid #ccc;
+  padding: 0 0.3rem;
+  height: 2.25rem;
+  box-sizing: border-box;
+  position: relative;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.select--with-search .select-input::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.625rem;
+  margin-top: -2px;
+  border-top: 5px solid #666;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
+.select--with-search .select-option-bar {
+  position: absolute;
+  display: none;
+  z-index: 992;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #333;
+  box-sizing: border-box;
+}
+.select--with-search .search-option-item {
+  position: relative;
+}
+.select--with-search .search-option-item input {
+  width: 100%;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  height: 2.25rem;
+  padding-left: 1.75rem;
+}
+.select--with-search .search-option-item .fa {
+  position: absolute;
+  left: 0.3rem;
+  top: 0.725rem;
+  color: #ccc;
+}
+.select--with-search .loading-option-item {
+  border-top: 1px solid #333;
+  color: #ccc;
+  text-align: center;
+  font-size: 0.8rem;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.select--with-search .option-item {
+  border-top: 1px solid #333;
+  display: block;
+  padding: 0 0.3rem;
+}
+.select--with-search .option-item:hover {
+  background-color: #f4f4f4;
+}
+.select--with-search .option-item.selected {
+  background-color: #f4f4f4;
+}
+.select--with-search.focus .select-input {
+  border-color: #333;
+  border-bottom: none;
+}
+.select--with-search.focus .select-input::after {
+  transform: rotate(180deg);
+}
+.select--with-search.focus .select-option-bar {
+  display: block;
 }
 /*# sourceMappingURL=dialog-select.css.map */

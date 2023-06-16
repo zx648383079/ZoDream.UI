@@ -2,21 +2,25 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * 缓存数据
@@ -54,7 +58,7 @@ var CacheUrl = /** @class */ (function () {
         this._event[url] = [callback];
         var instance = this;
         $.getJSON(url, function (data) {
-            if (data.code == 0) {
+            if (data.code == 200) {
                 instance.setData(url, data.data);
                 return;
             }
@@ -106,7 +110,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, __spreadArrays([this], args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args, false));
     };
     return Eve;
 }());
@@ -160,11 +164,11 @@ var SelectBox = /** @class */ (function (_super) {
     };
     SelectBox.prototype._bindEvent = function () {
         var _this = this;
-        this.element.click(function (e) {
+        this.element.on('click', function (e) {
             e.stopPropagation();
             _this.show();
         });
-        // $(document).click(function() {
+        // $(document).on('click', function() {
         //    instance.hide();
         // });
         this.box.on('click', '.dialog-close', function () {
@@ -232,7 +236,7 @@ var SelectBox = /** @class */ (function (_super) {
         if (error) {
             return;
         }
-        var data = (_a = this.options.data).call.apply(_a, __spreadArrays([this, next, index], args));
+        var data = (_a = this.options.data).call.apply(_a, __spreadArray([this, next, index], args, false));
         if (typeof data === 'object') {
             next(data, index);
         }
@@ -578,7 +582,7 @@ var SelectBox = /** @class */ (function (_super) {
             texts.push(option.text());
             data.push(option.data('value'));
         });
-        this.trigger.apply(this, __spreadArrays(['done'], data, texts, opts, this._index));
+        this.trigger.apply(this, __spreadArray(__spreadArray(__spreadArray(__spreadArray(['done'], data, false), texts, false), opts, false), this._index, false));
         return this;
     };
     /**

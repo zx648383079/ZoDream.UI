@@ -117,7 +117,7 @@ class DialogImage extends DialogContent {
                 return;
             }
         });
-        this.box.find('.dialog-body img').bind("load", function() {
+        this.box.find('.dialog-body img').on("load", function() {
             if (instance.box) {
                 instance.resize();
                 return;

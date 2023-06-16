@@ -99,7 +99,7 @@ interface SliderOptions {
 }
 
 class SliderDefaultOptions implements SliderOptions {
-    item: string = 'li';
+    item: string = '.slider-box li';
     spacetime: number = 3000;
     animationtime: number = 1000;
     animationmode: string = "swing";

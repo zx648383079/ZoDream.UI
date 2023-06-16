@@ -121,13 +121,16 @@ class SliderItem extends Eve {
         this.element.find(this.options.next).on('click', function() {
             instance.next();
         });
+        this.element.on(this._getOption<string>('pointevent'), ".slider-point li", function() {
+            instance.index = $(this).index();
+        });
         $(window).on('resize', function() {
             instance.resize();
         });
-        if (!$.fn.swipe) {
+        if (!($.fn as any).swipe) {
             return;
         }
-        this.element.swipe({
+        (this.element as any).swipe({
             swipeLeft: function() {
                 instance.next();
             },
@@ -176,10 +179,6 @@ class SliderItem extends Eve {
             html += '<li><span>' + i +'</span></i>';
         }
         this.element.append('<ul class="slider-point">'+ html +'</ul>');
-        let instance = this;
-        this.element.on(this._getOption<string>('pointevent'), ".slider-point li", function() {
-            instance.index = $(this).index();
-        });
     }
 
     /**
@@ -297,9 +296,6 @@ class SliderItem extends Eve {
 
     private _showPoint(index: number) {
         this._index = index;
-        if (!this.options.haspoint) {
-            return;
-        }
         this.element.find(".slider-point li")
         .eq(index).addClass("active").siblings().removeClass("active");
     }

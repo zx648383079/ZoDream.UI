@@ -1,4 +1,5 @@
 /// <reference types="jquery" />
+/// <reference types="jquery" />
 /**
  * 缓存数据
  */
@@ -44,6 +45,7 @@ declare class MultiSelect extends Eve {
     element: JQuery;
     constructor(element: JQuery, options?: MultiSelectOptions);
     options: MultiSelectOptions;
+    private readonly customControl;
     private _index;
     private _val;
     get val(): string;
@@ -54,6 +56,7 @@ declare class MultiSelect extends Eve {
      * 获取生成标签的头和身体
      */
     private _getHtml;
+    private renderOptionItem;
     /**
      * 获取一个数据的id和显示的文字
      * @param item
@@ -62,6 +65,14 @@ declare class MultiSelect extends Eve {
     private _getIdAndName;
     private _create;
     private _bindEvent;
+    private loadRomote;
+    private replaceOption;
+    private appendOption;
+    private controlItems;
+    private controlVal;
+    private selectOption;
+    private optionVal;
+    private getParentId;
     bodyMap(callback: (id: string, name: string, index: number) => any, index?: number): void;
     /**
      * 加载下一页不进行选择
@@ -96,9 +107,16 @@ interface MultiSelectOptions {
     name?: string;
     tag?: string;
     children?: string;
+    searchable?: boolean;
+    query?: string;
+    parentId?: string;
+    multiLevel?: boolean;
 }
 declare class MultiSelectDefaultOptions implements MultiSelectOptions {
     id: string;
     name: string;
     children: string;
+    parentId: string;
+    query: string;
+    multiLevel: boolean;
 }

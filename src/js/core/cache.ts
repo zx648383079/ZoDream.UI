@@ -45,7 +45,7 @@ class CacheUrl {
         this._event[url] = [callback];
         let instance = this;
         $.getJSON(url, function(data) {
-            if (data.code == 0) {
+            if (data.code == 200) {
                 instance.setData(url, data.data);
                 return;
             }

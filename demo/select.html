@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link href="../bower_components/Font-Awesome/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../dist/css/dialog.css">
     <link rel="stylesheet" href="../dist/css/dialog-select.css">
 </head>
@@ -28,12 +29,17 @@
         <option value="1123">1231231231223</option>
     </select>
 
-
+    <div class="select-bar">
+    </div>
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dist/js/jquery.selectbox.js"></script>
+    <script src="../dist/js/jquery.multi-select.js"></script>
     <script>
         $(function () {
+            $('.select-bar').multiSelect({
+                searchable: true
+            });
             $('.open-one').select({
                 default: 2,
                 data: [

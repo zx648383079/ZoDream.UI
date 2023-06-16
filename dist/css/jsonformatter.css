@@ -2,7 +2,6 @@
 body {
   -webkit-user-select: text;
      -moz-user-select: text;
-      -ms-user-select: text;
           user-select: text;
   overflow-y: scroll !important;
   margin: 0;
@@ -12,7 +11,6 @@ body {
 .formatter-bar {
   -webkit-user-select: none;
      -moz-user-select: none;
-      -ms-user-select: none;
           user-select: none;
   display: flex;
   position: absolute;
@@ -27,7 +25,6 @@ body {
   box-shadow: 0px 1px 0.1875rem rgba(0, 0, 0, 0.1);
   -webkit-user-select: none;
      -moz-user-select: none;
-      -ms-user-select: none;
           user-select: none;
   background: linear-gradient(#fafafa, #f4f4f4 40%, #e5e5e5);
   border: 1px solid #aaa;

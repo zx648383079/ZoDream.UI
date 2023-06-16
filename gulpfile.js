@@ -58,7 +58,7 @@ function dialogTask() {
         'src/js/dialog/type/form.ts',
         'src/js/dialog/type/page.ts',
         'src/js/dialog/type/image.ts',
-        //'src/js/dialog/type/disk.ts'
+        // 'src/js/dialog/type/disk.ts'
     ])
         //.pipe(sourcemaps.init())
         .pipe(concat('jquery.dialog.ts'))
@@ -100,23 +100,23 @@ function uploadTask() {
 
 function cityTask() {
     return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/core/box.ts', 'src/js/city/jquery.city.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.city.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))
-        .pipe(sourcemaps.write())
+        //.pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 }
 
 function multiSelectTask() {
     return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/select/jquery.multi-select.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.multi-select.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
         //.pipe(rename({suffix:'.min'}))
-        .pipe(sourcemaps.write())
+        // .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist/js'));
 }
 
@@ -144,7 +144,7 @@ function dateTask() {
 
 function selectTask() {
     return gulp.src(['src/js/core/cache.ts', 'src/js/core/event.ts', 'src/js/select/jquery.selectbox.ts'])
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(concat('jquery.selectbox.ts'))
         .pipe(tsProject())
         //.pipe(uglify())
@@ -229,7 +229,7 @@ var build = gulp.series(gulp.parallel(sassTask, tsTask));
 
 gulp.task('dialog', gulp.series(dialogTask));
 gulp.task('date', gulp.series(dateTask));
-gulp.task('select', gulp.series(selectTask));
+gulp.task('select', gulp.series(multiSelectTask));
 gulp.task('region', gulp.series(regionTask));
 gulp.task('slider', gulp.series(sliderTask));
 gulp.task('upload', gulp.series(uploadTask));

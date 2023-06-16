@@ -14,13 +14,14 @@ class MultiSelect extends Eve {
         super();
         let instance = this;
         this.options = $.extend({}, new MultiSelectDefaultOptions(), options);
+        this.customControl = this.options.searchable;
         if (typeof this.options.data == 'function') {
             this.options.data = this.options.data.call(this, function(data) {
                 instance.options.data = data;
                 instance.init();
             });
         }
-        if (typeof this.options.data == 'object') {
+        if (this.customControl || typeof this.options.data == 'object') {
             this.init();
             return;
         }
@@ -34,9 +35,8 @@ class MultiSelect extends Eve {
     }
 
     public options: MultiSelectOptions;
-
+    private readonly customControl: boolean;
     private _index: number = -1;
-
     private _val: string;
 
     public get val() {
@@ -53,6 +53,10 @@ class MultiSelect extends Eve {
     }
 
     private _selectedPath(...args: Array<string>) {
+        if (!this.options.multiLevel) {
+            this.controlVal(this.controlItems().eq(0), args[0]);
+            return;
+        }
         let data = this.options.data;
         this._index = -1;
         this.element.html('');
@@ -82,17 +86,36 @@ class MultiSelect extends Eve {
      * 获取生成标签的头和身体
      */
     private _getHtml(data: any, title: string = '请选择', selected?: string | number): string {
-        let html = '<option>' + title +'</option>';
+        
+        let html = '';
         let instance = this;
         $.each(data, (i: number| string, item) => {
             let [id, name] = instance._getIdAndName(item, i);
-            if (selected && id == selected) {
-                html += '<option selected value="' + id + '">' + name +'</li>';
-                return;
-            }
-            html += '<option value="' + id + '">' + name +'</li>';
+            html += this.renderOptionItem(id, name, selected && id == selected);
         });
-        return '<select name="'+ this.options.tag +'">' + html + '</ul>';
+        if (this.customControl) {
+            return `<div class="select--with-search">
+            <div class="select-input">
+            ${title}
+            </div>
+            <div class="select-option-bar">
+                <div class="search-option-item">
+                    <input type="search">
+                    <i class="fa fa-search"></i>
+                </div>
+            </div>
+            <input type="hidden" name="${this.options.tag}">
+        </div>`;
+        }
+        return `<select name="${this.options.tag}"><option>${title}</option>${html}</select>`;
+    }
+
+    private renderOptionItem(value: any, label: string, selected = false) {
+        const sel = selected ? ' selected' : ''
+        if (this.customControl) {
+            return `<div class="option-item${sel}" data-value="${value}">${label}</div>`
+        }
+        return `<option value="${value}"${sel}>${label}</option>`
     }
 
     /**
@@ -117,18 +140,142 @@ class MultiSelect extends Eve {
 
     private _bindEvent() {
         let instance = this;
-        this.element.on('change', 'select', function() {
-            let $this = $(this);
-            let id = $this.val();
-            let index = $this.index();
+        if (!this.customControl) {
+            this.element.on('change', 'select', function() {
+                let $this = $(this);
+                let id = $this.val();
+                let index = $this.index();
+                instance.selected(id + '', index);
+            });
+            return;
+        }
+        this.element.on('click', '.select--with-search .select-input', function() {
+            $(this).closest('.select--with-search').toggleClass('focus')
+        }).on('keydown', '.select--with-search .search-option-item input', function(e) {
+            if (e.key !== 'Enter') {
+                return;
+            }
+            const $this = $(this);
+            const ctl = $this.closest('.select--with-search');
+            instance.loadRomote(ctl, {
+                [instance.options.query]: $this.val(),
+            });
+        }).on('click', '.select--with-search .option-item', function() {
+            const $this = $(this);
+            const ctl = $(this).closest('.select--with-search');
+            const val = $this.data('value');
+            $this.addClass('selected').siblings().removeClass('selected');
+            ctl.data('value', val);
+            ctl.find('.select-input').text($this.text());
+            ctl.find('input[type=hidden]').val(val);
+            ctl.trigger('change', [val, $this.index() - 2]);
+        }).on('change', '.select--with-search', function(arg) {
+            let id = arg[0];
+            let index = arg[1];
             instance.selected(id + '', index);
         });
     }
 
+    private loadRomote(ctl: JQuery, data: any, cb?: Function) {
+        data[this.options.parentId] = this.getParentId(ctl);
+        ctl.addClass('loading');
+        $.getJSON(this.options.data, data, res => {
+            ctl.removeClass('loading');
+            this.replaceOption(ctl, res.code === 200 ? res.data : []);
+            cb && cb();
+        });
+    }
+
+    private replaceOption(ctl: JQuery, items: any[] = []) {
+        let i = -1;
+        const that = this;
+        ctl.find(this.customControl ? '.option-item' : 'option').each(function() {
+            const $this = $(this);
+            i ++;
+            if (i >= items.length) {
+                $this.remove();
+                return;
+            }
+            that.optionVal($this, items[i][that.options.id]);
+            $this.text(items[i][that.options.name]);
+        });
+        while (i < items.length) {
+            i ++;
+            this.appendOption(ctl, items[i]);
+        }
+    }
+
+    private appendOption(ctl: JQuery, data: any) {
+        const bar = this.customControl ? ctl.find('.select-option-bar') : ctl;
+        bar.append($(this.renderOptionItem(data[this.options.id], data[this.options.name])))
+    }
+
+    private controlItems(): JQuery {
+        return this.element.find(this.customControl ? '.select--with-search' : 'select');
+    }
+
+    private controlVal(ctl: JQuery, val?: any): any {
+        if (typeof val === 'undefined') {
+            return this.customControl ? ctl.data('value') : ctl.val();
+        }
+        if (!this.customControl) {
+            ctl.val(val);
+            return;
+        }
+        const that = this;
+        let target: JQuery;
+        ctl.find('.option-item').each(function() {
+            const $this = $(this);
+            const selected = that.optionVal($this) == val;
+            $this.toggleClass('.selected', selected);
+            if (selected) {
+                target = $this;
+            }
+        });
+        ctl.data('value', val);
+        ctl.find('input[type=hidden]').val(val);
+        if (target) {
+            ctl.find('.select-input').text(target.text());
+            return;
+        }
+        this.loadRomote(ctl, {
+            [this.options.id]: val,
+        }, () => {
+            this.selectOption(ctl, val);
+        })
+    }
+
+    private selectOption(ctl: JQuery, val: any) {
+        if (!this.customControl) {
+            ctl.val(val);
+            return;
+        }
+        const that = this;
+        ctl.find('.option-item').each(function() {
+            const $this = $(this);
+            const selected = that.optionVal($this) == val;
+            $this.toggleClass( '.selected', selected);
+        });
+    }
+
+    private optionVal(ctl: JQuery, val?: any): any {
+        if (typeof val === 'undefined') {
+            return this.customControl ? ctl.data('value') : ctl.val();
+        }
+        return this.customControl ? ctl.data('value', val) : ctl.val(val);
+    }
+
+    private getParentId(element: JQuery): any {
+        const items = this.controlItems();
+        const i = items.index(element);
+        return i < 1 ? 0 : this.controlVal(items.eq(i - 1));
+    }
+
     public bodyMap(callback: (id: string, name: string, index: number) => any, index: number = this._index) {
-        this.element.find('select').eq(index).find('option').each(function(i, ele) {
+        const that = this;
+        this.controlItems().eq(index).find(this.customControl ? '.option-item' : 'option').each(function(i, ele) {
             let item = $(ele);
-            let id = item.val();
+            let id = that.optionVal(item);
             if (!id) {
                 return;
             }
@@ -144,9 +291,9 @@ class MultiSelect extends Eve {
      */
     public selected(id?: string| number, index: number = this._index) {
         this.remove(index + 1);
-        let data = this._getNextData();
         this.trigger('change');
-        if (typeof data == 'object' && (!(data instanceof Array) || data.length > 0)) {
+        let data = this.options.multiLevel ? this._getNextData() : undefined;
+        if (this.options.multiLevel && typeof data == 'object' && (!(data instanceof Array) || data.length > 0)) {
             this.addElement(data, '请选择');
         }
         if (!data || data.length == 0) {
@@ -192,7 +339,7 @@ class MultiSelect extends Eve {
     }
 
     public remove(start: number = 1): this {
-        let items = this.element.find('select');
+        let items = this.controlItems();
         for (let i = items.length - 1; i >= start; i--) {
             items.eq(i).remove();
         }
@@ -200,13 +347,14 @@ class MultiSelect extends Eve {
     }
 
     public map(callback: (id: string, name: string, index: number) => any): this {
-        this.element.find('select').each(function(i, ele) {
+        const that = this;
+        this.controlItems().each(function(i, ele) {
             let item = $(ele);
-            let id = item.val();
+            let id = that.controlVal(item);
             if (!id) {
                 return;
             }
-            if (callback.call(item, id, item.find('option:selected').text(), i) == false) {
+            if (callback.call(item, id, item.find(that.customControl ? '.option-item.selected' : 'option:selected').text(), i) == false) {
                 return false;
             }
         });
@@ -253,7 +401,7 @@ class MultiSelect extends Eve {
         if (!id) {
             return [];
         }
-        if (this.options.hasOwnProperty(id)) {
+        if (!this.options.multiLevel || this.options.data.hasOwnProperty(id)) {
             return [id];
         }
         let path = [],
@@ -299,12 +447,19 @@ interface MultiSelectOptions {
     name?: string,  // 文字的标志
     tag?: string,
     children?: string, // 子代的标志
+    searchable?: boolean;
+    query?: string;
+    parentId?: string;
+    multiLevel?: boolean;
 }
 
 class MultiSelectDefaultOptions implements MultiSelectOptions {
     id: string = 'id';
     name: string = 'name';
     children: string = 'children';
+    parentId = 'parent_id';
+    query = 'keywords';
+    multiLevel = true;
 }
 
 ;(function($: any) {

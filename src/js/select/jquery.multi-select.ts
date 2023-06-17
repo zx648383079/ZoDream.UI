@@ -15,6 +15,9 @@ class MultiSelect extends Eve {
         let instance = this;
         this.options = $.extend({}, new MultiSelectDefaultOptions(), options);
         this.customControl = this.options.searchable;
+        if (this.customControl && typeof this.options.data === 'string' && !this.options.searchUri) {
+            this.options.searchUri = this.options.data;
+        }
         if (typeof this.options.data == 'function') {
             this.options.data = this.options.data.call(this, function(data) {
                 instance.options.data = data;
@@ -100,7 +103,7 @@ class MultiSelect extends Eve {
             </div>
             <div class="select-option-bar">
                 <div class="search-option-item">
-                    <input type="search">
+                    <input type="search" placeholder="Enter搜索">
                     <i class="fa fa-search"></i>
                 </div>
             </div>
@@ -135,7 +138,7 @@ class MultiSelect extends Eve {
     }
 
     private _create() {
-        this.addElement(this.options.data);
+        this.addElement(typeof this.options.data === 'object' ? this.options.data : {});
     }
 
     private _bindEvent() {
@@ -155,6 +158,8 @@ class MultiSelect extends Eve {
             if (e.key !== 'Enter') {
                 return;
             }
+            e.preventDefault();
+            e.stopPropagation();
             const $this = $(this);
             const ctl = $this.closest('.select--with-search');
             instance.loadRomote(ctl, {
@@ -169,39 +174,51 @@ class MultiSelect extends Eve {
             ctl.find('.select-input').text($this.text());
             ctl.find('input[type=hidden]').val(val);
             ctl.trigger('change', [val, $this.index() - 2]);
+            ctl.removeClass('focus');
         }).on('change', '.select--with-search', function(arg) {
             let id = arg[0];
-            let index = arg[1];
+            let index = $(this).index();
             instance.selected(id + '', index);
+        });
+        $(document).on('click', function(e) {
+            const target = $(e.target);
+            const ctl: any = target.hasClass('.select--with-search') ? target : target.closest('.select--with-search');
+            instance.controlItems().each(function() {
+                const $this = $(this);
+                if (!$this.hasClass('focus') || $this.is(ctl)) {
+                    return;
+                }
+                $this.removeClass('focus');
+            });
         });
     }
 
     private loadRomote(ctl: JQuery, data: any, cb?: Function) {
         data[this.options.parentId] = this.getParentId(ctl);
-        ctl.addClass('loading');
-        $.getJSON(this.options.data, data, res => {
-            ctl.removeClass('loading');
+        ctl.addClass('select-loading');
+        $.getJSON(this.options.searchUri, data, res => {
+            ctl.removeClass('select-loading');
             this.replaceOption(ctl, res.code === 200 ? res.data : []);
             cb && cb();
         });
     }
 
     private replaceOption(ctl: JQuery, items: any[] = []) {
-        let i = -1;
+        let i = 0;
         const that = this;
         ctl.find(this.customControl ? '.option-item' : 'option').each(function() {
             const $this = $(this);
-            i ++;
             if (i >= items.length) {
                 $this.remove();
                 return;
             }
             that.optionVal($this, items[i][that.options.id]);
             $this.text(items[i][that.options.name]);
+            i ++;
         });
         while (i < items.length) {
-            i ++;
             this.appendOption(ctl, items[i]);
+            i ++;
         }
     }
 
@@ -290,7 +307,9 @@ class MultiSelect extends Eve {
      * 加载下一页不进行选择
      */
     public selected(id?: string| number, index: number = this._index) {
-        this.remove(index + 1);
+        if (this.options.multiLevel) {
+            this.remove(index + 1);
+        }
         this.trigger('change');
         let data = this.options.multiLevel ? this._getNextData() : undefined;
         if (this.options.multiLevel && typeof data == 'object' && (!(data instanceof Array) || data.length > 0)) {
@@ -451,6 +470,7 @@ interface MultiSelectOptions {
     query?: string;
     parentId?: string;
     multiLevel?: boolean;
+    searchUri?: string;
 }
 
 class MultiSelectDefaultOptions implements MultiSelectOptions {

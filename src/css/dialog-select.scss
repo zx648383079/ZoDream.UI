@@ -125,7 +125,7 @@ $lineHeight: 2.25rem;
             border: none;
             background-color: transparent;
             height: $lineHeight;
-            padding-left: $lineHeight - .5rem;
+            padding-left: $lineHeight - .5rem !important;
         }
         .fa {
             position: absolute;
@@ -153,7 +153,7 @@ $lineHeight: 2.25rem;
             background-color: #f4f4f4;
         }
     }
-    &.loading {
+    &.select-loading {
         .loading-option-item {
             display: block;
         }

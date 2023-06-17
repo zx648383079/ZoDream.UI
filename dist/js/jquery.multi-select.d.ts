@@ -111,6 +111,7 @@ interface MultiSelectOptions {
     query?: string;
     parentId?: string;
     multiLevel?: boolean;
+    searchUri?: string;
 }
 declare class MultiSelectDefaultOptions implements MultiSelectOptions {
     id: string;

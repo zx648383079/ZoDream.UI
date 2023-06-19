@@ -83,6 +83,20 @@ function pageTask() {
         .pipe(gulp.dest('dist/js'));
 }
 
+function editorTask() {
+    return gulp.src(['src/js/core/event.ts',
+    'src/js/editor/modal/*.ts',
+        'src/js/editor/*.ts'])
+        //.pipe(sourcemaps.init())
+        .pipe(concat('jquery.editor.ts'))
+        .pipe(tsProject())
+        //.pipe(uglify())
+        //.pipe(rename({suffix:'.min'}))
+        // .pipe(sourcemaps.write())
+        .pipe(gulp.dest('dist/js'));
+}
+
+
 function uploadTask() {
     return gulp.src(['src/js/core/event.ts',
         'src/js/upload/jquery.upload.ts'])
@@ -224,6 +238,7 @@ exports.christmasTask = christmasTask;
 exports.navTask = navTask;
 exports.readerTask = readerTask;
 exports.multiSelectTask = multiSelectTask;
+exports.editorTask  = editorTask;
 
 var build = gulp.series(gulp.parallel(sassTask, tsTask));
 
@@ -236,4 +251,5 @@ gulp.task('upload', gulp.series(uploadTask));
 gulp.task('crsms', gulp.series(christmasTask));
 gulp.task('nav', gulp.series(navTask));
 gulp.task('reader', gulp.series(readerTask));
+gulp.task('editor', gulp.series(editorTask));
 gulp.task('default', build);

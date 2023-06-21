@@ -1,5 +1,3 @@
-
-
 const FontItems: IEditorOptionItem[] = [
     {
         name: 'Arial',
@@ -28,29 +26,30 @@ const FontItems: IEditorOptionItem[] = [
 ]
 
 class EditorDropdownComponent implements IEditorSharedModal {
-
-    
-
-    public visible = false;
-    public items: IEditorOptionItem[] = [];
-    public selected = '';
-    public modalStyle: any = {};
+    private items: IEditorOptionItem[] = [];
     private confirmFn: EditorModalCallback;
+    private element: JQuery<HTMLDivElement>;
 
     constructor() {
     }
 
     public render() {
-        return `<div class="editor-modal-box" [ngClass]="{'modal-visible': visible}" [ngStyle]="modalStyle">
+        return `<div class="editor-modal-box editor-dropdown-modal">
         <ul class="option-bar">
-            <ng-container *ngFor="let item of items">
-                <li [ngClass]="{active: item.value == selected}" [ngStyle]="item.style" (click)="tapConfirm(item)">{{ item.name }}</li>
-            </ng-container>
         </ul>
     </div>`;
     }
 
-    public modalReady(module: IEditorModule) {
+    private renderItem(item: IEditorOptionItem): string {
+        return `<li style="${EditorHelper.nodeStyle(item.style)}">${item.name}</li>`
+    }
+
+    public modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
         if (module.name === 'font') {
             this.items = FontItems.map(i => {
                 i.style = {
@@ -58,7 +57,6 @@ class EditorDropdownComponent implements IEditorSharedModal {
                 };
                 return i;
             });
-            return;
         } else if (module.name === 'fontsize') {
             const items = [];
             let last = 7;
@@ -75,22 +73,29 @@ class EditorDropdownComponent implements IEditorSharedModal {
                 last = value;
             }
             this.items = items;
-            return;
         }
+        this.element.find('.option-bar').html(this.items.map(this.renderItem).join(''));
+    }
+
+    private bindEvent() {
+        const that = this;
+        this.element.on('click', 'li', function() {
+            const $this = $(this);
+            $this.addClass('selected').siblings().removeClass('selected');
+            that.tapConfirm(that.items[$this.index()]);
+        });
     }
 
     public open(data: any, cb: EditorModalCallback, position?: IPoint) {
-        this.modalStyle = position ? {left: position.x + 'px', top: position.y + 'px'} : {};
-        this.visible = true;
+        this.element.css(position ? {left: position.x + 'px', top: position.y + 'px'} : {});
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     }
 
     public tapConfirm(item: IEditorOptionItem) {
-        this.visible = false;
-        this.selected = item.value;
         if (this.confirmFn) {
             this.confirmFn({
-                value: this.selected
+                value: item.value
             });
         }
     }

@@ -7,72 +7,73 @@ class EditorResizerComponent {
         finish: undefined,
     };
     private updatedHandler: EditorUpdatedCallback;
-
-    constructor() { }
+    private element: JQuery<HTMLDivElement>;
 
     public render() {
-        return `<div class="reflect-container">
-        <div class="selection-container" [ngStyle]="boxStyle">
+        return `<div class="editor-resizer-modal">
+        <div class="selection-container">
             <div class="rotate-icon">
                 <i class="iconfont icon-refresh"></i>
             </div>
             <div class="eight-corner">
-                <div class="cursor lt" (mousedown)="onMoveLt($event)"></div>
-                <div class="cursor t" (mousedown)="onMoveT($event)"></div>
-                <div class="cursor rt" (mousedown)="onMoveRt($event)"></div>
-                <div class="cursor r" (mousedown)="onMoveR($event)"></div>
-                <div class="cursor rb" (mousedown)="onMoveRb($event)"></div>
-                <div class="cursor b" (mousedown)="onMoveB($event)"></div>
-                <div class="cursor lb" (mousedown)="onMoveLb($event)"></div>
-                <div class="cursor l" (mousedown)="onMoveL($event)"></div>
+                <div class="cursor lt"></div>
+                <div class="cursor t"></div>
+                <div class="cursor rt"></div>
+                <div class="cursor r"></div>
+                <div class="cursor rb"></div>
+                <div class="cursor b"></div>
+                <div class="cursor lb"></div>
+                <div class="cursor l"></div>
             </div>
         </div>
-        <div class="horizontal-bar" [ngStyle]="horizontalStyle"></div>
-        <div class="vertical-bar" [ngStyle]="verticalStyle"></div>
+        <div class="horizontal-bar"></div>
+        <div class="vertical-bar"></div>
     </div>`;
     }
 
-    public get boxStyle() {
-        if (this.toolType !== 1) {
-            return {
-                display: 'none',
-            };
-        }
-        return {
+    private triggerBoxStyle() {
+        this.element.find('.selection-container').css(this.toolType !== 1 ? {
+            display: 'none',
+        } : {
             display: 'block',
             left: this.rectBound.x + 'px',
             top: this.rectBound.y + 'px',
             width: this.rectBound.width + 'px',
             height: this.rectBound.height + 'px',
-        };
+        });
     }
 
-    public get horizontalStyle() {
-        if (this.toolType !== 2) {
-            return {
+    private triggerHorizontalStyle() {
+        this.element.find('.horizontal-bar').css(this.toolType !== 2 ? {
                 display: 'none',
-            };
-        }
-        return {
+            } : {
             display: 'block',
             left: this.rectBound.x + 'px',
             top: this.rectBound.y + 'px',
             height: this.rectBound.height + 'px',
-        };
+        });
     }
 
-    public get verticalStyle() {
-        if (this.toolType !== 3) {
-            return {
+    private triggerVerticalStyle() {
+        this.element.find('.vertical-bar').css(this.toolType !== 3 ? {
                 display: 'none',
-            };
-        }
-        return {
+            } : {
             display: 'block',
             left: this.rectBound.x + 'px',
             top: this.rectBound.y + 'px',
             width: this.rectBound.width + 'px',
-        };
+        });
+    }
+
+    private bindEvent() {
+        const that = this;
+        const fnMap = [this.onMoveLt, this.onMoveT, this.onMoveRt, this.onMoveR, this.onMoveRb, this.onMoveB, this.onMoveLb, this.onMoveL];
+        this.element.on('mousedown', '.eight-corner .cursor', function(e) {
+            const fn = fnMap[$(this).index()];
+            fn && fn.call(that, e);
+        });
+        $(document).on('mousemove', this.docMouseMove.bind(this))
+            .on('mouseup', this.docMouseUp.bind(this));
     }
 
     private docMouseMove(e: MouseEvent) {
@@ -87,16 +88,24 @@ class EditorResizerComponent {
         }
     }
 
+    public ready(parent: JQuery<HTMLDivElement>) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
+    }
+
     public openResize(bound: IBound, cb: EditorUpdatedCallback) {
-        this.toolType = 1;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(1);
+        this.updatedHandler = cb;
     }
 
     public openHorizontalResize(bound: IBound, cb: EditorUpdatedCallback) {
-        this.toolType = 2;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(2);
+        this.updatedHandler = cb;
         this.mouseMove(undefined, (b, x, y) => {
             return {
                 ...b,
@@ -107,9 +116,9 @@ class EditorResizerComponent {
 
     
     public openVerticalResize(bound: IBound, cb: EditorUpdatedCallback) {
-        this.toolType = 3;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(3);
+        this.updatedHandler = cb;
         this.mouseMove(undefined, (b, x, y) => {
             return {
                 ...b,
@@ -119,7 +128,27 @@ class EditorResizerComponent {
     }
 
     public close() {
-        this.toolType = 0;
+        this.toggleType(0);
+    }
+
+    private toggleType(i = 0) {
+        if (this.toolType === i) {
+            return;
+        }
+        this.updateStyle();
+        this.updateStyle(i);
+        this.toolType = i;
+    }
+
+    private updateStyle(i: number = this.toolType) {
+        this.toolType = i;
+        if (i === 1) {
+            this.triggerBoxStyle();
+        } else if (i === 2) {
+            this.triggerHorizontalStyle();
+        } else if (i === 3) {
+            this.triggerVerticalStyle();
+        }
     }
 
 
@@ -214,10 +243,11 @@ class EditorResizerComponent {
             const offsetX = p.x - last.x;
             const offsetY = p.y - last.y;
             this.rectBound = move(this.rectBound, offsetX, offsetY);
+            this.updateStyle();
             last = p;
         }, _ => {
             const toolType = this.toolType;
-            this.toolType = 0;
+            this.toggleType(0);
             if (!this.updatedHandler) {
                 return;
             }
@@ -228,6 +258,7 @@ class EditorResizerComponent {
                 });
                 return;
             } else if (toolType === 2 || toolType === 3) {
+                
                 this.updatedHandler(<IEditorResizeBlock>{
                     type: EditorBlockType.NodeMove,
                     ...this.rectBound,

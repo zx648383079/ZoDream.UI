@@ -59,7 +59,7 @@ class CodeElement implements IEditorElement {
         return this.value.length;
     }
     public get wordLength(): number {
-        return wordLength(this.value);
+        return EditorHelper.wordLength(this.value);
     }
     public selectAll(): void {
         const sel = window.getSelection();
@@ -77,19 +77,19 @@ class CodeElement implements IEditorElement {
             case EditorBlockType.AddText:
             case EditorBlockType.AddRaw:
                 this.insertText(block.value, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddLineBreak:
                 this.insertLineBreak(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.Indent:
                 this.insertIndent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Outdent:
                 this.insertOutdent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
         }
     }
@@ -129,7 +129,7 @@ class CodeElement implements IEditorElement {
             }
         });
         resizeObserver.observe(this.element);
-        this.container.on(EVENT_EDITOR_DESTORY, () => {
+        this.container.on(EDITOR_EVENT_EDITOR_DESTORY, () => {
             resizeObserver.disconnect();
         });
     }
@@ -138,14 +138,14 @@ class CodeElement implements IEditorElement {
         this.bindResize();
         this.bodyPanel.addEventListener('keydown', e => {
             this.container.saveSelection();
-            this.container.emit(EVENT_INPUT_KEYDOWN, e);
+            this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
         });
         this.bodyPanel.addEventListener('keyup', e => {
             if (this.isComposition) {
                 return;
             }
             this.selectRangeLine(this.selection.range);
-            this.container.emit(EVENT_EDITOR_CHANGE);
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             if (e.key === 'Backspace') {
                 this.updateLineCount();
             }
@@ -160,7 +160,7 @@ class CodeElement implements IEditorElement {
                 type: EditorBlockType.AddRaw,
                 value: e.clipboardData.getData('text/plain')
             });
-            this.container.emit(EVENT_EDITOR_CHANGE);
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.bodyPanel.addEventListener('compositionstart', () => {
             this.isComposition = true;
@@ -169,8 +169,8 @@ class CodeElement implements IEditorElement {
         this.bodyPanel.addEventListener('compositionend', () => {
             this.isComposition = false;
             this.container.saveSelection();
-            this.container.emit(EVENT_SELECTION_CHANGE);
-            this.container.emit(EVENT_EDITOR_CHANGE);
+            this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
     }
 

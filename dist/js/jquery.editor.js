@@ -44,49 +44,312 @@ var Eve = /** @class */ (function () {
 }());
 var EditorCodeComponent = /** @class */ (function () {
     function EditorCodeComponent() {
-        this.visible = false;
-        this.language = '';
-        this.code = '';
     }
     EditorCodeComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!language}\">\n            <input type=\"text\" [(ngModel)]=\"language\">\n            <label for=\"\">\u4EE3\u7801\u8BED\u8A00</label>\n        </div>\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!code}\">\n            <textarea [(ngModel)]=\"code\" rows=\"10\"></textarea>\n            <label for=\"\">\u6807\u9898</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u63D2\u5165</div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"input-header-block\">\n            <input type=\"text\" name=\"language\">\n            <label for=\"\">\u4EE3\u7801\u8BED\u8A00</label>\n        </div>\n        <div class=\"input-header-block\">\n            <textarea name=\"code\" rows=\"10\"></textarea>\n            <label for=\"\">\u6807\u9898</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n        </div>\n    </div>";
     };
-    EditorCodeComponent.prototype.modalReady = function (module, parent) {
+    EditorCodeComponent.prototype.bindEvent = function () {
+        var _this = this;
+        EditorHelper.modalInputBind(this.element, function (data) {
+            if (_this.confirmFn) {
+                _this.confirmFn({
+                    value: data.code,
+                    language: data.language
+                });
+            }
+        });
+    };
+    EditorCodeComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorCodeComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    };
-    EditorCodeComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                value: this.code,
-                language: this.language
-            });
-        }
     };
     return EditorCodeComponent;
 }());
 var EditorColorComponent = /** @class */ (function () {
     function EditorColorComponent() {
-        this.visible = false;
-        this.color = '';
+        this.hY = 0;
+        this.x = 0;
+        this.y = 0;
+        this.hsv = [0, 0, 0];
+        this.disabled = false;
     }
     EditorColorComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"color-layer\">\n            <div class=\"color-picker-sv\" (touchstart)=\"touchStart($event)\" (touchmove)=\"touchMove($event)\" (touchend)=\"touchEnd($event)\" (click)=\"tapNotTouch($event)\" [ngStyle]=\"{'background-color': background}\">\n                <div class=\"color-picker-white\"></div>\n                <div class=\"color-picker-black\"></div>\n                <i [ngStyle]=\"svStyle\"></i>\n            </div>\n            <div class=\"color-picker-h\" (touchstart)=\"touchHStart($event)\" (touchmove)=\"touchHMove($event)\" (click)=\"tapHNotTouch($event)\">\n                <i [ngStyle]=\"hStyle\"></i>\n            </div>\n        </div>\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!color}\">\n            <input type=\"text\" [(ngModel)]=\"color\">\n            <label for=\"\">Hex</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u786E\u8BA4</div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box editor-color-modal\">\n        <div class=\"editor-color-layer\">\n            <div class=\"color-picker-sv\">\n                <div class=\"color-picker-white\"></div>\n                <div class=\"color-picker-black\"></div>\n                <i></i>\n            </div>\n            <div class=\"color-picker-h\">\n                <i></i>\n            </div>\n        </div>\n        <div class=\"input-header-block\">\n            <input type=\"text\" name=\"color\">\n            <label for=\"\">Hex</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\">\u786E\u8BA4</div>\n        </div>\n    </div>";
+    };
+    EditorColorComponent.prototype.bindEvent = function () {
+        var _this = this;
+        this.element.on('touchstart', '.color-picker-h', function (e) {
+            _this.touchHStart(e);
+        }).on('touchmove', '.color-picker-h', function (e) {
+            _this.touchHMove(e);
+        }).on('click', '.color-picker-h', function (e) {
+            _this.tapHNotTouch(e);
+        }).on('touchstart', '.color-picker-sv', function (e) {
+            _this.touchStart(e);
+        }).on('touchmove', '.color-picker-sv', function (e) {
+            _this.touchMove(e);
+        }).on('touchend', '.color-picker-sv', function (e) {
+            _this.touchEnd(e);
+        }).on('click', '.color-picker-sv', function (e) {
+            _this.tapNotTouch(e);
+        });
+        EditorHelper.modalInputBind(this.element, function (data) {
+            if (_this.confirmFn) {
+                _this.confirmFn({
+                    value: data.color
+                });
+            }
+        });
+    };
+    EditorColorComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorColorComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
-    EditorColorComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                value: this.color
-            });
+    EditorColorComponent.prototype.triggerSvStyle = function () {
+        this.element.find('.color-picker-sv i').css({ left: this.x - 5 + 'px', top: this.y - 5 + 'px' });
+    };
+    EditorColorComponent.prototype.triggerHStyle = function () {
+        this.element.find('.color-picker-h i').css({ top: this.hY - 3 + 'px' });
+    };
+    EditorColorComponent.prototype.tapNotTouch = function (e) {
+        if (this.disabled) {
+            return;
         }
+        if ('ontouchstart' in document.documentElement) {
+            return;
+        }
+        var clientX = e.clientX + document.body.scrollLeft;
+        var clientY = e.clientY + document.body.scrollTop;
+        this.touchMove({
+            target: e.target,
+            targetTouches: [
+                { clientX: clientX, clientY: clientY }
+            ]
+        });
+        this.triggerChange();
+    };
+    EditorColorComponent.prototype.tapHNotTouch = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        if ('ontouchstart' in document.documentElement) {
+            return;
+        }
+        var clientX = e.clientX + document.body.scrollLeft;
+        var clientY = e.clientY + document.body.scrollTop;
+        this.touchHMove({
+            target: e.target,
+            targetTouches: [
+                { clientX: clientX, clientY: clientY }
+            ]
+        });
+    };
+    EditorColorComponent.prototype.touchStart = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        this.doColor(e);
+    };
+    EditorColorComponent.prototype.touchMove = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        this.doColor(e);
+    };
+    EditorColorComponent.prototype.touchEnd = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        this.triggerChange();
+    };
+    EditorColorComponent.prototype.touchHStart = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        this.doH(e);
+    };
+    EditorColorComponent.prototype.touchHMove = function (e) {
+        if (this.disabled) {
+            return;
+        }
+        this.doH(e);
+    };
+    EditorColorComponent.prototype.applyColor = function (value) {
+        this.hsv = this.parse(value);
+        this.hY = this.clamp(160 - this.hsv[0] * 160, 0, 160);
+        this.setBackground(this.hsv[0]);
+        this.x = this.clamp(this.hsv[1] * 160, 0, 160);
+        this.y = this.clamp(160 - this.hsv[2] * 160, 0, 160);
+        this.triggerHStyle();
+        this.triggerSvStyle();
+    };
+    EditorColorComponent.prototype.setBackground = function (off) {
+        this.hsv[0] = off;
+        var b = this.HSV2RGB([off, 1, 1]);
+        this.element.find('.color-picker-sv').css('background-color', 'rgb(' + b.join(',') + ')');
+    };
+    EditorColorComponent.prototype.triggerChange = function () {
+        this.element.find('input').val('#' + this.HSV2HEX(this.hsv)).trigger('change');
+    };
+    EditorColorComponent.prototype.doColor = function (e) {
+        var offset = e.target.getBoundingClientRect();
+        this.y = this.clamp(e.targetTouches[0].clientY - offset.top, 0, offset.height);
+        this.x = this.clamp(e.targetTouches[0].clientX - offset.left, 0, offset.width);
+        this.hsv[1] = this.x / offset.width;
+        this.hsv[2] = (offset.height - this.y) / offset.height;
+        this.triggerChange();
+        this.triggerSvStyle();
+    };
+    EditorColorComponent.prototype.doH = function (e) {
+        var offset = e.target.getBoundingClientRect();
+        this.hY = this.clamp(e.targetTouches[0].clientY - offset.top, 0, offset.height);
+        this.setBackground(offset.height - this.hY / offset.height);
+        this.triggerChange();
+        this.triggerHStyle();
+    };
+    /**
+     * 限制最大最小值
+     */
+    EditorColorComponent.prototype.clamp = function (val, min, max) {
+        return val > max ? max : val < min ? min : val;
+    };
+    EditorColorComponent.prototype.parse = function (x) {
+        if (typeof x === 'object') {
+            return x;
+        }
+        var rgb = /\s*rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i.exec(x);
+        var hsv = /\s*hsv\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)\s*$/i.exec(x);
+        var hex = x[0] === '#' && x.match(/^#([\da-f]{3}|[\da-f]{6})$/i);
+        if (hex) {
+            return this.HEX2HSV(x.slice(1));
+        }
+        else if (hsv) {
+            return this._2HSV_pri([+hsv[1], +hsv[2], +hsv[3]]);
+        }
+        else if (rgb) {
+            return this.RGB2HSV([+rgb[1], +rgb[2], +rgb[3]]);
+        }
+        return [0, 1, 1]; // default is red
+    };
+    // [h, s, v] ... 0 <= h, s, v <= 1
+    EditorColorComponent.prototype.HSV2RGB = function (a) {
+        var h = +a[0];
+        var s = +a[1];
+        var v = +a[2];
+        var r = 0;
+        var g = 0;
+        var b = 0;
+        var i = Math.floor(h * 6);
+        var f = h * 6 - i;
+        var p = v * (1 - s);
+        var q = v * (1 - f * s);
+        var t = v * (1 - (1 - f) * s);
+        i = i || 0;
+        q = q || 0;
+        t = t || 0;
+        switch (i % 6) {
+            case 0:
+                r = v, g = t, b = p;
+                break;
+            case 1:
+                r = q, g = v, b = p;
+                break;
+            case 2:
+                r = p, g = v, b = t;
+                break;
+            case 3:
+                r = p, g = q, b = v;
+                break;
+            case 4:
+                r = t, g = p, b = v;
+                break;
+            case 5:
+                r = v, g = p, b = q;
+                break;
+        }
+        return [this.round(r * 255), this.round(g * 255), this.round(b * 255)];
+    };
+    EditorColorComponent.prototype.HSV2HEX = function (a) {
+        return this.RGB2HEX(this.HSV2RGB(a));
+    };
+    // [r, g, b] ... 0 <= r, g, b <= 255
+    EditorColorComponent.prototype.RGB2HSV = function (a) {
+        var r = +a[0];
+        var g = +a[1];
+        var b = +a[2];
+        var max = Math.max(r, g, b);
+        var min = Math.min(r, g, b);
+        var d = max - min;
+        var h = 0;
+        var s = (max === 0 ? 0 : d / max);
+        var v = max / 255;
+        switch (max) {
+            case min:
+                h = 0;
+                break;
+            case r:
+                h = (g - b) + d * (g < b ? 6 : 0);
+                h /= 6 * d;
+                break;
+            case g:
+                h = (b - r) + d * 2;
+                h /= 6 * d;
+                break;
+            case b:
+                h = (r - g) + d * 4;
+                h /= 6 * d;
+                break;
+        }
+        return [h, s, v];
+    };
+    EditorColorComponent.prototype.RGB2HEX = function (a) {
+        // tslint:disable-next-line: no-bitwise
+        var s = +a[2] | (+a[1] << 8) | (+a[0] << 16);
+        s = '000000' + s.toString(16);
+        return s.slice(-6);
+    };
+    // rrggbb or rgb
+    EditorColorComponent.prototype.HEX2HSV = function (s) {
+        return this.RGB2HSV(this.HEX2RGB(s));
+    };
+    EditorColorComponent.prototype.HEX2RGB = function (s) {
+        if (s.length === 3) {
+            s = s.replace(/./g, '$&$&');
+        }
+        return [this.num(s[0] + s[1], 16), this.num(s[2] + s[3], 16), this.num(s[4] + s[5], 16)];
+    };
+    // convert range from `0` to `360` and `0` to `100` in color into range from `0` to `1`
+    EditorColorComponent.prototype._2HSV_pri = function (a) {
+        return [+a[0] / 360, +a[1] / 100, +a[2] / 100];
+    };
+    // convert range from `0` to `1` into `0` to `360` and `0` to `100` in color
+    EditorColorComponent.prototype._2HSV_pub = function (a) {
+        return [this.round(+a[0] * 360), this.round(+a[1] * 100), this.round(+a[2] * 100)];
+    };
+    // convert range from `0` to `255` in color into range from `0` to `1`
+    EditorColorComponent.prototype._2RGB_pri = function (a) {
+        return [+a[0] / 255, +a[1] / 255, +a[2] / 255];
+    };
+    EditorColorComponent.prototype.num = function (i, j) {
+        if (j === void 0) { j = 10; }
+        return parseInt(i, j || 10);
+    };
+    EditorColorComponent.prototype.round = function (i) {
+        return Math.round(i);
     };
     return EditorColorComponent;
 }());
@@ -118,15 +381,20 @@ var FontItems = [
 ];
 var EditorDropdownComponent = /** @class */ (function () {
     function EditorDropdownComponent() {
-        this.visible = false;
         this.items = [];
-        this.selected = '';
-        this.modalStyle = {};
     }
     EditorDropdownComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\" [ngStyle]=\"modalStyle\">\n        <ul class=\"option-bar\">\n            <ng-container *ngFor=\"let item of items\">\n                <li [ngClass]=\"{active: item.value == selected}\" [ngStyle]=\"item.style\" (click)=\"tapConfirm(item)\">{{ item.name }}</li>\n            </ng-container>\n        </ul>\n    </div>";
+        return "<div class=\"editor-modal-box editor-dropdown-modal\">\n        <ul class=\"option-bar\">\n        </ul>\n    </div>";
     };
-    EditorDropdownComponent.prototype.modalReady = function (module) {
+    EditorDropdownComponent.prototype.renderItem = function (item) {
+        return "<li style=\"".concat(EditorHelper.nodeStyle(item.style), "\">").concat(item.name, "</li>");
+    };
+    EditorDropdownComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
         if (module.name === 'font') {
             this.items = FontItems.map(function (i) {
                 i.style = {
@@ -134,7 +402,6 @@ var EditorDropdownComponent = /** @class */ (function () {
                 };
                 return i;
             });
-            return;
         }
         else if (module.name === 'fontsize') {
             var items = [];
@@ -152,55 +419,59 @@ var EditorDropdownComponent = /** @class */ (function () {
                 last = value;
             }
             this.items = items;
-            return;
         }
+        this.element.find('.option-bar').html(this.items.map(this.renderItem).join(''));
+    };
+    EditorDropdownComponent.prototype.bindEvent = function () {
+        var that = this;
+        this.element.on('click', 'li', function () {
+            var $this = $(this);
+            $this.addClass('selected').siblings().removeClass('selected');
+            that.tapConfirm(that.items[$this.index()]);
+        });
     };
     EditorDropdownComponent.prototype.open = function (data, cb, position) {
-        this.modalStyle = position ? { left: position.x + 'px', top: position.y + 'px' } : {};
-        this.visible = true;
+        this.element.css(position ? { left: position.x + 'px', top: position.y + 'px' } : {});
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
     EditorDropdownComponent.prototype.tapConfirm = function (item) {
-        this.visible = false;
-        this.selected = item.value;
         if (this.confirmFn) {
             this.confirmFn({
-                value: this.selected
+                value: item.value
             });
         }
     };
     return EditorDropdownComponent;
 }());
 var EditorFileComponent = /** @class */ (function () {
-    function EditorFileComponent(
-    // private uploadService: FileUploadService,
-    ) {
-        this.visible = false;
-        this.fileName = '';
-        this.isLoading = false;
+    function EditorFileComponent() {
     }
     EditorFileComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible, 'modal-loading': isLoading}\" appFileDrop (fileDrop)=\"uploadFiles($event)\">\n        <label class=\"drag-input\" [for]=\"fileName\">\n            \u62D6\u653E\u6587\u4EF6\n            <p>(\u6216\u70B9\u51FB)</p>\n            <input type=\"file\" [id]=\"fileName\" (change)=\"uploadFile($event)\">\n        </label>\n        <app-loading-ring></app-loading-ring>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <label class=\"drag-input\" for=\"editor-modal-file\">\n            \u62D6\u653E\u6587\u4EF6\n            <p>(\u6216\u70B9\u51FB)</p>\n            <input type=\"file\" id=\"editor-modal-file\">\n        </label>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+    };
+    EditorFileComponent.prototype.bindEvent = function () {
+        EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
+    };
+    EditorFileComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorFileComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
-    EditorFileComponent.prototype.uploadFile = function (e) {
-        if (this.isLoading) {
-            return;
-        }
-        var files = e.target.files;
-        this.uploadFiles(files);
-    };
     EditorFileComponent.prototype.uploadFiles = function (files) {
-        if (this.isLoading) {
+        if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
         if (files.length < 1) {
             return;
         }
-        this.isLoading = true;
+        this.element.addClass('editor-modal-loading');
         // this.uploadService.uploadFile(files[0]).subscribe({
         //     next: res => {
         //         this.isLoading = false;
@@ -212,7 +483,6 @@ var EditorFileComponent = /** @class */ (function () {
         // })
     };
     EditorFileComponent.prototype.tapConfirm = function (value, title, size) {
-        this.visible = false;
         if (this.confirmFn) {
             this.confirmFn({
                 value: value,
@@ -224,37 +494,47 @@ var EditorFileComponent = /** @class */ (function () {
     return EditorFileComponent;
 }());
 var EditorImageComponent = /** @class */ (function () {
-    function EditorImageComponent(
-    // private uploadService: FileUploadService,
-    ) {
-        this.visible = false;
-        this.fileName = '';
-        this.tabIndex = 0;
-        this.url = '';
-        this.isLoading = false;
+    function EditorImageComponent() {
     }
     EditorImageComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible, 'modal-loading': isLoading}\" appFileDrop (fileDrop)=\"uploadFiles($event)\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" [ngClass]=\"{active: tabIndex < 1}\" (click)=\"tabIndex = 0\" title=\"\u4E0A\u4F20\">\n                <i class=\"iconfont icon-upload\"></i>\n            </a>\n            <a class=\"item\" [ngClass]=\"{active: tabIndex == 1}\" (click)=\"tabIndex = 1\" title=\"\u94FE\u63A5\">\n                <i class=\"iconfont icon-chain\"></i>\n            </a>\n            <a class=\"item\" [ngClass]=\"{active: tabIndex == 2}\" (click)=\"tabIndex = 2\" title=\"\u5728\u7EBF\u56FE\u5E93\">\n                <i class=\"iconfont icon-folder-open-o\"></i>\n            </a>\n        </div>\n        <label class=\"drag-input\" [for]=\"fileName\" *ngIf=\"tabIndex < 1\">\n            \u62D6\u653E\u6587\u4EF6\n            <p>(\u6216\u70B9\u51FB)</p>\n            <input type=\"file\" [id]=\"fileName\" (change)=\"uploadFile($event)\">\n        </label>\n        <div *ngIf=\"tabIndex == 1\">\n            <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!url}\">\n                <input type=\"text\" [(ngModel)]=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <app-loading-ring></app-loading-ring>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u5728\u7EBF\u56FE\u5E93\">\n                <i class=\"fa fa-folder-open\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-image\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-image\">\n            </label>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+    };
+    EditorImageComponent.prototype.bindEvent = function () {
+        var _this = this;
+        var that = this;
+        this.element.on('click', '.tab-bar .item', function () {
+            var $this = $(this);
+            $this.addClass('active').siblings().removeClass('active');
+            that.element.find('.tab-body-item').each(function (i) {
+                $(this).toggleClass('active', $this.index() === i);
+            });
+        });
+        EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
+        EditorHelper.modalInputBind(this.element, function (data) {
+            _this.output({
+                value: data.url
+            });
+        });
+    };
+    EditorImageComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorImageComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
-    EditorImageComponent.prototype.uploadFile = function (e) {
-        if (this.isLoading) {
-            return;
-        }
-        var files = e.target.files;
-        this.uploadFiles(files);
-    };
     EditorImageComponent.prototype.uploadFiles = function (files) {
-        if (this.isLoading) {
+        if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
         if (files.length < 1) {
             return;
         }
-        this.isLoading = true;
+        this.element.addClass('editor-modal-loading');
         // this.uploadService.uploadImage(files[0]).subscribe({
         //     next: res => {
         //         this.isLoading = false;
@@ -269,13 +549,7 @@ var EditorImageComponent = /** @class */ (function () {
         //     }
         // })
     };
-    EditorImageComponent.prototype.tapConfirm = function () {
-        this.output({
-            value: this.url
-        });
-    };
     EditorImageComponent.prototype.output = function (data) {
-        this.visible = false;
         if (this.confirmFn) {
             this.confirmFn(data);
         }
@@ -284,27 +558,32 @@ var EditorImageComponent = /** @class */ (function () {
 }());
 var EditorLinkComponent = /** @class */ (function () {
     function EditorLinkComponent() {
-        this.visible = false;
-        this.url = '';
-        this.title = '';
-        this.isBlank = false;
     }
     EditorLinkComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!url}\">\n            <input type=\"url\" [(ngModel)]=\"url\">\n            <label for=\"\">\u7F51\u5740</label>\n        </div>\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!title}\">\n            <input type=\"text\" [(ngModel)]=\"title\">\n            <label for=\"\">\u6807\u9898</label>\n        </div>\n        <div class=\"input-flex-line\">\n            <i class=\"iconfont\" [ngClass]=\"{'icon-check-square-o': isBlank, 'icon-square-o': !isBlank}\" (click)=\"isBlank = !isBlank\"></i>\n            \u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u63D2\u5165</div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"input-header-block\">\n            <input type=\"url\" name=\"url\">\n            <label for=\"\">\u7F51\u5740</label>\n        </div>\n        <div class=\"input-header-block\">\n            <input type=\"text\" name=\"title\">\n            <label for=\"\">\u6807\u9898</label>\n        </div>\n        <div class=\"input-flex-line\">\n            <i class=\"fa check-input fa-square\" name=\"is_blank\"></i>\n            \u5728\u65B0\u6807\u7B7E\u9875\u6253\u5F00\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n        </div>\n    </div>";
+    };
+    EditorLinkComponent.prototype.bindEvent = function () {
+        var _this = this;
+        EditorHelper.modalInputBind(this.element, function (data) {
+            if (_this.confirmFn) {
+                _this.confirmFn({
+                    value: data.url,
+                    title: data.title,
+                    target: data.is_blank
+                });
+            }
+        });
+    };
+    EditorLinkComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorLinkComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    };
-    EditorLinkComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                value: this.url,
-                title: this.title,
-                target: this.isBlank
-            });
-        }
     };
     return EditorLinkComponent;
 }());
@@ -317,60 +596,49 @@ var EditorResizerComponent = /** @class */ (function () {
         };
     }
     EditorResizerComponent.prototype.render = function () {
-        return "<div class=\"reflect-container\">\n        <div class=\"selection-container\" [ngStyle]=\"boxStyle\">\n            <div class=\"rotate-icon\">\n                <i class=\"iconfont icon-refresh\"></i>\n            </div>\n            <div class=\"eight-corner\">\n                <div class=\"cursor lt\" (mousedown)=\"onMoveLt($event)\"></div>\n                <div class=\"cursor t\" (mousedown)=\"onMoveT($event)\"></div>\n                <div class=\"cursor rt\" (mousedown)=\"onMoveRt($event)\"></div>\n                <div class=\"cursor r\" (mousedown)=\"onMoveR($event)\"></div>\n                <div class=\"cursor rb\" (mousedown)=\"onMoveRb($event)\"></div>\n                <div class=\"cursor b\" (mousedown)=\"onMoveB($event)\"></div>\n                <div class=\"cursor lb\" (mousedown)=\"onMoveLb($event)\"></div>\n                <div class=\"cursor l\" (mousedown)=\"onMoveL($event)\"></div>\n            </div>\n        </div>\n        <div class=\"horizontal-bar\" [ngStyle]=\"horizontalStyle\"></div>\n        <div class=\"vertical-bar\" [ngStyle]=\"verticalStyle\"></div>\n    </div>";
+        return "<div class=\"editor-resizer-modal\">\n        <div class=\"selection-container\">\n            <div class=\"rotate-icon\">\n                <i class=\"iconfont icon-refresh\"></i>\n            </div>\n            <div class=\"eight-corner\">\n                <div class=\"cursor lt\"></div>\n                <div class=\"cursor t\"></div>\n                <div class=\"cursor rt\"></div>\n                <div class=\"cursor r\"></div>\n                <div class=\"cursor rb\"></div>\n                <div class=\"cursor b\"></div>\n                <div class=\"cursor lb\"></div>\n                <div class=\"cursor l\"></div>\n            </div>\n        </div>\n        <div class=\"horizontal-bar\"></div>\n        <div class=\"vertical-bar\"></div>\n    </div>";
     };
-    Object.defineProperty(EditorResizerComponent.prototype, "boxStyle", {
-        get: function () {
-            if (this.toolType !== 1) {
-                return {
-                    display: 'none',
-                };
-            }
-            return {
-                display: 'block',
-                left: this.rectBound.x + 'px',
-                top: this.rectBound.y + 'px',
-                width: this.rectBound.width + 'px',
-                height: this.rectBound.height + 'px',
-            };
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(EditorResizerComponent.prototype, "horizontalStyle", {
-        get: function () {
-            if (this.toolType !== 2) {
-                return {
-                    display: 'none',
-                };
-            }
-            return {
-                display: 'block',
-                left: this.rectBound.x + 'px',
-                top: this.rectBound.y + 'px',
-                height: this.rectBound.height + 'px',
-            };
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(EditorResizerComponent.prototype, "verticalStyle", {
-        get: function () {
-            if (this.toolType !== 3) {
-                return {
-                    display: 'none',
-                };
-            }
-            return {
-                display: 'block',
-                left: this.rectBound.x + 'px',
-                top: this.rectBound.y + 'px',
-                width: this.rectBound.width + 'px',
-            };
-        },
-        enumerable: false,
-        configurable: true
-    });
+    EditorResizerComponent.prototype.triggerBoxStyle = function () {
+        this.element.find('.selection-container').css(this.toolType !== 1 ? {
+            display: 'none',
+        } : {
+            display: 'block',
+            left: this.rectBound.x + 'px',
+            top: this.rectBound.y + 'px',
+            width: this.rectBound.width + 'px',
+            height: this.rectBound.height + 'px',
+        });
+    };
+    EditorResizerComponent.prototype.triggerHorizontalStyle = function () {
+        this.element.find('.horizontal-bar').css(this.toolType !== 2 ? {
+            display: 'none',
+        } : {
+            display: 'block',
+            left: this.rectBound.x + 'px',
+            top: this.rectBound.y + 'px',
+            height: this.rectBound.height + 'px',
+        });
+    };
+    EditorResizerComponent.prototype.triggerVerticalStyle = function () {
+        this.element.find('.vertical-bar').css(this.toolType !== 3 ? {
+            display: 'none',
+        } : {
+            display: 'block',
+            left: this.rectBound.x + 'px',
+            top: this.rectBound.y + 'px',
+            width: this.rectBound.width + 'px',
+        });
+    };
+    EditorResizerComponent.prototype.bindEvent = function () {
+        var that = this;
+        var fnMap = [this.onMoveLt, this.onMoveT, this.onMoveRt, this.onMoveR, this.onMoveRb, this.onMoveB, this.onMoveLb, this.onMoveL];
+        this.element.on('mousedown', '.eight-corner .cursor', function (e) {
+            var fn = fnMap[$(this).index()];
+            fn && fn.call(that, e);
+        });
+        $(document).on('mousemove', this.docMouseMove.bind(this))
+            .on('mouseup', this.docMouseUp.bind(this));
+    };
     EditorResizerComponent.prototype.docMouseMove = function (e) {
         if (this.mouseMoveListeners.move) {
             this.mouseMoveListeners.move({ x: e.clientX, y: e.clientY });
@@ -381,29 +649,58 @@ var EditorResizerComponent = /** @class */ (function () {
             this.mouseMoveListeners.finish({ x: e.clientX, y: e.clientY });
         }
     };
+    EditorResizerComponent.prototype.ready = function (parent) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
+    };
     EditorResizerComponent.prototype.openResize = function (bound, cb) {
-        this.toolType = 1;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(1);
+        this.updatedHandler = cb;
     };
     EditorResizerComponent.prototype.openHorizontalResize = function (bound, cb) {
-        this.toolType = 2;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(2);
+        this.updatedHandler = cb;
         this.mouseMove(undefined, function (b, x, y) {
             return __assign(__assign({}, b), { x: b.x + x });
         });
     };
     EditorResizerComponent.prototype.openVerticalResize = function (bound, cb) {
-        this.toolType = 3;
-        this.updatedHandler = cb;
         this.rectBound = bound;
+        this.toggleType(3);
+        this.updatedHandler = cb;
         this.mouseMove(undefined, function (b, x, y) {
             return __assign(__assign({}, b), { y: b.y + y });
         });
     };
     EditorResizerComponent.prototype.close = function () {
-        this.toolType = 0;
+        this.toggleType(0);
+    };
+    EditorResizerComponent.prototype.toggleType = function (i) {
+        if (i === void 0) { i = 0; }
+        if (this.toolType === i) {
+            return;
+        }
+        this.updateStyle();
+        this.updateStyle(i);
+        this.toolType = i;
+    };
+    EditorResizerComponent.prototype.updateStyle = function (i) {
+        if (i === void 0) { i = this.toolType; }
+        this.toolType = i;
+        if (i === 1) {
+            this.triggerBoxStyle();
+        }
+        else if (i === 2) {
+            this.triggerHorizontalStyle();
+        }
+        else if (i === 3) {
+            this.triggerVerticalStyle();
+        }
     };
     EditorResizerComponent.prototype.onMoveLt = function (e) {
         this.mouseMove(e, function (b, x, y) {
@@ -468,10 +765,11 @@ var EditorResizerComponent = /** @class */ (function () {
             var offsetX = p.x - last.x;
             var offsetY = p.y - last.y;
             _this.rectBound = move(_this.rectBound, offsetX, offsetY);
+            _this.updateStyle();
             last = p;
         }, function (_) {
             var toolType = _this.toolType;
-            _this.toolType = 0;
+            _this.toggleType(0);
             if (!_this.updatedHandler) {
                 return;
             }
@@ -498,115 +796,167 @@ var EditorResizerComponent = /** @class */ (function () {
 }());
 var EditorSizeComponent = /** @class */ (function () {
     function EditorSizeComponent() {
-        this.visible = false;
-        this.width = '';
-        this.height = '';
     }
     EditorSizeComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" (click)=\"tapBack()\">\n                <i class=\"iconfont icon-back\"></i>\n            </a>\n        </div>\n        <div class=\"input-flex-group\">\n            <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!width}\">\n                <input type=\"text\" [(ngModel)]=\"width\">\n                <label for=\"\">\u5BBD</label>\n            </div>\n            <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!height}\">\n                <input type=\"text\" [(ngModel)]=\"height\">\n                <label for=\"\">\u9AD8</label>\n            </div>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u66F4\u65B0</div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\">\n                <i class=\"fa fa-arrow-left\"></i>\n            </a>\n        </div>\n        <div class=\"input-flex-group\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"width\">\n                <label for=\"\">\u5BBD</label>\n            </div>\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"height\">\n                <label for=\"\">\u9AD8</label>\n            </div>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\">\u66F4\u65B0</div>\n        </div>\n    </div>";
     };
-    EditorSizeComponent.prototype.tapBack = function () {
+    EditorSizeComponent.prototype.bindEvent = function () {
+        var _this = this;
+        EditorHelper.modalInputBind(this.element, function (data) {
+            if (_this.confirmFn) {
+                _this.confirmFn({
+                    height: data.height,
+                    width: data.width
+                });
+            }
+        });
+    };
+    EditorSizeComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorSizeComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    };
-    EditorSizeComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                height: this.height,
-                width: this.width
-            });
-        }
     };
     return EditorSizeComponent;
 }());
 var EditorTableComponent = /** @class */ (function () {
     function EditorTableComponent() {
-        this.visible = false;
-        this.columnItems = [];
-        this.rowItems = [];
-        this.column = 1;
-        this.row = 1;
-        this.columnItems = this.generateRange(10);
-        this.rowItems = this.generateRange(2);
     }
     EditorTableComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"table-grid\">\n            <div class=\"table-row\" *ngFor=\"let i of rowItems\">\n                <ng-container *ngFor=\"let j of columnItems\">\n                    <span class=\"table-cell\" [ngClass]=\"{active: column >= j && row >= i}\" (mouseover)=\"tapCell(i, j)\" (click)=\"tapConfirm(i, j)\"></span>\n                </ng-container>\n            </div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box editor-table-modal\"><div class=\"table-grid\"></div></div>";
     };
-    EditorTableComponent.prototype.tapCell = function (row, col) {
-        this.column = col;
-        this.row = row;
-        if (row >= 9 && this.rowItems.length == 10) {
-            return;
+    EditorTableComponent.prototype.renderTableRow = function (column) {
+        if (column === void 0) { column = 10; }
+        var row = '';
+        for (var j = 0; j < column; j++) {
+            row += "<span class=\"table-cell\"></span>";
         }
-        this.rowItems = this.generateRange(row + 1);
+        return "<div class=\"table-row\">".concat(row, "</div>");
     };
-    EditorTableComponent.prototype.tapConfirm = function (row, column) {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                row: row,
-                column: column
-            });
+    EditorTableComponent.prototype.renderTable = function (row, column) {
+        if (column === void 0) { column = 10; }
+        var html = '';
+        for (var i = 0; i < row; i++) {
+            html += this.renderTableRow(column);
         }
+        this.element.find('.table-grid').html(html);
+    };
+    EditorTableComponent.prototype.bindEvent = function () {
+        var that = this;
+        this.element.on('mouseover', '.table-cell', function () {
+            var $this = $(this);
+            var i = $this.index();
+            var parent = $this.parent();
+            var j = parent.index();
+            var box = parent[0].parentNode;
+            for (var r = 0; r < box.children.length; r++) {
+                var re = box.children[r];
+                for (var c = 0; c < re.children.length; c++) {
+                    var ce = re.children[c];
+                    $(ce).toggleClass('active', r <= j && c <= i);
+                }
+            }
+            if (j < box.children.length - 1 || j >= 9) {
+                return;
+            }
+            $(box).append(that.renderTableRow());
+        }).on('click', '.table-cell', function () {
+            var $this = $(this);
+            if (that.confirmFn) {
+                that.confirmFn({
+                    row: $this.parent().index() + 1,
+                    column: $this.index() + 1
+                });
+            }
+        });
+    };
+    EditorTableComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorTableComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.renderTable(2, 10);
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    };
-    EditorTableComponent.prototype.generateRange = function (count) {
-        var items = [];
-        for (var i = 1; i <= count; i++) {
-            items.push(i);
-        }
-        return items;
     };
     return EditorTableComponent;
 }());
 var EditorTextComponent = /** @class */ (function () {
-    function EditorTextComponent() {
-        this.visible = false;
-        this.value = '';
-        this.label = '文字';
+    function EditorTextComponent(label) {
+        if (label === void 0) { label = '文字'; }
+        this.label = label;
     }
     EditorTextComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible}\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" (click)=\"tapBack()\">\n                <i class=\"iconfont icon-back\"></i>\n            </a>\n        </div>\n        <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!value}\">\n            <input type=\"text\" [(ngModel)]=\"value\">\n            <label for=\"\">{{ label }}</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u66F4\u65B0</div>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\">\n                <i class=\"fa fa-arrow-left\"></i>\n            </a>\n        </div>\n        <div class=\"input-header-block\">\n            <input type=\"text\" name=\"value\">\n            <label for=\"\">".concat(this.label, "</label>\n        </div>\n        <div class=\"modal-action\">\n            <div class=\"btn btn-outline-primary\">\u66F4\u65B0</div>\n        </div>\n    </div>");
     };
-    EditorTextComponent.prototype.tapBack = function () {
+    EditorTextComponent.prototype.bindEvent = function () {
+        var _this = this;
+        EditorHelper.modalInputBind(this.element, function (data) {
+            if (_this.confirmFn) {
+                _this.confirmFn({
+                    value: data.value,
+                });
+            }
+        });
+    };
+    EditorTextComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorTextComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    };
-    EditorTextComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                value: this.value
-            });
-        }
     };
     return EditorTextComponent;
 }());
 var EditorVideoComponent = /** @class */ (function () {
-    function EditorVideoComponent(
-    //private uploadService: FileUploadService,
-    ) {
-        this.visible = false;
-        this.fileName = '';
-        this.tabIndex = 0;
-        this.url = '';
-        this.code = '';
-        this.isAutoplay = false;
-        this.isLoading = false;
+    function EditorVideoComponent() {
     }
     EditorVideoComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\" [ngClass]=\"{'modal-visible': visible,'modal-loading': isLoading}\" appFileDrop (fileDrop)=\"uploadFiles($event)\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" [ngClass]=\"{active: tabIndex == 1}\" (click)=\"tabIndex = 1\" title=\"\u94FE\u63A5\">\n                <i class=\"iconfont icon-chain\"></i>\n            </a>\n            <a class=\"item\" [ngClass]=\"{active: tabIndex == 2}\" (click)=\"tabIndex = 2\" title=\"\u4EE3\u7801\">\n                <i class=\"iconfont icon-code\"></i>\n            </a>\n            <a class=\"item\" [ngClass]=\"{active: tabIndex < 1}\" (click)=\"tabIndex = 0\" title=\"\u4E0A\u4F20\">\n                <i class=\"iconfont icon-upload\"></i>\n            </a>\n        </div>\n        <label class=\"drag-input\" [for]=\"fileName\" *ngIf=\"tabIndex < 1\">\n            \u62D6\u653E\u6587\u4EF6\n            <p>(\u6216\u70B9\u51FB)</p>\n            <input type=\"file\" [id]=\"fileName\" (change)=\"uploadFile($event)\">\n        </label>\n        <div *ngIf=\"tabIndex == 1\">\n            <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!url}\">\n                <input type=\"text\" [(ngModel)]=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"iconfont\" [ngClass]=\"{'icon-check-square-o': isAutoplay, 'icon-square-o': !isAutoplay}\" (click)=\"isAutoplay = !isAutoplay\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div *ngIf=\"tabIndex == 2\">\n            <div class=\"input-header-block\" [ngClass]=\"{'input-not-empty': !!code}\">\n                <textarea [(ngModel)]=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\" (click)=\"tapConfirm()\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <app-loading-ring></app-loading-ring>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4EE3\u7801\">\n                <i class=\"fa fa-code\"></i>\n            </a>\n            <a class=\"item active\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-video\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-video\">\n            </label>\n        </div>\n        <div class=\"tab-body-item\">\n            <div class=\"input-header-block\">\n                <textarea name=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"fa fa-square check-input\" name=\"auto_play\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+    };
+    EditorVideoComponent.prototype.bindEvent = function () {
+        var _this = this;
+        var that = this;
+        this.element.on('click', '.tab-bar .item', function () {
+            var $this = $(this);
+            $this.addClass('active').siblings().removeClass('active');
+            that.element.find('.tab-body-item').each(function (i) {
+                $(this).toggleClass('active', $this.index() === i);
+            });
+        });
+        EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
+        EditorHelper.modalInputBind(this.element, function (data) {
+            // this.output({
+            //     value: data.url
+            // });
+            if (!_this.confirmFn) {
+                return;
+            }
+            var index = _this.element.find('.tab-bar .active').index();
+            _this.confirmFn(index === 2 ? { code: data.code } : { value: data.url, autoplay: data.auto_play });
+        });
+    };
+    EditorVideoComponent.prototype.modalReady = function (module, parent, option) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     };
     EditorVideoComponent.prototype.open = function (data, cb) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
     EditorVideoComponent.prototype.uploadFile = function (e) {
@@ -614,13 +964,13 @@ var EditorVideoComponent = /** @class */ (function () {
         this.uploadFiles(files);
     };
     EditorVideoComponent.prototype.uploadFiles = function (files) {
-        if (this.isLoading) {
+        if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
         if (files.length < 1) {
             return;
         }
-        this.isLoading = true;
+        this.element.addClass('editor-modal-loading');
         // this.uploadService.uploadVideo(files[0]).subscribe({
         //     next: res => {
         //         this.isLoading = false;
@@ -631,12 +981,6 @@ var EditorVideoComponent = /** @class */ (function () {
         //         this.isLoading = false;
         //     }
         // })
-    };
-    EditorVideoComponent.prototype.tapConfirm = function () {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn(this.tabIndex === 2 ? { code: this.code } : { value: this.url, autoplay: this.isAutoplay });
-        }
     };
     return EditorVideoComponent;
 }());
@@ -715,7 +1059,7 @@ var CodeElement = /** @class */ (function () {
     });
     Object.defineProperty(CodeElement.prototype, "wordLength", {
         get: function () {
-            return wordLength(this.value);
+            return EditorHelper.wordLength(this.value);
         },
         enumerable: false,
         configurable: true
@@ -735,19 +1079,19 @@ var CodeElement = /** @class */ (function () {
             case EditorBlockType.AddText:
             case EditorBlockType.AddRaw:
                 this.insertText(block.value, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddLineBreak:
                 this.insertLineBreak(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.Indent:
                 this.insertIndent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Outdent:
                 this.insertOutdent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
         }
     };
@@ -785,7 +1129,7 @@ var CodeElement = /** @class */ (function () {
             }
         });
         resizeObserver.observe(this.element);
-        this.container.on(EVENT_EDITOR_DESTORY, function () {
+        this.container.on(EDITOR_EVENT_EDITOR_DESTORY, function () {
             resizeObserver.disconnect();
         });
     };
@@ -794,14 +1138,14 @@ var CodeElement = /** @class */ (function () {
         this.bindResize();
         this.bodyPanel.addEventListener('keydown', function (e) {
             _this.container.saveSelection();
-            _this.container.emit(EVENT_INPUT_KEYDOWN, e);
+            _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
         });
         this.bodyPanel.addEventListener('keyup', function (e) {
             if (_this.isComposition) {
                 return;
             }
             _this.selectRangeLine(_this.selection.range);
-            _this.container.emit(EVENT_EDITOR_CHANGE);
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             if (e.key === 'Backspace') {
                 _this.updateLineCount();
             }
@@ -816,7 +1160,7 @@ var CodeElement = /** @class */ (function () {
                 type: EditorBlockType.AddRaw,
                 value: e.clipboardData.getData('text/plain')
             });
-            _this.container.emit(EVENT_EDITOR_CHANGE);
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.bodyPanel.addEventListener('compositionstart', function () {
             _this.isComposition = true;
@@ -825,8 +1169,8 @@ var CodeElement = /** @class */ (function () {
         this.bodyPanel.addEventListener('compositionend', function () {
             _this.isComposition = false;
             _this.container.saveSelection();
-            _this.container.emit(EVENT_SELECTION_CHANGE);
-            _this.container.emit(EVENT_EDITOR_CHANGE);
+            _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
     };
     CodeElement.prototype.insertText = function (v, range) {
@@ -1173,10 +1517,10 @@ var EditorContainer = /** @class */ (function () {
         this.asyncTimer = 0;
         this.listeners = {};
         // document.addEventListener('mousemove', e => {
-        //     this.emit(EVENT_MOUSE_MOVE, {x: e.clientX, y: e.clientX});
+        //     this.emit(EDITOR_EVENT_MOUSE_MOVE, {x: e.clientX, y: e.clientX});
         // });
         // document.addEventListener('mouseup', e => {
-        //     this.emit(EVENT_MOUSE_UP, {x: e.clientX, y: e.clientX});
+        //     this.emit(EDITOR_EVENT_MOUSE_UP, {x: e.clientX, y: e.clientX});
         // });
     }
     EditorContainer.prototype.ready = function (element) {
@@ -1193,16 +1537,16 @@ var EditorContainer = /** @class */ (function () {
         if (!this.element) {
             return;
         }
-        // this.on(EVENT_MOUSE_MOVE, p => {
+        // this.on(EDITOR_EVENT_MOUSE_MOVE, p => {
         //     if (this.mouseMoveListeners.move) {
         //         this.mouseMoveListeners.move(p);
         //     }
-        // }).on(EVENT_MOUSE_UP, p => {
+        // }).on(EDITOR_EVENT_MOUSE_UP, p => {
         //     if (this.mouseMoveListeners.finish) {
         //         this.mouseMoveListeners.finish(p);
         //     }
         // });
-        this.on(EVENT_INPUT_KEYDOWN, function (e) {
+        this.on(EDITOR_EVENT_INPUT_KEYDOWN, function (e) {
             var modifiers = [];
             if (e.ctrlKey) {
                 modifiers.push('Ctrl');
@@ -1235,14 +1579,14 @@ var EditorContainer = /** @class */ (function () {
                 _this.insert({ type: EditorBlockType.Indent });
             }
         });
-        this.on(EVENT_INPUT_BLUR, function () {
+        this.on(EDITOR_EVENT_INPUT_BLUR, function () {
             _this.saveSelection();
-            // this.emit(EVENT_EDITOR_CHANGE);
+            // this.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
-        this.on(EVENT_EDITOR_CHANGE, function () {
+        this.on(EDITOR_EVENT_EDITOR_CHANGE, function () {
             _this.asynSave();
         });
-        this.on(EVENT_EDITOR_AUTO_SAVE, function () {
+        this.on(EDITOR_EVENT_EDITOR_AUTO_SAVE, function () {
             if (_this.undoIndex >= 0 && _this.undoIndex < _this.undoStack.length - 1) {
                 _this.undoStack.splice(_this.undoIndex);
             }
@@ -1252,9 +1596,9 @@ var EditorContainer = /** @class */ (function () {
             }
             _this.undoStack.push(_this.value);
             _this.undoIndex = _this.undoStack.length - 1;
-            _this.emit(EVENT_UNDO_CHANGE);
+            _this.emit(EDITOR_EVENT_UNDO_CHANGE);
         });
-        this.emit(EVENT_EDITOR_READY);
+        this.emit(EDITOR_EVENT_EDITOR_READY);
     };
     Object.defineProperty(EditorContainer.prototype, "canUndo", {
         get: function () {
@@ -1290,13 +1634,13 @@ var EditorContainer = /** @class */ (function () {
         set: function (content) {
             var _this = this;
             if (!this.element) {
-                this.once(EVENT_EDITOR_READY, function () {
+                this.once(EDITOR_EVENT_EDITOR_READY, function () {
                     _this.element.value = content;
                 });
                 return;
             }
             this.element.value = typeof content === 'undefined' ? '' : content;
-            // this.emit(EVENT_EDITOR_CHANGE);
+            // this.emit(EDITOR_EVENT_EDITOR_CHANGE);
         },
         enumerable: false,
         configurable: true
@@ -1365,19 +1709,19 @@ var EditorContainer = /** @class */ (function () {
         }
         this.asyncTimer = window.setTimeout(function () {
             _this.asyncTimer = 0;
-            _this.emit(EVENT_EDITOR_AUTO_SAVE);
+            _this.emit(EDITOR_EVENT_EDITOR_AUTO_SAVE);
         }, 2000);
     };
     EditorContainer.prototype.blur = function () {
         this.element.blur();
     };
     EditorContainer.prototype.destroy = function () {
-        this.emit(EVENT_EDITOR_DESTORY);
+        this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     };
     EditorContainer.prototype.undo = function () {
         if (!this.canUndo) {
-            this.emit(EVENT_UNDO_CHANGE);
+            this.emit(EDITOR_EVENT_UNDO_CHANGE);
             return;
         }
         this.undoIndex--;
@@ -1385,7 +1729,7 @@ var EditorContainer = /** @class */ (function () {
     };
     EditorContainer.prototype.redo = function () {
         if (!this.canRedo) {
-            this.emit(EVENT_UNDO_CHANGE);
+            this.emit(EDITOR_EVENT_UNDO_CHANGE);
             return;
         }
         this.undoIndex++;
@@ -1564,7 +1908,7 @@ var DivElement = /** @class */ (function () {
     });
     Object.defineProperty(DivElement.prototype, "wordLength", {
         get: function () {
-            return wordLength(this.element.innerText);
+            return EditorHelper.wordLength(this.element.innerText);
         },
         enumerable: false,
         configurable: true
@@ -1583,43 +1927,43 @@ var DivElement = /** @class */ (function () {
         switch (block.type) {
             case EditorBlockType.AddHr:
                 this.insertHr(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddText:
                 this.insertText(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddRaw:
                 this.insertRaw(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.Indent:
                 this.insertIndent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Outdent:
                 this.insertOutdent(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddLineBreak:
                 this.insertLineBreak(range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddImage:
                 this.insertImage(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddTable:
                 this.insertTable(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddVideo:
                 this.insertVideo(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
             case EditorBlockType.AddLink:
                 this.insertLink(block, range.range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 break;
         }
     };
@@ -1853,8 +2197,8 @@ var DivElement = /** @class */ (function () {
         var _this = this;
         this.element.addEventListener('keydown', function (e) {
             _this.container.saveSelection();
-            _this.container.emit(EVENT_INPUT_KEYDOWN, e);
-            _this.container.emit(EVENT_CLOSE_TOOL);
+            _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
+            _this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
         });
         this.element.addEventListener('keyup', function () {
             if (_this.isComposition) {
@@ -1862,7 +2206,7 @@ var DivElement = /** @class */ (function () {
             }
             var range = _this.selection.range;
             if (_this.isEmptyLine(range)) {
-                _this.container.emit(EVENT_SHOW_ADD_TOOL, _this.getNodeOffset(range.startContainer).y);
+                _this.container.emit(EDITOR_EVENT_SHOW_ADD_TOOL, _this.getNodeOffset(range.startContainer).y);
                 return;
             }
         });
@@ -1873,12 +2217,12 @@ var DivElement = /** @class */ (function () {
         this.element.addEventListener('compositionend', function () {
             _this.isComposition = false;
             _this.container.saveSelection();
-            _this.container.emit(EVENT_SELECTION_CHANGE);
-            _this.container.emit(EVENT_EDITOR_CHANGE);
+            _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.element.addEventListener('mouseup', function () {
             _this.container.saveSelection();
-            _this.container.emit(EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             // console.log([this.selectedValue]);
         });
         this.element.addEventListener('mouseenter', function (e) {
@@ -1888,7 +2232,7 @@ var DivElement = /** @class */ (function () {
             if (e.target instanceof HTMLHRElement) {
                 if (e.target.previousSibling instanceof HTMLHRElement) {
                     _this.selectNode(e.target);
-                    _this.container.emit(EVENT_SHOW_LINE_BREAK_TOOL, _this.getNodeOffset(e.target.previousSibling));
+                    _this.container.emit(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, _this.getNodeOffset(e.target.previousSibling));
                 }
             }
         });
@@ -1938,7 +2282,7 @@ var DivElement = /** @class */ (function () {
             if (e.target instanceof HTMLImageElement) {
                 var img_1 = e.target;
                 _this.selectNode(img_1);
-                _this.container.emit(EVENT_SHOW_IMAGE_TOOL, _this.getNodeBound(img_1), function (data) { return _this.updateNode(img_1, data); });
+                _this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, _this.getNodeBound(img_1), function (data) { return _this.updateNode(img_1, data); });
                 return;
             }
             var range = _this.selection.range;
@@ -1946,15 +2290,15 @@ var DivElement = /** @class */ (function () {
                 return;
             }
             if (_this.isEmptyLine(range)) {
-                _this.container.emit(EVENT_SHOW_ADD_TOOL, _this.getNodeOffset(range.startContainer).y);
+                _this.container.emit(EDITOR_EVENT_SHOW_ADD_TOOL, _this.getNodeOffset(range.startContainer).y);
                 return;
             }
-            _this.container.emit(EVENT_INPUT_CLICK);
-            _this.container.emit(EVENT_CLOSE_TOOL);
+            _this.container.emit(EDITOR_EVENT_INPUT_CLICK);
+            _this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
         });
         this.element.addEventListener('blur', function () {
             _this.container.saveSelection();
-            _this.container.emit(EVENT_INPUT_BLUR);
+            _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
     };
     DivElement.prototype.moveTableCol = function (node) {
@@ -1966,7 +2310,7 @@ var DivElement = /** @class */ (function () {
         var rect = table.getBoundingClientRect();
         var nodeRect = node.getBoundingClientRect();
         var x = nodeRect.x + nodeRect.width - base.x;
-        this.container.emit(EVENT_SHOW_COLUMN_TOOL, {
+        this.container.emit(EDITOR_EVENT_SHOW_COLUMN_TOOL, {
             x: x,
             y: table.offsetTop,
             width: 0,
@@ -2399,11 +2743,11 @@ var DivElement = /** @class */ (function () {
         var event;
         this.eachParentNode(range.startContainer, function (node) {
             if (linkTag.indexOf(node.nodeName) >= 0) {
-                event = EVENT_SHOW_LINK_TOOL;
+                event = EDITOR_EVENT_SHOW_LINK_TOOL;
                 return false;
             }
             if (tableTag.indexOf(node.nodeName) >= 0) {
-                event = EVENT_SHOW_TABLE_TOOL;
+                event = EDITOR_EVENT_SHOW_TABLE_TOOL;
                 return false;
             }
         });
@@ -2584,35 +2928,24 @@ var DivElement = /** @class */ (function () {
     };
     return DivElement;
 }());
-var EVENT_INPUT_KEYDOWN = 'input.keydown';
-var EVENT_INPUT_BLUR = 'input.blur';
-var EVENT_INPUT_CLICK = 'input.click';
-var EVENT_MOUSE_UP = 'mouse.up';
-var EVENT_MOUSE_MOVE = 'mouse.move';
-var EVENT_EDITOR_CHANGE = 'change';
-var EVENT_EDITOR_READY = 'ready';
-var EVENT_EDITOR_DESTORY = 'destroy';
-var EVENT_EDITOR_AUTO_SAVE = 'auto_save'; // 自动保存跟内容变化不一样，自动保存步骤少于内容变化
-var EVENT_SELECTION_CHANGE = 'selection_change';
-var EVENT_UNDO_CHANGE = 'undo';
-var EVENT_SHOW_ADD_TOOL = 'tool.add';
-var EVENT_SHOW_LINE_BREAK_TOOL = 'tool.line.break';
-var EVENT_SHOW_IMAGE_TOOL = 'tool.image';
-var EVENT_SHOW_COLUMN_TOOL = 'tool.column';
-var EVENT_SHOW_LINK_TOOL = 'tool.link';
-var EVENT_SHOW_TABLE_TOOL = 'tool.table';
-var EVENT_CLOSE_TOOL = 'tool.flow.close';
-var EDITOR_CLOSE_TOOL = 'close';
-var EDITOR_ADD_TOOL = 'add';
-var EDITOR_ENTER_TOOL = 'enter';
-var EDITOR_UNDO_TOOL = 'undo';
-var EDITOR_REDO_TOOL = 'redo';
-var EDITOR_FULL_SCREEN_TOOL = 'full-screen';
-var EDITOR_CODE_TOOL = 'code';
-var EDITOR_IMAGE_TOOL = 'image_edit';
-var EDITOR_TABLE_TOOL = 'table_edit';
-var EDITOR_VIDEO_TOOL = 'video_edit';
-var EDITOR_LINK_TOOL = 'link_edit';
+var EDITOR_EVENT_INPUT_KEYDOWN = 'input.keydown';
+var EDITOR_EVENT_INPUT_BLUR = 'input.blur';
+var EDITOR_EVENT_INPUT_CLICK = 'input.click';
+var EDITOR_EVENT_MOUSE_UP = 'mouse.up';
+var EDITOR_EVENT_MOUSE_MOVE = 'mouse.move';
+var EDITOR_EVENT_EDITOR_CHANGE = 'change';
+var EDITOR_EVENT_EDITOR_READY = 'ready';
+var EDITOR_EVENT_EDITOR_DESTORY = 'destroy';
+var EDITOR_EVENT_EDITOR_AUTO_SAVE = 'auto_save'; // 自动保存跟内容变化不一样，自动保存步骤少于内容变化
+var EDITOR_EVENT_SELECTION_CHANGE = 'selection_change';
+var EDITOR_EVENT_UNDO_CHANGE = 'undo';
+var EDITOR_EVENT_SHOW_ADD_TOOL = 'tool.add';
+var EDITOR_EVENT_SHOW_LINE_BREAK_TOOL = 'tool.line.break';
+var EDITOR_EVENT_SHOW_IMAGE_TOOL = 'tool.image';
+var EDITOR_EVENT_SHOW_COLUMN_TOOL = 'tool.column';
+var EDITOR_EVENT_SHOW_LINK_TOOL = 'tool.link';
+var EDITOR_EVENT_SHOW_TABLE_TOOL = 'tool.table';
+var EDITOR_EVENT_CLOSE_TOOL = 'tool.flow.close';
 var EditorBlockType;
 (function (EditorBlockType) {
     EditorBlockType[EditorBlockType["AddLineBreak"] = 0] = "AddLineBreak";
@@ -2631,6 +2964,17 @@ var EditorBlockType;
     EditorBlockType[EditorBlockType["NodeResize"] = 13] = "NodeResize";
     EditorBlockType[EditorBlockType["NodeMove"] = 14] = "NodeMove";
 })(EditorBlockType || (EditorBlockType = {}));
+var EDITOR_CLOSE_TOOL = 'close';
+var EDITOR_ADD_TOOL = 'add';
+var EDITOR_ENTER_TOOL = 'enter';
+var EDITOR_UNDO_TOOL = 'undo';
+var EDITOR_REDO_TOOL = 'redo';
+var EDITOR_FULL_SCREEN_TOOL = 'full-screen';
+var EDITOR_CODE_TOOL = 'code';
+var EDITOR_IMAGE_TOOL = 'image_edit';
+var EDITOR_TABLE_TOOL = 'table_edit';
+var EDITOR_VIDEO_TOOL = 'video_edit';
+var EDITOR_LINK_TOOL = 'link_edit';
 var EditorModules = [
     {
         name: 'text',
@@ -2704,31 +3048,31 @@ var EditorModules = [
     },
     {
         name: 'wavyline',
-        icon: 'fa-wavy-line',
+        icon: 'fa-percentage',
         label: 'Add Wavyline',
         parent: 'text',
     },
     {
         name: 'dashed',
-        icon: 'fa-dottedunderline',
+        icon: 'fa-burn',
         label: '下标加点',
         parent: 'text',
     },
     {
         name: 'strike',
-        icon: 'fa-strike',
+        icon: 'fa-strikethrough',
         label: '画线',
         parent: 'text',
     },
     {
         name: 'sub',
-        icon: 'fa-sub',
+        icon: 'fa-subscript',
         label: '下标',
         parent: 'text',
     },
     {
         name: 'sup',
-        icon: 'fa-sup',
+        icon: 'fa-superscript',
         label: '上标',
         parent: 'text',
     },
@@ -2910,13 +3254,13 @@ var EditorModules = [
     // 图片处理
     {
         name: 'replace-image',
-        icon: 'fa-exchange',
+        icon: 'fa-exchange-alt',
         label: '替换',
         parent: EDITOR_IMAGE_TOOL,
     },
     {
         name: 'align-image',
-        icon: 'fa-alignright',
+        icon: 'fa-align-right',
         label: '位置',
         parent: EDITOR_IMAGE_TOOL,
     },
@@ -2934,20 +3278,22 @@ var EditorModules = [
     },
     {
         name: 'link-image',
-        icon: 'fa-chain',
+        icon: 'fa-link',
         label: '插入链接',
         parent: EDITOR_IMAGE_TOOL,
     },
     {
         name: 'alt-image',
-        icon: 'fa-char',
+        icon: 'fa-font',
         label: '图片备注',
+        modal: new EditorTextComponent('备注'),
         parent: EDITOR_IMAGE_TOOL,
     },
     {
         name: 'size-image',
         icon: 'fa-ruler',
         label: '调整尺寸',
+        modal: new EditorSizeComponent,
         parent: EDITOR_IMAGE_TOOL,
     },
     // 视频处理
@@ -2984,7 +3330,7 @@ var EditorModules = [
     // 表格处理
     {
         name: 'header-table',
-        icon: 'fa-table',
+        icon: 'fa-heading',
         label: '表头',
         parent: EDITOR_TABLE_TOOL,
     },
@@ -3026,7 +3372,7 @@ var EditorModules = [
     },
     {
         name: 'cell-background-table',
-        icon: 'fa-table',
+        icon: 'fa-brush',
         label: '单元格背景',
         parent: EDITOR_TABLE_TOOL,
     },
@@ -3038,14 +3384,14 @@ var EditorModules = [
     },
     {
         name: 'horizontal-table',
-        icon: 'fa-shuipingdengjianju',
-        label: '横向',
+        icon: 'fa-grip-horizontal',
+        label: '横向合并',
         parent: EDITOR_TABLE_TOOL,
     },
     {
         name: 'vertical-table',
-        icon: 'fa-chuizhidengjianju',
-        label: '纵向',
+        icon: 'fa-grip-vertical',
+        label: '纵向合并',
         parent: EDITOR_TABLE_TOOL,
     },
     // 链接处理
@@ -3057,7 +3403,7 @@ var EditorModules = [
     },
     {
         name: 'link-style',
-        icon: 'fa-font-foreground',
+        icon: 'fa-brush',
         label: '更改样式',
         parent: EDITOR_LINK_TOOL,
     },
@@ -3069,7 +3415,7 @@ var EditorModules = [
     },
     {
         name: 'unlink',
-        icon: 'fa-chain-broken',
+        icon: 'fa-unlink',
         label: '断开链接',
         parent: EDITOR_LINK_TOOL,
     },
@@ -3325,7 +3671,7 @@ var TextareaElement = /** @class */ (function () {
     });
     Object.defineProperty(TextareaElement.prototype, "wordLength", {
         get: function () {
-            return wordLength(this.value);
+            return EditorHelper.wordLength(this.value);
         },
         enumerable: false,
         configurable: true
@@ -3347,32 +3693,32 @@ var TextareaElement = /** @class */ (function () {
         switch (block.type) {
             case EditorBlockType.AddLink:
                 this.insertLink(block, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddText:
             case EditorBlockType.AddRaw:
                 this.insertText(block.value, range, block.cursor);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddImage:
                 this.insertImage(block, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Indent:
                 this.insertIndent(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Outdent:
                 this.insertOutdent(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddLineBreak:
                 this.insertLineBreak(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddCode:
                 this.insertCode(block, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
         }
     };
@@ -3498,7 +3844,7 @@ var TextareaElement = /** @class */ (function () {
     TextareaElement.prototype.bindEvent = function () {
         var _this = this;
         this.element.addEventListener('keydown', function (e) {
-            _this.container.emit(EVENT_INPUT_KEYDOWN, e);
+            _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
         });
         this.element.addEventListener('keyup', function (e) {
             if (_this.isComposition) {
@@ -3507,56 +3853,185 @@ var TextareaElement = /** @class */ (function () {
             _this.container.saveSelection();
         });
         this.element.addEventListener('blur', function () {
-            _this.container.emit(EVENT_INPUT_BLUR);
+            _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
         this.element.addEventListener('paste', function () {
             setTimeout(function () {
-                _this.container.emit(EVENT_EDITOR_CHANGE);
+                _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             }, 10);
         });
         this.element.addEventListener('mouseup', function () {
             _this.container.saveSelection();
-            _this.container.emit(EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
         });
         this.element.addEventListener('compositionstart', function () {
             _this.isComposition = true;
         });
         this.element.addEventListener('compositionend', function () {
             _this.isComposition = false;
-            _this.container.emit(EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
         });
     };
     return TextareaElement;
 }());
-var OTHER_WORD_CODE = [8220, 8221, 8216, 8217, 65281, 12290, 65292, 12304, 12305, 12289, 65311, 65288, 65289, 12288, 12298, 12299, 65306];
-/**
- * 计算内容的长度，排除空格符号等特殊字符
- */
-function wordLength(val) {
-    if (!val) {
-        return 0;
+var EditorHelper = /** @class */ (function () {
+    function EditorHelper() {
     }
-    var code;
-    var length = 0;
-    for (var i = val.length - 1; i >= 0; i--) {
-        code = val.charCodeAt(i);
-        if (code < 48
-            || (code > 57 && code < 65)
-            || (code > 90 && code < 97)
-            || (code > 122 && code < 128)
-            || (code > 128 && OTHER_WORD_CODE.indexOf(code) >= 0)) {
-            continue;
+    /**
+    * 计算内容的长度，排除空格符号等特殊字符
+    */
+    EditorHelper.wordLength = function (val) {
+        if (!val) {
+            return 0;
         }
-        length++;
-    }
-    return length;
-}
+        var code;
+        var length = 0;
+        for (var i = val.length - 1; i >= 0; i--) {
+            code = val.charCodeAt(i);
+            if (code < 48
+                || (code > 57 && code < 65)
+                || (code > 90 && code < 97)
+                || (code > 122 && code < 128)
+                || (code > 128 && this.OTHER_WORD_CODE.indexOf(code) >= 0)) {
+                continue;
+            }
+            length++;
+        }
+        return length;
+    };
+    EditorHelper.nodeClass = function (obj) {
+        var items = [];
+        $.each(obj, function (i, v) {
+            if (typeof i !== 'number') {
+                v = v ? i : '';
+            }
+            if (v) {
+                items.push(v);
+            }
+        });
+        return items.join(' ');
+    };
+    EditorHelper.nodeStyle = function (obj) {
+        if (!obj) {
+            return '';
+        }
+        var items = [];
+        $.each(obj, function (i, v) {
+            if (typeof i !== 'number') {
+                if (i !== 'z-index' && typeof v === 'number') {
+                    v = v + 'px';
+                }
+                v = "".concat(i.toString(), ":").concat(v, ";");
+            }
+            if (v) {
+                items.push(v);
+            }
+        });
+        return items.join('');
+    };
+    EditorHelper.modalInputBind = function (element, confirmFn) {
+        element.on('change', 'input,textarea,select', function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'file') {
+                return;
+            }
+            var val = $this.val();
+            $this.parent().toggleClass('input-not-empty', !!val);
+        }).on('click', '.check-input', function () {
+            var $this = $(this);
+            var val = !$this.hasClass('fa-check-square');
+            EditorHelper.toggleCheck($this, val);
+        }).on('click', '.btn', function () {
+            confirmFn(EditorHelper.modalInputData(element));
+        });
+    };
+    EditorHelper.toggleCheck = function (element, val) {
+        if (val === void 0) { val = false; }
+        element.toggleClass('fa-check-square', !!val).toggleClass('fa-square', !val);
+    };
+    EditorHelper.modalInputData = function (element, data) {
+        var res = {};
+        var isSet = !!data;
+        element.find('input,textarea,select,.check-input').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'file') {
+                return;
+            }
+            var name = $this.attr('name');
+            if ($this.hasClass('.check-input')) {
+                if (isSet) {
+                    EditorHelper.toggleCheck($this, data[name]);
+                    return;
+                }
+                res[name] = $this.hasClass('fa-check-square');
+                return;
+            }
+            if (isSet) {
+                $this.val(data[name] || '').trigger('change');
+                return;
+            }
+            res[name] = $this.val();
+        });
+        if (!isSet) {
+            return res;
+        }
+    };
+    EditorHelper.modalFileUpload = function (element, uploadFn) {
+        var _this = this;
+        element.on('change', 'input[type=file]', function (e) {
+            uploadFn(e.target.files);
+        }).on('dragover', function (e) {
+            var transfer = _this.getTransfer(e);
+            if (!_this.haveFiles(transfer.types)) {
+                return;
+            }
+            transfer.dropEffect = 'copy';
+            _this.preventAndStop(e);
+        }).on('dragleave', function (e) {
+            if (e.currentTarget === element[0]) {
+                return;
+            }
+            _this.preventAndStop(e);
+        }).on('drop', function (e) {
+            var transfer = _this.getTransfer(e);
+            if (!transfer) {
+                return;
+            }
+            _this.preventAndStop(e);
+            uploadFn(transfer.files);
+        });
+    };
+    EditorHelper.getTransfer = function (event) {
+        return event.dataTransfer ? event.dataTransfer : event.originalEvent.dataTransfer;
+    };
+    EditorHelper.preventAndStop = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    EditorHelper.haveFiles = function (types) {
+        if (!types) {
+            return false;
+        }
+        if (types.indexOf) {
+            return types.indexOf('Files') !== -1;
+        }
+        else if (types.contains) {
+            return types.contains('Files');
+        }
+        else {
+            return false;
+        }
+    };
+    EditorHelper.OTHER_WORD_CODE = [8220, 8221, 8216, 8217, 65281, 12290, 65292, 12304, 12305, 12289, 65311, 65288, 65289, 12288, 12298, 12299, 65306];
+    return EditorHelper;
+}());
 var EditorApp = /** @class */ (function () {
     /**
     *
     */
     function EditorApp(element, option) {
         this.isFullScreen = false;
+        this.resizer = new EditorResizerComponent();
         this.option = new EditorOptionManager();
         if (option) {
             this.option.merge(option);
@@ -3580,11 +4055,13 @@ var EditorApp = /** @class */ (function () {
         this.modalContianer = this.box.find('.editor-flow-area .editor-modal-area');
         this.footerBar = this.box.find('.editor-footer');
         this.bindEvent();
+        this.resizer.ready(this.modalContianer.parent());
     };
     EditorApp.prototype.tapTool = function (item, isRight, event) {
         this.container.focus();
         if (item.name === this.subParentName) {
             this.toggleSubToolbar(item.name, isRight);
+            this.subParentName = '';
             return;
         }
         var next = this.container.option.toolChildren(item.name);
@@ -3637,11 +4114,11 @@ var EditorApp = /** @class */ (function () {
             return;
         }
         var modal = module.modal;
-        if (modal.modalReady === 'function') {
+        if (typeof modal.modalReady === 'function') {
             modal.modalReady(module, this.modalContianer, this.option);
         }
         modal.open({}, function (res) {
-            _this.modalContianer.children().hide();
+            _this.hideModal();
             _this.container.execute(module, undefined, res);
         }, position);
     };
@@ -3658,44 +4135,35 @@ var EditorApp = /** @class */ (function () {
     };
     EditorApp.prototype.bindEvent = function () {
         var _this = this;
-        this.container.on(EVENT_UNDO_CHANGE, function () {
+        this.container.on(EDITOR_EVENT_UNDO_CHANGE, function () {
             _this.toggleTool({ name: EDITOR_UNDO_TOOL, disabled: !_this.container.canUndo }, { name: EDITOR_REDO_TOOL, disabled: !_this.container.canRedo });
-        });
-        this.container.on(EVENT_SHOW_ADD_TOOL, function (y) {
-            _this.modalContianer.children().hide();
-            _this.toggleFlowbar(_this.container.option.tool(EDITOR_ADD_TOOL), {
+        }).on(EDITOR_EVENT_SHOW_ADD_TOOL, function (y) {
+            _this.hideModal();
+            _this.toggleFlowbar(_this.option.tool(EDITOR_ADD_TOOL), {
                 x: 0,
                 y: y,
             });
-        });
-        this.container.on(EVENT_SHOW_LINE_BREAK_TOOL, function (p) {
-            _this.toggleFlowbar(_this.container.option.tool(EDITOR_ENTER_TOOL), {
+        }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, function (p) {
+            _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
             });
-        });
-        this.container.on(EVENT_SHOW_TABLE_TOOL, function (p) {
-            _this.toggleFlowbar(_this.container.option.tool(EDITOR_TABLE_TOOL), p);
-        });
-        this.container.on(EVENT_SHOW_LINK_TOOL, function (p) {
-            _this.toggleFlowbar(_this.container.option.tool(EDITOR_LINK_TOOL), p);
-        });
-        this.container.on(EVENT_SHOW_IMAGE_TOOL, function (p, cb) {
-            _this.toggleFlowbar(_this.container.option.tool(EDITOR_IMAGE_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
-            // this.resizer.openResize(p, cb);
-        });
-        this.container.on(EVENT_SHOW_COLUMN_TOOL, function (p, cb) {
-            // this.resizer.openHorizontalResize(p, cb);
-        });
-        this.container.on(EVENT_CLOSE_TOOL, function () {
-            _this.modalContianer.children().hide();
+        }).on(EDITOR_EVENT_SHOW_TABLE_TOOL, function (p) {
+            _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_TABLE_TOOL), p);
+        }).on(EDITOR_EVENT_SHOW_LINK_TOOL, function (p) {
+            _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
+        }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, function (p, cb) {
+            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_IMAGE_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
+            _this.resizer.openResize(p, cb);
+        }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, function (p, cb) {
+            _this.resizer.openHorizontalResize(p, cb);
+        }).on(EDITOR_EVENT_CLOSE_TOOL, function () {
+            _this.hideModal();
             _this.toggleFlowbar();
-            // this.flowItems = [];
-            // if (this.modalRef) {
-            //     this.modalRef.destroy();
-            //     this.modalRef = undefined;
-            // }
-            // this.resizer.close();
+            _this.resizer.close();
+        }).on(EDITOR_EVENT_EDITOR_CHANGE, function () {
+            _this.footerBar.text(_this.container.wordLength + ' words');
+            _this.target.val(_this.container.value).trigger('change');
         });
         var that = this;
         this.box.on('click', '.tool-item', function (e) {
@@ -3708,6 +4176,14 @@ var EditorApp = /** @class */ (function () {
             }
             that.tapTool(that.option.toolOnly(module), parent.hasClass('tool-right'), e);
         });
+        var $win = $(window).on('scroll', function () {
+            var scollTop = $win.scrollTop();
+            var offset = _this.box.offset();
+            _this.box.toggleClass('editor-header-fixed', offset.top < scollTop && offset.top + _this.box.height() > scollTop - 80);
+        });
+    };
+    EditorApp.prototype.hideModal = function () {
+        this.modalContianer.children().removeClass('modal-visible');
     };
     EditorApp.prototype.toggleFlowbar = function (items, p) {
         if (items === true) {
@@ -3721,8 +4197,14 @@ var EditorApp = /** @class */ (function () {
         // this.flowLastTool = items;
         this.renderToolbar(items, this.flowToolbar);
         if (p) {
+            var offset = 0;
+            var of = this.box.offset();
+            if (p.x + of.left < 40) {
+                offset = p.y + of.top > 40 ? -40 : 40;
+                // 
+            }
             this.flowToolbar.css({
-                top: p.y + 'px',
+                top: p.y + offset + 'px',
                 left: p.x + 'px',
             });
         }

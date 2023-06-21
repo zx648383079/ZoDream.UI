@@ -31,6 +31,7 @@ class EditorApp {
     private footerBar: JQuery<HTMLDivElement>;
     private subParentName: string|undefined;
     private isFullScreen = false;
+    private resizer = new EditorResizerComponent();
 
     private ready() {
         this.renderToolbar(this.option.leftToolbar, this.box.find<HTMLDivElement>('.tool-bar-top .tool-left'));
@@ -42,12 +43,14 @@ class EditorApp {
         this.modalContianer = this.box.find<HTMLDivElement>('.editor-flow-area .editor-modal-area');
         this.footerBar = this.box.find<HTMLDivElement>('.editor-footer');
         this.bindEvent();
+        this.resizer.ready(this.modalContianer.parent());
     }
 
     public tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent) {
         this.container.focus();
         if (item.name === this.subParentName) {
             this.toggleSubToolbar(item.name, isRight);
+            this.subParentName = '';
             return;
         }
         const next = this.container.option.toolChildren(item.name);
@@ -102,11 +105,11 @@ class EditorApp {
             return;
         }
         const modal = module.modal;
-        if ((modal as any).modalReady === 'function') {
+        if (typeof (modal as any).modalReady === 'function') {
             (modal as IEditorSharedModal).modalReady(module, this.modalContianer, this.option);
         }
         modal.open({}, res => {
-            this.modalContianer.children().hide();
+            this.hideModal();
             this.container.execute(module, undefined, res);
         }, position);
     }
@@ -122,50 +125,41 @@ class EditorApp {
 
     private toggleFullScreen() {
         this.isFullScreen = !this.isFullScreen;
-
+        
     }
 
 
     private bindEvent() {
-        this.container.on(EVENT_UNDO_CHANGE, () => {
+        this.container.on(EDITOR_EVENT_UNDO_CHANGE, () => {
             this.toggleTool({name: EDITOR_UNDO_TOOL, disabled: !this.container.canUndo},
                 {name: EDITOR_REDO_TOOL, disabled: !this.container.canRedo},);
-        });
-        this.container.on(EVENT_SHOW_ADD_TOOL, y => {
-            this.modalContianer.children().hide();
-            this.toggleFlowbar(this.container.option.tool(EDITOR_ADD_TOOL), {
+        }).on(EDITOR_EVENT_SHOW_ADD_TOOL, y => {
+            this.hideModal();
+            this.toggleFlowbar(this.option.tool(EDITOR_ADD_TOOL), {
                 x: 0,
                 y,
             });
-        });
-        this.container.on(EVENT_SHOW_LINE_BREAK_TOOL, p => {
-            this.toggleFlowbar(this.container.option.tool(EDITOR_ENTER_TOOL), {
+        }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, p => {
+            this.toggleFlowbar(this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
             });
-        });
-        this.container.on(EVENT_SHOW_TABLE_TOOL, p => {
-            this.toggleFlowbar(this.container.option.tool(EDITOR_TABLE_TOOL), p);
-        });
-        this.container.on(EVENT_SHOW_LINK_TOOL, p => {
-            this.toggleFlowbar(this.container.option.tool(EDITOR_LINK_TOOL), p);
-        });
-        this.container.on(EVENT_SHOW_IMAGE_TOOL, (p, cb) => {
-            this.toggleFlowbar(this.container.option.tool(EDITOR_IMAGE_TOOL), {...p, y: p.y + p.height + 20});
-            // this.resizer.openResize(p, cb);
-        });
-        this.container.on(EVENT_SHOW_COLUMN_TOOL, (p, cb) => {
-            // this.resizer.openHorizontalResize(p, cb);
-        });
-        this.container.on(EVENT_CLOSE_TOOL, () => {
-            this.modalContianer.children().hide();
+        }).on(EDITOR_EVENT_SHOW_TABLE_TOOL, p => {
+            this.toggleFlowbar(this.container.option.toolChildren(EDITOR_TABLE_TOOL), p);
+        }).on(EDITOR_EVENT_SHOW_LINK_TOOL, p => {
+            this.toggleFlowbar(this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
+        }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, (p, cb) => {
+            this.toggleFlowbar(this.option.toolChildren(EDITOR_IMAGE_TOOL), {...p, y: p.y + p.height + 20});
+            this.resizer.openResize(p, cb);
+        }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, (p, cb) => {
+            this.resizer.openHorizontalResize(p, cb);
+        }).on(EDITOR_EVENT_CLOSE_TOOL, () => {
+            this.hideModal();
             this.toggleFlowbar();
-            // this.flowItems = [];
-            // if (this.modalRef) {
-            //     this.modalRef.destroy();
-            //     this.modalRef = undefined;
-            // }
-            // this.resizer.close();
+            this.resizer.close();
+        }).on(EDITOR_EVENT_EDITOR_CHANGE, () => {
+            this.footerBar.text(this.container.wordLength + ' words');
+            this.target.val(this.container.value).trigger('change');
         });
         const that = this;
         this.box.on('click', '.tool-item', function(e) {
@@ -178,6 +172,15 @@ class EditorApp {
             }
             that.tapTool(that.option.toolOnly(module), parent.hasClass('tool-right'), e as any);
         });
+        const $win = $(window).on('scroll', () => {
+            const scollTop = $win.scrollTop();
+            const offset = this.box.offset();
+            this.box.toggleClass('editor-header-fixed', offset.top < scollTop && offset.top + this.box.height() > scollTop - 80);
+        });
+    }
+
+    private hideModal() {
+        this.modalContianer.children().removeClass('modal-visible');
     }
 
     private toggleFlowbar(): void;
@@ -196,8 +199,14 @@ class EditorApp {
         // this.flowLastTool = items;
         this.renderToolbar(items, this.flowToolbar);
         if (p) {
+            let offset = 0;
+            const of = this.box.offset()
+            if (p.x + of.left < 40) {
+                offset = p.y + of.top > 40 ?  - 40 : 40;
+                // 
+            }
             this.flowToolbar.css({
-                top: p.y + 'px',
+                top: p.y + offset + 'px',
                 left: p.x + 'px',
             });
         }

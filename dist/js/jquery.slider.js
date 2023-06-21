@@ -262,6 +262,7 @@ var SliderItem = /** @class */ (function (_super) {
      * 浏览器尺寸变化
      */
     SliderItem.prototype.resize = function () {
+        this._setTime();
         var instance = this;
         var maxWidth = this.element.width();
         var width = 0;

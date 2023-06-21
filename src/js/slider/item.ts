@@ -185,6 +185,7 @@ class SliderItem extends Eve {
      * 浏览器尺寸变化
      */
     public resize() {
+        this._setTime();
         let instance = this;
         let maxWidth = this.element.width();
         let width = 0;

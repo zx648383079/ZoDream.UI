@@ -1,3 +1,16 @@
+const EDITOR_CLOSE_TOOL = 'close';
+const EDITOR_ADD_TOOL = 'add';
+const EDITOR_ENTER_TOOL = 'enter';
+const EDITOR_UNDO_TOOL = 'undo';
+const EDITOR_REDO_TOOL = 'redo';
+const EDITOR_FULL_SCREEN_TOOL = 'full-screen';
+const EDITOR_CODE_TOOL = 'code';
+const EDITOR_IMAGE_TOOL = 'image_edit';
+const EDITOR_TABLE_TOOL = 'table_edit';
+const EDITOR_VIDEO_TOOL = 'video_edit';
+const EDITOR_LINK_TOOL = 'link_edit';
+
+
 const EditorModules: IEditorModule[] = [
     {
         name: 'text',
@@ -72,31 +85,31 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'wavyline',
-        icon: 'fa-wavy-line',
+        icon: 'fa-percentage',
         label: 'Add Wavyline',
         parent: 'text',
     },
     {
         name: 'dashed',
-        icon: 'fa-dottedunderline',
+        icon: 'fa-burn',
         label: '下标加点',
         parent: 'text',
     },
     {
         name: 'strike',
-        icon: 'fa-strike',
+        icon: 'fa-strikethrough',
         label: '画线',
         parent: 'text',
     },
     {
         name: 'sub',
-        icon: 'fa-sub',
+        icon: 'fa-subscript',
         label: '下标',
         parent: 'text',
     },
     {
         name: 'sup',
-        icon: 'fa-sup',
+        icon: 'fa-superscript',
         label: '上标',
         parent: 'text',
     },
@@ -301,13 +314,13 @@ const EditorModules: IEditorModule[] = [
     // 图片处理
     {
         name: 'replace-image',
-        icon: 'fa-exchange',
+        icon: 'fa-exchange-alt',
         label: '替换',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'align-image',
-        icon: 'fa-alignright',
+        icon: 'fa-align-right',
         label: '位置',
         parent: EDITOR_IMAGE_TOOL, 
     },
@@ -325,20 +338,22 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'link-image',
-        icon: 'fa-chain',
+        icon: 'fa-link',
         label: '插入链接',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'alt-image',
-        icon: 'fa-char',
+        icon: 'fa-font',
         label: '图片备注',
+        modal: new EditorTextComponent('备注'),
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'size-image',
         icon: 'fa-ruler',
         label: '调整尺寸',
+        modal: new EditorSizeComponent,
         parent: EDITOR_IMAGE_TOOL, 
     },
     
@@ -378,7 +393,7 @@ const EditorModules: IEditorModule[] = [
 
     {
         name: 'header-table',
-        icon: 'fa-table',
+        icon: 'fa-heading',
         label: '表头',
         parent: EDITOR_TABLE_TOOL, 
     },
@@ -420,7 +435,7 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'cell-background-table',
-        icon: 'fa-table',
+        icon: 'fa-brush',
         label: '单元格背景',
         parent: EDITOR_TABLE_TOOL, 
     },
@@ -432,14 +447,14 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'horizontal-table',
-        icon: 'fa-shuipingdengjianju',
-        label: '横向',
+        icon: 'fa-grip-horizontal',
+        label: '横向合并',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'vertical-table',
-        icon: 'fa-chuizhidengjianju',
-        label: '纵向',
+        icon: 'fa-grip-vertical',
+        label: '纵向合并',
         parent: EDITOR_TABLE_TOOL, 
     },
     // 链接处理
@@ -452,7 +467,7 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'link-style',
-        icon: 'fa-font-foreground',
+        icon: 'fa-brush',
         label: '更改样式',
         parent: EDITOR_LINK_TOOL, 
     },
@@ -464,7 +479,7 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'unlink',
-        icon: 'fa-chain-broken',
+        icon: 'fa-unlink',
         label: '断开链接',
         parent: EDITOR_LINK_TOOL, 
     },

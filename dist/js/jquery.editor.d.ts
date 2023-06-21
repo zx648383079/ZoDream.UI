@@ -7,124 +7,119 @@ declare abstract class Eve {
     trigger(event: string, ...args: any[]): any;
 }
 declare class EditorCodeComponent implements IEditorSharedModal {
-    visible: boolean;
-    language: string;
-    code: string;
     private confirmFn;
+    private element;
     constructor();
     render(): string;
-    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>): void;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    tapConfirm(): void;
 }
-declare class EditorColorComponent implements IEditorModal {
-    visible: boolean;
-    color: string;
+declare class EditorColorComponent implements IEditorSharedModal {
+    private hY;
+    private x;
+    private y;
+    private hsv;
+    private disabled;
     private confirmFn;
-    constructor();
+    private element;
     render(): string;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    tapConfirm(): void;
+    private triggerSvStyle;
+    private triggerHStyle;
+    tapNotTouch(e: MouseEvent): void;
+    tapHNotTouch(e: MouseEvent): void;
+    touchStart(e: TouchEvent): void;
+    touchMove(e: TouchEvent): void;
+    touchEnd(e: TouchEvent): void;
+    touchHStart(e: TouchEvent): void;
+    touchHMove(e: TouchEvent): void;
+    private applyColor;
+    private setBackground;
+    private triggerChange;
+    private doColor;
+    private doH;
+    /**
+     * 限制最大最小值
+     */
+    private clamp;
+    private parse;
+    private HSV2RGB;
+    private HSV2HEX;
+    private RGB2HSV;
+    private RGB2HEX;
+    private HEX2HSV;
+    private HEX2RGB;
+    private _2HSV_pri;
+    private _2HSV_pub;
+    private _2RGB_pri;
+    private num;
+    private round;
 }
 declare const FontItems: IEditorOptionItem[];
 declare class EditorDropdownComponent implements IEditorSharedModal {
-    visible: boolean;
-    items: IEditorOptionItem[];
-    selected: string;
-    modalStyle: any;
+    private items;
     private confirmFn;
+    private element;
     constructor();
     render(): string;
-    modalReady(module: IEditorModule): void;
+    private renderItem;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
+    private bindEvent;
     open(data: any, cb: EditorModalCallback, position?: IPoint): void;
     tapConfirm(item: IEditorOptionItem): void;
 }
-declare class EditorFileComponent implements IEditorModal {
-    visible: boolean;
-    fileName: string;
-    isLoading: boolean;
+declare class EditorFileComponent implements IEditorSharedModal {
     private confirmFn;
-    constructor();
+    private element;
     render(): string;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    uploadFile(e: any): void;
     uploadFiles(files: FileList | File[]): void;
     tapConfirm(value: string, title: string, size: number): void;
 }
-declare class EditorImageComponent implements IEditorModal {
-    visible: boolean;
-    fileName: string;
-    tabIndex: number;
-    url: string;
-    isLoading: boolean;
+declare class EditorImageComponent implements IEditorSharedModal {
     private confirmFn;
-    constructor();
+    private element;
     render(): string;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    uploadFile(e: any): void;
     uploadFiles(files: FileList | File[]): void;
-    tapConfirm(): void;
     private output;
 }
-declare class EditorLinkComponent implements IEditorModal {
-    visible: boolean;
-    url: string;
-    title: string;
-    isBlank: boolean;
+declare class EditorLinkComponent implements IEditorSharedModal {
     private confirmFn;
+    private element;
     constructor();
     render(): string;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    tapConfirm(): void;
 }
 declare class EditorResizerComponent {
     toolType: number;
     private rectBound?;
     private mouseMoveListeners;
     private updatedHandler;
-    constructor();
+    private element;
     render(): string;
-    get boxStyle(): {
-        display: string;
-        left?: undefined;
-        top?: undefined;
-        width?: undefined;
-        height?: undefined;
-    } | {
-        display: string;
-        left: string;
-        top: string;
-        width: string;
-        height: string;
-    };
-    get horizontalStyle(): {
-        display: string;
-        left?: undefined;
-        top?: undefined;
-        height?: undefined;
-    } | {
-        display: string;
-        left: string;
-        top: string;
-        height: string;
-    };
-    get verticalStyle(): {
-        display: string;
-        left?: undefined;
-        top?: undefined;
-        width?: undefined;
-    } | {
-        display: string;
-        left: string;
-        top: string;
-        width: string;
-    };
+    private triggerBoxStyle;
+    private triggerHorizontalStyle;
+    private triggerVerticalStyle;
+    private bindEvent;
     private docMouseMove;
     private docMouseUp;
+    ready(parent: JQuery<HTMLDivElement>): void;
     openResize(bound: IBound, cb: EditorUpdatedCallback): void;
     openHorizontalResize(bound: IBound, cb: EditorUpdatedCallback): void;
     openVerticalResize(bound: IBound, cb: EditorUpdatedCallback): void;
     close(): void;
+    private toggleType;
+    private updateStyle;
     onMoveLt(e: MouseEvent): void;
     onMoveT(e: MouseEvent): void;
     onMoveRt(e: MouseEvent): void;
@@ -136,57 +131,44 @@ declare class EditorResizerComponent {
     private mouseMove;
     private onMouseMove;
 }
-declare class EditorSizeComponent implements IEditorModal {
-    visible: boolean;
-    width: string;
-    height: string;
+declare class EditorSizeComponent implements IEditorSharedModal {
     private confirmFn;
+    private element;
     constructor();
     render(): string;
-    tapBack(): void;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    tapConfirm(): void;
 }
-declare class EditorTableComponent implements IEditorModal {
-    visible: boolean;
-    columnItems: number[];
-    rowItems: number[];
-    column: number;
-    row: number;
+declare class EditorTableComponent implements IEditorSharedModal {
     private confirmFn;
-    constructor();
+    private element;
     render(): string;
-    tapCell(row: number, col: number): void;
-    tapConfirm(row: number, column: number): void;
+    private renderTableRow;
+    private renderTable;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    private generateRange;
 }
-declare class EditorTextComponent implements IEditorModal {
-    visible: boolean;
-    value: string;
-    label: string;
+declare class EditorTextComponent implements IEditorSharedModal {
+    private label;
     private confirmFn;
-    constructor();
+    private element;
+    constructor(label?: string);
     render(): string;
-    tapBack(): void;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
-    tapConfirm(): void;
 }
-declare class EditorVideoComponent implements IEditorModal {
-    visible: boolean;
-    fileName: string;
-    tabIndex: number;
-    url: string;
-    code: string;
-    isAutoplay: boolean;
-    isLoading: boolean;
+declare class EditorVideoComponent implements IEditorSharedModal {
     private confirmFn;
-    constructor();
+    private element;
     render(): string;
+    private bindEvent;
+    modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     open(data: any, cb: EditorModalCallback): void;
     uploadFile(e: any): void;
     uploadFiles(files: FileList | File[]): void;
-    tapConfirm(): void;
 }
 declare class CodeElement implements IEditorElement {
     private element;
@@ -471,55 +453,44 @@ interface IEditorElement {
     focus(): void;
     blur(): void;
 }
-declare const EVENT_INPUT_KEYDOWN = "input.keydown";
-declare const EVENT_INPUT_BLUR = "input.blur";
-declare const EVENT_INPUT_CLICK = "input.click";
-declare const EVENT_MOUSE_UP = "mouse.up";
-declare const EVENT_MOUSE_MOVE = "mouse.move";
-declare const EVENT_EDITOR_CHANGE = "change";
-declare const EVENT_EDITOR_READY = "ready";
-declare const EVENT_EDITOR_DESTORY = "destroy";
-declare const EVENT_EDITOR_AUTO_SAVE = "auto_save";
-declare const EVENT_SELECTION_CHANGE = "selection_change";
-declare const EVENT_UNDO_CHANGE = "undo";
-declare const EVENT_SHOW_ADD_TOOL = "tool.add";
-declare const EVENT_SHOW_LINE_BREAK_TOOL = "tool.line.break";
-declare const EVENT_SHOW_IMAGE_TOOL = "tool.image";
-declare const EVENT_SHOW_COLUMN_TOOL = "tool.column";
-declare const EVENT_SHOW_LINK_TOOL = "tool.link";
-declare const EVENT_SHOW_TABLE_TOOL = "tool.table";
-declare const EVENT_CLOSE_TOOL = "tool.flow.close";
+declare const EDITOR_EVENT_INPUT_KEYDOWN = "input.keydown";
+declare const EDITOR_EVENT_INPUT_BLUR = "input.blur";
+declare const EDITOR_EVENT_INPUT_CLICK = "input.click";
+declare const EDITOR_EVENT_MOUSE_UP = "mouse.up";
+declare const EDITOR_EVENT_MOUSE_MOVE = "mouse.move";
+declare const EDITOR_EVENT_EDITOR_CHANGE = "change";
+declare const EDITOR_EVENT_EDITOR_READY = "ready";
+declare const EDITOR_EVENT_EDITOR_DESTORY = "destroy";
+declare const EDITOR_EVENT_EDITOR_AUTO_SAVE = "auto_save";
+declare const EDITOR_EVENT_SELECTION_CHANGE = "selection_change";
+declare const EDITOR_EVENT_UNDO_CHANGE = "undo";
+declare const EDITOR_EVENT_SHOW_ADD_TOOL = "tool.add";
+declare const EDITOR_EVENT_SHOW_LINE_BREAK_TOOL = "tool.line.break";
+declare const EDITOR_EVENT_SHOW_IMAGE_TOOL = "tool.image";
+declare const EDITOR_EVENT_SHOW_COLUMN_TOOL = "tool.column";
+declare const EDITOR_EVENT_SHOW_LINK_TOOL = "tool.link";
+declare const EDITOR_EVENT_SHOW_TABLE_TOOL = "tool.table";
+declare const EDITOR_EVENT_CLOSE_TOOL = "tool.flow.close";
 interface IEditorListeners {
-    [EVENT_INPUT_KEYDOWN]: (e: KeyboardEvent) => void;
-    [EVENT_INPUT_BLUR]: () => void;
-    [EVENT_EDITOR_CHANGE]: () => void;
-    [EVENT_INPUT_CLICK]: () => void;
-    [EVENT_SHOW_ADD_TOOL]: (y: number) => void;
-    [EVENT_CLOSE_TOOL]: () => void;
-    [EVENT_SHOW_LINE_BREAK_TOOL]: (p: IPoint) => void;
-    [EVENT_SHOW_IMAGE_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
-    [EVENT_SHOW_LINK_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
-    [EVENT_SHOW_TABLE_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
-    [EVENT_SHOW_COLUMN_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
-    [EVENT_SELECTION_CHANGE]: () => void;
-    [EVENT_UNDO_CHANGE]: () => void;
-    [EVENT_EDITOR_AUTO_SAVE]: () => void;
-    [EVENT_EDITOR_READY]: () => void;
-    [EVENT_MOUSE_MOVE]: (p: IPoint) => void;
-    [EVENT_MOUSE_UP]: (p: IPoint) => void;
-    [EVENT_EDITOR_DESTORY]: () => void;
+    [EDITOR_EVENT_INPUT_KEYDOWN]: (e: KeyboardEvent) => void;
+    [EDITOR_EVENT_INPUT_BLUR]: () => void;
+    [EDITOR_EVENT_EDITOR_CHANGE]: () => void;
+    [EDITOR_EVENT_INPUT_CLICK]: () => void;
+    [EDITOR_EVENT_SHOW_ADD_TOOL]: (y: number) => void;
+    [EDITOR_EVENT_CLOSE_TOOL]: () => void;
+    [EDITOR_EVENT_SHOW_LINE_BREAK_TOOL]: (p: IPoint) => void;
+    [EDITOR_EVENT_SHOW_IMAGE_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
+    [EDITOR_EVENT_SHOW_LINK_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
+    [EDITOR_EVENT_SHOW_TABLE_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
+    [EDITOR_EVENT_SHOW_COLUMN_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
+    [EDITOR_EVENT_SELECTION_CHANGE]: () => void;
+    [EDITOR_EVENT_UNDO_CHANGE]: () => void;
+    [EDITOR_EVENT_EDITOR_AUTO_SAVE]: () => void;
+    [EDITOR_EVENT_EDITOR_READY]: () => void;
+    [EDITOR_EVENT_MOUSE_MOVE]: (p: IPoint) => void;
+    [EDITOR_EVENT_MOUSE_UP]: (p: IPoint) => void;
+    [EDITOR_EVENT_EDITOR_DESTORY]: () => void;
 }
-declare const EDITOR_CLOSE_TOOL = "close";
-declare const EDITOR_ADD_TOOL = "add";
-declare const EDITOR_ENTER_TOOL = "enter";
-declare const EDITOR_UNDO_TOOL = "undo";
-declare const EDITOR_REDO_TOOL = "redo";
-declare const EDITOR_FULL_SCREEN_TOOL = "full-screen";
-declare const EDITOR_CODE_TOOL = "code";
-declare const EDITOR_IMAGE_TOOL = "image_edit";
-declare const EDITOR_TABLE_TOOL = "table_edit";
-declare const EDITOR_VIDEO_TOOL = "video_edit";
-declare const EDITOR_LINK_TOOL = "link_edit";
 type EditorUpdatedCallback<T = IEditorBlock> = (data: T) => void;
 interface IPoint {
     x: number;
@@ -613,6 +584,17 @@ interface IEditorInclueBlock extends IEditorBlock {
     end: string;
     cursor?: number;
 }
+declare const EDITOR_CLOSE_TOOL = "close";
+declare const EDITOR_ADD_TOOL = "add";
+declare const EDITOR_ENTER_TOOL = "enter";
+declare const EDITOR_UNDO_TOOL = "undo";
+declare const EDITOR_REDO_TOOL = "redo";
+declare const EDITOR_FULL_SCREEN_TOOL = "full-screen";
+declare const EDITOR_CODE_TOOL = "code";
+declare const EDITOR_IMAGE_TOOL = "image_edit";
+declare const EDITOR_TABLE_TOOL = "table_edit";
+declare const EDITOR_VIDEO_TOOL = "video_edit";
+declare const EDITOR_LINK_TOOL = "link_edit";
 declare const EditorModules: IEditorModule[];
 interface IUploadResult {
     url: string;
@@ -721,11 +703,23 @@ declare class TextareaElement implements IEditorElement {
     private moveCursor;
     private bindEvent;
 }
-declare const OTHER_WORD_CODE: number[];
-/**
- * 计算内容的长度，排除空格符号等特殊字符
- */
-declare function wordLength(val: string): number;
+declare class EditorHelper {
+    private static OTHER_WORD_CODE;
+    /**
+    * 计算内容的长度，排除空格符号等特殊字符
+    */
+    static wordLength(val: string): number;
+    static nodeClass(obj: any): string;
+    static nodeStyle(obj: any): string;
+    static modalInputBind<T = any>(element: JQuery<HTMLDivElement>, confirmFn: (data: T) => void): void;
+    private static toggleCheck;
+    static modalInputData(element: JQuery<HTMLDivElement>): any;
+    static modalInputData<T = any>(element: JQuery<HTMLDivElement>, data: T): T;
+    static modalFileUpload(element: JQuery<HTMLDivElement>, uploadFn: (data: FileList) => void): void;
+    private static getTransfer;
+    private static preventAndStop;
+    private static haveFiles;
+}
 declare class EditorApp {
     /**
     *
@@ -743,6 +737,7 @@ declare class EditorApp {
     private footerBar;
     private subParentName;
     private isFullScreen;
+    private resizer;
     private ready;
     tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent): void;
     tapFlowTool(item: IEditorTool, event: MouseEvent): void;
@@ -751,6 +746,7 @@ declare class EditorApp {
     private getOffsetPosition;
     private toggleFullScreen;
     private bindEvent;
+    private hideModal;
     private toggleFlowbar;
     private toggleSubToolbar;
     private toggleTool;

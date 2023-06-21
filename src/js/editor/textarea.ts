@@ -52,7 +52,7 @@ class TextareaElement implements IEditorElement {
         return this.value.length;
     }
     public get wordLength(): number {
-        return wordLength(this.value);
+        return EditorHelper.wordLength(this.value);
     }
 
     public selectAll(): void {
@@ -73,32 +73,32 @@ class TextareaElement implements IEditorElement {
         switch(block.type) {
             case EditorBlockType.AddLink:
                 this.insertLink(block as any, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddText:
             case EditorBlockType.AddRaw:
                 this.insertText(block.value, range, block.cursor);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddImage:
                 this.insertImage(block as any, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Indent:
                 this.insertIndent(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.Outdent:
                 this.insertOutdent(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddLineBreak:
                 this.insertLineBreak(range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
             case EditorBlockType.AddCode:
                 this.insertCode(block as any, range);
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
                 return;
         }
     }
@@ -233,7 +233,7 @@ class TextareaElement implements IEditorElement {
 
     private bindEvent() {
         this.element.addEventListener('keydown', e => {
-            this.container.emit(EVENT_INPUT_KEYDOWN, e);
+            this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
         });
         this.element.addEventListener('keyup', e => {
             if (this.isComposition) {
@@ -242,23 +242,23 @@ class TextareaElement implements IEditorElement {
             this.container.saveSelection();
         });
         this.element.addEventListener('blur', () => {
-            this.container.emit(EVENT_INPUT_BLUR);
+            this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
         this.element.addEventListener('paste', () => {
             setTimeout(() => {
-                this.container.emit(EVENT_EDITOR_CHANGE);
+                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             }, 10);
         });
         this.element.addEventListener('mouseup', () => {
             this.container.saveSelection();
-            this.container.emit(EVENT_SELECTION_CHANGE);
+            this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
         });
         this.element.addEventListener('compositionstart', () => {
             this.isComposition = true;
         });
         this.element.addEventListener('compositionend', () => {
             this.isComposition = false;
-            this.container.emit(EVENT_SELECTION_CHANGE);
+            this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
         });
     }
 

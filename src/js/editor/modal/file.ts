@@ -1,47 +1,52 @@
 
 
-class EditorFileComponent implements IEditorModal {
+class EditorFileComponent implements IEditorSharedModal {
 
-    public visible = false;
-    public fileName = '';
-    public isLoading = false;
     private confirmFn: EditorModalCallback;
-    constructor(
-        // private uploadService: FileUploadService,
-    ) { }
+    private element: JQuery<HTMLDivElement>;
 
     public render() {
-        return `<div class="editor-modal-box" [ngClass]="{'modal-visible': visible, 'modal-loading': isLoading}" appFileDrop (fileDrop)="uploadFiles($event)">
-        <label class="drag-input" [for]="fileName">
+        return `<div class="editor-modal-box">
+        <label class="drag-input" for="editor-modal-file">
             拖放文件
             <p>(或点击)</p>
-            <input type="file" [id]="fileName" (change)="uploadFile($event)">
+            <input type="file" id="editor-modal-file">
         </label>
-        <app-loading-ring></app-loading-ring>
+        <div class="loading-ring">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>`;
     }
 
+    private bindEvent() {
+        EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
+    }
+
+    public modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
+    }
+
     public open(data: any, cb: EditorModalCallback) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     }
 
-    public uploadFile(e: any) {
-        if (this.isLoading) {
-            return;
-        }
-        const files = e.target.files as FileList;
-        this.uploadFiles(files);
-    }
-
     public uploadFiles(files: FileList|File[]) {
-        if (this.isLoading) {
+        if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
         if (files.length < 1) {
             return;
         }
-        this.isLoading = true;
+        this.element.addClass('editor-modal-loading');
         // this.uploadService.uploadFile(files[0]).subscribe({
         //     next: res => {
         //         this.isLoading = false;
@@ -53,7 +58,6 @@ class EditorFileComponent implements IEditorModal {
         // })
     }
     public tapConfirm(value: string, title: string, size: number) {
-        this.visible = false;
         if (this.confirmFn) {
             this.confirmFn({
                 value,

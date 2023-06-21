@@ -1,53 +1,54 @@
+class EditorSizeComponent implements IEditorSharedModal {
 
-
-class EditorSizeComponent implements IEditorModal {
-
-    public visible = false;
-    public width = '';
-    public height = '';
     private confirmFn: EditorModalCallback;
+    private element: JQuery<HTMLDivElement>;
 
     constructor() { }
 
     public render() {
-        return `<div class="editor-modal-box" [ngClass]="{'modal-visible': visible}">
+        return `<div class="editor-modal-box">
         <div class="tab-bar">
-            <a class="item" (click)="tapBack()">
-                <i class="iconfont icon-back"></i>
+            <a class="item">
+                <i class="fa fa-arrow-left"></i>
             </a>
         </div>
         <div class="input-flex-group">
-            <div class="input-header-block" [ngClass]="{'input-not-empty': !!width}">
-                <input type="text" [(ngModel)]="width">
+            <div class="input-header-block">
+                <input type="text" name="width">
                 <label for="">宽</label>
             </div>
-            <div class="input-header-block" [ngClass]="{'input-not-empty': !!height}">
-                <input type="text" [(ngModel)]="height">
+            <div class="input-header-block">
+                <input type="text" name="height">
                 <label for="">高</label>
             </div>
         </div>
         <div class="modal-action">
-            <div class="btn btn-outline-primary" (click)="tapConfirm()">更新</div>
+            <div class="btn btn-outline-primary">更新</div>
         </div>
     </div>`;
     }
 
-    public tapBack() {
-        
+    private bindEvent() {
+        EditorHelper.modalInputBind(this.element, data => {
+            if (this.confirmFn) {
+                this.confirmFn({
+                    height: data.height,
+                    width: data.width
+                });
+            }
+        });
+    }
+
+    public modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
     }
 
     public open(data: any, cb: EditorModalCallback) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
-    }
-
-    public tapConfirm() {
-        this.visible = false;
-        if (this.confirmFn) {
-            this.confirmFn({
-                height: this.height,
-                width: this.width
-            });
-        }
     }
 }

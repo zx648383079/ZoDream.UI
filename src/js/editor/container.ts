@@ -16,10 +16,10 @@ class EditorContainer implements IEditorContainer {
         public option: EditorOptionManager = new EditorOptionManager(),
     ) {
         // document.addEventListener('mousemove', e => {
-        //     this.emit(EVENT_MOUSE_MOVE, {x: e.clientX, y: e.clientX});
+        //     this.emit(EDITOR_EVENT_MOUSE_MOVE, {x: e.clientX, y: e.clientX});
         // });
         // document.addEventListener('mouseup', e => {
-        //     this.emit(EVENT_MOUSE_UP, {x: e.clientX, y: e.clientX});
+        //     this.emit(EDITOR_EVENT_MOUSE_UP, {x: e.clientX, y: e.clientX});
         // });
     }
 
@@ -34,16 +34,16 @@ class EditorContainer implements IEditorContainer {
         if (!this.element) {
             return;
         }
-        // this.on(EVENT_MOUSE_MOVE, p => {
+        // this.on(EDITOR_EVENT_MOUSE_MOVE, p => {
         //     if (this.mouseMoveListeners.move) {
         //         this.mouseMoveListeners.move(p);
         //     }
-        // }).on(EVENT_MOUSE_UP, p => {
+        // }).on(EDITOR_EVENT_MOUSE_UP, p => {
         //     if (this.mouseMoveListeners.finish) {
         //         this.mouseMoveListeners.finish(p);
         //     }
         // });
-        this.on(EVENT_INPUT_KEYDOWN, (e: KeyboardEvent) => {
+        this.on(EDITOR_EVENT_INPUT_KEYDOWN, (e: KeyboardEvent) => {
             const modifiers = [];
             if (e.ctrlKey) {
                 modifiers.push('Ctrl');
@@ -76,14 +76,14 @@ class EditorContainer implements IEditorContainer {
                 this.insert({type: EditorBlockType.Indent});
             }
         });
-        this.on(EVENT_INPUT_BLUR, () => {
+        this.on(EDITOR_EVENT_INPUT_BLUR, () => {
             this.saveSelection();
-            // this.emit(EVENT_EDITOR_CHANGE);
+            // this.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
-        this.on(EVENT_EDITOR_CHANGE, () => {
+        this.on(EDITOR_EVENT_EDITOR_CHANGE, () => {
             this.asynSave();
         });
-        this.on(EVENT_EDITOR_AUTO_SAVE, () => {
+        this.on(EDITOR_EVENT_EDITOR_AUTO_SAVE, () => {
             if (this.undoIndex >= 0 && this.undoIndex < this.undoStack.length - 1) {
                 this.undoStack.splice(this.undoIndex);
             }
@@ -93,9 +93,9 @@ class EditorContainer implements IEditorContainer {
             }
             this.undoStack.push(this.value);
             this.undoIndex = this.undoStack.length - 1;
-            this.emit(EVENT_UNDO_CHANGE);
+            this.emit(EDITOR_EVENT_UNDO_CHANGE);
         });
-        this.emit(EVENT_EDITOR_READY);
+        this.emit(EDITOR_EVENT_EDITOR_READY);
     }
 
     public get canUndo() {
@@ -123,13 +123,13 @@ class EditorContainer implements IEditorContainer {
 
     public set value(content: string) {
         if (!this.element) {
-            this.once(EVENT_EDITOR_READY, () => {
+            this.once(EDITOR_EVENT_EDITOR_READY, () => {
                 this.element.value = content;
             });
             return;
         }
         this.element.value = typeof content === 'undefined' ? '' : content;
-        // this.emit(EVENT_EDITOR_CHANGE);
+        // this.emit(EDITOR_EVENT_EDITOR_CHANGE);
     }
 
     public get length(): number {
@@ -194,7 +194,7 @@ class EditorContainer implements IEditorContainer {
         }
         this.asyncTimer = window.setTimeout(() => {
             this.asyncTimer = 0;
-            this.emit(EVENT_EDITOR_AUTO_SAVE);
+            this.emit(EDITOR_EVENT_EDITOR_AUTO_SAVE);
         }, 2000);
     }
 
@@ -203,13 +203,13 @@ class EditorContainer implements IEditorContainer {
     }
 
     public destroy(): void {
-        this.emit(EVENT_EDITOR_DESTORY);
+        this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     }
 
     public undo(): void {
         if (!this.canUndo) {
-            this.emit(EVENT_UNDO_CHANGE);
+            this.emit(EDITOR_EVENT_UNDO_CHANGE);
             return;
         }
         this.undoIndex --;
@@ -217,7 +217,7 @@ class EditorContainer implements IEditorContainer {
     }
     public redo(): void {
         if (!this.canRedo) {
-            this.emit(EVENT_UNDO_CHANGE);
+            this.emit(EDITOR_EVENT_UNDO_CHANGE);
             return;
         }
         this.undoIndex ++;

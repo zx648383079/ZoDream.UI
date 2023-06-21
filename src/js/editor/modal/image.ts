@@ -1,69 +1,85 @@
+class EditorImageComponent implements IEditorSharedModal {
 
-
-class EditorImageComponent implements IEditorModal {
-
-    public visible = false;
-    public fileName = '';
-    public tabIndex = 0;
-    public url = '';
-    public isLoading = false;
     private confirmFn: EditorModalCallback;
-    constructor(
-        // private uploadService: FileUploadService,
-    ) { }
+    private element: JQuery<HTMLDivElement>;
 
     public render() {
-        return `<div class="editor-modal-box" [ngClass]="{'modal-visible': visible, 'modal-loading': isLoading}" appFileDrop (fileDrop)="uploadFiles($event)">
+        return `<div class="editor-modal-box">
         <div class="tab-bar">
-            <a class="item" [ngClass]="{active: tabIndex < 1}" (click)="tabIndex = 0" title="上传">
-                <i class="iconfont icon-upload"></i>
+            <a class="item" title="上传">
+                <i class="fa fa-upload"></i>
             </a>
-            <a class="item" [ngClass]="{active: tabIndex == 1}" (click)="tabIndex = 1" title="链接">
-                <i class="iconfont icon-chain"></i>
+            <a class="item active" title="链接">
+                <i class="fa fa-link"></i>
             </a>
-            <a class="item" [ngClass]="{active: tabIndex == 2}" (click)="tabIndex = 2" title="在线图库">
-                <i class="iconfont icon-folder-open-o"></i>
+            <a class="item" title="在线图库">
+                <i class="fa fa-folder-open"></i>
             </a>
         </div>
-        <label class="drag-input" [for]="fileName" *ngIf="tabIndex < 1">
-            拖放文件
-            <p>(或点击)</p>
-            <input type="file" [id]="fileName" (change)="uploadFile($event)">
-        </label>
-        <div *ngIf="tabIndex == 1">
-            <div class="input-header-block" [ngClass]="{'input-not-empty': !!url}">
-                <input type="text" [(ngModel)]="url">
+        <div class="tab-body-item">
+            <label class="drag-input" for="editor-modal-image">
+                拖放文件
+                <p>(或点击)</p>
+                <input type="file" id="editor-modal-image">
+            </label>
+        </div>
+        <div class="tab-body-item active">
+            <div class="input-header-block">
+                <input type="text" name="url">
                 <label for="">链接</label>
             </div>
             <div class="modal-action">
-                <div class="btn btn-outline-primary" (click)="tapConfirm()">插入</div>
+                <div class="btn btn-outline-primary">插入</div>
             </div>
         </div>
-        <app-loading-ring></app-loading-ring>
+        <div class="loading-ring">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>`;
     }
 
+    private bindEvent() {
+        const that = this;
+        this.element.on('click', '.tab-bar .item', function() {
+            const $this = $(this);
+            $this.addClass('active').siblings().removeClass('active');
+            that.element.find('.tab-body-item').each(function(i) {
+                $(this).toggleClass('active', $this.index() === i);
+            });
+        });
+        EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
+        EditorHelper.modalInputBind(this.element, data => {
+            this.output({
+                value: data.url
+            });
+        });
+    }
+
+    public modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager) {
+        if (!this.element) {
+            this.element = $(this.render());
+        }
+        parent.append(this.element);
+        this.bindEvent();
+    }
+
     public open(data: any, cb: EditorModalCallback) {
-        this.visible = true;
+        this.element.addClass('modal-visible');
         this.confirmFn = cb;
     }
 
-    public uploadFile(e: any) {
-        if (this.isLoading) {
-            return;
-        }
-        const files = e.target.files as FileList;
-        this.uploadFiles(files);
-    }
-
     public uploadFiles(files: FileList|File[]) {
-        if (this.isLoading) {
+        if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
         if (files.length < 1) {
             return;
         }
-        this.isLoading = true;
+        this.element.addClass('editor-modal-loading');
         // this.uploadService.uploadImage(files[0]).subscribe({
         //     next: res => {
         //         this.isLoading = false;
@@ -79,14 +95,7 @@ class EditorImageComponent implements IEditorModal {
         // })
     }
 
-    public tapConfirm() {
-        this.output({
-            value: this.url
-        });
-    }
-
     private output(data: any) {
-        this.visible = false;
         if (this.confirmFn) {
             this.confirmFn(data);
         }

@@ -40,7 +40,7 @@ class CodeElement implements IEditorElement {
     }
     public set selectedValue(v: string) {
         const range = this.selection.range;
-        this.insertText(v, range);
+        this.addTextExecute(range, {value: v} as any);
     }
     public get value(): string {
         const items = [];
@@ -73,25 +73,13 @@ class CodeElement implements IEditorElement {
         if (!range) {
             range = this.selection;
         }
-        switch(block.type) {
-            case EditorBlockType.AddText:
-            case EditorBlockType.AddRaw:
-                this.insertText(block.value, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddLineBreak:
-                this.insertLineBreak(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.Indent:
-                this.insertIndent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Outdent:
-                this.insertOutdent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
+        const type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        const func = this[type + 'Execute'];
+        if (typeof func === 'function') {
+            func.call(this, range.range, block);
+            return;
         }
+        throw new Error(`insert type error:[${block.type}]`);
     }
 
 
@@ -173,27 +161,28 @@ class CodeElement implements IEditorElement {
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
     }
+//#region 外部调用的方法
 
-    private insertText(v: string, range: Range) {
+    private addTextExecute(range: Range, block: IEditorTextBlock) {
         const [begin, end] = this.getRangeLineNo(range);
-        const items = v.split('\n');
+        const items = block.value.split('\n');
         items[0] = this.getLinePrevious(range) + items[0];
         items[items.length - 1] += this.getLineNext(range);
         this.insertLines(begin, end, ...items);
     }
 
-    private insertLineBreak(range: Range) {
+    private addLineBreakExecute(range: Range) {
         const [begin, end] = this.getRangeLineNo(range);
         this.insertLines(begin, end, this.getLinePrevious(range), this.getLineNext(range));
     }
 
-    private insertIndent(range: Range) {
+    private indentExecute(range: Range) {
         this.replaceSelectLine(s => {
             return '    ' + s;
         }, range);
     }
 
-    private insertOutdent(range: Range) {
+    private outdentExecute(range: Range) {
         this.replaceSelectLine(s => {
             if (s.length < 1) {
                 return s;
@@ -208,6 +197,8 @@ class CodeElement implements IEditorElement {
             }
         }, range);
     }
+
+//#endregion
 
     private replaceSelectLine(cb: (line: string) => string, range: Range) {
         const [begin, end] = this.getRangeLineNo(range);

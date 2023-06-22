@@ -3,6 +3,7 @@
 class EditorFileComponent implements IEditorSharedModal {
 
     private confirmFn: EditorModalCallback;
+    private option: EditorOptionManager;
     private element: JQuery<HTMLDivElement>;
 
     public render() {
@@ -32,6 +33,7 @@ class EditorFileComponent implements IEditorSharedModal {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     }
 
     public open(data: any, cb: EditorModalCallback) {
@@ -47,15 +49,12 @@ class EditorFileComponent implements IEditorSharedModal {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadFile(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.tapConfirm(res.url, res.original, res.size);
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'file', res => {
+            this.element.removeClass('editor-modal-loading');
+            this.tapConfirm(res.url, res.title, res.size);
+        }, () => {
+            this.element.removeClass('editor-modal-loading');
+        });
     }
     public tapConfirm(value: string, title: string, size: number) {
         if (this.confirmFn) {

@@ -3,6 +3,7 @@ const EDITOR_ADD_TOOL = 'add';
 const EDITOR_ENTER_TOOL = 'enter';
 const EDITOR_UNDO_TOOL = 'undo';
 const EDITOR_REDO_TOOL = 'redo';
+const EDITOR_MORE_TOOL = 'more';
 const EDITOR_FULL_SCREEN_TOOL = 'full-screen';
 const EDITOR_CODE_TOOL = 'code';
 const EDITOR_IMAGE_TOOL = 'image_edit';
@@ -46,7 +47,7 @@ const EditorModules: IEditorModule[] = [
         }
     },
     {
-        name: 'more',
+        name: EDITOR_MORE_TOOL,
         icon: 'fa-ellipsis-v',
         label: 'More'
     },
@@ -65,6 +66,13 @@ const EditorModules: IEditorModule[] = [
         }
     },
     // 文字处理
+    {
+        name: 'head',
+        icon: 'fa-heading',
+        label: 'H1-H6',
+        parent: 'text',
+        modal: new EditorDropdownComponent(true),
+    },
     {
         name: 'bold',
         icon: 'fa-bold',
@@ -154,24 +162,36 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-align-left',
         label: 'Algin Left',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Align, value: 'left'})
+        },
     },
     {
         name: 'align-center',
         icon: 'fa-align-center',
         label: 'Algin Center',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Align, value: 'center'})
+        },
     },
     {
         name: 'align-right',
         icon: 'fa-align-right',
         label: 'Algin Right',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Align, value: 'right'})
+        },
     },
     {
         name: 'align-justify',
         icon: 'fa-align-justify',
         label: 'Algin Justify',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Align, value: ''})
+        },
     },
     {
         name: 'list',
@@ -293,13 +313,13 @@ const EditorModules: IEditorModule[] = [
         name: EDITOR_FULL_SCREEN_TOOL,
         icon: 'fa-expand',
         label: 'Toggle Full Screen',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
     },
     {
         name: 'select-all',
         icon: 'fa-braille',
         label: 'Select All',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
         handler(editor, range, data) {
             editor.selectAll();
         },
@@ -308,7 +328,7 @@ const EditorModules: IEditorModule[] = [
         name: EDITOR_CODE_TOOL,
         icon: 'fa-code',
         label: 'View Code',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
     },
 
     // 图片处理

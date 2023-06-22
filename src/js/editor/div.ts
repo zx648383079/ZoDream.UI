@@ -105,48 +105,13 @@ class DivElement implements IEditorElement {
         if (!range) {
             range = this.selection;
         }
-        switch(block.type) {
-            case EditorBlockType.AddHr:
-                this.insertHr(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddText:
-                this.insertText(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddRaw:
-                this.insertRaw(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.Indent:
-                this.insertIndent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Outdent:
-                this.insertOutdent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddLineBreak:
-                this.insertLineBreak(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddImage:
-                this.insertImage(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddTable:
-                this.insertTable(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddVideo:
-                this.insertVideo(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddLink:
-                this.insertLink(block as any, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
+        const func = this[block.type + 'Execute'];
+        if (typeof func === 'function') {
+            func.call(this, range.range, block);
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
+            return;
         }
+        throw new Error(`insert type error:[${block.type}]`);
     }
     public focus(): void {
         this.element.focus({preventScroll: true});
@@ -156,12 +121,14 @@ class DivElement implements IEditorElement {
         return this.element.blur();
     }
 
-    private insertHr(range: Range) {
+//#region 外部调用的方法
+
+    private addHrExecute(range: Range) {
         const hr = document.createElement('hr');
         this.replaceSelected(range, hr);
     }
 
-    private insertIndent(range: Range) {
+    private indentExecute(range: Range) {
         const items: Node[] = [];
         this.eachRangeParentNode(range, node => {
             if (this.isBlockNode(node) || node.parentNode === this.element) {
@@ -182,7 +149,7 @@ class DivElement implements IEditorElement {
         }
     }
 
-    private insertOutdent(range: Range) {
+    private outdentExecute(range: Range) {
         this.eachRangeParentNode(range, node => {
             if (!this.isBlockNode(node)) {
                 return;
@@ -195,7 +162,7 @@ class DivElement implements IEditorElement {
         });
     }
 
-    private insertTable(block: IEditorTableBlock, range: Range) {
+    private addTableExecute(range: Range, block: IEditorTableBlock) {
         const table = document.createElement('table');
         table.style.width = '100%';
         const tbody = table.createTBody();
@@ -213,20 +180,20 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, table);
     }
 
-    private insertImage(block: IEditorFileBlock, range: Range) {
+    private addImageExecute(range: Range, block: IEditorFileBlock) {
         const image = document.createElement('img');
         image.src = block.value;
         image.title = block.title || '';
         this.replaceSelected(range, image);
     }
 
-    private insertText(block: IEditorTextBlock, range: Range) {
+    private addTextExecute(range: Range, block: IEditorTextBlock) {
         const span = document.createElement('span');
         span.innerText = block.value;
         this.replaceSelected(range, span);
     }
 
-    private insertRaw(block: IEditorTextBlock, range: Range) {
+    private addRawExecute(range: Range, block: IEditorTextBlock) {
         const p = document.createElement('div');
         p.innerHTML = block.value;
         const items = [];
@@ -236,21 +203,21 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, ...items);
     }
 
-    private insertVideo(block: IEditorVideoBlock, range: Range) {
+    private addVideoExecute(range: Range, block: IEditorVideoBlock) {
         const ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
         this.replaceSelected(range, ele);
     }
 
-    private insertFile(block: IEditorFileBlock, range: Range) {
+    private addFileExecute(range: Range, block: IEditorFileBlock) {
         const ele = document.createElement('a');
         ele.href = block.value;
         ele.title = block.title || '';
         this.replaceSelected(range, ele);
     }
 
-    private insertLink(block: IEditorLinkBlock, range: Range) {
+    private addLinkExecute(range: Range, block: IEditorLinkBlock) {
         const link = document.createElement('a');
         link.href = block.value;
         link.text = block.title;
@@ -261,8 +228,8 @@ class DivElement implements IEditorElement {
         this.selectNode(link);
     }
 
-    
-    private insertLineBreak(range: Range) {
+
+    private addLineBreakExecute(range: Range) {
         let begin = range.startContainer;
         let beginOffset = range.startOffset;
         const p = document.createElement(this.container.option.blockTag);
@@ -314,6 +281,17 @@ class DivElement implements IEditorElement {
         }
         this.selectNode(p);
     }
+
+    private alignExecute(range: Range, block: IEditorValueBlock) {
+        const box = range.startContainer.parentNode as HTMLElement;
+        if (box === this.element) {
+            
+            return;
+        }
+        box.style.textAlign = block.value;
+    }
+
+//#endregion
 
     /**
      * 删除选中并替换为新的

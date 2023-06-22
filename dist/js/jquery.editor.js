@@ -18,30 +18,6 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
-var Eve = /** @class */ (function () {
-    function Eve() {
-    }
-    Eve.prototype.on = function (event, callback) {
-        this.options['on' + event] = callback;
-        return this;
-    };
-    Eve.prototype.hasEvent = function (event) {
-        return this.options.hasOwnProperty('on' + event);
-    };
-    Eve.prototype.trigger = function (event) {
-        var _a;
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var realEvent = 'on' + event;
-        if (!this.hasEvent(event)) {
-            return;
-        }
-        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args, false));
-    };
-    return Eve;
-}());
 var EditorCodeComponent = /** @class */ (function () {
     function EditorCodeComponent() {
     }
@@ -353,7 +329,7 @@ var EditorColorComponent = /** @class */ (function () {
     };
     return EditorColorComponent;
 }());
-var FontItems = [
+var EditorFontItems = [
     {
         name: 'Arial',
         value: 'Arial,Helvetica,sans-serif',
@@ -380,14 +356,27 @@ var FontItems = [
     }
 ];
 var EditorDropdownComponent = /** @class */ (function () {
-    function EditorDropdownComponent() {
+    function EditorDropdownComponent(isNodeTag) {
+        if (isNodeTag === void 0) { isNodeTag = false; }
+        this.isNodeTag = isNodeTag;
         this.items = [];
     }
     EditorDropdownComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box editor-dropdown-modal\">\n        <ul class=\"option-bar\">\n        </ul>\n    </div>";
+        return "<div class=\"editor-modal-box editor-dropdown-modal\"></div>";
     };
-    EditorDropdownComponent.prototype.renderItem = function (item) {
-        return "<li style=\"".concat(EditorHelper.nodeStyle(item.style), "\">").concat(item.name, "</li>");
+    EditorDropdownComponent.prototype.renderItems = function (isTag) {
+        if (isTag === void 0) { isTag = false; }
+        var html = '';
+        for (var _i = 0, _a = this.items; _i < _a.length; _i++) {
+            var item = _a[_i];
+            html += this.renderItem(item, isTag ? item.value : 'li');
+        }
+        var tag = isTag ? 'div' : 'ul';
+        return "<".concat(tag, " class=\"option-bar\">").concat(html, "</").concat(tag, ">");
+    };
+    EditorDropdownComponent.prototype.renderItem = function (item, tag) {
+        if (tag === void 0) { tag = 'li'; }
+        return "<".concat(tag, " class=\"option-item\" style=\"").concat(EditorHelper.nodeStyle(item.style), "\">").concat(item.name, "</").concat(tag, ">");
     };
     EditorDropdownComponent.prototype.modalReady = function (module, parent, option) {
         if (!this.element) {
@@ -396,7 +385,7 @@ var EditorDropdownComponent = /** @class */ (function () {
         parent.append(this.element);
         this.bindEvent();
         if (module.name === 'font') {
-            this.items = FontItems.map(function (i) {
+            this.items = EditorFontItems.map(function (i) {
                 i.style = {
                     'font-family': i.value
                 };
@@ -420,11 +409,22 @@ var EditorDropdownComponent = /** @class */ (function () {
             }
             this.items = items;
         }
-        this.element.find('.option-bar').html(this.items.map(this.renderItem).join(''));
+        else if (module.name === 'head') {
+            var items = [];
+            for (var i = 1; i < 7; i++) {
+                var value = "h".concat(i);
+                items.push({
+                    name: value,
+                    value: value,
+                });
+            }
+            this.items = items;
+        }
+        this.element.html(this.renderItems(this.isNodeTag));
     };
     EditorDropdownComponent.prototype.bindEvent = function () {
         var that = this;
-        this.element.on('click', 'li', function () {
+        this.element.on('click', '.option-item', function () {
             var $this = $(this);
             $this.addClass('selected').siblings().removeClass('selected');
             that.tapConfirm(that.items[$this.index()]);
@@ -459,12 +459,14 @@ var EditorFileComponent = /** @class */ (function () {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     };
     EditorFileComponent.prototype.open = function (data, cb) {
         this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
     EditorFileComponent.prototype.uploadFiles = function (files) {
+        var _this = this;
         if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
@@ -472,15 +474,12 @@ var EditorFileComponent = /** @class */ (function () {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadFile(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.tapConfirm(res.url, res.original, res.size);
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'file', function (res) {
+            _this.element.removeClass('editor-modal-loading');
+            _this.tapConfirm(res.url, res.title, res.size);
+        }, function () {
+            _this.element.removeClass('editor-modal-loading');
+        });
     };
     EditorFileComponent.prototype.tapConfirm = function (value, title, size) {
         if (this.confirmFn) {
@@ -522,12 +521,14 @@ var EditorImageComponent = /** @class */ (function () {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     };
     EditorImageComponent.prototype.open = function (data, cb) {
         this.element.addClass('modal-visible');
         this.confirmFn = cb;
     };
     EditorImageComponent.prototype.uploadFiles = function (files) {
+        var _this = this;
         if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
@@ -535,19 +536,15 @@ var EditorImageComponent = /** @class */ (function () {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadImage(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.url = res.url;
-        //         this.output({
-        //             value: res.url,
-        //             title: res.original
-        //         });
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'image', function (res) {
+            _this.element.removeClass('editor-modal-loading');
+            _this.output({
+                value: res.url,
+                title: res.title
+            });
+        }, function () {
+            _this.element.removeClass('editor-modal-loading');
+        });
     };
     EditorImageComponent.prototype.output = function (data) {
         if (this.confirmFn) {
@@ -954,6 +951,7 @@ var EditorVideoComponent = /** @class */ (function () {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     };
     EditorVideoComponent.prototype.open = function (data, cb) {
         this.element.addClass('modal-visible');
@@ -964,6 +962,7 @@ var EditorVideoComponent = /** @class */ (function () {
         this.uploadFiles(files);
     };
     EditorVideoComponent.prototype.uploadFiles = function (files) {
+        var _this = this;
         if (this.element.hasClass('editor-modal-loading')) {
             return;
         }
@@ -971,16 +970,15 @@ var EditorVideoComponent = /** @class */ (function () {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadVideo(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.url = res.url;
-        //         this.tapConfirm();
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'video', function (res) {
+            _this.element.removeClass('editor-modal-loading');
+            if (!_this.confirmFn) {
+                return;
+            }
+            _this.confirmFn({ value: res.url });
+        }, function () {
+            _this.element.removeClass('editor-modal-loading');
+        });
     };
     return EditorVideoComponent;
 }());
@@ -1027,7 +1025,7 @@ var CodeElement = /** @class */ (function () {
         },
         set: function (v) {
             var range = this.selection.range;
-            this.insertText(v, range);
+            this.addTextExecute(range, { value: v });
         },
         enumerable: false,
         configurable: true
@@ -1075,25 +1073,13 @@ var CodeElement = /** @class */ (function () {
         if (!range) {
             range = this.selection;
         }
-        switch (block.type) {
-            case EditorBlockType.AddText:
-            case EditorBlockType.AddRaw:
-                this.insertText(block.value, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddLineBreak:
-                this.insertLineBreak(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.Indent:
-                this.insertIndent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Outdent:
-                this.insertOutdent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
+        var type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        var func = this[type + 'Execute'];
+        if (typeof func === 'function') {
+            func.call(this, range.range, block);
+            return;
         }
+        throw new Error("insert type error:[".concat(block.type, "]"));
     };
     CodeElement.prototype.focus = function () {
         this.bodyPanel.focus({ preventScroll: true });
@@ -1173,23 +1159,24 @@ var CodeElement = /** @class */ (function () {
             _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
     };
-    CodeElement.prototype.insertText = function (v, range) {
+    //#region 外部调用的方法
+    CodeElement.prototype.addTextExecute = function (range, block) {
         var _a = this.getRangeLineNo(range), begin = _a[0], end = _a[1];
-        var items = v.split('\n');
+        var items = block.value.split('\n');
         items[0] = this.getLinePrevious(range) + items[0];
         items[items.length - 1] += this.getLineNext(range);
         this.insertLines.apply(this, __spreadArray([begin, end], items, false));
     };
-    CodeElement.prototype.insertLineBreak = function (range) {
+    CodeElement.prototype.addLineBreakExecute = function (range) {
         var _a = this.getRangeLineNo(range), begin = _a[0], end = _a[1];
         this.insertLines(begin, end, this.getLinePrevious(range), this.getLineNext(range));
     };
-    CodeElement.prototype.insertIndent = function (range) {
+    CodeElement.prototype.indentExecute = function (range) {
         this.replaceSelectLine(function (s) {
             return '    ' + s;
         }, range);
     };
-    CodeElement.prototype.insertOutdent = function (range) {
+    CodeElement.prototype.outdentExecute = function (range) {
         this.replaceSelectLine(function (s) {
             if (s.length < 1) {
                 return s;
@@ -1204,6 +1191,7 @@ var CodeElement = /** @class */ (function () {
             }
         }, range);
     };
+    //#endregion
     CodeElement.prototype.replaceSelectLine = function (cb, range) {
         var _a = this.getRangeLineNo(range), begin = _a[0], end = _a[1];
         for (var i = begin; i <= end; i++) {
@@ -1924,48 +1912,13 @@ var DivElement = /** @class */ (function () {
         if (!range) {
             range = this.selection;
         }
-        switch (block.type) {
-            case EditorBlockType.AddHr:
-                this.insertHr(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddText:
-                this.insertText(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddRaw:
-                this.insertRaw(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.Indent:
-                this.insertIndent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Outdent:
-                this.insertOutdent(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddLineBreak:
-                this.insertLineBreak(range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddImage:
-                this.insertImage(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddTable:
-                this.insertTable(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddVideo:
-                this.insertVideo(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
-            case EditorBlockType.AddLink:
-                this.insertLink(block, range.range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                break;
+        var func = this[block.type + 'Execute'];
+        if (typeof func === 'function') {
+            func.call(this, range.range, block);
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
+            return;
         }
+        throw new Error("insert type error:[".concat(block.type, "]"));
     };
     DivElement.prototype.focus = function () {
         this.element.focus({ preventScroll: true });
@@ -1973,11 +1926,12 @@ var DivElement = /** @class */ (function () {
     DivElement.prototype.blur = function () {
         return this.element.blur();
     };
-    DivElement.prototype.insertHr = function (range) {
+    //#region 外部调用的方法
+    DivElement.prototype.addHrExecute = function (range) {
         var hr = document.createElement('hr');
         this.replaceSelected(range, hr);
     };
-    DivElement.prototype.insertIndent = function (range) {
+    DivElement.prototype.indentExecute = function (range) {
         var _this = this;
         var items = [];
         this.eachRangeParentNode(range, function (node) {
@@ -1999,7 +1953,7 @@ var DivElement = /** @class */ (function () {
             node.style.marginLeft = parseFloat(style.marginLeft.replace('px', '')) + 20 + 'px';
         }
     };
-    DivElement.prototype.insertOutdent = function (range) {
+    DivElement.prototype.outdentExecute = function (range) {
         var _this = this;
         this.eachRangeParentNode(range, function (node) {
             if (!_this.isBlockNode(node)) {
@@ -2012,7 +1966,7 @@ var DivElement = /** @class */ (function () {
             return true;
         });
     };
-    DivElement.prototype.insertTable = function (block, range) {
+    DivElement.prototype.addTableExecute = function (range, block) {
         var table = document.createElement('table');
         table.style.width = '100%';
         var tbody = table.createTBody();
@@ -2029,18 +1983,18 @@ var DivElement = /** @class */ (function () {
         }
         this.replaceSelected(range, table);
     };
-    DivElement.prototype.insertImage = function (block, range) {
+    DivElement.prototype.addImageExecute = function (range, block) {
         var image = document.createElement('img');
         image.src = block.value;
         image.title = block.title || '';
         this.replaceSelected(range, image);
     };
-    DivElement.prototype.insertText = function (block, range) {
+    DivElement.prototype.addTextExecute = function (range, block) {
         var span = document.createElement('span');
         span.innerText = block.value;
         this.replaceSelected(range, span);
     };
-    DivElement.prototype.insertRaw = function (block, range) {
+    DivElement.prototype.addRawExecute = function (range, block) {
         var p = document.createElement('div');
         p.innerHTML = block.value;
         var items = [];
@@ -2049,19 +2003,19 @@ var DivElement = /** @class */ (function () {
         }
         this.replaceSelected.apply(this, __spreadArray([range], items, false));
     };
-    DivElement.prototype.insertVideo = function (block, range) {
+    DivElement.prototype.addVideoExecute = function (range, block) {
         var ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
         this.replaceSelected(range, ele);
     };
-    DivElement.prototype.insertFile = function (block, range) {
+    DivElement.prototype.addFileExecute = function (range, block) {
         var ele = document.createElement('a');
         ele.href = block.value;
         ele.title = block.title || '';
         this.replaceSelected(range, ele);
     };
-    DivElement.prototype.insertLink = function (block, range) {
+    DivElement.prototype.addLinkExecute = function (range, block) {
         var link = document.createElement('a');
         link.href = block.value;
         link.text = block.title;
@@ -2071,7 +2025,7 @@ var DivElement = /** @class */ (function () {
         this.insertElement(link, range);
         this.selectNode(link);
     };
-    DivElement.prototype.insertLineBreak = function (range) {
+    DivElement.prototype.addLineBreakExecute = function (range) {
         var _this = this;
         var begin = range.startContainer;
         var beginOffset = range.startOffset;
@@ -2126,6 +2080,14 @@ var DivElement = /** @class */ (function () {
         }
         this.selectNode(p);
     };
+    DivElement.prototype.alignExecute = function (range, block) {
+        var box = range.startContainer.parentNode;
+        if (box === this.element) {
+            return;
+        }
+        box.style.textAlign = block.value;
+    };
+    //#endregion
     /**
      * 删除选中并替换为新的
      */
@@ -2948,27 +2910,39 @@ var EDITOR_EVENT_SHOW_TABLE_TOOL = 'tool.table';
 var EDITOR_EVENT_CLOSE_TOOL = 'tool.flow.close';
 var EditorBlockType;
 (function (EditorBlockType) {
-    EditorBlockType[EditorBlockType["AddLineBreak"] = 0] = "AddLineBreak";
-    EditorBlockType[EditorBlockType["AddHr"] = 1] = "AddHr";
-    EditorBlockType[EditorBlockType["AddText"] = 2] = "AddText";
-    EditorBlockType[EditorBlockType["AddRaw"] = 3] = "AddRaw";
-    EditorBlockType[EditorBlockType["AddImage"] = 4] = "AddImage";
-    EditorBlockType[EditorBlockType["AddLink"] = 5] = "AddLink";
-    EditorBlockType[EditorBlockType["AddTable"] = 6] = "AddTable";
-    EditorBlockType[EditorBlockType["AddVideo"] = 7] = "AddVideo";
-    EditorBlockType[EditorBlockType["AddFile"] = 8] = "AddFile";
-    EditorBlockType[EditorBlockType["AddCode"] = 9] = "AddCode";
-    EditorBlockType[EditorBlockType["Bold"] = 10] = "Bold";
-    EditorBlockType[EditorBlockType["Indent"] = 11] = "Indent";
-    EditorBlockType[EditorBlockType["Outdent"] = 12] = "Outdent";
-    EditorBlockType[EditorBlockType["NodeResize"] = 13] = "NodeResize";
-    EditorBlockType[EditorBlockType["NodeMove"] = 14] = "NodeMove";
+    EditorBlockType["AddLineBreak"] = "addLineBreak";
+    EditorBlockType["AddHr"] = "addHr";
+    EditorBlockType["AddText"] = "addText";
+    EditorBlockType["AddRaw"] = "addRaw";
+    EditorBlockType["AddImage"] = "addImage";
+    EditorBlockType["AddLink"] = "addLink";
+    EditorBlockType["AddTable"] = "addTable";
+    EditorBlockType["AddVideo"] = "addVideo";
+    EditorBlockType["AddFile"] = "addFile";
+    EditorBlockType["AddCode"] = "addCode";
+    EditorBlockType["H"] = "h";
+    EditorBlockType["Bold"] = "bold";
+    EditorBlockType["Italic"] = "italic";
+    EditorBlockType["Underline"] = "underline";
+    EditorBlockType["Strike"] = "strike";
+    EditorBlockType["FontSize"] = "fontSize";
+    EditorBlockType["FontFamily"] = "fontFamily";
+    EditorBlockType["Background"] = "background";
+    EditorBlockType["Foreground"] = "foreground";
+    EditorBlockType["ClearStyle"] = "clearStyle";
+    EditorBlockType["Align"] = "align";
+    EditorBlockType["Blockquote"] = "blockquote";
+    EditorBlockType["Indent"] = "indent";
+    EditorBlockType["Outdent"] = "outdent";
+    EditorBlockType["NodeResize"] = "nodeResize";
+    EditorBlockType["NodeMove"] = "nodeMove";
 })(EditorBlockType || (EditorBlockType = {}));
 var EDITOR_CLOSE_TOOL = 'close';
 var EDITOR_ADD_TOOL = 'add';
 var EDITOR_ENTER_TOOL = 'enter';
 var EDITOR_UNDO_TOOL = 'undo';
 var EDITOR_REDO_TOOL = 'redo';
+var EDITOR_MORE_TOOL = 'more';
 var EDITOR_FULL_SCREEN_TOOL = 'full-screen';
 var EDITOR_CODE_TOOL = 'code';
 var EDITOR_IMAGE_TOOL = 'image_edit';
@@ -3010,7 +2984,7 @@ var EditorModules = [
         }
     },
     {
-        name: 'more',
+        name: EDITOR_MORE_TOOL,
         icon: 'fa-ellipsis-v',
         label: 'More'
     },
@@ -3028,6 +3002,13 @@ var EditorModules = [
         }
     },
     // 文字处理
+    {
+        name: 'head',
+        icon: 'fa-heading',
+        label: 'H1-H6',
+        parent: 'text',
+        modal: new EditorDropdownComponent(true),
+    },
     {
         name: 'bold',
         icon: 'fa-bold',
@@ -3116,24 +3097,36 @@ var EditorModules = [
         icon: 'fa-align-left',
         label: 'Algin Left',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Align, value: 'left' });
+        },
     },
     {
         name: 'align-center',
         icon: 'fa-align-center',
         label: 'Algin Center',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Align, value: 'center' });
+        },
     },
     {
         name: 'align-right',
         icon: 'fa-align-right',
         label: 'Algin Right',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Align, value: 'right' });
+        },
     },
     {
         name: 'align-justify',
         icon: 'fa-align-justify',
         label: 'Algin Justify',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Align, value: '' });
+        },
     },
     {
         name: 'list',
@@ -3234,13 +3227,13 @@ var EditorModules = [
         name: EDITOR_FULL_SCREEN_TOOL,
         icon: 'fa-expand',
         label: 'Toggle Full Screen',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
     },
     {
         name: 'select-all',
         icon: 'fa-braille',
         label: 'Select All',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
         handler: function (editor, range, data) {
             editor.selectAll();
         },
@@ -3249,7 +3242,7 @@ var EditorModules = [
         name: EDITOR_CODE_TOOL,
         icon: 'fa-code',
         label: 'View Code',
-        parent: 'more',
+        parent: EDITOR_MORE_TOOL,
     },
     // 图片处理
     {
@@ -3483,6 +3476,7 @@ var EditorOptionManager = /** @class */ (function () {
         configurable: true
     });
     EditorOptionManager.prototype.merge = function (option) {
+        var _this = this;
         for (var key in option) {
             if (Object.prototype.hasOwnProperty.call(option, key)) {
                 if (typeof this.option[key] !== 'object') {
@@ -3490,9 +3484,11 @@ var EditorOptionManager = /** @class */ (function () {
                 }
             }
         }
-        if (option.icons) {
-            this.option.icons = this.mergeObject(this.option.icons, option.icons);
-        }
+        ['icons', 'uploader'].forEach(function (k) {
+            if (Object.prototype.hasOwnProperty.call(option, k)) {
+                _this.option[k] = _this.mergeObject(_this.option[k], option[k]);
+            }
+        });
         this.option.hiddenModules = this.strToArr(option.hiddenModules);
         this.option.visibleModules = this.strToArr(option.visibleModules);
         if (option.toolbar) {
@@ -3523,13 +3519,59 @@ var EditorOptionManager = /** @class */ (function () {
         return items;
     };
     EditorOptionManager.prototype.toolChildren = function (name) {
+        var _this = this;
         var items = [];
-        for (var key in this.moduleItems) {
-            if (Object.prototype.hasOwnProperty.call(this.moduleItems, key) && this.moduleItems[key].parent == name && this.isVisible(key)) {
-                items.push(this.moduleItems[key]);
+        this.moduleMap(function (item) {
+            if (item.parent == name && _this.isVisible(item.name)) {
+                items.push(item);
+            }
+        });
+        return items;
+    };
+    EditorOptionManager.prototype.toolToggle = function (items, active) {
+        var _this = this;
+        if (typeof items === 'string') {
+            items = [items];
+        }
+        var isSystem = true;
+        for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
+            var item = items_5[_i];
+            if (!this.isSystemTool(item)) {
+                isSystem = false;
+                break;
             }
         }
-        return items;
+        var updated = [];
+        if (!isSystem) {
+            this.moduleMap(function (item) {
+                if (items.indexOf(item.name) >= 0) {
+                    if (!_this.isBoolEqual(item.actived, active)) {
+                        item.actived = active;
+                        updated.push(item);
+                    }
+                    return;
+                }
+                if (!item.actived || _this.isSystemTool(item)) {
+                    return;
+                }
+                item.actived = false;
+                updated.push(item);
+            });
+        }
+        else {
+            for (var _a = 0, items_6 = items; _a < items_6.length; _a++) {
+                var item = items_6[_a];
+                var module = this.moduleItems[item];
+                if (this.isBoolEqual(module.actived, active)) {
+                    continue;
+                }
+                module.actived = active;
+                updated.push(module);
+            }
+        }
+        if (this.toolUpdatedFn) {
+            this.toolUpdatedFn(updated);
+        }
     };
     EditorOptionManager.prototype.push = function () {
         var modules = [];
@@ -3549,6 +3591,16 @@ var EditorOptionManager = /** @class */ (function () {
         }
         return undefined;
     };
+    EditorOptionManager.prototype.moduleMap = function (cb) {
+        for (var key in this.moduleItems) {
+            if (!Object.prototype.hasOwnProperty.call(this.moduleItems, key)) {
+                continue;
+            }
+            if (cb(this.moduleItems[key]) === false) {
+                return;
+            }
+        }
+    };
     EditorOptionManager.prototype.toModule = function (module) {
         if (typeof module === 'string') {
             return this.moduleItems[module];
@@ -3561,13 +3613,21 @@ var EditorOptionManager = /** @class */ (function () {
         }
         return module;
     };
+    EditorOptionManager.prototype.upload = function (files, type, success, failure) {
+        var func = this.option.uploader ? this.option.uploader[type] : undefined;
+        if (!func) {
+            failure('uploader not exist');
+            return;
+        }
+        func(files, success, failure);
+    };
     EditorOptionManager.prototype.filterTool = function (items) {
         if (!items) {
             return [];
         }
         var data = [];
-        for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
-            var item = items_5[_i];
+        for (var _i = 0, items_7 = items; _i < items_7.length; _i++) {
+            var item = items_7[_i];
             if (this.isVisible(item) && Object.prototype.hasOwnProperty.call(this.moduleItems, item)) {
                 data.push(this.toTool(this.moduleItems[item]));
             }
@@ -3604,6 +3664,18 @@ var EditorOptionManager = /** @class */ (function () {
             return args;
         }
         return $.extend(true, {}, data, args);
+    };
+    EditorOptionManager.prototype.isBoolEqual = function (a, b) {
+        if (a === true || b === true) {
+            return a === b;
+        }
+        return false;
+    };
+    EditorOptionManager.prototype.isSystemTool = function (module) {
+        if (typeof module === 'string') {
+            module = this.moduleItems[module];
+        }
+        return !module.parent || module.parent === EDITOR_MORE_TOOL;
     };
     return EditorOptionManager;
 }());
@@ -3690,37 +3762,13 @@ var TextareaElement = /** @class */ (function () {
             this.includeBlock(block.begin, block.end, range);
             return;
         }
-        switch (block.type) {
-            case EditorBlockType.AddLink:
-                this.insertLink(block, range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddText:
-            case EditorBlockType.AddRaw:
-                this.insertText(block.value, range, block.cursor);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddImage:
-                this.insertImage(block, range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Indent:
-                this.insertIndent(range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.Outdent:
-                this.insertOutdent(range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddLineBreak:
-                this.insertLineBreak(range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
-            case EditorBlockType.AddCode:
-                this.insertCode(block, range);
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-                return;
+        var type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        var func = this[type + 'Execute'];
+        if (typeof func === 'function') {
+            func.call(this, range.range, block);
+            return;
         }
+        throw new Error("insert type error:[".concat(block.type, "]"));
     };
     TextareaElement.prototype.focus = function () {
         this.element.focus();
@@ -3728,17 +3776,18 @@ var TextareaElement = /** @class */ (function () {
     TextareaElement.prototype.blur = function () {
         return this.element.blur();
     };
-    TextareaElement.prototype.insertLineBreak = function (range) {
+    //#region 外部调用的方法
+    TextareaElement.prototype.addLineBreakExecute = function (range) {
         this.insertText('\n', range);
     };
-    TextareaElement.prototype.insertIndent = function (range) {
+    TextareaElement.prototype.indentExecute = function (range) {
         this.replaceSelectLine(function (s) {
             return s.split('\n').map(function (v) {
                 return '    ' + v;
             }).join('\n');
         }, range);
     };
-    TextareaElement.prototype.insertOutdent = function (range) {
+    TextareaElement.prototype.outdentExecute = function (range) {
         this.replaceSelectLine(function (s) {
             return s.split('\n').map(function (v) {
                 if (v.length < 1) {
@@ -3754,6 +3803,52 @@ var TextareaElement = /** @class */ (function () {
                 }
             }).join('\n');
         }, range);
+    };
+    TextareaElement.prototype.addTextExecute = function (range, block) {
+        var v = this.value;
+        this.value = v.substring(0, range.start) + block.value + v.substring(range.start);
+        this.moveCursor(range.start + (!block.cursor ? block.value.length : block.cursor));
+    };
+    TextareaElement.prototype.addCodeExecute = function (range, block) {
+        var _a;
+        var v = this.value;
+        var selected = v.substring(range.start, range.end);
+        var replace = '```' + block.language + '\n' + ((_a = block.value) !== null && _a !== void 0 ? _a : selected) + '\n```';
+        if (range.start > 0 && v.charAt(range.start - 1) !== '\n') {
+            replace = '\n' + replace;
+        }
+        var cursor = replace.length - 4;
+        if (range.end >= v.length - 1 || v.charAt(range.end + 1) !== '\n') {
+            replace += '\n';
+        }
+        this.value = v.substring(0, range.start) + replace + v.substring(range.end);
+        this.moveCursor(range.start + cursor);
+    };
+    TextareaElement.prototype.addLinkExecute = function (range, block) {
+        if (!block.value) {
+            block.value = '';
+        }
+        if (block.title) {
+            this.insertText("[".concat(block.title, "](").concat(block.value, ")"), range);
+            return;
+        }
+        this.replaceSelect(function (s) {
+            return "[".concat(s, "](").concat(block.value, ")");
+        }, range, block.value ? block.value.length + 4 : 3);
+    };
+    TextareaElement.prototype.addImageExecute = function (range, block) {
+        this.replaceSelect(function (s) {
+            if (s.trim().length === 0 && block.title) {
+                s = block.title;
+            }
+            return "![".concat(block.title, "](").concat(block.value, ")");
+        }, range, block.title ? block.title.length + 4 : 2);
+    };
+    //#endregion
+    TextareaElement.prototype.insertText = function (text, range, cursor) {
+        var v = this.value;
+        this.value = v.substring(0, range.start) + text + v.substring(range.start);
+        this.moveCursor(range.start + (!cursor ? text.length : cursor));
     };
     TextareaElement.prototype.replaceSelectLine = function (cb, range) {
         var v = this.value;
@@ -3775,46 +3870,6 @@ var TextareaElement = /** @class */ (function () {
             end: begin + replace.length
         };
         this.focus();
-    };
-    TextareaElement.prototype.insertText = function (text, range, cursor) {
-        var v = this.value;
-        this.value = v.substring(0, range.start) + text + v.substring(range.start);
-        this.moveCursor(range.start + (!cursor ? text.length : cursor));
-    };
-    TextareaElement.prototype.insertCode = function (block, range) {
-        var _a;
-        var v = this.value;
-        var selected = v.substring(range.start, range.end);
-        var replace = '```' + block.language + '\n' + ((_a = block.value) !== null && _a !== void 0 ? _a : selected) + '\n```';
-        if (range.start > 0 && v.charAt(range.start - 1) !== '\n') {
-            replace = '\n' + replace;
-        }
-        var cursor = replace.length - 4;
-        if (range.end >= v.length - 1 || v.charAt(range.end + 1) !== '\n') {
-            replace += '\n';
-        }
-        this.value = v.substring(0, range.start) + replace + v.substring(range.end);
-        this.moveCursor(range.start + cursor);
-    };
-    TextareaElement.prototype.insertLink = function (block, range) {
-        if (!block.value) {
-            block.value = '';
-        }
-        if (block.title) {
-            this.insertText("[".concat(block.title, "](").concat(block.value, ")"), range);
-            return;
-        }
-        this.replaceSelect(function (s) {
-            return "[".concat(s, "](").concat(block.value, ")");
-        }, range, block.value ? block.value.length + 4 : 3);
-    };
-    TextareaElement.prototype.insertImage = function (block, range) {
-        this.replaceSelect(function (s) {
-            if (s.trim().length === 0 && block.title) {
-                s = block.title;
-            }
-            return "![".concat(block.title, "](").concat(block.value, ")");
-        }, range, block.title ? block.title.length + 4 : 2);
     };
     TextareaElement.prototype.includeBlock = function (begin, end, range) {
         this.replaceSelect(function (s) {
@@ -4037,6 +4092,7 @@ var EditorApp = /** @class */ (function () {
             this.option.merge(option);
         }
         this.container = new EditorContainer(this.option);
+        this.codeContainer = new EditorContainer(this.option);
         if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
             this.initByInput($(element));
         }
@@ -4049,7 +4105,9 @@ var EditorApp = /** @class */ (function () {
         this.renderToolbar(this.option.leftToolbar, this.box.find('.tool-bar-top .tool-left'));
         this.renderToolbar(this.option.rightToolbar, this.box.find('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
+        this.codebox = this.box.find('.editor-code-container');
         this.container.ready(this.textbox[0]);
+        this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));
         this.subToolbar = this.box.find('.editor-tool-bar .tool-bar-bottom');
         this.flowToolbar = this.box.find('.flow-tool-bar');
         this.modalContianer = this.box.find('.editor-flow-area .editor-modal-area');
@@ -4090,19 +4148,21 @@ var EditorApp = /** @class */ (function () {
     };
     EditorApp.prototype.executeModule = function (item, position) {
         var _this = this;
+        var isCode = this.box.hasClass('editor-code-mode');
         this.modalContianer.html('');
         if (item.name === EDITOR_CODE_TOOL) {
-            // this.isCodeMode = !this.isCodeMode;
-            // if (this.isCodeMode) {
-            //     this.codeEditor.writeValue(this.container.value);
-            //     this.codeEditor.registerOnChange(res => {
-            //         this.writeValue(res);
-            //     });
-            // }
+            this.box.toggleClass('editor-code-mode', !isCode);
+            this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
+            if (!isCode) {
+                this.codeContainer.value = this.container.value;
+            }
             return;
         }
         if (item.name === EDITOR_FULL_SCREEN_TOOL) {
             this.toggleFullScreen();
+            return;
+        }
+        if (isCode) {
             return;
         }
         var module = this.container.option.toModule(item);
@@ -4123,8 +4183,17 @@ var EditorApp = /** @class */ (function () {
         }, position);
     };
     EditorApp.prototype.getOffsetPosition = function (event) {
-        var ele = this.textbox;
-        var rect = ele.offset();
+        var rect = this.textbox.offset();
+        if (event.currentTarget) {
+            var target = $(event.currentTarget);
+            if (target.hasClass('tool-item')) {
+                var offset = target.offset();
+                return {
+                    x: offset.left - rect.left,
+                    y: offset.top + target.height() - rect.top,
+                };
+            }
+        }
         return {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
@@ -4144,6 +4213,7 @@ var EditorApp = /** @class */ (function () {
                 y: y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, function (p) {
+            console.log(1);
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
@@ -4165,6 +4235,9 @@ var EditorApp = /** @class */ (function () {
             _this.footerBar.text(_this.container.wordLength + ' words');
             _this.target.val(_this.container.value).trigger('change');
         });
+        this.option.toolUpdatedFn = function (items) {
+            _this.toggleTool.apply(_this, items);
+        };
         var that = this;
         this.box.on('click', '.tool-item', function (e) {
             var $this = $(this);
@@ -4232,8 +4305,8 @@ var EditorApp = /** @class */ (function () {
             items[_i] = arguments[_i];
         }
         var maps = {};
-        for (var _a = 0, items_6 = items; _a < items_6.length; _a++) {
-            var item = items_6[_a];
+        for (var _a = 0, items_8 = items; _a < items_8.length; _a++) {
+            var item = items_8[_a];
             maps[item.name] = item;
         }
         this.box.find('.tool-item').each(function (_, ele) {
@@ -4269,7 +4342,7 @@ var EditorApp = /** @class */ (function () {
         this.box.append(element);
     };
     EditorApp.prototype.renderBase = function () {
-        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            <div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>";
+        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            <div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n        <div class=\"editor-code-container\"></div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>";
     };
     EditorApp.prototype.renderToolIcon = function (item, target) {
         if (target) {

@@ -84,8 +84,7 @@ function pageTask() {
 }
 
 function editorTask() {
-    return gulp.src(['src/js/core/event.ts',
-    'src/js/editor/modal/*.ts',
+    return gulp.src(['src/js/editor/modal/*.ts',
         'src/js/editor/*.ts'])
         //.pipe(sourcemaps.init())
         .pipe(concat('jquery.editor.ts'))

@@ -1,4 +1,4 @@
-const FontItems: IEditorOptionItem[] = [
+const EditorFontItems: IEditorOptionItem[] = [
     {
         name: 'Arial',
         value: 'Arial,Helvetica,sans-serif',
@@ -30,18 +30,26 @@ class EditorDropdownComponent implements IEditorSharedModal {
     private confirmFn: EditorModalCallback;
     private element: JQuery<HTMLDivElement>;
 
-    constructor() {
+    constructor(
+        private isNodeTag = false,
+    ) {
     }
 
     public render() {
-        return `<div class="editor-modal-box editor-dropdown-modal">
-        <ul class="option-bar">
-        </ul>
-    </div>`;
+        return `<div class="editor-modal-box editor-dropdown-modal"></div>`;
     }
 
-    private renderItem(item: IEditorOptionItem): string {
-        return `<li style="${EditorHelper.nodeStyle(item.style)}">${item.name}</li>`
+    private renderItems(isTag = false): string {
+        let html = '';
+        for (const item of this.items) {
+            html += this.renderItem(item, isTag ? item.value : 'li');
+        }
+        const tag = isTag ? 'div' : 'ul';
+        return `<${tag} class="option-bar">${html}</${tag}>`;
+    }
+
+    private renderItem(item: IEditorOptionItem, tag = 'li'): string {
+        return `<${tag} class="option-item" style="${EditorHelper.nodeStyle(item.style)}">${item.name}</${tag}>`
     }
 
     public modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager) {
@@ -50,8 +58,9 @@ class EditorDropdownComponent implements IEditorSharedModal {
         }
         parent.append(this.element);
         this.bindEvent();
+
         if (module.name === 'font') {
-            this.items = FontItems.map(i => {
+            this.items = EditorFontItems.map(i => {
                 i.style = {
                     'font-family': i.value
                 };
@@ -73,13 +82,23 @@ class EditorDropdownComponent implements IEditorSharedModal {
                 last = value;
             }
             this.items = items;
+        } else if (module.name === 'head') {
+            const items = [];
+            for (let i = 1; i < 7; i++) {
+                const value = `h${i}`;
+                items.push({
+                    name: value,
+                    value,
+                });
+            }
+            this.items = items;
         }
-        this.element.find('.option-bar').html(this.items.map(this.renderItem).join(''));
+        this.element.html(this.renderItems(this.isNodeTag));
     }
 
     private bindEvent() {
         const that = this;
-        this.element.on('click', 'li', function() {
+        this.element.on('click', '.option-item', function() {
             const $this = $(this);
             $this.addClass('selected').siblings().removeClass('selected');
             that.tapConfirm(that.items[$this.index()]);

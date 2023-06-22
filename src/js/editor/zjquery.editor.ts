@@ -11,6 +11,7 @@ class EditorApp {
             this.option.merge(option);
         }
         this.container = new EditorContainer(this.option);
+        this.codeContainer = new EditorContainer(this.option);
         if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
             this.initByInput($(element));
         } else {
@@ -21,9 +22,11 @@ class EditorApp {
 
     private option: EditorOptionManager;
     private container: EditorContainer;
+    private codeContainer: EditorContainer;
     private box: JQuery<HTMLDivElement>;
     private target: JQuery<HTMLTextAreaElement>;
     private textbox: JQuery<HTMLElement>;
+    private codebox: JQuery<HTMLElement>;
     private subToolbar: JQuery<HTMLDivElement>;
     private flowToolbar: JQuery<HTMLDivElement>;
     private flowLastTool: IEditorTool[]|undefined;
@@ -37,7 +40,9 @@ class EditorApp {
         this.renderToolbar(this.option.leftToolbar, this.box.find<HTMLDivElement>('.tool-bar-top .tool-left'));
         this.renderToolbar(this.option.rightToolbar, this.box.find<HTMLDivElement>('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
+        this.codebox = this.box.find('.editor-code-container');
         this.container.ready(this.textbox[0] as any);
+        this.codeContainer.ready(new CodeElement(this.codebox[0] as any, this.codeContainer));
         this.subToolbar = this.box.find<HTMLDivElement>('.editor-tool-bar .tool-bar-bottom');
         this.flowToolbar = this.box.find<HTMLDivElement>('.flow-tool-bar');
         this.modalContianer = this.box.find<HTMLDivElement>('.editor-flow-area .editor-modal-area');
@@ -81,19 +86,21 @@ class EditorApp {
     }
 
     private executeModule(item: IEditorTool, position: IPoint) {
+        const isCode = this.box.hasClass('editor-code-mode');
         this.modalContianer.html('');
         if (item.name === EDITOR_CODE_TOOL) {
-            // this.isCodeMode = !this.isCodeMode;
-            // if (this.isCodeMode) {
-            //     this.codeEditor.writeValue(this.container.value);
-            //     this.codeEditor.registerOnChange(res => {
-            //         this.writeValue(res);
-            //     });
-            // }
+            this.box.toggleClass('editor-code-mode', !isCode);
+            this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
+            if (!isCode) {
+                this.codeContainer.value = this.container.value;
+            }
             return;
         }
         if (item.name === EDITOR_FULL_SCREEN_TOOL) {
             this.toggleFullScreen();
+            return;
+        }
+        if (isCode) {
             return;
         }
         const module = this.container.option.toModule(item);
@@ -115,8 +122,17 @@ class EditorApp {
     }
 
     private getOffsetPosition(event: MouseEvent): IPoint {
-        const ele = this.textbox;
-        const rect = ele.offset();
+        const rect = this.textbox.offset();
+        if (event.currentTarget) {
+            const target = $(event.currentTarget);
+            if (target.hasClass('tool-item')) {
+                const offset = target.offset()
+                return {
+                    x: offset.left - rect.left,
+                    y: offset.top + target.height() - rect.top,
+                };
+            }
+        }
         return {
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
@@ -125,7 +141,6 @@ class EditorApp {
 
     private toggleFullScreen() {
         this.isFullScreen = !this.isFullScreen;
-        
     }
 
 
@@ -140,6 +155,8 @@ class EditorApp {
                 y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, p => {
+            console.log(1);
+            
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
@@ -161,6 +178,9 @@ class EditorApp {
             this.footerBar.text(this.container.wordLength + ' words');
             this.target.val(this.container.value).trigger('change');
         });
+        this.option.toolUpdatedFn = items => {
+            this.toggleTool(...items);
+        };
         const that = this;
         this.box.on('click', '.tool-item', function(e) {
             const $this = $(this);
@@ -287,6 +307,7 @@ class EditorApp {
             <div class="flow-tool-bar"></div>
             <div class="editor-modal-area"></div>
         </div>
+        <div class="editor-code-container"></div>
     </div>
     <div class="editor-footer">0 words</div>`;
     }

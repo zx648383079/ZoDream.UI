@@ -6,7 +6,7 @@ interface IUploadResult {
 }
 
 
-type UploadFileCallback = (files: File[]|File, success: (data: IUploadResult|IUploadResult[]) => void, failure: (error: string) => void) => void;
+type UploadFileCallback = (files: File[]|File|FileList, success: (data: IUploadResult|IUploadResult[]) => void, failure: (error: string) => void) => void;
 
 interface IEditorOption {
     undoCount?: number; // 最大回退步骤
@@ -68,6 +68,8 @@ class EditorOptionManager {
         [key: string]: IEditorModule
     } = {};
 
+    public toolUpdatedFn: (items: IEditorToolStatus[]) => void;
+
     constructor() {
         this.push(...EditorModules);
     }
@@ -108,9 +110,11 @@ class EditorOptionManager {
                 }
             }
         }
-        if (option.icons) {
-            this.option.icons = this.mergeObject(this.option.icons, option.icons);
-        }
+        ['icons', 'uploader'].forEach(k => {
+            if (Object.prototype.hasOwnProperty.call(option, k)) {
+                this.option[k] = this.mergeObject(this.option[k], option[k]);
+            }
+        });
         this.option.hiddenModules = this.strToArr(option.hiddenModules);
         this.option.visibleModules = this.strToArr(option.visibleModules);
         if (option.toolbar) {
@@ -141,12 +145,56 @@ class EditorOptionManager {
 
     public toolChildren(name: string): IEditorTool[] {
         const items = [];
-        for (const key in this.moduleItems) {
-            if (Object.prototype.hasOwnProperty.call(this.moduleItems, key) && this.moduleItems[key].parent == name && this.isVisible(key)) {
-                items.push(this.moduleItems[key]);
+        this.moduleMap(item => {
+            if (item.parent == name && this.isVisible(item.name)) {
+                items.push(item);
+            }
+        });
+        return items;
+    }
+
+    public toolToggle(modules: string[], active: boolean): void;
+    public toolToggle(name: string, active: boolean): void;
+    public toolToggle(items: string[]|string, active: boolean): void {
+        if (typeof items === 'string') {
+            items = [items];
+        }
+        let isSystem = true;
+        for (const item of items) {
+            if (!this.isSystemTool(item)) {
+                isSystem = false;
+                break;
             }
         }
-        return items;
+        const updated: IEditorToolStatus[] = [];
+        if (!isSystem) {
+            this.moduleMap(item => {
+                if (items.indexOf(item.name) >= 0) {
+                    if (!this.isBoolEqual(item.actived, active)) {
+                        item.actived = active;
+                        updated.push(item);
+                    }
+                    return;
+                }
+                if (!item.actived || this.isSystemTool(item)) {
+                    return;
+                }
+                item.actived = false;
+                updated.push(item);
+            });
+        } else {
+            for (const item of items) {
+                const module = this.moduleItems[item];
+                if (this.isBoolEqual(module.actived, active)) {
+                    continue;
+                }
+                module.actived = active;
+                updated.push(module);
+            }
+        }
+        if (this.toolUpdatedFn) {
+            this.toolUpdatedFn(updated);
+        }
     }
 
     public push(...modules: IEditorModule[]) {
@@ -164,6 +212,17 @@ class EditorOptionManager {
         return undefined;
     }
 
+    public moduleMap(cb: (item: IEditorModule) => void|false) {
+        for (const key in this.moduleItems) {
+            if (!Object.prototype.hasOwnProperty.call(this.moduleItems, key)) {
+                continue;
+            }
+            if (cb(this.moduleItems[key]) === false) {
+                return;
+            }
+        }
+    }
+
     public toModule(module: string|IEditorTool): IEditorModule|undefined {
         if (typeof module === 'string') {
             return this.moduleItems[module];
@@ -175,6 +234,17 @@ class EditorOptionManager {
             return this.moduleItems[module.name];
         }
         return module;
+    }
+
+    public upload(files: File[]|FileList, type: 'image'|'video'|'file', success: (data: IUploadResult[]) => void, failure: (error: string) => void): void;
+    public upload(files: File, type: 'image'|'video'|'file', success: (data: IUploadResult) => void, failure: (error: string) => void): void;
+    public upload(files: any, type: 'image'|'video'|'file', success: (data: any) => void, failure: (error: string) => void) {
+        const func = this.option.uploader ? this.option.uploader[type] : undefined;
+        if (!func) {
+            failure('uploader not exist');
+            return;
+        }
+        func(files, success, failure);
     }
 
     private filterTool(items?: string[]): IEditorTool[] {
@@ -223,5 +293,19 @@ class EditorOptionManager {
             return args;
         }
         return $.extend(true, {}, data, args);
+    }
+
+    private isBoolEqual(a?: boolean, b?: boolean): boolean {
+        if (a === true || b === true) {
+            return a === b;
+        }
+        return false;
+    }
+
+    private isSystemTool(module: string|IEditorModule): boolean {
+        if (typeof module === 'string') {
+            module = this.moduleItems[module];
+        }
+        return !module.parent || module.parent === EDITOR_MORE_TOOL;
     }
 }

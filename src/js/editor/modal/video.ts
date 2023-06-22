@@ -1,6 +1,7 @@
 class EditorVideoComponent implements IEditorSharedModal {
 
     private confirmFn: EditorModalCallback;
+    private option: EditorOptionManager;
     private element: JQuery<HTMLDivElement>;
 
     public render() {
@@ -83,6 +84,7 @@ class EditorVideoComponent implements IEditorSharedModal {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     }
 
     public open(data: any, cb: EditorModalCallback) {
@@ -103,15 +105,14 @@ class EditorVideoComponent implements IEditorSharedModal {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadVideo(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.url = res.url;
-        //         this.tapConfirm();
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'video', res => {
+            this.element.removeClass('editor-modal-loading');
+            if (!this.confirmFn) {
+                return;
+            }
+            this.confirmFn({value: res.url});
+        }, () => {
+            this.element.removeClass('editor-modal-loading');
+        });
     }
 }

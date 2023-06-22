@@ -1,11 +1,5 @@
 /// <reference types="jquery" />
 /// <reference types="jquery" />
-declare abstract class Eve {
-    options: any;
-    on(event: string, callback: Function): this;
-    hasEvent(event: string): boolean;
-    trigger(event: string, ...args: any[]): any;
-}
 declare class EditorCodeComponent implements IEditorSharedModal {
     private confirmFn;
     private element;
@@ -58,13 +52,15 @@ declare class EditorColorComponent implements IEditorSharedModal {
     private num;
     private round;
 }
-declare const FontItems: IEditorOptionItem[];
+declare const EditorFontItems: IEditorOptionItem[];
 declare class EditorDropdownComponent implements IEditorSharedModal {
+    private isNodeTag;
     private items;
     private confirmFn;
     private element;
-    constructor();
+    constructor(isNodeTag?: boolean);
     render(): string;
+    private renderItems;
     private renderItem;
     modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
     private bindEvent;
@@ -73,6 +69,7 @@ declare class EditorDropdownComponent implements IEditorSharedModal {
 }
 declare class EditorFileComponent implements IEditorSharedModal {
     private confirmFn;
+    private option;
     private element;
     render(): string;
     private bindEvent;
@@ -83,6 +80,7 @@ declare class EditorFileComponent implements IEditorSharedModal {
 }
 declare class EditorImageComponent implements IEditorSharedModal {
     private confirmFn;
+    private option;
     private element;
     render(): string;
     private bindEvent;
@@ -162,6 +160,7 @@ declare class EditorTextComponent implements IEditorSharedModal {
 }
 declare class EditorVideoComponent implements IEditorSharedModal {
     private confirmFn;
+    private option;
     private element;
     render(): string;
     private bindEvent;
@@ -192,10 +191,10 @@ declare class CodeElement implements IEditorElement {
     private init;
     private bindResize;
     private bindEvent;
-    private insertText;
-    private insertLineBreak;
-    private insertIndent;
-    private insertOutdent;
+    private addTextExecute;
+    private addLineBreakExecute;
+    private indentExecute;
+    private outdentExecute;
     private replaceSelectLine;
     private getLinePrevious;
     private getLineNext;
@@ -293,17 +292,18 @@ declare class DivElement implements IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
-    private insertHr;
-    private insertIndent;
-    private insertOutdent;
-    private insertTable;
-    private insertImage;
-    private insertText;
-    private insertRaw;
-    private insertVideo;
-    private insertFile;
-    private insertLink;
-    private insertLineBreak;
+    private addHrExecute;
+    private indentExecute;
+    private outdentExecute;
+    private addTableExecute;
+    private addImageExecute;
+    private addTextExecute;
+    private addRawExecute;
+    private addVideoExecute;
+    private addFileExecute;
+    private addLinkExecute;
+    private addLineBreakExecute;
+    private alignExecute;
     /**
      * 删除选中并替换为新的
      */
@@ -525,25 +525,36 @@ interface IEditorSharedModal<T = any> extends IEditorModal<T> {
     modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
 }
 declare enum EditorBlockType {
-    AddLineBreak = 0,
-    AddHr = 1,
-    AddText = 2,
-    AddRaw = 3,
-    AddImage = 4,
-    AddLink = 5,
-    AddTable = 6,
-    AddVideo = 7,
-    AddFile = 8,
-    AddCode = 9,
-    Bold = 10,
-    Indent = 11,
-    Outdent = 12,
-    NodeResize = 13,
-    NodeMove = 14
+    AddLineBreak = "addLineBreak",
+    AddHr = "addHr",
+    AddText = "addText",
+    AddRaw = "addRaw",
+    AddImage = "addImage",
+    AddLink = "addLink",
+    AddTable = "addTable",
+    AddVideo = "addVideo",
+    AddFile = "addFile",
+    AddCode = "addCode",
+    H = "h",
+    Bold = "bold",
+    Italic = "italic",
+    Underline = "underline",
+    Strike = "strike",
+    FontSize = "fontSize",
+    FontFamily = "fontFamily",
+    Background = "background",
+    Foreground = "foreground",
+    ClearStyle = "clearStyle",
+    Align = "align",
+    Blockquote = "blockquote",
+    Indent = "indent",
+    Outdent = "outdent",
+    NodeResize = "nodeResize",
+    NodeMove = "nodeMove"
 }
 interface IEditorBlock {
     [key: string]: any;
-    type: EditorBlockType;
+    type: EditorBlockType | string;
 }
 interface IEditorValueBlock extends IEditorBlock {
     value: string;
@@ -589,6 +600,7 @@ declare const EDITOR_ADD_TOOL = "add";
 declare const EDITOR_ENTER_TOOL = "enter";
 declare const EDITOR_UNDO_TOOL = "undo";
 declare const EDITOR_REDO_TOOL = "redo";
+declare const EDITOR_MORE_TOOL = "more";
 declare const EDITOR_FULL_SCREEN_TOOL = "full-screen";
 declare const EDITOR_CODE_TOOL = "code";
 declare const EDITOR_IMAGE_TOOL = "image_edit";
@@ -602,7 +614,7 @@ interface IUploadResult {
     title: string;
     thumb?: string;
 }
-type UploadFileCallback = (files: File[] | File, success: (data: IUploadResult | IUploadResult[]) => void, failure: (error: string) => void) => void;
+type UploadFileCallback = (files: File[] | File | FileList, success: (data: IUploadResult | IUploadResult[]) => void, failure: (error: string) => void) => void;
 interface IEditorOption {
     undoCount?: number;
     blockTag?: string;
@@ -644,6 +656,7 @@ interface IEditorModule extends IEditorTool {
 declare class EditorOptionManager {
     private option;
     private moduleItems;
+    toolUpdatedFn: (items: IEditorToolStatus[]) => void;
     constructor();
     get leftToolbar(): IEditorTool[];
     get rightToolbar(): IEditorTool[];
@@ -657,14 +670,21 @@ declare class EditorOptionManager {
     toolOnly(name: string): IEditorTool;
     tool(...names: string[]): IEditorTool[];
     toolChildren(name: string): IEditorTool[];
+    toolToggle(modules: string[], active: boolean): void;
+    toolToggle(name: string, active: boolean): void;
     push(...modules: IEditorModule[]): void;
     hotKeyModule(hotKey: string): IEditorTool | undefined;
+    moduleMap(cb: (item: IEditorModule) => void | false): void;
     toModule(module: string | IEditorTool): IEditorModule | undefined;
+    upload(files: File[] | FileList, type: 'image' | 'video' | 'file', success: (data: IUploadResult[]) => void, failure: (error: string) => void): void;
+    upload(files: File, type: 'image' | 'video' | 'file', success: (data: IUploadResult) => void, failure: (error: string) => void): void;
     private filterTool;
     private toTool;
     private isVisible;
     private strToArr;
     private mergeObject;
+    private isBoolEqual;
+    private isSystemTool;
 }
 /**
  * markdown 模式
@@ -686,14 +706,15 @@ declare class TextareaElement implements IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
-    private insertLineBreak;
-    private insertIndent;
-    private insertOutdent;
-    private replaceSelectLine;
+    private addLineBreakExecute;
+    private indentExecute;
+    private outdentExecute;
+    private addTextExecute;
+    private addCodeExecute;
+    private addLinkExecute;
+    private addImageExecute;
     private insertText;
-    private insertCode;
-    private insertLink;
-    private insertImage;
+    private replaceSelectLine;
     private includeBlock;
     private replaceSelect;
     /**
@@ -727,9 +748,11 @@ declare class EditorApp {
     constructor(element: HTMLDivElement | HTMLTextAreaElement, option?: IEditorOption);
     private option;
     private container;
+    private codeContainer;
     private box;
     private target;
     private textbox;
+    private codebox;
     private subToolbar;
     private flowToolbar;
     private flowLastTool;

@@ -1,6 +1,7 @@
 class EditorImageComponent implements IEditorSharedModal {
 
     private confirmFn: EditorModalCallback;
+    private option: EditorOptionManager;
     private element: JQuery<HTMLDivElement>;
 
     public render() {
@@ -65,6 +66,7 @@ class EditorImageComponent implements IEditorSharedModal {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.option = option;
     }
 
     public open(data: any, cb: EditorModalCallback) {
@@ -80,19 +82,15 @@ class EditorImageComponent implements IEditorSharedModal {
             return;
         }
         this.element.addClass('editor-modal-loading');
-        // this.uploadService.uploadImage(files[0]).subscribe({
-        //     next: res => {
-        //         this.isLoading = false;
-        //         this.url = res.url;
-        //         this.output({
-        //             value: res.url,
-        //             title: res.original
-        //         });
-        //     },
-        //     error: () => {
-        //         this.isLoading = false;
-        //     }
-        // })
+        this.option.upload(files[0], 'image', res => {
+            this.element.removeClass('editor-modal-loading');
+            this.output({
+                value: res.url,
+                title: res.title
+            });
+        }, () => {
+            this.element.removeClass('editor-modal-loading');
+        });
     }
 
     private output(data: any) {

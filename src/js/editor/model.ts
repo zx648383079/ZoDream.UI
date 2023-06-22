@@ -39,26 +39,37 @@ interface IEditorSharedModal<T = any> extends IEditorModal<T> {
 }
 
 enum EditorBlockType {
-    AddLineBreak,
-    AddHr,
-    AddText,
-    AddRaw,
-    AddImage,
-    AddLink,
-    AddTable,
-    AddVideo,
-    AddFile,
-    AddCode,
-    Bold,
-    Indent,
-    Outdent,
-    NodeResize,
-    NodeMove,
+    AddLineBreak = 'addLineBreak',
+    AddHr = 'addHr',
+    AddText = 'addText',
+    AddRaw = 'addRaw',
+    AddImage = 'addImage',
+    AddLink = 'addLink',
+    AddTable = 'addTable',
+    AddVideo = 'addVideo',
+    AddFile = 'addFile',
+    AddCode = 'addCode',
+    H = 'h',
+    Bold = 'bold',
+    Italic = 'italic',
+    Underline = 'underline',
+    Strike = 'strike',
+    FontSize = 'fontSize',
+    FontFamily = 'fontFamily',
+    Background = 'background',
+    Foreground = 'foreground',
+    ClearStyle = 'clearStyle',
+    Align = 'align',
+    Blockquote = 'blockquote',
+    Indent = 'indent',
+    Outdent = 'outdent',
+    NodeResize = 'nodeResize',
+    NodeMove = 'nodeMove',
 }
 
 interface IEditorBlock {
     [key: string]: any;
-    type: EditorBlockType;
+    type: EditorBlockType|string;
 }
 
 interface IEditorValueBlock extends IEditorBlock {

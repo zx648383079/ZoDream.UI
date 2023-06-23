@@ -14,11 +14,15 @@ $toolHeight: 2.5rem;
     border-radius: $radius;
     position: relative;
     .fa-wavyline {
-        content: '~';
+        &::before {
+            content: '~';
+        }
     }
     
     .fa-dashed {
-        content: '.';
+        &::before {
+            content: '.';
+        }
     }
     .#{$prefix}tool-bar,
     .#{$prefix}flow-tool-bar {

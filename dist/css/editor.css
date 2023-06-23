@@ -6,10 +6,10 @@
   border-radius: 0.25rem;
   position: relative;
 }
-.editor-box .fa-wavyline {
+.editor-box .fa-wavyline::before {
   content: "~";
 }
-.editor-box .fa-dashed {
+.editor-box .fa-dashed::before {
   content: ".";
 }
 .editor-box .editor-tool-bar,

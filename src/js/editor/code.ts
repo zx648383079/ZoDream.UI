@@ -255,10 +255,8 @@ class CodeElement implements IEditorElement {
         if (range.endContainer instanceof HTMLDivElement) {
             return;
         }
-        if (range.endOffset > 0) {
-            const text = range.endContainer as Text;
-            cb(text.textContent.substring(range.endOffset));
-        }
+        const text = range.endContainer as Text;
+        cb(range.endOffset > 0 ? text.textContent.substring(range.endOffset) : text.textContent);
         let current = range.endContainer;
         while (true) {
             if (current.nextSibling) {
@@ -469,7 +467,7 @@ class CodeElement implements IEditorElement {
         const dt = document.createElement('div');
         dt.className = 'editor-line';
         this.renderLine(dt, v);
-        dt.appendChild(document.createElement('br'));
+        this.appendBr(dt);
         return dt;
     }
 
@@ -490,10 +488,18 @@ class CodeElement implements IEditorElement {
     }
 
     private renderLine(parent: HTMLDivElement, line?: string) {
-        if (!line) {
+        if (typeof line === 'undefined') {
             return;
         }
         parent.innerText = line;
+        this.appendBr(parent);
+    }
+
+    private appendBr(node: Node) {
+        if (node.childNodes.length > 0 && node.childNodes[node.childNodes.length - 1].nodeName === 'BR') {
+            return;
+        }
+        node.appendChild(document.createElement('br'));
     }
 
     private eachLine(cb: (dt: HTMLDivElement, dd: HTMLDivElement, index: number) => void|false) {

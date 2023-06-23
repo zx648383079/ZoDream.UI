@@ -21,7 +21,7 @@ class EditorApp {
     }
 
     private option: EditorOptionManager;
-    private container: EditorContainer;
+    public container: EditorContainer;
     private codeContainer: EditorContainer;
     private box: JQuery<HTMLDivElement>;
     private target: JQuery<HTMLTextAreaElement>;
@@ -49,6 +49,7 @@ class EditorApp {
         this.footerBar = this.box.find<HTMLDivElement>('.editor-footer');
         this.bindEvent();
         this.resizer.ready(this.modalContianer.parent());
+        this.container.value = this.target.val() as any;
     }
 
     public tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent) {
@@ -91,6 +92,7 @@ class EditorApp {
         if (item.name === EDITOR_CODE_TOOL) {
             this.box.toggleClass('editor-code-mode', !isCode);
             this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
+            this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
             if (!isCode) {
                 this.codeContainer.value = this.container.value;
             }
@@ -175,6 +177,10 @@ class EditorApp {
         }).on(EDITOR_EVENT_EDITOR_CHANGE, () => {
             this.footerBar.text(this.container.wordLength + ' words');
             this.target.val(this.container.value).trigger('change');
+        });
+        this.codeContainer.on(EDITOR_EVENT_EDITOR_CHANGE, () => {
+            this.container.value = this.codeContainer.value;
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.option.toolUpdatedFn = items => {
             this.toggleTool(...items);

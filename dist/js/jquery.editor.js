@@ -1246,10 +1246,8 @@ var CodeElement = /** @class */ (function () {
         if (range.endContainer instanceof HTMLDivElement) {
             return;
         }
-        if (range.endOffset > 0) {
-            var text = range.endContainer;
-            cb(text.textContent.substring(range.endOffset));
-        }
+        var text = range.endContainer;
+        cb(range.endOffset > 0 ? text.textContent.substring(range.endOffset) : text.textContent);
         var current = range.endContainer;
         while (true) {
             if (current.nextSibling) {
@@ -1461,7 +1459,7 @@ var CodeElement = /** @class */ (function () {
         var dt = document.createElement('div');
         dt.className = 'editor-line';
         this.renderLine(dt, v);
-        dt.appendChild(document.createElement('br'));
+        this.appendBr(dt);
         return dt;
     };
     CodeElement.prototype.updateLine = function (index, text) {
@@ -1480,10 +1478,17 @@ var CodeElement = /** @class */ (function () {
         }
     };
     CodeElement.prototype.renderLine = function (parent, line) {
-        if (!line) {
+        if (typeof line === 'undefined') {
             return;
         }
         parent.innerText = line;
+        this.appendBr(parent);
+    };
+    CodeElement.prototype.appendBr = function (node) {
+        if (node.childNodes.length > 0 && node.childNodes[node.childNodes.length - 1].nodeName === 'BR') {
+            return;
+        }
+        node.appendChild(document.createElement('br'));
     };
     CodeElement.prototype.eachLine = function (cb) {
         for (var i = 0; i < this.bodyPanel.children.length; i++) {
@@ -4763,6 +4768,7 @@ var EditorApp = /** @class */ (function () {
         this.footerBar = this.box.find('.editor-footer');
         this.bindEvent();
         this.resizer.ready(this.modalContianer.parent());
+        this.container.value = this.target.val();
     };
     EditorApp.prototype.tapTool = function (item, isRight, event) {
         this.container.focus();
@@ -4802,6 +4808,7 @@ var EditorApp = /** @class */ (function () {
         if (item.name === EDITOR_CODE_TOOL) {
             this.box.toggleClass('editor-code-mode', !isCode);
             this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
+            this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
             if (!isCode) {
                 this.codeContainer.value = this.container.value;
             }
@@ -4882,6 +4889,10 @@ var EditorApp = /** @class */ (function () {
         }).on(EDITOR_EVENT_EDITOR_CHANGE, function () {
             _this.footerBar.text(_this.container.wordLength + ' words');
             _this.target.val(_this.container.value).trigger('change');
+        });
+        this.codeContainer.on(EDITOR_EVENT_EDITOR_CHANGE, function () {
+            _this.container.value = _this.codeContainer.value;
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.option.toolUpdatedFn = function (items) {
             _this.toggleTool.apply(_this, items);

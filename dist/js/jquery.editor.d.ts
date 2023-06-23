@@ -228,6 +228,7 @@ declare class CodeElement implements IEditorElement {
     private updateLine;
     private updateLineNo;
     private renderLine;
+    private appendBr;
     private eachLine;
 }
 declare class EditorContainer implements IEditorContainer {
@@ -825,7 +826,7 @@ declare class EditorApp {
     */
     constructor(element: HTMLDivElement | HTMLTextAreaElement, option?: IEditorOption);
     private option;
-    private container;
+    container: EditorContainer;
     private codeContainer;
     private box;
     private target;

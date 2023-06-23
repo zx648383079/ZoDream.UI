@@ -280,6 +280,7 @@ declare class DivElement implements IEditorElement {
     private container;
     constructor(element: HTMLDivElement, container: IEditorContainer);
     private isComposition;
+    private get blockTagName();
     get selection(): IEditorRange;
     set selection(v: IEditorRange);
     get selectedValue(): string;
@@ -295,6 +296,7 @@ declare class DivElement implements IEditorElement {
     private addHrExecute;
     private indentExecute;
     private outdentExecute;
+    private tabExecute;
     private addTableExecute;
     private addImageExecute;
     private addTextExecute;
@@ -303,7 +305,36 @@ declare class DivElement implements IEditorElement {
     private addFileExecute;
     private addLinkExecute;
     private addLineBreakExecute;
+    private hExecute;
+    private blockquoteExecute;
+    private listExecute;
+    private boldExecute;
+    private subExecute;
+    private supExecute;
+    private italicExecute;
+    private underlineExecute;
+    private strikeExecute;
+    private fontSizeExecute;
+    private fontFamilyExecute;
+    private backgroundExecute;
+    private foregroundExecute;
+    private clearStyleExecute;
     private alignExecute;
+    private theadExecute;
+    private tfootExecute;
+    private rowSpanExecute;
+    private colSpanExecute;
+    private delTableExecute;
+    private openLinkExecute;
+    getModuleItems(range: IEditorRange): string[];
+    private getTableCellSpan;
+    private getTableCell;
+    /**
+     * 移动光标到下一格
+     * @param node
+     * @returns
+     */
+    private moveTableFocus;
     /**
      * 删除选中并替换为新的
      */
@@ -320,8 +351,31 @@ declare class DivElement implements IEditorElement {
      * 切换父级的样式
      */
     private toggleParentStyle;
+    /**
+     * 获取节点的父级
+     * @param node
+     * @returns
+     */
+    private getBlockParent;
+    private nodeParent;
+    /**
+     * 判断节点是否处于范围内
+     * @param node
+     * @returns
+     */
+    private hasNode;
+    private replaceNodeName;
+    /**
+     * 替换节点为
+     * @param node
+     * @param newNode
+     * @param removeFn 删除旧节点还是移动
+     * @returns
+     */
+    private replaceNode;
     private isNotSelected;
     private selectNode;
+    private focusAfter;
     private bindEvent;
     private moveTableCol;
     private updateNode;
@@ -360,6 +414,12 @@ declare class DivElement implements IEditorElement {
     private insertAfter;
     private insertToChildIndex;
     private removeRange;
+    /**
+     * 删除节点
+     * @param node
+     * @returns
+     */
+    private removeNode;
     private copySelectedNode;
     private copyRangeNode;
     private indexOfNode;
@@ -415,6 +475,12 @@ declare class DivElement implements IEditorElement {
     private getNodeBound;
     private isEndNode;
     private isEmptyLine;
+    /**
+     * 判断父级是否只有这一个子节点
+     * @param node
+     * @returns
+     */
+    private isOnlyNode;
     private isEmptyLineNode;
 }
 interface IEditorContainer {
@@ -540,13 +606,24 @@ declare enum EditorBlockType {
     Italic = "italic",
     Underline = "underline",
     Strike = "strike",
+    Wavyline = "wavyline",
+    Dashed = "dashed",
+    Sub = "sub",
+    Sup = "sup",
     FontSize = "fontSize",
     FontFamily = "fontFamily",
     Background = "background",
     Foreground = "foreground",
     ClearStyle = "clearStyle",
     Align = "align",
+    List = "list",
     Blockquote = "blockquote",
+    Thead = "thead",
+    TFoot = "tfoot",
+    DeleteTable = "delTable",
+    RowSpan = "rowSpan",
+    ColSpan = "colSpan",
+    OpenLink = "openLink",
     Indent = "indent",
     Outdent = "outdent",
     NodeResize = "nodeResize",
@@ -730,6 +807,7 @@ declare class EditorHelper {
     * 计算内容的长度，排除空格符号等特殊字符
     */
     static wordLength(val: string): number;
+    static css(node: HTMLElement, style: any): void;
     static nodeClass(obj: any): string;
     static nodeStyle(obj: any): string;
     static modalInputBind<T = any>(element: JQuery<HTMLDivElement>, confirmFn: (data: T) => void): void;

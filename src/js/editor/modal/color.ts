@@ -61,6 +61,8 @@ class EditorColorComponent implements IEditorSharedModal {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.triggerHStyle();
+        this.triggerSvStyle();
     }
 
     public open(data: any, cb: EditorModalCallback) {

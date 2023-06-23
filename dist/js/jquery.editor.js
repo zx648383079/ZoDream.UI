@@ -90,6 +90,8 @@ var EditorColorComponent = /** @class */ (function () {
         }
         parent.append(this.element);
         this.bindEvent();
+        this.triggerHStyle();
+        this.triggerSvStyle();
     };
     EditorColorComponent.prototype.open = function (data, cb) {
         this.element.addClass('modal-visible');
@@ -921,7 +923,7 @@ var EditorVideoComponent = /** @class */ (function () {
     function EditorVideoComponent() {
     }
     EditorVideoComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4EE3\u7801\">\n                <i class=\"fa fa-code\"></i>\n            </a>\n            <a class=\"item active\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-video\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-video\">\n            </label>\n        </div>\n        <div class=\"tab-body-item\">\n            <div class=\"input-header-block\">\n                <textarea name=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"fa fa-square check-input\" name=\"auto_play\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4EE3\u7801\">\n                <i class=\"fa fa-code\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"fa fa-square check-input\" name=\"auto_play\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <div class=\"input-header-block\">\n                <textarea name=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-video\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-video\">\n            </label>\n        </div>\n\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
     };
     EditorVideoComponent.prototype.bindEvent = function () {
         var _this = this;
@@ -1800,6 +1802,13 @@ var DivElement = /** @class */ (function () {
         this.isComposition = false;
         this.bindEvent();
     }
+    Object.defineProperty(DivElement.prototype, "blockTagName", {
+        get: function () {
+            return this.container.option.blockTag;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(DivElement.prototype, "selection", {
         get: function () {
             var sel = window.getSelection();
@@ -1944,7 +1953,7 @@ var DivElement = /** @class */ (function () {
             var item = items_2[_i];
             var node = item;
             if (!this.isBlockNode(node)) {
-                var p = document.createElement(this.container.option.blockTag);
+                var p = document.createElement(this.blockTagName);
                 p.appendChild(node.cloneNode(true));
                 this.element.replaceChild(p, node);
                 node = p;
@@ -1965,6 +1974,17 @@ var DivElement = /** @class */ (function () {
             ele.style.marginLeft = Math.max(0, padding) + 'px';
             return true;
         });
+    };
+    DivElement.prototype.tabExecute = function (range) {
+        var cell = this.nodeParent(range.startContainer, 'td,' + this.blockTagName);
+        if (!(cell instanceof HTMLTableCellElement)) {
+            this.indentExecute(range);
+            return;
+        }
+        if (this.moveTableFocus(cell)) {
+            return;
+        }
+        this.focusAfter(this.nodeParent(cell, 'table'));
     };
     DivElement.prototype.addTableExecute = function (range, block) {
         var table = document.createElement('table');
@@ -2029,7 +2049,7 @@ var DivElement = /** @class */ (function () {
         var _this = this;
         var begin = range.startContainer;
         var beginOffset = range.startOffset;
-        var p = document.createElement(this.container.option.blockTag);
+        var p = document.createElement(this.blockTagName);
         if (begin === this.element) {
             p.appendChild(document.createElement('br'));
             if (this.element.children.length === 0) {
@@ -2040,6 +2060,22 @@ var DivElement = /** @class */ (function () {
             }
             this.selectNode(p);
             return;
+        }
+        var li = this.nodeParent(begin, 'li,td,' + this.blockTagName);
+        if (li) {
+            if (li.nodeName === 'LI') {
+                var next_1 = document.createElement(li.nodeName);
+                this.insertAfter(li, next_1);
+                this.selectNode(next_1);
+                return;
+            }
+            if (li instanceof HTMLTableCellElement) {
+                if (this.moveTableFocus(li)) {
+                    return;
+                }
+                this.focusAfter(this.nodeParent(li, 'table'));
+                return;
+            }
         }
         var addBlock = false;
         this.eachBlockNext(range.endContainer, range.endOffset, function (node) {
@@ -2074,20 +2110,368 @@ var DivElement = /** @class */ (function () {
             }
         }
         if (addBlock) {
-            var ele = document.createElement(this.container.option.blockTag);
+            var ele = document.createElement(this.blockTagName);
             ele.appendChild(document.createElement('br'));
             this.insertBefore(p, ele);
         }
         this.selectNode(p);
     };
-    DivElement.prototype.alignExecute = function (range, block) {
-        var box = range.startContainer.parentNode;
-        if (box === this.element) {
+    DivElement.prototype.hExecute = function (range, block) {
+        this.replaceNodeName(range.startContainer, block.value);
+    };
+    DivElement.prototype.blockquoteExecute = function (range) {
+        this.toggleParentNode(range, 'blockquote');
+    };
+    DivElement.prototype.listExecute = function (range) {
+        var node = range.startContainer;
+        var box = this.nodeParent(node, 'ul,ol');
+        if (box) {
+            var items_3 = [];
+            for (var j = 0; j < box.childNodes.length; j++) {
+                var li_1 = box.childNodes[j];
+                if (li_1.nodeName !== 'li') {
+                    items_3.push(li_1);
+                    continue;
+                }
+                li_1.childNodes.forEach(function (v) {
+                    items_3.push(v);
+                });
+            }
+            this.replaceNode(box, items_3);
             return;
         }
-        box.style.textAlign = block.value;
+        box = document.createElement('ul');
+        var li = document.createElement('li');
+        box.appendChild(li);
+        this.replaceNode(node, box, function () {
+            li.appendChild(node);
+        });
+    };
+    DivElement.prototype.boldExecute = function (range) {
+        this.toggleParentNode(range, 'b');
+    };
+    DivElement.prototype.subExecute = function (range) {
+        this.toggleParentStyle(range, {
+            'vertical-align': 'text-bottom',
+            'font-size': '8px'
+        });
+    };
+    DivElement.prototype.supExecute = function (range) {
+        this.toggleParentStyle(range, {
+            'vertical-align': 'text-top',
+            'font-size': '8px'
+        });
+    };
+    DivElement.prototype.italicExecute = function (range, block) {
+        this.toggleParentNode(range, 'i');
+    };
+    DivElement.prototype.underlineExecute = function (range) {
+        this.toggleParentStyle(range, {
+            'text-decoration': 'underline'
+        });
+    };
+    DivElement.prototype.strikeExecute = function (range) {
+        this.toggleParentStyle(range, {
+            'text-decoration': 'strike'
+        });
+    };
+    DivElement.prototype.fontSizeExecute = function (range, block) {
+        this.toggleParentStyle(range, {
+            'font-size': block.value
+        });
+    };
+    DivElement.prototype.fontFamilyExecute = function (range, block) {
+        this.toggleParentStyle(range, {
+            'font-family': block.value
+        });
+    };
+    DivElement.prototype.backgroundExecute = function (range, block) {
+        this.toggleParentStyle(range, {
+            'background-color': block.value
+        });
+    };
+    DivElement.prototype.foregroundExecute = function (range, block) {
+        this.toggleParentStyle(range, {
+            color: block.value
+        });
+    };
+    DivElement.prototype.clearStyleExecute = function (range) {
+        this.eachRangeParentNode(range, function (node) {
+            if (node instanceof HTMLElement) {
+                node.removeAttribute('style');
+            }
+        });
+    };
+    DivElement.prototype.alignExecute = function (range, block) {
+        this.toggleParentStyle(range, {
+            'text-align': block.value
+        });
+    };
+    DivElement.prototype.theadExecute = function (range) {
+        var table = this.nodeParent(range.startContainer, 'table');
+        if (!table) {
+            return;
+        }
+        if (table.tHead) {
+            table.tHead = null;
+            return;
+        }
+        table.createTHead();
+    };
+    DivElement.prototype.tfootExecute = function (range) {
+        var table = this.nodeParent(range.startContainer, 'table');
+        if (!table) {
+            return;
+        }
+        if (table.tFoot) {
+            table.tFoot = null;
+            return;
+        }
+        table.createTFoot();
+    };
+    DivElement.prototype.rowSpanExecute = function (range) {
+        var start = this.getTableCell(range.startContainer);
+        var end = this.getTableCell(range.endContainer);
+        var body = start.parentNode.parentNode;
+        var startSpan = this.getTableCellSpan(start);
+        if (start === end) {
+            if (start.rowSpan < 2) {
+                return;
+            }
+            var count = start.rowSpan - 1;
+            start.rowSpan = 1;
+            var found = false;
+            for (var i = 0; i < body.rows.length; i++) {
+                if (count < 1) {
+                    break;
+                }
+                var tr = body.rows[i];
+                if (tr === start.parentNode) {
+                    found = true;
+                    continue;
+                }
+                if (!found) {
+                    continue;
+                }
+                count--;
+                var span_1 = 0;
+                for (var j = 0; j < tr.cells.length; j++) {
+                    var item = tr.cells[i];
+                    span_1 += item.colSpan;
+                    if (span_1 === startSpan) {
+                        this.insertAfter(item, document.createElement(start.nodeName));
+                        break;
+                    }
+                    else if (span_1 > startSpan) {
+                        item.colSpan++;
+                        break;
+                    }
+                }
+            }
+            return;
+        }
+        if (start.parentNode === end.parentNode) {
+            return;
+        }
+        if (body !== end.parentNode.parentNode) {
+            return;
+        }
+        // 获取 td|th table
+        // 判断 两个 table 是否是同一个
+        // 获取 tr.index 
+        // 设置第一个 td rowspan ，删除其他行的td
+        var endIndex = -1;
+        var span = 0;
+        for (var i = body.rows.length - 1; i >= 0; i--) {
+            var tr = body.rows[i];
+            if (tr === start.parentNode) {
+                start.rowSpan += span;
+                break;
+            }
+            if (tr === end.parentNode) {
+                endIndex = i;
+            }
+            if (endIndex < 0) {
+                return;
+            }
+            span++;
+            var s = 0;
+            for (var j = 0; j < tr.cells.length; j++) {
+                var item = tr.cells[j];
+                s += item.colSpan;
+                if (s < startSpan) {
+                    continue;
+                }
+                if (s > startSpan || item.colSpan > 1) {
+                    item.colSpan--;
+                }
+                else {
+                    tr.removeChild(item);
+                }
+                break;
+            }
+        }
+    };
+    DivElement.prototype.colSpanExecute = function (range) {
+        var start = this.getTableCell(range.startContainer);
+        var end = this.getTableCell(range.endContainer);
+        if (start === end) {
+            if (start.colSpan < 2) {
+                return;
+            }
+            var count = start.colSpan - 1;
+            start.colSpan = 1;
+            for (var i = 0; i < count; i++) {
+                this.insertAfter(start, document.createElement(start.nodeName));
+            }
+            return;
+        }
+        var tr = start.parentNode;
+        // 获取 td|th tr
+        // 判断 两个 tr 是否是同一个
+        // 获取 td.index 
+        // 设置第一个 td rowspan ，删除其他的td
+        if (tr !== end.parentNode) {
+            return;
+        }
+        var endIndex = -1;
+        var span = 0;
+        for (var i = tr.cells.length - 1; i >= 0; i--) {
+            var item = tr.cells[i];
+            if (item === start) {
+                item.colSpan += span;
+                break;
+            }
+            if (item === end) {
+                endIndex = i;
+            }
+            if (endIndex > 0) {
+                span += item.colSpan;
+                tr.removeChild(item);
+            }
+        }
+    };
+    DivElement.prototype.delTableExecute = function (range) {
+        var table = this.nodeParent(range.startContainer, 'table');
+        if (table) {
+            this.removeNode(table);
+        }
+    };
+    DivElement.prototype.openLinkExecute = function (range) {
+        var link = this.nodeParent(range.startContainer, 'a');
+        if (!link) {
+            return;
+        }
+        window.open(link.getAttribute('href'));
     };
     //#endregion
+    DivElement.prototype.getModuleItems = function (range) {
+        var _a;
+        var node = (_a = range.range) === null || _a === void 0 ? void 0 : _a.startContainer;
+        if (!node) {
+            return [];
+        }
+        var blockName = this.blockTagName.toUpperCase();
+        var data = [];
+        this.eachParentNode(node, function (item) {
+            if (node.nodeName === blockName || node.nodeName === 'IMG'
+                || node.nodeName === 'TABLE' || node.nodeName === 'VIDEO') {
+                return false;
+            }
+            if (!(item instanceof HTMLElement)) {
+                return;
+            }
+            if (item.nodeName === 'B') {
+                data.push('bold');
+            }
+            else if (item.nodeName === 'I') {
+                data.push('italic');
+            }
+            else if (item.nodeName === 'BLOCKQUOTE') {
+                data.push('blockquote');
+            }
+            else if (/^H[1-6]$/.test(item.nodeName)) {
+                data.push('head');
+            }
+            if (item.style.verticalAlign === 'text-top') {
+                data.push('sup');
+            }
+            else if (item.style.verticalAlign === 'text-bottom') {
+                data.push('sub');
+            }
+            if (item.style.textDecoration === 'underline') {
+                data.push('wavyline');
+            }
+            else if (item.style.textDecoration === 'wavyline') {
+                data.push('dashed');
+            }
+            else if (item.style.textDecoration === 'strike') {
+                data.push('strike');
+            }
+            if (item.style.backgroundColor) {
+                data.push('background');
+            }
+            if (item.style.color) {
+                data.push('foreground');
+            }
+        });
+        return data;
+    };
+    DivElement.prototype.getTableCellSpan = function (node) {
+        var parent = node.parentNode;
+        var span = 0;
+        for (var i = 0; i < parent.cells.length; i++) {
+            var item = parent.cells[i];
+            if (item === node) {
+                break;
+            }
+            span += item.colSpan;
+        }
+        return span;
+    };
+    DivElement.prototype.getTableCell = function (node) {
+        if (node instanceof HTMLTableCellElement) {
+            return node;
+        }
+        while (node.parentNode) {
+            if (node.parentNode instanceof HTMLTableCellElement) {
+                return node.parentNode;
+            }
+        }
+        return;
+    };
+    /**
+     * 移动光标到下一格
+     * @param node
+     * @returns
+     */
+    DivElement.prototype.moveTableFocus = function (node) {
+        if (node.nextSibling) {
+            this.selectNode(node.nextSibling);
+            return true;
+        }
+        var tr = node.parentNode;
+        if (!tr || !(tr instanceof HTMLTableRowElement)) {
+            return false;
+        }
+        if (tr.nextSibling && tr.nextSibling.childNodes.length >= 1) {
+            this.selectNode(tr.nextSibling.childNodes[0]);
+            return true;
+        }
+        var body = tr.parentNode;
+        if (!body || !(body instanceof HTMLTableSectionElement)) {
+            return false;
+        }
+        if (!body.nextSibling || body.nextSibling.childNodes.length === 0) {
+            return false;
+        }
+        var nextTr = body.nextSibling.childNodes[0];
+        if (nextTr.childNodes.length === 0) {
+            return false;
+        }
+        this.selectNode(nextTr.childNodes[0]);
+        return true;
+    };
     /**
      * 删除选中并替换为新的
      */
@@ -2135,11 +2519,139 @@ var DivElement = /** @class */ (function () {
      * 切换父级的标签，例如 b strong
      */
     DivElement.prototype.toggleParentNode = function (range, tag) {
+        var _this = this;
+        var n = document.createElement(tag);
+        var node = range.startContainer;
+        if (node === this.element) {
+            this.insertToChildIndex(n, node, range.startOffset);
+            this.selectNode(n);
+            return;
+        }
+        var parent = this.nodeParent(node, tag);
+        if (parent) {
+            this.replaceNodeName(parent, tag === 'b' ? 'span' : this.blockTagName);
+            return;
+        }
+        var target = node;
+        if (node.parentNode && node.parentNode !== this.element && this.isOnlyNode(node)) {
+            target = node.parentNode;
+        }
+        this.replaceNode(target, n, function () {
+            n.appendChild(node);
+            if (target !== node) {
+                _this.removeNode(target);
+            }
+        });
+        this.selectNode(node);
     };
     /**
      * 切换父级的样式
      */
     DivElement.prototype.toggleParentStyle = function (range, style) {
+        var box = this.getBlockParent(range.startContainer);
+        EditorHelper.css(box, style);
+    };
+    /**
+     * 获取节点的父级
+     * @param node
+     * @returns
+     */
+    DivElement.prototype.getBlockParent = function (node) {
+        var box = node.parentNode;
+        if (box !== this.element) {
+            return box;
+        }
+        var p = document.createElement(this.blockTagName);
+        this.replaceNode(node, p, function () {
+            p.appendChild(node);
+        });
+        return p;
+    };
+    DivElement.prototype.nodeParent = function (node, tag) {
+        if (!tag) {
+            return node.parentNode;
+        }
+        var items = tag.toUpperCase().split(',');
+        var parent;
+        this.eachParentNode(node, function (item) {
+            if (items.indexOf(item.nodeName) >= 0) {
+                parent = item;
+                return false;
+            }
+        });
+        return parent;
+    };
+    /**
+     * 判断节点是否处于范围内
+     * @param node
+     * @returns
+     */
+    DivElement.prototype.hasNode = function (node) {
+        if (node === this.element) {
+            return false;
+        }
+        while (node.parentNode) {
+            if (node.parentNode.nodeName === 'BODY') {
+                return false;
+            }
+            if (node.parentNode === this.element) {
+                return true;
+            }
+            node = node.parentNode;
+        }
+        return false;
+    };
+    DivElement.prototype.replaceNodeName = function (node, tag) {
+        var n = document.createElement(tag);
+        if (node instanceof HTMLElement) {
+            if (n.nodeName === node.nodeName) {
+                return;
+            }
+            n.innerHTML = node.innerHTML;
+            this.replaceNode(node, n);
+            this.selectNode(n);
+            return;
+        }
+        this.replaceNode(node, n, function () {
+            n.appendChild(node);
+        });
+        this.selectNode(n);
+    };
+    /**
+     * 替换节点为
+     * @param node
+     * @param newNode
+     * @param removeFn 删除旧节点还是移动
+     * @returns
+     */
+    DivElement.prototype.replaceNode = function (node, newNode, removeFn) {
+        var _this = this;
+        var fn = function () {
+            if (removeFn) {
+                removeFn();
+                return;
+            }
+            _this.removeNode(node);
+        };
+        if (!(newNode instanceof Array)) {
+            newNode = [newNode];
+        }
+        var borther = node.previousSibling;
+        if (borther) {
+            fn();
+            this.insertAfter.apply(this, __spreadArray([borther], newNode, false));
+            return;
+        }
+        borther = node.nextSibling;
+        if (borther) {
+            fn();
+            this.insertBefore.apply(this, __spreadArray([borther], newNode, false));
+            return;
+        }
+        var parent = node.parentNode;
+        fn();
+        this.insertLast.apply(this, __spreadArray([parent], newNode, false));
+        return;
     };
     DivElement.prototype.isNotSelected = function (range) {
         return range.startContainer === range.endContainer && range.startOffset === range.endOffset;
@@ -2155,11 +2667,27 @@ var DivElement = /** @class */ (function () {
         sel.removeAllRanges();
         sel.addRange(range);
     };
+    DivElement.prototype.focusAfter = function (node) {
+        if (!node) {
+            return;
+        }
+        if (node.nextSibling) {
+            this.selectNode(node.nextSibling);
+            return;
+        }
+        this.selectNode(node.parentNode, node.parentNode.childNodes.length);
+    };
     DivElement.prototype.bindEvent = function () {
         var _this = this;
         this.element.addEventListener('keydown', function (e) {
             _this.container.saveSelection();
-            _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                _this.tabExecute(_this.selection.range);
+            }
+            else {
+                _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
+            }
             _this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
         });
         this.element.addEventListener('keyup', function () {
@@ -2391,8 +2919,8 @@ var DivElement = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             items[_i - 1] = arguments[_i];
         }
-        for (var _a = 0, items_3 = items; _a < items_3.length; _a++) {
-            var item = items_3[_a];
+        for (var _a = 0, items_4 = items; _a < items_4.length; _a++) {
+            var item = items_4[_a];
             current.appendChild(item);
         }
     };
@@ -2407,8 +2935,8 @@ var DivElement = /** @class */ (function () {
             items[_i - 1] = arguments[_i];
         }
         var parent = current.parentNode;
-        for (var _a = 0, items_4 = items; _a < items_4.length; _a++) {
-            var item = items_4[_a];
+        for (var _a = 0, items_5 = items; _a < items_5.length; _a++) {
+            var item = items_5[_a];
             parent.insertBefore(item, current);
         }
     };
@@ -2437,6 +2965,7 @@ var DivElement = /** @class */ (function () {
         parent.insertBefore(newEle, parent.childNodes[index]);
     };
     DivElement.prototype.removeRange = function (range) {
+        var _this = this;
         if (range.startContainer === range.endContainer) {
             if (range.startOffset === range.endOffset) {
                 return;
@@ -2476,7 +3005,7 @@ var DivElement = /** @class */ (function () {
                     if (!n || n === beginNode || n === endNode) {
                         return;
                     }
-                    n.parentNode.removeChild(n);
+                    _this.removeNode(n);
                 }, endNode);
             }
             if (endNode && (!beginNode || endNode.parentNode !== beginNode.parentNode)) {
@@ -2487,7 +3016,7 @@ var DivElement = /** @class */ (function () {
                     if (n === beginNode) {
                         return;
                     }
-                    n.parentNode.removeChild(n);
+                    _this.removeNode(n);
                 }, false);
             }
         };
@@ -2514,6 +3043,17 @@ var DivElement = /** @class */ (function () {
             }
         }
         return;
+    };
+    /**
+     * 删除节点
+     * @param node
+     * @returns
+     */
+    DivElement.prototype.removeNode = function (node) {
+        if (!node.parentNode) {
+            return;
+        }
+        node.parentNode.removeChild(node);
     };
     DivElement.prototype.copySelectedNode = function (range) {
         if (range.startContainer === range.endContainer) {
@@ -2875,16 +3415,39 @@ var DivElement = /** @class */ (function () {
         }
         return this.isEmptyLineNode(range.startContainer);
     };
+    /**
+     * 判断父级是否只有这一个子节点
+     * @param node
+     * @returns
+     */
+    DivElement.prototype.isOnlyNode = function (node) {
+        var parent = node.parentNode;
+        if (!parent) {
+            return false;
+        }
+        for (var i = 0; i < parent.childNodes.length; i++) {
+            var element = parent.childNodes[i];
+            if (element !== node && element.nodeName !== 'BR') {
+                return false;
+            }
+        }
+        return true;
+    };
     DivElement.prototype.isEmptyLineNode = function (node) {
         if (node.nodeType !== 1) {
             return false;
         }
         for (var i = 0; i < node.childNodes.length; i++) {
             var element = node.childNodes[i];
+            if (['P', 'DIV'].indexOf(element.nodeName) >= 0) {
+                if (!this.isEmptyLineNode(element)) {
+                    return false;
+                }
+                continue;
+            }
             if (element.nodeName !== 'BR') {
                 return false;
             }
-            return true;
         }
         return true;
     };
@@ -2925,13 +3488,24 @@ var EditorBlockType;
     EditorBlockType["Italic"] = "italic";
     EditorBlockType["Underline"] = "underline";
     EditorBlockType["Strike"] = "strike";
+    EditorBlockType["Wavyline"] = "wavyline";
+    EditorBlockType["Dashed"] = "dashed";
+    EditorBlockType["Sub"] = "sub";
+    EditorBlockType["Sup"] = "sup";
     EditorBlockType["FontSize"] = "fontSize";
     EditorBlockType["FontFamily"] = "fontFamily";
     EditorBlockType["Background"] = "background";
     EditorBlockType["Foreground"] = "foreground";
     EditorBlockType["ClearStyle"] = "clearStyle";
     EditorBlockType["Align"] = "align";
+    EditorBlockType["List"] = "list";
     EditorBlockType["Blockquote"] = "blockquote";
+    EditorBlockType["Thead"] = "thead";
+    EditorBlockType["TFoot"] = "tfoot";
+    EditorBlockType["DeleteTable"] = "delTable";
+    EditorBlockType["RowSpan"] = "rowSpan";
+    EditorBlockType["ColSpan"] = "colSpan";
+    EditorBlockType["OpenLink"] = "openLink";
     EditorBlockType["Indent"] = "indent";
     EditorBlockType["Outdent"] = "outdent";
     EditorBlockType["NodeResize"] = "nodeResize";
@@ -3008,54 +3582,81 @@ var EditorModules = [
         label: 'H1-H6',
         parent: 'text',
         modal: new EditorDropdownComponent(true),
+        handler: function (editor, _, data) {
+            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.H }));
+        },
     },
     {
         name: 'bold',
         icon: 'fa-bold',
         label: 'Font Bold',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Bold });
+        },
     },
     {
         name: 'italic',
         icon: 'fa-italic',
         label: 'Font Italic',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Italic });
+        },
     },
     {
         name: 'underline',
         icon: 'fa-underline',
         label: 'Add Underline',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Underline });
+        },
     },
     {
         name: 'wavyline',
-        icon: 'fa-percentage',
+        icon: 'fa-wavyline',
         label: 'Add Wavyline',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Wavyline });
+        },
     },
     {
         name: 'dashed',
-        icon: 'fa-burn',
+        icon: 'fa-dashed',
         label: '下标加点',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Dashed });
+        },
     },
     {
         name: 'strike',
         icon: 'fa-strikethrough',
         label: '画线',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Strike });
+        },
     },
     {
         name: 'sub',
         icon: 'fa-subscript',
         label: '下标',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Sub });
+        },
     },
     {
         name: 'sup',
         icon: 'fa-superscript',
         label: '上标',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Sub });
+        },
     },
     {
         name: 'fontsize',
@@ -3063,6 +3664,9 @@ var EditorModules = [
         label: 'Font Size',
         parent: 'text',
         modal: new EditorDropdownComponent,
+        handler: function (editor, _, data) {
+            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.FontSize }));
+        },
     },
     {
         name: 'font',
@@ -3070,6 +3674,9 @@ var EditorModules = [
         label: 'Font Family',
         parent: 'text',
         modal: new EditorDropdownComponent,
+        handler: function (editor, _, data) {
+            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.FontFamily }));
+        },
     },
     {
         name: 'foreground',
@@ -3077,6 +3684,9 @@ var EditorModules = [
         label: 'Font Color',
         parent: 'text',
         modal: new EditorColorComponent,
+        handler: function (editor, _, data) {
+            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.Foreground }));
+        },
     },
     {
         name: 'background',
@@ -3084,12 +3694,18 @@ var EditorModules = [
         label: 'Background',
         parent: 'text',
         modal: new EditorColorComponent,
+        handler: function (editor, _, data) {
+            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.Background }));
+        },
     },
     {
         name: 'clear',
         icon: 'fa-tint-slash',
         label: 'Clear Style',
         parent: 'text',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.ClearStyle });
+        },
     },
     // 段落处理
     {
@@ -3133,24 +3749,36 @@ var EditorModules = [
         icon: 'fa-list',
         label: 'As List',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.List });
+        },
     },
     {
         name: 'indent',
         icon: 'fa-indent',
         label: 'Line Indent',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Indent });
+        },
     },
     {
         name: 'outdent',
         icon: 'fa-outdent',
         label: 'Line Outdent',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Outdent });
+        },
     },
     {
         name: 'blockquote',
         icon: 'fa-quote-left',
         label: 'Add Blockquote',
         parent: 'paragraph',
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Blockquote });
+        },
     },
     // 添加
     {
@@ -3326,18 +3954,27 @@ var EditorModules = [
         icon: 'fa-heading',
         label: '表头',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.Thead });
+        },
     },
     {
         name: 'footer-table',
         icon: 'fa-table',
         label: '表尾',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.TFoot });
+        },
     },
     {
         name: 'delete-table',
         icon: 'fa-trash',
         label: '删除表格',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.DeleteTable });
+        },
     },
     {
         name: 'row-table',
@@ -3380,12 +4017,18 @@ var EditorModules = [
         icon: 'fa-grip-horizontal',
         label: '横向合并',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.ColSpan });
+        },
     },
     {
         name: 'vertical-table',
         icon: 'fa-grip-vertical',
         label: '纵向合并',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.RowSpan });
+        },
     },
     // 链接处理
     {
@@ -3393,6 +4036,9 @@ var EditorModules = [
         icon: 'fa-paper-plane',
         label: '打开链接',
         parent: EDITOR_LINK_TOOL,
+        handler: function (editor) {
+            editor.insert({ type: EditorBlockType.OpenLink });
+        },
     },
     {
         name: 'link-style',
@@ -3534,8 +4180,8 @@ var EditorOptionManager = /** @class */ (function () {
             items = [items];
         }
         var isSystem = true;
-        for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
-            var item = items_5[_i];
+        for (var _i = 0, items_6 = items; _i < items_6.length; _i++) {
+            var item = items_6[_i];
             if (!this.isSystemTool(item)) {
                 isSystem = false;
                 break;
@@ -3559,8 +4205,8 @@ var EditorOptionManager = /** @class */ (function () {
             });
         }
         else {
-            for (var _a = 0, items_6 = items; _a < items_6.length; _a++) {
-                var item = items_6[_a];
+            for (var _a = 0, items_7 = items; _a < items_7.length; _a++) {
+                var item = items_7[_a];
                 var module = this.moduleItems[item];
                 if (this.isBoolEqual(module.actived, active)) {
                     continue;
@@ -3626,8 +4272,8 @@ var EditorOptionManager = /** @class */ (function () {
             return [];
         }
         var data = [];
-        for (var _i = 0, items_7 = items; _i < items_7.length; _i++) {
-            var item = items_7[_i];
+        for (var _i = 0, items_8 = items; _i < items_8.length; _i++) {
+            var item = items_8[_i];
             if (this.isVisible(item) && Object.prototype.hasOwnProperty.call(this.moduleItems, item)) {
                 data.push(this.toTool(this.moduleItems[item]));
             }
@@ -3954,6 +4600,9 @@ var EditorHelper = /** @class */ (function () {
         }
         return length;
     };
+    EditorHelper.css = function (node, style) {
+        $(node).css(style);
+    };
     EditorHelper.nodeClass = function (obj) {
         var items = [];
         $.each(obj, function (i, v) {
@@ -4109,7 +4758,7 @@ var EditorApp = /** @class */ (function () {
         this.container.ready(this.textbox[0]);
         this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));
         this.subToolbar = this.box.find('.editor-tool-bar .tool-bar-bottom');
-        this.flowToolbar = this.box.find('.flow-tool-bar');
+        this.flowToolbar = this.box.find('.editor-flow-tool-bar');
         this.modalContianer = this.box.find('.editor-flow-area .editor-modal-area');
         this.footerBar = this.box.find('.editor-footer');
         this.bindEvent();
@@ -4213,7 +4862,6 @@ var EditorApp = /** @class */ (function () {
                 y: y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, function (p) {
-            console.log(1);
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
@@ -4248,6 +4896,12 @@ var EditorApp = /** @class */ (function () {
                 return;
             }
             that.tapTool(that.option.toolOnly(module), parent.hasClass('tool-right'), e);
+        });
+        $(document).on('click', function (e) {
+            if ($(e.target).closest('.editor-box').is(_this.box)) {
+                return;
+            }
+            _this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
         });
         var $win = $(window).on('scroll', function () {
             var scollTop = $win.scrollTop();
@@ -4305,8 +4959,8 @@ var EditorApp = /** @class */ (function () {
             items[_i] = arguments[_i];
         }
         var maps = {};
-        for (var _a = 0, items_8 = items; _a < items_8.length; _a++) {
-            var item = items_8[_a];
+        for (var _a = 0, items_9 = items; _a < items_9.length; _a++) {
+            var item = items_9[_a];
             maps[item.name] = item;
         }
         this.box.find('.tool-item').each(function (_, ele) {
@@ -4342,7 +4996,7 @@ var EditorApp = /** @class */ (function () {
         this.box.append(element);
     };
     EditorApp.prototype.renderBase = function () {
-        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            <div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n        <div class=\"editor-code-container\"></div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>";
+        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            <div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"editor-flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n        <div class=\"editor-code-container\"></div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>";
     };
     EditorApp.prototype.renderToolIcon = function (item, target) {
         if (target) {

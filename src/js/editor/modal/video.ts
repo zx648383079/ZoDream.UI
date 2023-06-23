@@ -7,31 +7,15 @@ class EditorVideoComponent implements IEditorSharedModal {
     public render() {
         return `<div class="editor-modal-box">
         <div class="tab-bar">
-            <a class="item" title="链接">
+            <a class="item active" title="链接">
                 <i class="fa fa-link"></i>
             </a>
             <a class="item" title="代码">
                 <i class="fa fa-code"></i>
             </a>
-            <a class="item active" title="上传">
+            <a class="item" title="上传">
                 <i class="fa fa-upload"></i>
             </a>
-        </div>
-        <div class="tab-body-item">
-            <label class="drag-input" for="editor-modal-video">
-                拖放文件
-                <p>(或点击)</p>
-                <input type="file" id="editor-modal-video">
-            </label>
-        </div>
-        <div class="tab-body-item">
-            <div class="input-header-block">
-                <textarea name="code" rows="4"></textarea>
-                <label for="">代码</label>
-            </div>
-            <div class="modal-action">
-                <div class="btn btn-outline-primary">插入</div>
-            </div>
         </div>
         <div class="tab-body-item active">
             <div class="input-header-block">
@@ -46,6 +30,23 @@ class EditorVideoComponent implements IEditorSharedModal {
                 <div class="btn btn-outline-primary">插入</div>
             </div>
         </div>
+        <div class="tab-body-item">
+            <div class="input-header-block">
+                <textarea name="code" rows="4"></textarea>
+                <label for="">代码</label>
+            </div>
+            <div class="modal-action">
+                <div class="btn btn-outline-primary">插入</div>
+            </div>
+        </div>
+        <div class="tab-body-item">
+            <label class="drag-input" for="editor-modal-video">
+                拖放文件
+                <p>(或点击)</p>
+                <input type="file" id="editor-modal-video">
+            </label>
+        </div>
+
         <div class="loading-ring">
             <span></span>
             <span></span>

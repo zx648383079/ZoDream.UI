@@ -72,54 +72,81 @@ const EditorModules: IEditorModule[] = [
         label: 'H1-H6',
         parent: 'text',
         modal: new EditorDropdownComponent(true),
+        handler(editor, _, data) {
+            editor.insert({...data, type: EditorBlockType.H});
+        },
     },
     {
         name: 'bold',
         icon: 'fa-bold',
         label: 'Font Bold',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Bold});
+        },
     },
     {
         name: 'italic',
         icon: 'fa-italic',
         label: 'Font Italic',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Italic});
+        },
     },
     {
         name: 'underline',
         icon: 'fa-underline',
         label: 'Add Underline',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Underline});
+        },
     },
     {
         name: 'wavyline',
-        icon: 'fa-percentage',
+        icon: 'fa-wavyline',
         label: 'Add Wavyline',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Wavyline});
+        },
     },
     {
         name: 'dashed',
-        icon: 'fa-burn',
+        icon: 'fa-dashed',
         label: '下标加点',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Dashed});
+        },
     },
     {
         name: 'strike',
         icon: 'fa-strikethrough',
         label: '画线',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Strike});
+        },
     },
     {
         name: 'sub',
         icon: 'fa-subscript',
         label: '下标',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Sub});
+        },
     },
     {
         name: 'sup',
         icon: 'fa-superscript',
         label: '上标',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Sub});
+        },
     },
     {
         name: 'fontsize',
@@ -127,6 +154,9 @@ const EditorModules: IEditorModule[] = [
         label: 'Font Size',
         parent: 'text',
         modal: new EditorDropdownComponent,
+        handler(editor, _, data) {
+            editor.insert({...data, type: EditorBlockType.FontSize});
+        },
     },
     {
         name: 'font',
@@ -134,6 +164,9 @@ const EditorModules: IEditorModule[] = [
         label: 'Font Family',
         parent: 'text',
         modal: new EditorDropdownComponent,
+        handler(editor, _, data) {
+            editor.insert({...data, type: EditorBlockType.FontFamily});
+        },
     },
     {
         name: 'foreground',
@@ -141,6 +174,9 @@ const EditorModules: IEditorModule[] = [
         label: 'Font Color',
         parent: 'text',
         modal: new EditorColorComponent,
+        handler(editor, _, data) {
+            editor.insert({...data, type: EditorBlockType.Foreground});
+        },
     },
     {
         name: 'background',
@@ -148,12 +184,18 @@ const EditorModules: IEditorModule[] = [
         label: 'Background',
         parent: 'text',
         modal: new EditorColorComponent,
+        handler(editor, _, data) {
+            editor.insert({...data, type: EditorBlockType.Background});
+        },
     },
     {
         name: 'clear',
         icon: 'fa-tint-slash',
         label: 'Clear Style',
         parent: 'text',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.ClearStyle});
+        },
     },
 
     // 段落处理
@@ -198,24 +240,36 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-list',
         label: 'As List',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.List});
+        },
     },
     {
         name: 'indent',
         icon: 'fa-indent',
         label: 'Line Indent',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Indent});
+        },
     },
     {
         name: 'outdent',
         icon: 'fa-outdent',
         label: 'Line Outdent',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Outdent});
+        },
     },
     {
         name: 'blockquote',
         icon: 'fa-quote-left',
         label: 'Add Blockquote',
         parent: 'paragraph',
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Blockquote});
+        },
     },
 
 
@@ -416,18 +470,27 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-heading',
         label: '表头',
         parent: EDITOR_TABLE_TOOL, 
+        handler(editor) {
+            editor.insert({type: EditorBlockType.Thead});
+        },
     },
     {
         name: 'footer-table',
         icon: 'fa-table',
         label: '表尾',
         parent: EDITOR_TABLE_TOOL, 
+        handler(editor) {
+            editor.insert({type: EditorBlockType.TFoot});
+        },
     },
     {
         name: 'delete-table',
         icon: 'fa-trash',
         label: '删除表格',
-        parent: EDITOR_TABLE_TOOL, 
+        parent: EDITOR_TABLE_TOOL,
+        handler(editor) {
+            editor.insert({type: EditorBlockType.DeleteTable});
+        },
     },
     {
         name: 'row-table',
@@ -470,12 +533,18 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-grip-horizontal',
         label: '横向合并',
         parent: EDITOR_TABLE_TOOL, 
+        handler(editor) {
+            editor.insert({type: EditorBlockType.ColSpan});
+        },
     },
     {
         name: 'vertical-table',
         icon: 'fa-grip-vertical',
         label: '纵向合并',
         parent: EDITOR_TABLE_TOOL, 
+        handler(editor) {
+            editor.insert({type: EditorBlockType.RowSpan});
+        },
     },
     // 链接处理
 
@@ -484,6 +553,9 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-paper-plane',
         label: '打开链接',
         parent: EDITOR_LINK_TOOL, 
+        handler(editor) {
+            editor.insert({type: EditorBlockType.OpenLink});
+        },
     },
     {
         name: 'link-style',

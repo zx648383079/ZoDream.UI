@@ -44,7 +44,7 @@ class EditorApp {
         this.container.ready(this.textbox[0] as any);
         this.codeContainer.ready(new CodeElement(this.codebox[0] as any, this.codeContainer));
         this.subToolbar = this.box.find<HTMLDivElement>('.editor-tool-bar .tool-bar-bottom');
-        this.flowToolbar = this.box.find<HTMLDivElement>('.flow-tool-bar');
+        this.flowToolbar = this.box.find<HTMLDivElement>('.editor-flow-tool-bar');
         this.modalContianer = this.box.find<HTMLDivElement>('.editor-flow-area .editor-modal-area');
         this.footerBar = this.box.find<HTMLDivElement>('.editor-footer');
         this.bindEvent();
@@ -155,8 +155,6 @@ class EditorApp {
                 y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, p => {
-            console.log(1);
-            
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
@@ -191,6 +189,12 @@ class EditorApp {
                 return;
             }
             that.tapTool(that.option.toolOnly(module), parent.hasClass('tool-right'), e as any);
+        });
+        $(document).on('click', e => {
+            if ($(e.target).closest('.editor-box').is(this.box)) {
+                return;
+            }
+            this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
         });
         const $win = $(window).on('scroll', () => {
             const scollTop = $win.scrollTop();
@@ -304,7 +308,7 @@ class EditorApp {
             <div class="editor-view" contentEditable="true" spellcheck="false"></div>
         </div>
         <div class="editor-flow-area">
-            <div class="flow-tool-bar"></div>
+            <div class="editor-flow-tool-bar"></div>
             <div class="editor-modal-area"></div>
         </div>
         <div class="editor-code-container"></div>

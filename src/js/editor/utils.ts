@@ -24,6 +24,10 @@ class EditorHelper {
         return length;
     }
 
+    public static css(node: HTMLElement, style: any) {
+        $(node).css(style);
+    }
+
     public static nodeClass(obj: any): string {
         const items = [];
         $.each(obj, (i, v) => {

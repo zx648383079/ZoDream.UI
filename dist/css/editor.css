@@ -6,13 +6,19 @@
   border-radius: 0.25rem;
   position: relative;
 }
+.editor-box .fa-wavyline {
+  content: "~";
+}
+.editor-box .fa-dashed {
+  content: ".";
+}
 .editor-box .editor-tool-bar,
-.editor-box .flow-tool-bar {
+.editor-box .editor-flow-tool-bar {
   line-height: 2.5rem;
   color: #333;
 }
 .editor-box .editor-tool-bar .tool-item,
-.editor-box .flow-tool-bar .tool-item {
+.editor-box .editor-flow-tool-bar .tool-item {
   display: inline-block;
   padding: 0 0.5rem;
   text-align: center;
@@ -22,22 +28,22 @@
   cursor: pointer;
 }
 .editor-box .editor-tool-bar .tool-item input[type=file],
-.editor-box .flow-tool-bar .tool-item input[type=file] {
+.editor-box .editor-flow-tool-bar .tool-item input[type=file] {
   width: 0;
   height: 0;
   overflow: hidden;
 }
 .editor-box .editor-tool-bar .tool-item:hover,
-.editor-box .flow-tool-bar .tool-item:hover {
+.editor-box .editor-flow-tool-bar .tool-item:hover {
   background-color: rgba(204, 204, 204, 0.4);
 }
 .editor-box .editor-tool-bar .tool-item.active,
-.editor-box .flow-tool-bar .tool-item.active {
+.editor-box .editor-flow-tool-bar .tool-item.active {
   color: #4592ff;
   box-shadow: inset 1px -1px 2px #777;
 }
 .editor-box .editor-tool-bar .tool-item.disabled,
-.editor-box .flow-tool-bar .tool-item.disabled {
+.editor-box .editor-flow-tool-bar .tool-item.disabled {
   color: #777;
   cursor: not-allowed;
 }
@@ -176,7 +182,7 @@
   display: flex;
 }
 
-.flow-tool-bar {
+.editor-flow-tool-bar {
   position: absolute;
   z-index: 100;
   left: -2rem;
@@ -186,31 +192,23 @@
   box-shadow: 0 0 0.2rem 0.2rem #ccc;
   border-radius: 0.25rem;
 }
-.flow-tool-bar .tool-item {
+.editor-flow-tool-bar .tool-item {
   border-radius: 0.25rem;
 }
-.flow-tool-bar.flow-tool-one {
+.editor-flow-tool-bar.flow-tool-one {
   border-radius: 50%;
   padding: 0;
   width: 2.5rem;
   height: 2.5rem;
   text-align: center;
 }
-.flow-tool-bar.flow-tool-one .tool-item {
+.editor-flow-tool-bar.flow-tool-one .tool-item {
   width: 2.5rem;
   border-radius: 50%;
 }
 
-.code-editor-container {
+.editor-code-container {
   min-height: 8rem;
-}
-
-.icon-wavyline {
-  content: "~";
-}
-
-.icon-dashed {
-  content: ".";
 }
 
 .editor-modal-box {

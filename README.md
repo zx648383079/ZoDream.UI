@@ -20,7 +20,7 @@
 | 弹幕             | [jquery.barrager](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.barrager.ts)       | 滚动弹幕                                                                                                                                         | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/barrager.html)    |
 | 自动内容导航     | [jquery.sideNav](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.sideNav.ts)         | 自动生成内容导航, 支持分级，支持导航条数限制，支持滚动识别                                                                                       | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/sideNav.html)     |
 | ios select       | [jquery.select](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/select/jquery.selectbox.ts) | 仿ios 手机版下拉选择框,支持点击、滑动、多级联动                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/select.html) [Doc](https://github.com/zx648383079/ZoDream.UI/blob/master/doc/select.md)     |
-
+| 富文本编辑器       | [jquery.editor](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/editor) | html editor                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/edior.html)    |
 
 ## 更新进度
 

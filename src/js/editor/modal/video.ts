@@ -43,7 +43,7 @@ class EditorVideoComponent implements IEditorSharedModal {
             <label class="drag-input" for="editor-modal-video">
                 拖放文件
                 <p>(或点击)</p>
-                <input type="file" id="editor-modal-video">
+                <input type="file" id="editor-modal-video" accept="video/*">
             </label>
         </div>
 

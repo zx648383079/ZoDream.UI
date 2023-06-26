@@ -136,6 +136,32 @@ class EditorHelper {
         });
     }
 
+    public static uploadFile(url: string, files: File[]|FileList|File, success: (res: any) => void, failure: (message: string) => void, name = 'upfile') {
+        const form = new FormData();
+        if (files instanceof File) {
+            form.append(name, files);
+        } else {
+            form.append(name, files[0]);
+        }
+        $.ajax({
+            method: 'POST',
+            url,
+            data: form,
+            cache: false,
+            contentType: false,    //不可缺
+            processData: false,    //不可缺
+            success(res) {
+                const data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.state === 'SUCCESS') {
+                    data.title = data.original;
+                    success(data);
+                    return;
+                }
+                failure(data.state);
+            }
+        })
+    }
+
     private static getTransfer(event: any): any {
         return event.dataTransfer ? event.dataTransfer : event.originalEvent.dataTransfer;
     }

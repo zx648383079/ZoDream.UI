@@ -694,6 +694,7 @@ interface IUploadResult {
 }
 type UploadFileCallback = (files: File[] | File | FileList, success: (data: IUploadResult | IUploadResult[]) => void, failure: (error: string) => void) => void;
 interface IEditorOption {
+    height?: number | string;
     undoCount?: number;
     blockTag?: string;
     icons?: {
@@ -709,7 +710,7 @@ interface IEditorOption {
         image?: UploadFileCallback;
         video?: UploadFileCallback;
         file?: UploadFileCallback;
-    };
+    } | UploadFileCallback;
 }
 interface IEditorOptionItem {
     name: string | number;
@@ -743,6 +744,7 @@ declare class EditorOptionManager {
     get enterTool(): IEditorTool;
     get blockTag(): string;
     get maxUndoCount(): any;
+    set(key: string, value: any): void;
     merge(option: IEditorOption): void;
     get(optionKey: string): any;
     toolOnly(name: string): IEditorTool;
@@ -816,6 +818,7 @@ declare class EditorHelper {
     static modalInputData(element: JQuery<HTMLDivElement>): any;
     static modalInputData<T = any>(element: JQuery<HTMLDivElement>, data: T): T;
     static modalFileUpload(element: JQuery<HTMLDivElement>, uploadFn: (data: FileList) => void): void;
+    static uploadFile(url: string, files: File[] | FileList | File, success: (res: any) => void, failure: (message: string) => void, name?: string): void;
     private static getTransfer;
     private static preventAndStop;
     private static haveFiles;

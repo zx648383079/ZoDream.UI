@@ -21,7 +21,7 @@ class EditorImageComponent implements IEditorSharedModal {
             <label class="drag-input" for="editor-modal-image">
                 拖放文件
                 <p>(或点击)</p>
-                <input type="file" id="editor-modal-image">
+                <input type="file" id="editor-modal-image" accept="image/*">
             </label>
         </div>
         <div class="tab-body-item active">

@@ -155,9 +155,10 @@ $toolHeight: 2.5rem;
     .tool-align-right {
         text-align: right;
     }
-    .editor-view {
+    .#{$prefix}view {
         padding: .8rem;
         min-height: 8rem;
+        overflow-y: auto;
         &:focus {
             outline: 0 solid transparent;
         }

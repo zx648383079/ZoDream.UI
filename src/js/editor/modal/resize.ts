@@ -135,13 +135,13 @@ class EditorResizerComponent {
         if (this.toolType === i) {
             return;
         }
-        this.updateStyle();
-        this.updateStyle(i);
+        const old = this.toolType;
         this.toolType = i;
+        this.updateStyle(old);
+        this.updateStyle(i);
     }
 
     private updateStyle(i: number = this.toolType) {
-        this.toolType = i;
         if (i === 1) {
             this.triggerBoxStyle();
         } else if (i === 2) {

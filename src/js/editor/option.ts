@@ -9,6 +9,7 @@ interface IUploadResult {
 type UploadFileCallback = (files: File[]|File|FileList, success: (data: IUploadResult|IUploadResult[]) => void, failure: (error: string) => void) => void;
 
 interface IEditorOption {
+    height?: number|string;
     undoCount?: number; // 最大回退步骤
     blockTag?: string,
     icons?: {
@@ -24,7 +25,7 @@ interface IEditorOption {
         image?: UploadFileCallback;
         video?: UploadFileCallback;
         file?: UploadFileCallback;
-    };
+    } | UploadFileCallback;
 }
 
 
@@ -62,6 +63,17 @@ class EditorOptionManager {
         toolbar: {
             left: ['text', 'paragraph', 'add'],
             right: ['undo', 'redo', 'more']
+        },
+        uploader: {
+            image(files, success, failure) {
+                EditorHelper.uploadFile('/ueditor.php?action=uploadimage', files, success, failure);
+            },
+            video(files, success, failure) {
+                EditorHelper.uploadFile('/ueditor.php?action=uploadvideo', files, success, failure);
+            },
+            file(files, success, failure) {
+                EditorHelper.uploadFile('/ueditor.php?action=uploadfile', files, success, failure);
+            }
         }
     };
     private moduleItems: {
@@ -102,6 +114,10 @@ class EditorOptionManager {
         return this.get('undoCount');
     }
     
+    public set(key: string, value: any) {
+        this.option[key] = value;
+    }
+
     public merge(option: IEditorOption) {
         for (const key in option) {
             if (Object.prototype.hasOwnProperty.call(option, key)) {
@@ -111,7 +127,7 @@ class EditorOptionManager {
             }
         }
         ['icons', 'uploader'].forEach(k => {
-            if (Object.prototype.hasOwnProperty.call(option, k)) {
+            if (Object.prototype.hasOwnProperty.call(option, k) && typeof option[k] === 'object') {
                 this.option[k] = this.mergeObject(this.option[k], option[k]);
             }
         });
@@ -239,7 +255,11 @@ class EditorOptionManager {
     public upload(files: File[]|FileList, type: 'image'|'video'|'file', success: (data: IUploadResult[]) => void, failure: (error: string) => void): void;
     public upload(files: File, type: 'image'|'video'|'file', success: (data: IUploadResult) => void, failure: (error: string) => void): void;
     public upload(files: any, type: 'image'|'video'|'file', success: (data: any) => void, failure: (error: string) => void) {
-        const func = this.option.uploader ? this.option.uploader[type] : undefined;
+        const uploader = this.option.uploader;
+        let func: UploadFileCallback = typeof uploader === 'function' ? uploader : undefined;
+        if (typeof uploader === 'object') {
+            func = uploader[type] ? uploader[type] : uploader.file;
+        }
         if (!func) {
             failure('uploader not exist');
             return;

@@ -12,6 +12,9 @@ class EditorApp {
         }
         this.container = new EditorContainer(this.option);
         this.codeContainer = new EditorContainer(this.option);
+        if (element.style.height) {
+            this.option.set('height', element.style.height);
+        }
         if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
             this.initByInput($(element));
         } else {
@@ -41,6 +44,10 @@ class EditorApp {
         this.renderToolbar(this.option.rightToolbar, this.box.find<HTMLDivElement>('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
         this.codebox = this.box.find('.editor-code-container');
+        const height = this.option.get('height');
+        if (height) {
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+        }
         this.container.ready(this.textbox[0] as any);
         this.codeContainer.ready(new CodeElement(this.codebox[0] as any, this.codeContainer));
         this.subToolbar = this.box.find<HTMLDivElement>('.editor-tool-bar .tool-bar-bottom');
@@ -151,19 +158,23 @@ class EditorApp {
             this.toggleTool({name: EDITOR_UNDO_TOOL, disabled: !this.container.canUndo},
                 {name: EDITOR_REDO_TOOL, disabled: !this.container.canRedo},);
         }).on(EDITOR_EVENT_SHOW_ADD_TOOL, y => {
+            this.resizer.close();
             this.hideModal();
             this.toggleFlowbar(this.option.tool(EDITOR_ADD_TOOL), {
                 x: 0,
                 y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, p => {
+            this.resizer.close();
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
             });
         }).on(EDITOR_EVENT_SHOW_TABLE_TOOL, p => {
+            this.resizer.close();
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_TABLE_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_LINK_TOOL, p => {
+            this.resizer.close();
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, (p, cb) => {
             this.toggleFlowbar(this.option.toolChildren(EDITOR_IMAGE_TOOL), {...p, y: p.y + p.height + 20});
@@ -282,11 +293,17 @@ class EditorApp {
 
 
     private initByDiv(element: JQuery) {
-        this.box = element as any;
-        this.box.addClass('editor-box');
-        this.box.html(this.renderBase());
         this.target = $(document.createElement('textarea'));
-        this.target.attr('name', this.box.attr('name'));
+        this.target.attr('name', element.attr('name'));
+        if (element[0].nodeName === 'SCRIPT') {
+            this.box = $('<div class="editor-box"></div>');
+            element.before(this.box);
+            this.target.val(element.html());
+        } else {
+            this.box = element as any;
+            this.box.addClass('editor-box');
+        }
+        this.box.html(this.renderBase());
         this.target.hide();
         this.box.append(this.target);
     }
@@ -375,6 +392,10 @@ class EditorApp {
 }
 ;(function($: any) {
     $.fn.editor = function(option?: IEditorOption) {
+        if (this.data('editor')) {
+            return;
+        }
+        this.data('editor', 1);
         return new EditorApp(this[0], option);
     };
 })(jQuery);

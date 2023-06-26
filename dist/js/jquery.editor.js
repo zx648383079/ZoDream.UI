@@ -498,7 +498,7 @@ var EditorImageComponent = /** @class */ (function () {
     function EditorImageComponent() {
     }
     EditorImageComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u5728\u7EBF\u56FE\u5E93\">\n                <i class=\"fa fa-folder-open\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-image\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-image\">\n            </label>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u5728\u7EBF\u56FE\u5E93\">\n                <i class=\"fa fa-folder-open\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-image\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-image\" accept=\"image/*\">\n            </label>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
     };
     EditorImageComponent.prototype.bindEvent = function () {
         var _this = this;
@@ -684,13 +684,13 @@ var EditorResizerComponent = /** @class */ (function () {
         if (this.toolType === i) {
             return;
         }
-        this.updateStyle();
-        this.updateStyle(i);
+        var old = this.toolType;
         this.toolType = i;
+        this.updateStyle(old);
+        this.updateStyle(i);
     };
     EditorResizerComponent.prototype.updateStyle = function (i) {
         if (i === void 0) { i = this.toolType; }
-        this.toolType = i;
         if (i === 1) {
             this.triggerBoxStyle();
         }
@@ -923,7 +923,7 @@ var EditorVideoComponent = /** @class */ (function () {
     function EditorVideoComponent() {
     }
     EditorVideoComponent.prototype.render = function () {
-        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4EE3\u7801\">\n                <i class=\"fa fa-code\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"fa fa-square check-input\" name=\"auto_play\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <div class=\"input-header-block\">\n                <textarea name=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-video\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-video\">\n            </label>\n        </div>\n\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
+        return "<div class=\"editor-modal-box\">\n        <div class=\"tab-bar\">\n            <a class=\"item active\" title=\"\u94FE\u63A5\">\n                <i class=\"fa fa-link\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4EE3\u7801\">\n                <i class=\"fa fa-code\"></i>\n            </a>\n            <a class=\"item\" title=\"\u4E0A\u4F20\">\n                <i class=\"fa fa-upload\"></i>\n            </a>\n        </div>\n        <div class=\"tab-body-item active\">\n            <div class=\"input-header-block\">\n                <input type=\"text\" name=\"url\">\n                <label for=\"\">\u94FE\u63A5</label>\n            </div>\n            <div class=\"input-flex-line\">\n                <i class=\"fa fa-square check-input\" name=\"auto_play\"></i>\n                \u81EA\u52A8\u64AD\u653E\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <div class=\"input-header-block\">\n                <textarea name=\"code\" rows=\"4\"></textarea>\n                <label for=\"\">\u4EE3\u7801</label>\n            </div>\n            <div class=\"modal-action\">\n                <div class=\"btn btn-outline-primary\">\u63D2\u5165</div>\n            </div>\n        </div>\n        <div class=\"tab-body-item\">\n            <label class=\"drag-input\" for=\"editor-modal-video\">\n                \u62D6\u653E\u6587\u4EF6\n                <p>(\u6216\u70B9\u51FB)</p>\n                <input type=\"file\" id=\"editor-modal-video\" accept=\"video/*\">\n            </label>\n        </div>\n\n        <div class=\"loading-ring\">\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n            <span></span>\n        </div>\n    </div>";
     };
     EditorVideoComponent.prototype.bindEvent = function () {
         var _this = this;
@@ -4072,6 +4072,17 @@ var EditorOptionManager = /** @class */ (function () {
             toolbar: {
                 left: ['text', 'paragraph', 'add'],
                 right: ['undo', 'redo', 'more']
+            },
+            uploader: {
+                image: function (files, success, failure) {
+                    EditorHelper.uploadFile('/ueditor.php?action=uploadimage', files, success, failure);
+                },
+                video: function (files, success, failure) {
+                    EditorHelper.uploadFile('/ueditor.php?action=uploadvideo', files, success, failure);
+                },
+                file: function (files, success, failure) {
+                    EditorHelper.uploadFile('/ueditor.php?action=uploadfile', files, success, failure);
+                }
             }
         };
         this.moduleItems = {};
@@ -4126,6 +4137,9 @@ var EditorOptionManager = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    EditorOptionManager.prototype.set = function (key, value) {
+        this.option[key] = value;
+    };
     EditorOptionManager.prototype.merge = function (option) {
         var _this = this;
         for (var key in option) {
@@ -4136,7 +4150,7 @@ var EditorOptionManager = /** @class */ (function () {
             }
         }
         ['icons', 'uploader'].forEach(function (k) {
-            if (Object.prototype.hasOwnProperty.call(option, k)) {
+            if (Object.prototype.hasOwnProperty.call(option, k) && typeof option[k] === 'object') {
                 _this.option[k] = _this.mergeObject(_this.option[k], option[k]);
             }
         });
@@ -4265,7 +4279,11 @@ var EditorOptionManager = /** @class */ (function () {
         return module;
     };
     EditorOptionManager.prototype.upload = function (files, type, success, failure) {
-        var func = this.option.uploader ? this.option.uploader[type] : undefined;
+        var uploader = this.option.uploader;
+        var func = typeof uploader === 'function' ? uploader : undefined;
+        if (typeof uploader === 'object') {
+            func = uploader[type] ? uploader[type] : uploader.file;
+        }
         if (!func) {
             failure('uploader not exist');
             return;
@@ -4710,6 +4728,33 @@ var EditorHelper = /** @class */ (function () {
             uploadFn(transfer.files);
         });
     };
+    EditorHelper.uploadFile = function (url, files, success, failure, name) {
+        if (name === void 0) { name = 'upfile'; }
+        var form = new FormData();
+        if (files instanceof File) {
+            form.append(name, files);
+        }
+        else {
+            form.append(name, files[0]);
+        }
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: form,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.state === 'SUCCESS') {
+                    data.title = data.original;
+                    success(data);
+                    return;
+                }
+                failure(data.state);
+            }
+        });
+    };
     EditorHelper.getTransfer = function (event) {
         return event.dataTransfer ? event.dataTransfer : event.originalEvent.dataTransfer;
     };
@@ -4747,6 +4792,9 @@ var EditorApp = /** @class */ (function () {
         }
         this.container = new EditorContainer(this.option);
         this.codeContainer = new EditorContainer(this.option);
+        if (element.style.height) {
+            this.option.set('height', element.style.height);
+        }
         if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
             this.initByInput($(element));
         }
@@ -4760,6 +4808,10 @@ var EditorApp = /** @class */ (function () {
         this.renderToolbar(this.option.rightToolbar, this.box.find('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
         this.codebox = this.box.find('.editor-code-container');
+        var height = this.option.get('height');
+        if (height) {
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+        }
         this.container.ready(this.textbox[0]);
         this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));
         this.subToolbar = this.box.find('.editor-tool-bar .tool-bar-bottom');
@@ -4863,19 +4915,23 @@ var EditorApp = /** @class */ (function () {
         this.container.on(EDITOR_EVENT_UNDO_CHANGE, function () {
             _this.toggleTool({ name: EDITOR_UNDO_TOOL, disabled: !_this.container.canUndo }, { name: EDITOR_REDO_TOOL, disabled: !_this.container.canRedo });
         }).on(EDITOR_EVENT_SHOW_ADD_TOOL, function (y) {
+            _this.resizer.close();
             _this.hideModal();
             _this.toggleFlowbar(_this.option.tool(EDITOR_ADD_TOOL), {
                 x: 0,
                 y: y,
             });
         }).on(EDITOR_EVENT_SHOW_LINE_BREAK_TOOL, function (p) {
+            _this.resizer.close();
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_ENTER_TOOL), {
                 x: 0,
                 y: p.y,
             });
         }).on(EDITOR_EVENT_SHOW_TABLE_TOOL, function (p) {
+            _this.resizer.close();
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_TABLE_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_LINK_TOOL, function (p) {
+            _this.resizer.close();
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, function (p, cb) {
             _this.toggleFlowbar(_this.option.toolChildren(EDITOR_IMAGE_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
@@ -4990,11 +5046,18 @@ var EditorApp = /** @class */ (function () {
         });
     };
     EditorApp.prototype.initByDiv = function (element) {
-        this.box = element;
-        this.box.addClass('editor-box');
-        this.box.html(this.renderBase());
         this.target = $(document.createElement('textarea'));
-        this.target.attr('name', this.box.attr('name'));
+        this.target.attr('name', element.attr('name'));
+        if (element[0].nodeName === 'SCRIPT') {
+            this.box = $('<div class="editor-box"></div>');
+            element.before(this.box);
+            this.target.val(element.html());
+        }
+        else {
+            this.box = element;
+            this.box.addClass('editor-box');
+        }
+        this.box.html(this.renderBase());
         this.target.hide();
         this.box.append(this.target);
     };
@@ -5057,6 +5120,10 @@ var EditorApp = /** @class */ (function () {
 ;
 (function ($) {
     $.fn.editor = function (option) {
+        if (this.data('editor')) {
+            return;
+        }
+        this.data('editor', 1);
         return new EditorApp(this[0], option);
     };
 })(jQuery);

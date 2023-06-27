@@ -158,7 +158,6 @@ $toolHeight: 2.5rem;
     .#{$prefix}view {
         padding: .8rem;
         min-height: 8rem;
-        overflow-y: auto;
         &:focus {
             outline: 0 solid transparent;
         }

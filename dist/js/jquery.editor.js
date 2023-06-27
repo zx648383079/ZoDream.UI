@@ -4810,7 +4810,7 @@ var EditorApp = /** @class */ (function () {
         this.codebox = this.box.find('.editor-code-container');
         var height = this.option.get('height');
         if (height) {
-            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+            this.textbox.parent().css('height', /^\d+$/.test(height) ? height + 'px' : height);
         }
         this.container.ready(this.textbox[0]);
         this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));

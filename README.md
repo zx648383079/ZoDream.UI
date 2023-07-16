@@ -23,6 +23,14 @@
 | 富文本编辑器       | [jquery.editor](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/editor) | html editor                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/edior.html)    |
 | 瀑布流显示       | [jquery.waterfall](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.waterfall.ts) | 实现不规则图片/区域排列显示，基于等比例缩小、适当拆分和合并区域、限制最小尺寸（高、宽都不小于指定值）、固定间隔、周边无键，跟css3的瀑布流本质区别：不限制宽或高相等                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/grid.html)    |
 
+## 预览图
+
+1. 编辑器
+![编辑器](screen/editor.png)
+
+2. 瀑布流
+![瀑布流](screen/water.png)
+
 ## 更新进度
 
-2018/7/5 插件积累
+2023/7/16 插件积累

@@ -42,10 +42,10 @@ class Point {
     /**
      * 应用当前的宽和高
      */
-    public applyWidthAndHeight() {
+    public applyWidthAndHeight(keepScale = true) {
         let instance = this;
         let [width, height] = this.getElementWidthAndHeight();
-        if (height == this.height && this.width != width) {
+        if (keepScale && height === this.height && this.width !== width) {
             // 等比例缩放
             this.height = this.width * height / width;
         }

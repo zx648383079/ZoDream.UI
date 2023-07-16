@@ -1,35 +1,18 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Date.prototype.getRealMonth = function () {
-    return this.getMonth() + 1;
-};
-Date.prototype.format = function (fmt) {
-    if (fmt === void 0) { fmt = 'y年m月d日'; }
-    var o = {
-        "y+": this.getFullYear(),
-        "m+": this.getRealMonth(),
-        "d+": this.getDate(),
-        "h+": this.getHours(),
-        "i+": this.getMinutes(),
-        "s+": this.getSeconds(),
-        "q+": Math.floor((this.getMonth() + 3) / 3),
-        "S": this.getMilliseconds() //毫秒 
-    };
-    for (var k in o) {
-        if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        }
-    }
-    return fmt;
-};
 var Dater = /** @class */ (function (_super) {
     __extends(Dater, _super);
     function Dater(element, option) {
@@ -50,23 +33,23 @@ var Dater = /** @class */ (function (_super) {
         return _this;
     }
     Dater.prototype.previousYear = function () {
-        this.setDate(this._date.getFullYear() - 1, this._date.getRealMonth());
+        this.setDate(this._date.getFullYear() - 1, Dater.getRealMonth(this._date));
     };
     Dater.prototype.nextYear = function () {
-        this.setDate(this._date.getFullYear() + 1, this._date.getRealMonth());
+        this.setDate(this._date.getFullYear() + 1, Dater.getRealMonth(this._date));
     };
     Dater.prototype.previousMonth = function () {
         this.setDate(this._date.getFullYear(), this._date.getMonth());
     };
     Dater.prototype.nextMonth = function () {
-        this.setDate(this._date.getFullYear(), this._date.getRealMonth() + 1);
+        this.setDate(this._date.getFullYear(), Dater.getRealMonth(this._date) + 1);
     };
     Dater.prototype.setDate = function (year, month) {
         if (typeof year == 'string') {
             year = new Date(year);
         }
         if (year instanceof Date) {
-            month = year.getRealMonth();
+            month = Dater.getRealMonth(year);
             year = year.getFullYear();
         }
         this._date = new Date(year, month, 0);
@@ -120,7 +103,7 @@ var Dater = /** @class */ (function (_super) {
     };
     Dater.prototype._bindEvent = function () {
         var instance = this;
-        this.daysElement.click(function () {
+        this.daysElement.on('click', function () {
             var ele = $(this);
             var day = parseInt(ele.text());
             if (day > 0 && instance.hasEvent('click')) {
@@ -129,10 +112,10 @@ var Dater = /** @class */ (function (_super) {
                 instance.trigger('click', date, ele, instance.element);
             }
         });
-        this.element.find(".previousMonth").click(function () {
+        this.element.find(".previousMonth").on('click', function () {
             instance.previousMonth();
         });
-        this.element.find(".nextMonth").click(function () {
+        this.element.find(".nextMonth").on('click', function () {
             instance.nextMonth();
         });
     };
@@ -185,6 +168,30 @@ var Dater = /** @class */ (function (_super) {
      */
     Dater.prototype.click = function (callback) {
         return this.on('change', callback);
+    };
+    Dater.getRealMonth = function (date) {
+        return date.getMonth() + 1;
+    };
+    ;
+    Dater.format = function (date, fmt) {
+        if (fmt === void 0) { fmt = 'y年m月d日'; }
+        var o = {
+            "y+": date.getFullYear(),
+            "m+": this.getRealMonth(date),
+            "d+": date.getDate(),
+            "h+": date.getHours(),
+            "i+": date.getMinutes(),
+            "s+": date.getSeconds(),
+            "q+": Math.floor((date.getMonth() + 3) / 3),
+            "S": date.getMilliseconds() //毫秒 
+        };
+        for (var k in o) {
+            var match = fmt.match(new RegExp('(' + k + ')'));
+            if (match) {
+                fmt = fmt.replace(match[1], (match[1].length === 1 || k === 'y+') ? (o[k]) : (('00' + o[k]).substring(('' + o[k]).length)));
+            }
+        }
+        return fmt;
     };
     return Dater;
 }(Box));

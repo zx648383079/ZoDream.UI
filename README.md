@@ -21,6 +21,7 @@
 | 自动内容导航     | [jquery.sideNav](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.sideNav.ts)         | 自动生成内容导航, 支持分级，支持导航条数限制，支持滚动识别                                                                                       | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/sideNav.html)     |
 | ios select       | [jquery.select](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/select/jquery.selectbox.ts) | 仿ios 手机版下拉选择框,支持点击、滑动、多级联动                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/select.html) [Doc](https://github.com/zx648383079/ZoDream.UI/blob/master/doc/select.md)     |
 | 富文本编辑器       | [jquery.editor](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/editor) | html editor                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/edior.html)    |
+| 瀑布流显示       | [jquery.waterfall](https://github.com/zx648383079/ZoDream.UI/blob/master/src/js/jquery.waterfall.ts) | 实现不规则图片/区域排列显示，基于等比例缩小、适当拆分和合并区域、限制最小尺寸（高、宽都不小于指定值）、固定间隔、周边无键，跟css3的瀑布流本质区别：不限制宽或高相等                                                                                                  | [Demo](https://zx648383079.github.io/ZoDream.UI/demo/grid.html)    |
 
 ## 更新进度
 

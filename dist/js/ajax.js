@@ -17,7 +17,7 @@ var Ajax = /** @class */ (function () {
         xhr.open(option.method.toString(), option.url, option.async, option.user, option.password);
         if (option.method === AjaxMethod.POST &&
             ('object' != typeof option.data ||
-                !option.data instanceof FormData)) {
+                option.data instanceof FormData)) {
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         }
         if (option.async) {

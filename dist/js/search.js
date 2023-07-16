@@ -6,8 +6,8 @@ var search = /** @class */ (function () {
      */
     search.replace = function (key, val) {
         var uri = new Uri(window.location.href);
-        uri.replaceQueryParam(key, val);
-        uri.deleteQueryParam('page');
+        uri.setData(key, val);
+        uri.deleteData('page');
         window.location.href = uri.toString();
     };
     /**
@@ -16,11 +16,11 @@ var search = /** @class */ (function () {
     search.sort = function (name, order) {
         var uri = new Uri(window.location.href);
         if (!order) {
-            order = uri.getQueryParamValue(name) == 'desc' ? 'asc' : 'desc';
+            order = uri.getData(name) == 'desc' ? 'asc' : 'desc';
         }
-        uri.replaceQueryParam('sort', name);
-        uri.replaceQueryParam('order', order);
-        uri.deleteQueryParam('page');
+        uri.setData('sort', name);
+        uri.setData('order', order);
+        uri.deleteData('page');
         window.location.href = uri.toString();
     };
     /**
@@ -34,12 +34,12 @@ var search = /** @class */ (function () {
         var uri = new Uri(window.location.href);
         $.each(names, function (i, name) {
             if (typeof name == 'object') {
-                uri.replaceQueryParam(name[0], $('*[name=' + name[1] + ']').val());
+                uri.setData(name[0], $('*[name=' + name[1] + ']').val());
                 return;
             }
-            uri.replaceQueryParam(name, $('*[name=' + name + ']').val());
+            uri.setData(name, $('*[name=' + name + ']').val());
         });
-        uri.deleteQueryParam('page');
+        uri.deleteData('page');
         window.location.href = uri.toString();
     };
     /**
@@ -47,11 +47,11 @@ var search = /** @class */ (function () {
      */
     search.prevPage = function () {
         var uri = new Uri(window.location.href);
-        var page = uri.getQueryParamValue('page');
+        var page = uri.getData('page');
         if (page > 1) {
             page--;
         }
-        uri.replaceQueryParam('page', page);
+        uri.setData('page', page);
         window.location.href = uri.toString();
     };
     /**
@@ -59,7 +59,7 @@ var search = /** @class */ (function () {
      */
     search.page = function (page) {
         var uri = new Uri(window.location.href);
-        uri.replaceQueryParam('page', page);
+        uri.setData('page', page);
         window.location.href = uri.toString();
     };
     /**
@@ -67,11 +67,11 @@ var search = /** @class */ (function () {
      */
     search.nextPage = function () {
         var uri = new Uri(window.location.href);
-        var page = uri.getQueryParamValue('page');
+        var page = uri.getData('page');
         if (page < 1) {
             page = 1;
         }
-        uri.replaceQueryParam('page', page + 1);
+        uri.setData('page', page + 1);
         window.location.href = uri.toString();
     };
     return search;

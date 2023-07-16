@@ -38,14 +38,15 @@ function tslintTask() {
 
 function tsTask() {
     return gulp.src('src/js/*.ts')
-        .pipe(tsProject())
         .pipe(plumber({
             errorHandler() {
                 this.emit('end');
             }
         }))
+        .pipe(tsProject())
+       
         //.pipe(uglify())
-        //.pipe(rename({suffix:'.min'}))
+        //.pipe(rename({suffix:'.min'})) 
         .pipe(gulp.dest('dist/js'));
 }
 

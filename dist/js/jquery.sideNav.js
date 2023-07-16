@@ -17,7 +17,6 @@ var SideNav = /** @class */ (function () {
         }
         this.box.show();
         this._bindEvent();
-        this.fixed();
         this.setActive();
     };
     SideNav.prototype._bindEvent = function () {
@@ -31,6 +30,7 @@ var SideNav = /** @class */ (function () {
         });
         this._window.scroll(function () {
             that.setActive();
+            that.fixed();
         });
     };
     SideNav.prototype._getScrollTop = function () {
@@ -98,16 +98,23 @@ var SideNav = /** @class */ (function () {
         $(document.body).append(this.box);
     };
     SideNav.prototype.fixed = function () {
-        var top = this._window.scrollTop();
+        var top = this._window.scrollTop(), isFixed = false;
         if (top >= this.option.fixedTop) {
-            this.box.css({
-                "position": "fixed",
-            });
-            return;
+            if (!this.option.maxFixedTop) {
+                isFixed = true;
+            }
+            else {
+                var maxFixedTop = typeof this.option.maxFixedTop == 'function'
+                    ? this.option.maxFixedTop.call(this, this.box, top) : this.option.maxFixedTop;
+                if (typeof maxFixedTop == 'boolean') {
+                    isFixed = maxFixedTop;
+                }
+                else {
+                    isFixed = top < maxFixedTop;
+                }
+            }
         }
-        this.box.css({
-            "position": "absolute",
-        });
+        this.box.css('position', isFixed ? 'fixed' : 'absolute');
     };
     /**
      * scrollTo

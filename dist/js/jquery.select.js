@@ -1,8 +1,13 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -27,7 +32,7 @@ var Select = /** @class */ (function (_super) {
         set: function (arg) {
             this.data = arg;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Select.prototype._init = function () {
@@ -62,13 +67,13 @@ var Select = /** @class */ (function (_super) {
     };
     Select.prototype._bindEvent = function () {
         var instance = this;
-        this.element.click(function () {
+        this.element.on('click', function () {
             instance.show();
         });
-        $(document).click(function () {
+        $(document).on('click', function () {
             instance.hide();
         });
-        this._select.click(function (e) {
+        this._select.on('click', function (e) {
             if (e.stopPropagation) {
                 e.stopPropagation();
                 return;

@@ -33,19 +33,19 @@ var Carousel = /** @class */ (function () {
         set: function (left) {
             this.goLeft(left);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Carousel.prototype._addEvent = function () {
         var instance = this;
         if (this.options.previousTag) {
-            this.element.find(this.options.previousTag).click(function () {
+            this.element.find(this.options.previousTag).on('click', function () {
                 instance._stopTime = 1;
                 instance.previous();
             });
         }
         if (this.options.nextTag) {
-            this.element.find(this.options.nextTag).click(function () {
+            this.element.find(this.options.nextTag).on('click', function () {
                 instance._stopTime = 1;
                 instance.next();
             });
@@ -55,7 +55,7 @@ var Carousel = /** @class */ (function () {
         this._box.css({ "width": this.width * 3 + "px", "left": -this.width + "px" });
         for (var j = 0; j < 2; j++) {
             for (var i = 0, length_1 = items.length; i < length_1; i++) {
-                this._box.append(items[i].cloneNode(true));
+                this._box.append($(items[i]).clone(true));
             }
         }
     };

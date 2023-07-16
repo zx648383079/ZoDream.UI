@@ -17,10 +17,17 @@
             float: left;
             list-style: none;
         }
+        .waterfall {
+            position: relative;
+        }
+        .waterfall img {
+            position: absolute;
+            transition: all .5s;
+        }
         </style>
     </head>
     <body>
-    
+<!--     
     <div class="grid">
         <ul>
             <li><a><img src="image/banner1.jpg" alt=""></a></li>
@@ -39,29 +46,37 @@
             <li><img src="image/banner1.jpg" alt=""></li>
             <div style="clear: both"></div>
         </ul>
-    </div>
+    </div> -->
 
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>     <!-- <script src="../bower_components/jquery/dist/jquery.min.js"></script> -->
+    <div class="waterfall"></div>
+
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dist/js/jquery.grid.js"></script>
+    <script src="../dist/js/jquery.waterfall.js"></script>
     <script>
         $(document).ready(function() {
-            $(".grid").grid({
-                tag: 'li',
-                data: [
-                    ['.4', '.8'],
-                    ['.6', '.4'],
-                    ['.3', '.4'],
-                    ['.3', '.4'],
-                ]
-            });
-            $(".grid2").grid({
-                tag: 'li',
-                data: [
-                    ['.6', '.4'],
-                    ['.4', '.8'],
-                    {width: '.3', height: '.4', 'margin-top': -.4},
-                    {width: '.3', height: '.4', 'margin-left': .3, 'margin-top': -.4},
-                ]
+            // $(".grid").grid({
+            //     tag: 'li',
+            //     data: [
+            //         ['.4', '.8'],
+            //         ['.6', '.4'],
+            //         ['.3', '.4'],
+            //         ['.3', '.4'],
+            //     ]
+            // });
+            // $(".grid2").grid({
+            //     tag: 'li',
+            //     data: [
+            //         ['.6', '.4'],
+            //         ['.4', '.8'],
+            //         {width: '.3', height: '.4', 'margin-top': -.4},
+            //         {width: '.3', height: '.4', 'margin-left': .3, 'margin-top': -.4},
+            //     ]
+            // });
+            $('.waterfall').waterfall({
+                min: 100,
+                gap: 5,
+                items: [{"height":661,"width":1000},{"height":768,"width":1366},{"height":768,"width":1366},{"height":768,"width":1366},{"height":333,"width":450},{"height":333,"width":450},{"height":333,"width":450},{"height":133,"width":133},{"height":427,"width":640},{"height":426,"width":640},{"height":640,"width":427},{"height":640,"width":543},{"height":427,"width":640},{"height":851,"width":1280},{"height":488,"width":640},{"height":640,"width":427},{"height":640,"width":409},{"height":427,"width":640},{"height":360,"width":640},{"height":427,"width":640}]
             });
         });
     </script>

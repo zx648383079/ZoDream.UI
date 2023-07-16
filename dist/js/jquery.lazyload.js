@@ -14,10 +14,14 @@ var LazyItem = /** @class */ (function () {
     function LazyItem(element, callback, mode, diff) {
         if (mode === void 0) { mode = LazyMode.once; }
         if (diff === void 0) { diff = 0; }
+        var _this = this;
         this.element = element;
         this.callback = callback;
         this.mode = mode;
         this.diff = diff;
+        element.on('lazy-refresh', function () {
+            _this.refresh();
+        });
     }
     /**
      * 重新刷新
@@ -34,17 +38,22 @@ var LazyItem = /** @class */ (function () {
         if (this.mode == LazyMode.once && this._lastHeight != undefined) {
             return false;
         }
+        if (this.element.parent().length < 1) {
+            // 判断元素是否被移除
+            return false;
+        }
         if (typeof this.diff == 'function') {
             return this.diff.call(this, height, bottom);
         }
         var top = this.element.offset().top;
         return top + this.diff >= height && top < bottom;
     };
-    LazyItem.prototype.run = function (height, bottom) {
-        if (!this.canRun(height, bottom)) {
-            return false;
-        }
-        this.callback.call(this, this.element);
+    LazyItem.prototype.run = function (height, bottom, index) {
+        if (index === void 0) { index = 0; }
+        // if (!this.canRun(height, bottom)) {
+        //     return false;
+        // }
+        this.callback.call(this, this.element, height, bottom, index);
         this._lastHeight = height;
         return true;
     };
@@ -76,11 +85,15 @@ var Lazy = /** @class */ (function () {
         if (!this._data) {
             return;
         }
-        for (var i = this._data.length - 1; i >= 0; i--) {
+        var index = 0;
+        for (var i = 0, length_1 = this._data.length; i < length_1; i++) {
             var item = this._data[i];
-            if (item.run(height, bottom) && item.mode == LazyMode.once) {
-                this._data.splice(i, 1);
+            if (item.canRun(height, bottom)) {
+                item.run(height, bottom, index++);
             }
+            // if (item.run(height, bottom) && item.mode == LazyMode.once) {
+            //     this._data.splice(i, 1);
+            // }
         }
     };
     // 暂时只做一次
@@ -131,10 +144,14 @@ var Lazy = /** @class */ (function () {
  * 加载图片，如需加载动画控制请自定义
  */
 Lazy.addMethod('img', function (imgEle) {
-    var img = imgEle.attr('data-original');
+    var img = imgEle.attr('data-src');
     $("<img />")
         .bind("load", function () {
-        imgEle.attr('src', img);
+        if (imgEle.is('img') || imgEle.is('video')) {
+            imgEle.attr('src', img);
+            return;
+        }
+        imgEle.css('background-image', 'url(' + img + ')');
     }).attr('src', img);
 });
 /**
@@ -142,16 +159,23 @@ Lazy.addMethod('img', function (imgEle) {
  */
 Lazy.addMethod('tpl', function (tplEle) {
     var url = tplEle.attr('data-url');
+    tplEle.addClass('lazy-loading');
     var templateId = tplEle.attr('data-tpl');
-    $.getJSON(url, function (data) {
-        if (data.code != 200) {
-            return;
+    $.get(url, function (data) {
+        var html = '';
+        if (typeof data === 'object') {
+            if (data.code != 200) {
+                return;
+            }
+            html = typeof data.data != 'string' ? template(templateId, data.data) : data.data;
         }
-        if (typeof data.data != 'string') {
-            data.data = template(templateId, data.data);
+        else {
+            html = data;
         }
-        tplEle.html(data.data);
-    });
+        tplEle.removeClass('lazy-loading');
+        tplEle.html(html);
+        tplEle.trigger('lazyLoaded');
+    }, typeof templateId === 'undefined' ? null : 'json');
 });
 /**
  * 滚动加载模板，需要引用 template 函数

@@ -56,7 +56,7 @@ var ChatPlayText = /** @class */ (function () {
                     break;
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** 开始 */
@@ -217,7 +217,7 @@ var ChatPlayGroup = /** @class */ (function () {
             }
             this._group.push(new Group(arg));
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(ChatPlayGroup.prototype, "status", {
@@ -237,7 +237,7 @@ var ChatPlayGroup = /** @class */ (function () {
                     break;
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** 获取当前组 */
@@ -384,7 +384,7 @@ var Chat = /** @class */ (function () {
                     break;
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** 暂停 */
@@ -466,7 +466,7 @@ var Chat = /** @class */ (function () {
         set: function (arg) {
             this.go(arg);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** 跳到第几个 */

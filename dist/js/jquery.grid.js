@@ -11,7 +11,7 @@ var Grid = /** @class */ (function () {
         this.options = $.extend({}, new GridDefaultOptions(), options);
         this.refresh();
         var instance = this;
-        $(window).resize(function () {
+        $(window).on('resize', function () {
             instance.refresh();
         });
     }

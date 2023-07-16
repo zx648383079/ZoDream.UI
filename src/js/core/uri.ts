@@ -8,13 +8,21 @@ class Uri {
         }
     }
 
-    public setData(key: any, val?: string): this {
+    public setData(key: any, val?: string|any): this {
         if (typeof key == 'object') {
             this._data = $.extend(this._data, key);
         } else {
             this._data[key] = val;
         }
         return this;
+    }
+
+    public deleteData(key: any) {
+        delete this._data[key];
+    }
+
+    public getData<T>(key: any): T {
+        return this._data[key] as any;
     }
 
     public clearData(): this {
@@ -53,9 +61,9 @@ class Uri {
         if ('object' != typeof args) {
             return args;
         }
-            let value: string = '';
+        let value: string = '';
         $.each(args, function(key, item) {
-            value += Uri._filterValue(item, key);
+            value += Uri._filterValue(item, key as any);
         });
         return value.substring(0, value.length - 1);
     }
@@ -67,7 +75,7 @@ class Uri {
         let value = '';
         let isArray: boolean = data instanceof Array;
         $.each(data, function(key, item) {
-            value += Uri._filterValue(item, pre + (isArray ? "[]" : "[" + key + "]"));
+            value += Uri._filterValue(item, pre + (isArray ? "[]" : "[" + (key as any) + "]"));
         });
         return value;
     }

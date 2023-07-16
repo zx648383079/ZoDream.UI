@@ -196,7 +196,7 @@ class SliderItem extends Eve {
             if (instance.options.height > 0) {
                 point.height = instance._getWidth(instance.options.height);
             }
-            point.applyWidthAndHeight();
+            point.applyWidthAndHeight(!(instance.options.height > 0));
             width += point.width;
             point.x = -width;
         });

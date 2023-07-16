@@ -25,7 +25,7 @@ declare class Point {
     /**
      * 应用当前的宽和高
      */
-    applyWidthAndHeight(): void;
+    applyWidthAndHeight(keepScale?: boolean): void;
 }
 declare class SliderItem extends Eve {
     element: JQuery;

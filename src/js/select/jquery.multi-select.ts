@@ -244,7 +244,7 @@ class MultiSelect extends Eve {
         ctl.find('.option-item').each(function() {
             const $this = $(this);
             const selected = that.optionVal($this) == val;
-            $this.toggleClass('.selected', selected);
+            $this.toggleClass('selected', selected);
             if (selected) {
                 target = $this;
             }
@@ -268,11 +268,16 @@ class MultiSelect extends Eve {
             return;
         }
         const that = this;
+        let target: JQuery;
         ctl.find('.option-item').each(function() {
             const $this = $(this);
             const selected = that.optionVal($this) == val;
-            $this.toggleClass( '.selected', selected);
+            $this.toggleClass('selected', selected);
+            if (selected) {
+                target = $this;
+            }
         });
+        ctl.find('.select-input').text(target.text());
     }
 
     private optionVal(ctl: JQuery, val?: any): any {

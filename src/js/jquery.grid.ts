@@ -64,7 +64,7 @@ class Size {
         if (element.length < 1) {
             return;
         }
-        let obj = $.extend({}, this.option);
+        let obj: any = $.extend({}, this.option);
         for (let i in obj) {
             if (obj.hasOwnProperty(i)) {
                 obj[i] = obj[i] * width + 'px';

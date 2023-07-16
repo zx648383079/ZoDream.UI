@@ -15,7 +15,7 @@ var Metro = /** @class */ (function () {
             this._width = arg;
             this.refresh();
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Metro.prototype.refresh = function () {

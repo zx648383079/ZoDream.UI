@@ -83,10 +83,11 @@ var Point = /** @class */ (function () {
     /**
      * 应用当前的宽和高
      */
-    Point.prototype.applyWidthAndHeight = function () {
+    Point.prototype.applyWidthAndHeight = function (keepScale) {
+        if (keepScale === void 0) { keepScale = true; }
         var instance = this;
         var _a = this.getElementWidthAndHeight(), width = _a[0], height = _a[1];
-        if (height == this.height && this.width != width) {
+        if (keepScale && height === this.height && this.width !== width) {
             // 等比例缩放
             this.height = this.width * height / width;
         }
@@ -273,7 +274,7 @@ var SliderItem = /** @class */ (function (_super) {
             if (instance.options.height > 0) {
                 point.height = instance._getWidth(instance.options.height);
             }
-            point.applyWidthAndHeight();
+            point.applyWidthAndHeight(!(instance.options.height > 0));
             width += point.width;
             point.x = -width;
         });

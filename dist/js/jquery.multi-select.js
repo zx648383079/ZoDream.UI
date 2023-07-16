@@ -344,7 +344,7 @@ var MultiSelect = /** @class */ (function (_super) {
         ctl.find('.option-item').each(function () {
             var $this = $(this);
             var selected = that.optionVal($this) == val;
-            $this.toggleClass('.selected', selected);
+            $this.toggleClass('selected', selected);
             if (selected) {
                 target = $this;
             }
@@ -367,11 +367,16 @@ var MultiSelect = /** @class */ (function (_super) {
             return;
         }
         var that = this;
+        var target;
         ctl.find('.option-item').each(function () {
             var $this = $(this);
             var selected = that.optionVal($this) == val;
-            $this.toggleClass('.selected', selected);
+            $this.toggleClass('selected', selected);
+            if (selected) {
+                target = $this;
+            }
         });
+        ctl.find('.select-input').text(target.text());
     };
     MultiSelect.prototype.optionVal = function (ctl, val) {
         if (typeof val === 'undefined') {

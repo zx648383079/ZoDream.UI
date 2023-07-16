@@ -60,16 +60,16 @@ var Compare = /** @class */ (function () {
     };
     Compare.prototype._bindEvent = function () {
         var instance = this;
-        this.element.click(function (e) {
+        this.element.on('click', function (e) {
             if (instance.option.onClick) {
                 instance.option.onClick.call(instance, $(this));
             }
             instance._dialog.show();
         });
-        this._dialog.find('.hide-me').click(function () {
+        this._dialog.find('.hide-me').on('click', function () {
             instance._dialog.hide();
         });
-        this._dialog.find('.del-items').click(function () {
+        this._dialog.find('.del-items').on('click', function () {
             instance.removeAll();
         });
         this._items.on('click', '.del-comp-item', function () {

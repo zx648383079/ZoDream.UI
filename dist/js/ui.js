@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     var weightOption = {
         sort: true,
         group: {
@@ -36,12 +36,12 @@ $(document).ready(function () {
     $("#main").on("click", '.weight-list', function () {
         weightPanel.show();
     });
-    $(".zd-tab .zd-tab-head .zd-tab-item").click(function () {
+    $(".zd-tab .zd-tab-head .zd-tab-item").on('click', function () {
         var $this = $(this);
         $this.addClass("active").siblings().removeClass("active");
         $this.parents(".zd-tab").find(".zd-tab-body .zd-tab-item").eq($this.index()).addClass("active").siblings().removeClass("active");
     });
-    $(".zd-panel .fa-close").click(function () {
+    $(".zd-panel .fa-close").on('click', function () {
         $(this).parent().parent().hide();
     });
 });

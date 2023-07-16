@@ -3,7 +3,7 @@ interface ChatMenuItem {
     text?: string,
     icon?: string,
     toggle?: (target: JQuery, menu: ChatMenu)=>boolean,
-    onclick?: (menuItem: JQuery, target: JQuery, menu: ChatMenu) => void,
+    onclick?: (menuItem: JQuery, target: JQuery, menu: ChatMenu) => void|false,
     children?: Array<ChatMenuItem>
 }
 
@@ -80,10 +80,11 @@ class ChatMenu extends ChatBaseBox {
      *
      */
     constructor(
-        private box: JQuery,
+        box: JQuery,
         private menus: Array<ChatMenuItem> = []
     ) {
         super();
+        this.box = box;
         this.bindEvent();
     }
 

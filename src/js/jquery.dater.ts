@@ -1,25 +1,4 @@
-Date.prototype.getRealMonth = function(): number {
-    return this.getMonth() + 1;
-};
 
-Date.prototype.format = function(fmt: string = 'y年m月d日'): string {
-    let o = {
-        "y+": this.getFullYear(),
-        "m+": this.getRealMonth(), //月份 
-        "d+": this.getDate(), //日 
-        "h+": this.getHours(), //小时 
-        "i+": this.getMinutes(), //分 
-        "s+": this.getSeconds(), //秒 
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        "S": this.getMilliseconds() //毫秒 
-    };
-    for (let k in o) {
-        if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        }
-    }
-    return fmt;
-}
 class Dater extends Box {
     constructor(
         public element: JQuery,
@@ -54,11 +33,11 @@ class Dater extends Box {
 
 
     public previousYear() {
-        this.setDate(this._date.getFullYear() - 1, this._date.getRealMonth());
+        this.setDate(this._date.getFullYear() - 1, Dater.getRealMonth(this._date));
     }
 
     public nextYear() {
-        this.setDate(this._date.getFullYear() + 1, this._date.getRealMonth());
+        this.setDate(this._date.getFullYear() + 1, Dater.getRealMonth(this._date));
     }
 
     public previousMonth() {
@@ -66,7 +45,7 @@ class Dater extends Box {
     }
 
     public nextMonth() {
-        this.setDate(this._date.getFullYear(), this._date.getRealMonth() + 1);
+        this.setDate(this._date.getFullYear(), Dater.getRealMonth(this._date) + 1);
     }
 
     public setDate(year: number|Date|string, month?: number) {
@@ -74,7 +53,7 @@ class Dater extends Box {
             year = new Date(year);
         }
         if (year instanceof Date) {
-            month = year.getRealMonth();
+            month = Dater.getRealMonth(year);
             year = year.getFullYear();
         }
         this._date = new Date(year, month, 0);
@@ -137,7 +116,7 @@ class Dater extends Box {
             let ele = $(this);
             let day = parseInt(ele.text());
             if (day > 0 && instance.hasEvent('click')) {
-                let date = new Date(instance._date);
+                let date = new Date(instance._date as any);
                 date.setDate(day);
                 instance.trigger('click', date, ele, instance.element);
             }
@@ -160,12 +139,12 @@ class Dater extends Box {
     public dayEach(callback: (day: Date, element: JQuery, dater: JQuery)=> any) {
         let instance = this;
         this.daysElement.each((index, item)=> {
-            let ele = $(this);
+            let ele = $(this) as any;
             let day = parseInt(ele.text());
             if (day < 1) {
                 return;
             }
-            let date = new Date(instance._date);
+            let date = new Date(instance._date as any);
             date.setDate(day);
             return callback(date, ele, instance.element);
         });
@@ -202,6 +181,30 @@ class Dater extends Box {
      */
     public click(callback: Function): this {
         return this.on('change', callback);
+    }
+
+    public static getRealMonth(date: Date): number {
+        return date.getMonth() + 1;
+    };
+    
+    public static format(date: Date, fmt: string = 'y年m月d日'): string {
+        const o = {
+            "y+": date.getFullYear(),
+            "m+": this.getRealMonth(date), //月份 
+            "d+": date.getDate(), //日 
+            "h+": date.getHours(), //小时 
+            "i+": date.getMinutes(), //分 
+            "s+": date.getSeconds(), //秒 
+            "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+            "S": date.getMilliseconds() //毫秒 
+        };
+        for (const k in o) {
+            const match = fmt.match(new RegExp('(' + k + ')'));
+            if (match) {
+                fmt = fmt.replace(match[1], (match[1].length === 1 || k === 'y+') ? (o[k]) : (('00' + o[k]).substring(('' + o[k]).length)));
+            }
+        }
+        return fmt;
     }
 }
 

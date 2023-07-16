@@ -1,13 +1,27 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var ChatType;
 (function (ChatType) {
     ChatType[ChatType["MESSAGE"] = 0] = "MESSAGE";
@@ -36,7 +50,7 @@ var ChatBaseBox = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.events[event]).call.apply(_a, [this].concat(args));
+        return (_a = this.events[event]).call.apply(_a, __spreadArray([this], args, false));
     };
     ChatBaseBox.prototype.find = function (tag) {
         if (this.cache_element.hasOwnProperty(tag)) {
@@ -61,8 +75,8 @@ var ChatMenu = /** @class */ (function (_super) {
     function ChatMenu(box, menus) {
         if (menus === void 0) { menus = []; }
         var _this_1 = _super.call(this) || this;
-        _this_1.box = box;
         _this_1.menus = menus;
+        _this_1.box = box;
         _this_1.bindEvent();
         return _this_1;
     }
@@ -383,10 +397,10 @@ var ChatUserBox = /** @class */ (function (_super) {
     };
     ChatUserBox.prototype.bindEvent = function () {
         var _this = this;
-        $(document).click(function () {
+        $(document).on('click', function () {
             _this.menu.hide();
         });
-        this.box.click(function () {
+        this.box.on('click', function () {
             if ($(this).hasClass('dialog-min')) {
                 $(this).removeClass('dialog-min');
             }

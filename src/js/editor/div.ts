@@ -912,6 +912,7 @@ class DivElement implements IEditorElement {
                 this.container.emit(EDITOR_EVENT_SHOW_ADD_TOOL, this.getNodeOffset(range.startContainer).y);
                 return;
             }
+            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.element.addEventListener('compositionstart', () => {
             this.isComposition = true;

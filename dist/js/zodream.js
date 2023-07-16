@@ -13,10 +13,10 @@ if ("Notification" in window) {
     });
 }
 $(document).ready(function () {
-    $(".expand .title").click(function () {
+    $(".expand .title").on('click', function () {
         $(this).parent().toggleClass("active");
     });
-    $(".tab .tab-header>li").click(function () {
+    $(".tab .tab-header>li").on('click', function () {
         $(this).addClass("active").siblings().removeClass("active");
         $(this).parent().parent().find(".tab-content>li").eq($(this).index()).addClass("active").siblings().removeClass("active");
     });

@@ -4,8 +4,8 @@ class search {
      */
     public static replace(key: string, val: string) {
         let uri = new Uri(window.location.href);
-        uri.replaceQueryParam(key, val);
-        uri.deleteQueryParam('page');
+        uri.setData(key, val);
+        uri.deleteData('page');
         window.location.href = uri.toString();
     }
 
@@ -15,27 +15,27 @@ class search {
     public static sort(name: string, order?: string) {
         let uri = new Uri(window.location.href);
         if (!order) {
-            order = uri.getQueryParamValue(name) == 'desc' ? 'asc' : 'desc';
+            order = uri.getData(name) == 'desc' ? 'asc' : 'desc';
         }
-        uri.replaceQueryParam('sort', name);
-        uri.replaceQueryParam('order', order);
-        uri.deleteQueryParam('page');
+        uri.setData('sort', name);
+        uri.setData('order', order);
+        uri.deleteData('page');
         window.location.href = uri.toString();
     }
 
     /**
      * replaceInput
      */
-    public static replaceInput(...names: string[]) {
+    public static replaceInput(...names: string[]|any[]) {
         let uri = new Uri(window.location.href);
         $.each(names, function(i, name) {
             if (typeof name == 'object') {
-                uri.replaceQueryParam(name[0], $('*[name='+name[1]+']').val());
+                uri.setData(name[0] as any, $('*[name='+name[1]+']').val() as any);
                 return;
             }
-            uri.replaceQueryParam(name, $('*[name='+name+']').val());
+            uri.setData(name, $('*[name='+name+']').val() as any);
         });
-        uri.deleteQueryParam('page');
+        uri.deleteData('page');
         window.location.href = uri.toString();
     }
 
@@ -44,11 +44,11 @@ class search {
      */
     public static prevPage() {
         let uri = new Uri(window.location.href);
-        let page = uri.getQueryParamValue('page');
+        let page = uri.getData<number>('page');
         if (page > 1) {
             page --;
         }
-        uri.replaceQueryParam('page', page);
+        uri.setData('page', page);
         window.location.href = uri.toString();
     }
 
@@ -57,7 +57,7 @@ class search {
      */
     public static page(page: number) {
         let uri = new Uri(window.location.href);
-        uri.replaceQueryParam('page', page);
+        uri.setData('page', page);
         window.location.href = uri.toString();
     }
 
@@ -66,11 +66,11 @@ class search {
      */
     public static nextPage() {
         let uri = new Uri(window.location.href);
-        let page = uri.getQueryParamValue('page');
+        let page = uri.getData<number>('page');
         if (page < 1) {
             page = 1;
         }
-        uri.replaceQueryParam('page', page + 1);
+        uri.setData('page', page + 1);
         window.location.href = uri.toString();
     }
 }

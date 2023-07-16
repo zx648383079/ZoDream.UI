@@ -64,11 +64,11 @@ class Carousel {
         }
     }
 
-    private _copyItem(items: JQuery) {
+    private _copyItem(items: JQuery<HTMLElement>) {
         this._box.css({"width": this.width * 3 + "px", "left": -this.width + "px"});
         for (let j = 0; j < 2; j ++) {
             for(let i = 0, length = items.length; i < length; i ++) {
-                this._box.append(items[i].cloneNode(true));
+                this._box.append($(items[i]).clone(true));
             }
         }
     }
@@ -112,7 +112,7 @@ class Carousel {
         let carousel = this;
         this._box.animate(
             {left: this._left - this.width + "px"}, 
-            this.options.animationTime, 
+            this.options.animationTime as number, 
             this.options.animationMode, function() {
                 if (left > 0) {
                     left -= carousel.width;

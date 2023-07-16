@@ -2704,6 +2704,7 @@ var DivElement = /** @class */ (function () {
                 _this.container.emit(EDITOR_EVENT_SHOW_ADD_TOOL, _this.getNodeOffset(range.startContainer).y);
                 return;
             }
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.element.addEventListener('compositionstart', function () {
             _this.isComposition = true;
@@ -4434,7 +4435,7 @@ var TextareaElement = /** @class */ (function () {
         var type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
         var func = this[type + 'Execute'];
         if (typeof func === 'function') {
-            func.call(this, range.range, block);
+            func.call(this, range, block);
             return;
         }
         throw new Error("insert type error:[".concat(block.type, "]"));
@@ -4575,6 +4576,7 @@ var TextareaElement = /** @class */ (function () {
                 return;
             }
             _this.container.saveSelection();
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
         this.element.addEventListener('blur', function () {
             _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
@@ -4594,6 +4596,7 @@ var TextareaElement = /** @class */ (function () {
         this.element.addEventListener('compositionend', function () {
             _this.isComposition = false;
             _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
+            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
     };
     return TextareaElement;

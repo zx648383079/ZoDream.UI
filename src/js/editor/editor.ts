@@ -13,6 +13,7 @@ interface IEditorContainer {
     // mouseMove(move?: (p: IPoint) => void, finish?: (p: IPoint) => void): void;
     insert(block: IEditorBlock|string, range?: IEditorRange): void;
     execute(module: string|IEditorTool, range?: IEditorRange, data?: any): void;
+    paste(data: DataTransfer): void;
     saveSelection(): void;
     undo(): void;
     redo(): void;

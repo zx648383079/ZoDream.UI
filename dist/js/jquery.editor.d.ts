@@ -191,6 +191,7 @@ declare class CodeElement implements IEditorElement {
     private init;
     private bindResize;
     private bindEvent;
+    paste(data: DataTransfer): void;
     private addTextExecute;
     private addLineBreakExecute;
     private indentExecute;
@@ -256,6 +257,7 @@ declare class EditorContainer implements IEditorContainer {
     saveSelection(): void;
     insert(block: IEditorBlock | string, range?: IEditorRange): void;
     execute(module: string | IEditorTool, range?: IEditorRange, data?: any): void;
+    paste(data: DataTransfer): void;
     clear(focus?: boolean): void;
     /**
      * focus
@@ -378,6 +380,11 @@ declare class DivElement implements IEditorElement {
     private selectNode;
     private focusAfter;
     private bindEvent;
+    paste(data: DataTransfer): void;
+    private isPasteFile;
+    private isPasteHtml;
+    private pasteFile;
+    private pasteHtml;
     private moveTableCol;
     private updateNode;
     /**
@@ -495,6 +502,7 @@ interface IEditorContainer {
      */
     insert(block: IEditorBlock | string, range?: IEditorRange): void;
     execute(module: string | IEditorTool, range?: IEditorRange, data?: any): void;
+    paste(data: DataTransfer): void;
     saveSelection(): void;
     undo(): void;
     redo(): void;
@@ -519,6 +527,7 @@ interface IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
+    paste(data: DataTransfer): void;
 }
 declare const EDITOR_EVENT_INPUT_KEYDOWN = "input.keydown";
 declare const EDITOR_EVENT_INPUT_BLUR = "input.blur";
@@ -803,6 +812,9 @@ declare class TextareaElement implements IEditorElement {
      */
     private moveCursor;
     private bindEvent;
+    paste(data: DataTransfer): void;
+    private isPasteFile;
+    private pasteFile;
 }
 declare class EditorHelper {
     private static OTHER_WORD_CODE;
@@ -819,6 +831,7 @@ declare class EditorHelper {
     static modalInputData<T = any>(element: JQuery<HTMLDivElement>, data: T): T;
     static modalFileUpload(element: JQuery<HTMLDivElement>, uploadFn: (data: FileList) => void): void;
     static uploadFile(url: string, files: File[] | FileList | File, success: (res: any) => void, failure: (message: string) => void, name?: string): void;
+    static fileType(file: File): 'image' | 'video' | 'file';
     private static getTransfer;
     private static preventAndStop;
     private static haveFiles;

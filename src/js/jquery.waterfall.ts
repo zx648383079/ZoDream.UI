@@ -86,11 +86,7 @@ class HorizontalBar {
     public get bottom(): number {
         return 0;
     }
-
-    public log() {
-        console.log(this.items);
-    }
-
+    
     public leftHeight(rang: IWaterFallRang): number {
         if (rang.x <= 0) {
             return 0;

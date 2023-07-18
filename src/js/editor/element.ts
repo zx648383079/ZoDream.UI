@@ -19,4 +19,6 @@ interface IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
+
+    paste(data: DataTransfer): void;
 }

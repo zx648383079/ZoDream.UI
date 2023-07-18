@@ -210,8 +210,9 @@ class DivElement implements IEditorElement {
     }
 
     private addRawExecute(range: Range, block: IEditorTextBlock) {
+        const value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');//.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         const p = document.createElement('div');
-        p.innerHTML = block.value;
+        p.innerHTML = value;
         const items = [];
         for (let i = 0; i < p.childNodes.length; i++) {
             items.push(p.childNodes[i]);
@@ -959,6 +960,10 @@ class DivElement implements IEditorElement {
                 }
             }
         });
+        this.element.addEventListener('paste', e => {
+            e.preventDefault();
+            this.paste((e.clipboardData || (window as any).clipboardData))
+        });
         this.element.addEventListener('mousedown', e => {
             if (!e.target) {
                 return;
@@ -1001,6 +1006,49 @@ class DivElement implements IEditorElement {
             this.container.saveSelection();
             this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
+    }
+
+    public paste(data: DataTransfer) {
+        if (this.isPasteFile(data)) {
+            this.pasteFile(data);
+            return;
+        }
+        if (this.isPasteHtml(data)) {
+            this.pasteHtml(data);
+            return;
+        }
+        const value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({type: EditorBlockType.AddText, value});
+    }
+
+    private isPasteFile(data: DataTransfer): boolean {
+        return data.types.length > 0 && data.types[0] === 'Files';
+    }
+
+    private isPasteHtml(data: DataTransfer): boolean {
+        return data.types.length > 1 && data.types[1] === 'text/html';
+    }
+
+    private pasteFile(data: DataTransfer) {
+        for (let i = 0; i < data.files.length; i++) {
+            const item = data.files[i];
+            const fileType = EditorHelper.fileType(item);
+            this.container.option.upload(item, fileType, res => {
+                this.insert({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                    title: res.title, size: res.size});
+            }, () => {});
+        }
+    }
+
+    private pasteHtml(data: DataTransfer) {
+        const value = data.getData(data.types[1]);
+        if (!value) {
+            return '';
+        }
+        this.insert({type: EditorBlockType.AddRaw, value});
     }
 
     private moveTableCol(node: HTMLTableCellElement) {

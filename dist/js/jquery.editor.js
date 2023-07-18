@@ -1144,11 +1144,7 @@ var CodeElement = /** @class */ (function () {
         });
         this.element.addEventListener('paste', function (e) {
             e.preventDefault();
-            _this.insert({
-                type: EditorBlockType.AddRaw,
-                value: e.clipboardData.getData('text/plain')
-            });
-            _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
+            _this.paste((e.clipboardData || window.clipboardData));
         });
         this.bodyPanel.addEventListener('compositionstart', function () {
             _this.isComposition = true;
@@ -1160,6 +1156,13 @@ var CodeElement = /** @class */ (function () {
             _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
+    };
+    CodeElement.prototype.paste = function (data) {
+        var value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({ type: EditorBlockType.AddText, value: value });
     };
     //#region 外部调用的方法
     CodeElement.prototype.addTextExecute = function (range, block) {
@@ -1681,6 +1684,9 @@ var EditorContainer = /** @class */ (function () {
         }
         instance.handler(this, range !== null && range !== void 0 ? range : this.selection, data);
     };
+    EditorContainer.prototype.paste = function (data) {
+        this.element.paste(data);
+    };
     EditorContainer.prototype.clear = function (focus) {
         if (focus === void 0) { focus = true; }
         this.element.value = '';
@@ -2020,8 +2026,9 @@ var DivElement = /** @class */ (function () {
         this.replaceSelected(range, span);
     };
     DivElement.prototype.addRawExecute = function (range, block) {
+        var value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''); //.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         var p = document.createElement('div');
-        p.innerHTML = block.value;
+        p.innerHTML = value;
         var items = [];
         for (var i = 0; i < p.childNodes.length; i++) {
             items.push(p.childNodes[i]);
@@ -2753,6 +2760,10 @@ var DivElement = /** @class */ (function () {
                 }
             }
         });
+        this.element.addEventListener('paste', function (e) {
+            e.preventDefault();
+            _this.paste((e.clipboardData || window.clipboardData));
+        });
         this.element.addEventListener('mousedown', function (e) {
             if (!e.target) {
                 return;
@@ -2796,6 +2807,49 @@ var DivElement = /** @class */ (function () {
             _this.container.saveSelection();
             _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
+    };
+    DivElement.prototype.paste = function (data) {
+        if (this.isPasteFile(data)) {
+            this.pasteFile(data);
+            return;
+        }
+        if (this.isPasteHtml(data)) {
+            this.pasteHtml(data);
+            return;
+        }
+        var value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({ type: EditorBlockType.AddText, value: value });
+    };
+    DivElement.prototype.isPasteFile = function (data) {
+        return data.types.length > 0 && data.types[0] === 'Files';
+    };
+    DivElement.prototype.isPasteHtml = function (data) {
+        return data.types.length > 1 && data.types[1] === 'text/html';
+    };
+    DivElement.prototype.pasteFile = function (data) {
+        var _this = this;
+        var _loop_1 = function (i) {
+            var item = data.files[i];
+            var fileType = EditorHelper.fileType(item);
+            this_1.container.option.upload(item, fileType, function (res) {
+                _this.insert({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                    title: res.title, size: res.size });
+            }, function () { });
+        };
+        var this_1 = this;
+        for (var i = 0; i < data.files.length; i++) {
+            _loop_1(i);
+        }
+    };
+    DivElement.prototype.pasteHtml = function (data) {
+        var value = data.getData(data.types[1]);
+        if (!value) {
+            return '';
+        }
+        this.insert({ type: EditorBlockType.AddRaw, value: value });
     };
     DivElement.prototype.moveTableCol = function (node) {
         var table = node.closest('table');
@@ -3001,13 +3055,13 @@ var DivElement = /** @class */ (function () {
             return false;
         });
         var max = Math.max(beginParentItems.length, endParentItems.length);
-        var _loop_1 = function (i) {
+        var _loop_2 = function (i) {
             var begin = beginParentItems.length - i;
             var end = endParentItems.length - i;
             var beginNode = begin >= 0 ? beginParentItems[begin] : undefined;
             var endNode = end >= 0 ? endParentItems[end] : undefined;
             if (beginNode) {
-                this_1.eachNextBrother(beginNode, function (n) {
+                this_2.eachNextBrother(beginNode, function (n) {
                     if (!n || n === beginNode || n === endNode) {
                         return;
                     }
@@ -3015,7 +3069,7 @@ var DivElement = /** @class */ (function () {
                 }, endNode);
             }
             if (endNode && (!beginNode || endNode.parentNode !== beginNode.parentNode)) {
-                this_1.eachBrother(endNode, function (n) {
+                this_2.eachBrother(endNode, function (n) {
                     if (n === endNode) {
                         return false;
                     }
@@ -3026,9 +3080,9 @@ var DivElement = /** @class */ (function () {
                 }, false);
             }
         };
-        var this_1 = this;
+        var this_2 = this;
         for (var i = 1; i <= max; i++) {
-            _loop_1(i);
+            _loop_2(i);
         }
         if (range.startContainer instanceof Text) {
             var text = range.startContainer.textContent;
@@ -3086,13 +3140,13 @@ var DivElement = /** @class */ (function () {
         var items = [];
         var lastBegin;
         var lastEnd;
-        var _loop_2 = function (i) {
+        var _loop_3 = function (i) {
             var begin = beginParentItems.length - i;
             var end = endParentItems.length - i;
             var beginNode = begin >= 0 ? beginParentItems[begin] : undefined;
             var endNode = end >= 0 ? endParentItems[end] : undefined;
             if (beginNode) {
-                this_2.eachNextBrother(beginNode, function (n) {
+                this_3.eachNextBrother(beginNode, function (n) {
                     var cloneN = n.cloneNode(n === beginNode || n === endNode);
                     if (i < 1) {
                         items.push(cloneN);
@@ -3110,7 +3164,7 @@ var DivElement = /** @class */ (function () {
                 }, endNode);
             }
             if (endNode && (!beginNode || endNode.parentNode !== beginNode.parentNode)) {
-                this_2.eachBrother(endNode, function (n) {
+                this_3.eachBrother(endNode, function (n) {
                     var cloneN = n.cloneNode(n === endNode);
                     if (i < 1) {
                         items.push(cloneN);
@@ -3125,9 +3179,9 @@ var DivElement = /** @class */ (function () {
                 }, false);
             }
         };
-        var this_2 = this;
+        var this_3 = this;
         for (var i = 1; i <= max; i++) {
-            _loop_2(i);
+            _loop_3(i);
         }
         if (!lastBegin) {
             items = [].concat(this.copyRangeNode(range.startContainer, range.startOffset), items);
@@ -4581,10 +4635,9 @@ var TextareaElement = /** @class */ (function () {
         this.element.addEventListener('blur', function () {
             _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
-        this.element.addEventListener('paste', function () {
-            setTimeout(function () {
-                _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-            }, 10);
+        this.element.addEventListener('paste', function (e) {
+            e.preventDefault();
+            _this.paste((e.clipboardData || window.clipboardData));
         });
         this.element.addEventListener('mouseup', function () {
             _this.container.saveSelection();
@@ -4598,6 +4651,35 @@ var TextareaElement = /** @class */ (function () {
             _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
+    };
+    TextareaElement.prototype.paste = function (data) {
+        if (this.isPasteFile(data)) {
+            this.pasteFile(data);
+            return;
+        }
+        var value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({ type: EditorBlockType.AddText, value: value });
+    };
+    TextareaElement.prototype.isPasteFile = function (data) {
+        return data.types.length > 0 && data.types[0] === 'Files';
+    };
+    TextareaElement.prototype.pasteFile = function (data) {
+        var _this = this;
+        var _loop_4 = function (i) {
+            var item = data.files[i];
+            var fileType = EditorHelper.fileType(item);
+            this_4.container.option.upload(item, fileType, function (res) {
+                _this.insert({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                    title: res.title, size: res.size });
+            }, function () { });
+        };
+        var this_4 = this;
+        for (var i = 0; i < data.files.length; i++) {
+            _loop_4(i);
+        }
     };
     return TextareaElement;
 }());
@@ -4757,6 +4839,15 @@ var EditorHelper = /** @class */ (function () {
                 failure(data.state);
             }
         });
+    };
+    EditorHelper.fileType = function (file) {
+        if (file.type.indexOf('image') >= 0) {
+            return 'image';
+        }
+        if (file.type.indexOf('video') >= 0) {
+            return 'video';
+        }
+        return 'file';
     };
     EditorHelper.getTransfer = function (event) {
         return event.dataTransfer ? event.dataTransfer : event.originalEvent.dataTransfer;

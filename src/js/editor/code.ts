@@ -144,11 +144,7 @@ class CodeElement implements IEditorElement {
         });
         this.element.addEventListener('paste', e => {
             e.preventDefault();
-            this.insert({
-                type: EditorBlockType.AddRaw,
-                value: e.clipboardData.getData('text/plain')
-            });
-            this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
+            this.paste((e.clipboardData || (window as any).clipboardData));
         });
         this.bodyPanel.addEventListener('compositionstart', () => {
             this.isComposition = true;
@@ -160,6 +156,14 @@ class CodeElement implements IEditorElement {
             this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
+    }
+
+    public paste(data: DataTransfer): void {
+        const value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({type: EditorBlockType.AddText, value});
     }
 //#region 外部调用的方法
 

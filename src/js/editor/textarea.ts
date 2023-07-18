@@ -233,10 +233,9 @@ class TextareaElement implements IEditorElement {
         this.element.addEventListener('blur', () => {
             this.container.emit(EDITOR_EVENT_INPUT_BLUR);
         });
-        this.element.addEventListener('paste', () => {
-            setTimeout(() => {
-                this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-            }, 10);
+        this.element.addEventListener('paste', e => {
+            e.preventDefault();
+            this.paste((e.clipboardData || (window as any).clipboardData));
         });
         this.element.addEventListener('mouseup', () => {
             this.container.saveSelection();
@@ -250,6 +249,33 @@ class TextareaElement implements IEditorElement {
             this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
         });
+    }
+
+    public paste(data: DataTransfer) {
+        if (this.isPasteFile(data)) {
+            this.pasteFile(data);
+            return;
+        }
+        const value = data.getData('text');
+        if (!value) {
+            return;
+        }
+        this.insert({type: EditorBlockType.AddText, value});
+    }
+
+    private isPasteFile(data: DataTransfer): boolean {
+        return data.types.length > 0 && data.types[0] === 'Files';
+    }
+
+    private pasteFile(data: DataTransfer) {
+        for (let i = 0; i < data.files.length; i++) {
+            const item = data.files[i];
+            const fileType = EditorHelper.fileType(item);
+            this.container.option.upload(item, fileType, res => {
+                this.insert({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                    title: res.title, size: res.size});
+            }, () => {});
+        }
     }
 
 }

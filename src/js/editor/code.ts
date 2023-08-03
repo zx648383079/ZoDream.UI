@@ -348,11 +348,14 @@ class CodeElement implements IEditorElement {
             }
             this.beforeLine(lineNo, items[i]);
         }
-        for (let i = end; i >= lineNo; i -- ) {
+        for (let i = end; i > lineNo; i -- ) {
             this.removeLine(i);
         }
         this.updateLineNo();
         const selectIndex = begin + items.length - 1;
+        if (selectIndex > this.bodyPanel.children.length) {
+            return;
+        }
         this.selectNode(this.bodyPanel.children[selectIndex - 1].firstChild, 0);
         this.selectLine(selectIndex);
     }
@@ -369,7 +372,7 @@ class CodeElement implements IEditorElement {
         const [begin, end] = this.getRangeLineNo(range);
         this.eachLine((dt, dd, index) => {
             const has = index >= begin && index <= end;
-            dd.style.height = dt.clientHeight + 'px';
+            dd.style.height = EditorHelper.height(dt) + 'px';
             this.toggleClass(dt, 'editor-line-active', has);
             this.toggleClass(dd, 'editor-line-active', has);
         });
@@ -386,9 +389,10 @@ class CodeElement implements IEditorElement {
         let minHeight = 0;
         for (let i = 0; i < this.bodyPanel.children.length; i++) {
             const element: HTMLDivElement = this.bodyPanel.children[i] as any;
-            if (element.clientHeight > 0 && (minHeight === 0 
-                || element.clientHeight < minHeight)) {
-                minHeight = element.clientHeight
+            const h = EditorHelper.height(element);
+            if (h > 0 && (minHeight === 0 
+                || h < minHeight)) {
+                minHeight = h
             }
         }
         if (minHeight <= 0) {
@@ -403,7 +407,9 @@ class CodeElement implements IEditorElement {
             if (!dd) {
                 dd = this.createLineNo(i + 1);
             }
-            dd.style.height = (dt && dt.clientHeight > minHeight ? dt.clientHeight : minHeight) + 'px';        }
+            const h = dt ? EditorHelper.height(dt) : 0;
+            dd.style.height = (h > minHeight ? h : minHeight) + 'px';
+        }
     }
 
     public toggleClass(ele: HTMLDivElement, tag: string, force?: boolean) {
@@ -462,7 +468,7 @@ class CodeElement implements IEditorElement {
         dd.className = 'editor-line-no';
         dd.textContent = line.toString();
         if (lineBody) {
-            dd.style.height = lineBody.clientHeight + 'px';
+            dd.style.height = EditorHelper.height(lineBody) + 'px';
         }
         return dd;
     }
@@ -482,7 +488,7 @@ class CodeElement implements IEditorElement {
             this.renderLine(lineBody, text);
         }
         const lineNo = this.linePanel.children[i] as HTMLDivElement;
-        lineNo.style.height = lineBody.clientHeight + 'px'
+        lineNo.style.height = EditorHelper.height(lineBody) + 'px'
     }
 
     private updateLineNo(index = 1) {

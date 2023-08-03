@@ -24,22 +24,47 @@ class SliderItem extends Eve {
         this.element.attr('data-slider', 1);
         if (this._length < 2) {
             this._initOnly(items);
-            return;
+        } else {
+            this._init(items);
         }
-        this._init(items);
+        this.bindResize();
     }
 
     public options: SliderOptions;
-
     private _data: Array<Point> = [];
-
     private _length: number = 0;
-
     private _index: number = 0;
-
     private _box: JQuery;
-
     private _time: number;
+    private _lastWidth = 0;
+
+    private getItemWidth(): number {
+        const w = this.options.width;
+        if (typeof w !== 'object') {
+            return w > 0 ? this._getWidth(w) : 0;
+        }
+        const ww = $(window).width();
+        let j = 0;
+        let c = 1;
+        $.each(w, (i, v) => {
+            if (i > ww) {
+                return;
+            }
+            if (i >= j) {
+                c = v;
+                j = i;
+            }
+        });
+        return c > 0 ? this._lastWidth / c : 0;
+    }
+
+    private getItemHeight(width: number): number {
+        const h = this.options.height;
+        if (typeof this.options.width !== 'object') {
+            return h > 0 ? this._getWidth(h) : 0;
+        }
+        return h < 10 ? h * width : h;
+    }
 
     private _timeCallback() {
         if (this._getOption('auto')) {
@@ -56,14 +81,26 @@ class SliderItem extends Eve {
         this.options = $.extend({}, options, option);
     }
 
+    private bindResize() {
+        const innerBox = this._box.parent();
+        this._lastWidth = innerBox.width();
+        $(window).on('resize', () => {
+            const w = innerBox.width();
+            if (w === this._lastWidth) {
+                return;
+            }
+            this._lastWidth = w;
+            this.element.trigger('slider:resize', this._lastWidth);
+        });
+        this.element.trigger('slider:resize', this._lastWidth);
+    }
+
     /**
      * 初始化只有一张
      */
     private _initOnly(items: JQuery) {
-        let instance = this;
-        this._resetOnly(items);
-        $(window).on('resize', function() {
-            instance._resetOnly(items);
+        this.element.on('slider:resize', () => {
+            this._resetOnly(items);
         });
     }
 
@@ -72,8 +109,14 @@ class SliderItem extends Eve {
      * @param item 
      */
     private _resetOnly(item: JQuery) {
-        let width = this.options.width > 0 ? this._getWidth(this.options.width) : item.width();
-        let height = this.options.height > 0 ? this._getWidth(this.options.height) : item.height();
+        let width = this.getItemWidth();
+        if (width <= 0) {
+            width = item.width();
+        }
+        let height = this.getItemHeight(width);
+        if (height <= 0) {
+            height = item.height();
+        }
         item.css({height: height, width: width});
         this.element.css({height: height, width: width});
     }
@@ -104,7 +147,6 @@ class SliderItem extends Eve {
         if (this._needMove()) {
             this._copyItem(items);
         }
-        this.resize();
         // 输出可点击的列表
         if (this.options.haspoint) {
             this._addListPoint();
@@ -115,17 +157,17 @@ class SliderItem extends Eve {
 
     private _bindEvent() {
         let instance = this;
-        this.element.find(this.options.previous).on('click', function() {
+        this.element.on('click', this.options.previous, function() {
             instance.previous();
         });
-        this.element.find(this.options.next).on('click', function() {
+        this.element.on('click', this.options.next, function() {
             instance.next();
         });
         this.element.on(this._getOption<string>('pointevent'), ".slider-point li", function() {
             instance.index = $(this).index();
         });
-        $(window).on('resize', function() {
-            instance.resize();
+        this.element.on('slider:resize', () => {
+            this.resize();
         });
         if (!($.fn as any).swipe) {
             return;
@@ -189,12 +231,14 @@ class SliderItem extends Eve {
         let instance = this;
         let maxWidth = this.element.width();
         let width = 0;
+        const itemWidth = this.getItemWidth();
+        const itemHeight = this.getItemHeight(itemWidth);
         $.each(this._data, function(i, point) {
-            if (instance.options.width > 0) {
-                point.width = instance._getWidth(instance.options.width);
+            if (itemWidth > 0) {
+                point.width = itemWidth;
             }
-            if (instance.options.height > 0) {
-                point.height = instance._getWidth(instance.options.height);
+            if (itemHeight > 0) {
+                point.height = itemHeight;
             }
             point.applyWidthAndHeight(!(instance.options.height > 0));
             width += point.width;
@@ -321,6 +365,7 @@ class SliderItem extends Eve {
      * @param callback 
      */
     private _goAndCallback(left: number, callback: () => void) {
+        this._box.stop(true, true);
         this._box.animate(
             {left: left + "px"}, 
             this._getOption<number>('animationtime'), 

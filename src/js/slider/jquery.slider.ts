@@ -84,8 +84,10 @@ class Slider {
 interface SliderOptions {
     item?: string,
     box?: string,
-    width?: number,   //统一指定宽度
-    height?: number,  //统一指定高度， 小数时已box的宽度为准
+    width?: number|{
+        [w: number]: number; // 浏览器宽度：显示个数
+    },   //统一指定宽度, 
+    height?: number,  //统一指定高度， 小数时已box的宽度为准，当宽度为自适应个数时，10 以内的数跟item 单个宽度等比例
     spacetime?: number,
     animationtime?: number,
     animationmode?: string,
@@ -113,7 +115,7 @@ class SliderDefaultOptions implements SliderOptions {
 
 
  ;(function($: any) {
-  $.fn.slider = function(options ?: SliderOptions) {
-    return new Slider(this, options); 
-  };
+    $.fn.slider = function(options ?: SliderOptions) {
+        return new Slider(this, options); 
+    };
 })(jQuery);

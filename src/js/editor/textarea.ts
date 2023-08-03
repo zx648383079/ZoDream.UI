@@ -121,7 +121,7 @@ class TextareaElement implements IEditorElement {
 
     private addTextExecute(range: IEditorRange, block: IEditorTextBlock) {
         const v = this.value;
-        this.value = v.substring(0, range.start) + block.value + v.substring(range.start);
+        this.value = v.substring(0, range.start) + block.value + v.substring(range.end);
         this.moveCursor(range.start + (!block.cursor ? block.value.length : block.cursor));
     }
 
@@ -167,7 +167,7 @@ class TextareaElement implements IEditorElement {
 
     private insertText(text: string, range: IEditorRange, cursor?: number) {
         const v = this.value;
-        this.value = v.substring(0, range.start) + text + v.substring(range.start);
+        this.value = v.substring(0, range.start) + text + v.substring(range.end);
         this.moveCursor(range.start + (!cursor ? text.length : cursor));
     }
 

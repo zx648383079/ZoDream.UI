@@ -1337,11 +1337,14 @@ var CodeElement = /** @class */ (function () {
             }
             this.beforeLine(lineNo, items[i]);
         }
-        for (var i = end; i >= lineNo; i--) {
+        for (var i = end; i > lineNo; i--) {
             this.removeLine(i);
         }
         this.updateLineNo();
         var selectIndex = begin + items.length - 1;
+        if (selectIndex > this.bodyPanel.children.length) {
+            return;
+        }
         this.selectNode(this.bodyPanel.children[selectIndex - 1].firstChild, 0);
         this.selectLine(selectIndex);
     };
@@ -1362,7 +1365,7 @@ var CodeElement = /** @class */ (function () {
         var _a = this.getRangeLineNo(range), begin = _a[0], end = _a[1];
         this.eachLine(function (dt, dd, index) {
             var has = index >= begin && index <= end;
-            dd.style.height = dt.clientHeight + 'px';
+            dd.style.height = EditorHelper.height(dt) + 'px';
             _this.toggleClass(dt, 'editor-line-active', has);
             _this.toggleClass(dd, 'editor-line-active', has);
         });
@@ -1377,9 +1380,10 @@ var CodeElement = /** @class */ (function () {
         var minHeight = 0;
         for (var i = 0; i < this.bodyPanel.children.length; i++) {
             var element = this.bodyPanel.children[i];
-            if (element.clientHeight > 0 && (minHeight === 0
-                || element.clientHeight < minHeight)) {
-                minHeight = element.clientHeight;
+            var h = EditorHelper.height(element);
+            if (h > 0 && (minHeight === 0
+                || h < minHeight)) {
+                minHeight = h;
             }
         }
         if (minHeight <= 0) {
@@ -1394,7 +1398,8 @@ var CodeElement = /** @class */ (function () {
             if (!dd) {
                 dd = this.createLineNo(i + 1);
             }
-            dd.style.height = (dt && dt.clientHeight > minHeight ? dt.clientHeight : minHeight) + 'px';
+            var h = dt ? EditorHelper.height(dt) : 0;
+            dd.style.height = (h > minHeight ? h : minHeight) + 'px';
         }
     };
     CodeElement.prototype.toggleClass = function (ele, tag, force) {
@@ -1454,7 +1459,7 @@ var CodeElement = /** @class */ (function () {
         dd.className = 'editor-line-no';
         dd.textContent = line.toString();
         if (lineBody) {
-            dd.style.height = lineBody.clientHeight + 'px';
+            dd.style.height = EditorHelper.height(lineBody) + 'px';
         }
         return dd;
     };
@@ -1472,7 +1477,7 @@ var CodeElement = /** @class */ (function () {
             this.renderLine(lineBody, text);
         }
         var lineNo = this.linePanel.children[i];
-        lineNo.style.height = lineBody.clientHeight + 'px';
+        lineNo.style.height = EditorHelper.height(lineBody) + 'px';
     };
     CodeElement.prototype.updateLineNo = function (index) {
         if (index === void 0) { index = 1; }
@@ -4530,7 +4535,7 @@ var TextareaElement = /** @class */ (function () {
     };
     TextareaElement.prototype.addTextExecute = function (range, block) {
         var v = this.value;
-        this.value = v.substring(0, range.start) + block.value + v.substring(range.start);
+        this.value = v.substring(0, range.start) + block.value + v.substring(range.end);
         this.moveCursor(range.start + (!block.cursor ? block.value.length : block.cursor));
     };
     TextareaElement.prototype.addCodeExecute = function (range, block) {
@@ -4710,6 +4715,9 @@ var EditorHelper = /** @class */ (function () {
     };
     EditorHelper.css = function (node, style) {
         $(node).css(style);
+    };
+    EditorHelper.height = function (node) {
+        return $(node).height();
     };
     EditorHelper.nodeClass = function (obj) {
         var items = [];

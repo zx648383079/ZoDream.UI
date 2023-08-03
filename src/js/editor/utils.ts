@@ -28,6 +28,10 @@ class EditorHelper {
         $(node).css(style);
     }
 
+    public static height(node: HTMLElement): number {
+        return $(node).height();
+    }
+
     public static nodeClass(obj: any): string {
         const items = [];
         $.each(obj, (i, v) => {

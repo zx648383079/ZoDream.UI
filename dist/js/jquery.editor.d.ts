@@ -823,6 +823,7 @@ declare class EditorHelper {
     */
     static wordLength(val: string): number;
     static css(node: HTMLElement, style: any): void;
+    static height(node: HTMLElement): number;
     static nodeClass(obj: any): string;
     static nodeStyle(obj: any): string;
     static modalInputBind<T = any>(element: JQuery<HTMLDivElement>, confirmFn: (data: T) => void): void;

@@ -36,8 +36,12 @@ declare class SliderItem extends Eve {
     private _index;
     private _box;
     private _time;
+    private _lastWidth;
+    private getItemWidth;
+    private getItemHeight;
     private _timeCallback;
     private _extendOption;
+    private bindResize;
     /**
      * 初始化只有一张
      */
@@ -125,7 +129,9 @@ declare class Slider {
 interface SliderOptions {
     item?: string;
     box?: string;
-    width?: number;
+    width?: number | {
+        [w: number]: number;
+    };
     height?: number;
     spacetime?: number;
     animationtime?: number;

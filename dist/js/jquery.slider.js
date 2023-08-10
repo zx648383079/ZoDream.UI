@@ -140,10 +140,12 @@ var SliderItem = /** @class */ (function (_super) {
             return w > 0 ? this._getWidth(w) : 0;
         }
         var ww = $(window).width();
-        var j = 0;
-        var c = 1;
+        var j = 0; // 当前宽度
+        var c = 1; // 当前数量
+        var isMax = true;
         $.each(w, function (i, v) {
             if (i > ww) {
+                isMax = false;
                 return;
             }
             if (i >= j) {
@@ -151,6 +153,10 @@ var SliderItem = /** @class */ (function (_super) {
                 j = i;
             }
         });
+        if (isMax && j > 0) {
+            // 超过设置的最大时，自动显示完整个数
+            c = Math.floor(this._lastWidth / j * c);
+        }
         return c > 0 ? this._lastWidth / c : 0;
     };
     SliderItem.prototype.getItemHeight = function (width) {
@@ -291,7 +297,7 @@ var SliderItem = /** @class */ (function (_super) {
         if (reltive > 1) {
             return reltive;
         }
-        return this.element.width() * reltive;
+        return this._lastWidth * reltive;
     };
     SliderItem.prototype._setTime = function () {
         this._time = (this._getOption('spacetime') + this._getOption('animationtime')) / 16;

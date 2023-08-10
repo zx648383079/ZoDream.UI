@@ -44,10 +44,12 @@ class SliderItem extends Eve {
             return w > 0 ? this._getWidth(w) : 0;
         }
         const ww = $(window).width();
-        let j = 0;
-        let c = 1;
+        let j = 0; // 当前宽度
+        let c = 1; // 当前数量
+        let isMax = true;
         $.each(w, (i, v) => {
             if (i > ww) {
+                isMax = false;
                 return;
             }
             if (i >= j) {
@@ -55,6 +57,10 @@ class SliderItem extends Eve {
                 j = i;
             }
         });
+        if (isMax && j > 0) {
+            // 超过设置的最大时，自动显示完整个数
+            c = Math.floor(this._lastWidth / j * c);
+        }
         return c > 0 ? this._lastWidth / c : 0;
     }
 
@@ -204,7 +210,7 @@ class SliderItem extends Eve {
         if (reltive > 1) {
             return reltive;
         }
-        return this.element.width() * reltive;
+        return this._lastWidth * reltive;
     }
 
     private _setTime() {

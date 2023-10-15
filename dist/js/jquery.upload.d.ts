@@ -1,4 +1,5 @@
 /// <reference types="jquery" />
+/// <reference types="jquery" />
 declare abstract class Eve {
     options: any;
     on(event: string, callback: Function): this;
@@ -69,6 +70,7 @@ interface UploadOption {
     onbefore?: (data: FormData, currentElement: JQuery) => any;
     onafter?: (data: any, currentElement: JQuery) => any;
     onsuccess?: (data: any, currentElement: JQuery) => boolean;
+    onerror?: (error: any, currentElement: JQuery) => boolean;
     dynamic?: boolean;
     getElement?: (tag: string, currentElement: JQuery) => JQuery;
     onprogress?: (data: any) => void;

@@ -58,7 +58,7 @@ var CacheUrl = /** @class */ (function () {
         this._event[url] = [callback];
         var instance = this;
         $.getJSON(url, function (data) {
-            if (data.code == 0) {
+            if (data.code == 200) {
                 instance.setData(url, data.data);
                 return;
             }
@@ -1865,6 +1865,8 @@ var DialogImage = /** @class */ (function (_super) {
     function DialogImage(option, id) {
         var _this = _super.call(this, option, id) || this;
         _this._index = -1;
+        _this._imageWidth = 0;
+        _this._imageHeight = 0;
         return _this;
     }
     Object.defineProperty(DialogImage.prototype, "src", {
@@ -1872,11 +1874,30 @@ var DialogImage = /** @class */ (function (_super) {
             return this._src;
         },
         set: function (img) {
+            var _this = this;
             if (!img) {
                 img = this.options.content;
             }
+            if (this._src === img) {
+                return;
+            }
             this._src = img;
-            this._img.attr('style', '').attr('src', img);
+            var target = new Image;
+            target.src = img;
+            var isLoaded = false;
+            var loadImage = function () {
+                isLoaded = true;
+                _this._target.empty();
+                _this._target.append(target);
+                _this.resetWithImage($(target), _this._imageWidth = target.width, _this._imageHeight = target.height);
+            };
+            target.onload = loadImage;
+            setTimeout(function () {
+                if (isLoaded || target.width <= 0) {
+                    return;
+                }
+                loadImage();
+            }, 50);
         },
         enumerable: false,
         configurable: true
@@ -1885,61 +1906,61 @@ var DialogImage = /** @class */ (function (_super) {
         Dialog.addItem(this);
         this.createCore().createContent()
             .appendParent().setProperty().bindEvent();
+        if (!this.options.content) {
+            this.src = this.trigger('request', ++this._index);
+        }
+        else {
+            this.src = this.options.content;
+        }
         if (this.status == DialogStatus.show) {
             this.showBox();
         }
     };
     DialogImage.prototype.createContent = function () {
         this.box.html(this.getContentHtml());
-        this._img = this.box.find('.dialog-body img');
+        this._target = this.box.find('.dialog-body');
         return this;
     };
     DialogImage.prototype.setProperty = function () {
-        if (!this._img) {
+        var img = this._target.find('img');
+        if (img.length === 0) {
             return this;
         }
+        if (this._imageHeight <= 0) {
+            this._imageHeight = img.height();
+        }
+        if (this._imageWidth <= 0) {
+            this._imageWidth = img.width();
+        }
+        this.resetWithImage(img, this._imageWidth, this._imageHeight);
+        return this;
+    };
+    DialogImage.prototype.resetWithImage = function (img, width, height) {
         var target = this.options.target || Dialog.$window;
         var maxWidth = target.width();
-        var width = this._img.width();
         var maxHeight = target.height();
-        var height = this._img.height();
-        if (width <= maxWidth && height <= maxHeight) {
-            this.css({
-                left: (maxWidth - width) / 2 + 'px',
-                top: (maxHeight - height) / 2 + 'px',
-                height: height,
-                width: width
-            });
-            return this;
+        if (width > maxWidth || height > maxHeight) {
+            var wScale = width / maxWidth;
+            var hScale = height / maxHeight;
+            if (wScale >= hScale) {
+                height /= wScale;
+                width = maxWidth;
+            }
+            else {
+                width /= hScale;
+                height = maxHeight;
+            }
         }
-        var wScale = width / maxWidth;
-        var hScale = height / maxHeight;
-        if (wScale >= hScale) {
-            height /= wScale;
-            this.css({
-                left: 0,
-                top: (maxHeight - height) / 2 + 'px',
-                height: height,
-                width: maxWidth
-            });
-            this._img.css({
-                height: height,
-                width: maxWidth
-            });
-            return this;
-        }
-        width /= hScale;
         this.css({
             left: (maxWidth - width) / 2 + 'px',
-            top: 0,
-            height: maxHeight,
+            top: (maxHeight - height) / 2 + 'px',
+            height: height,
             width: width
         });
-        this._img.css({
+        img.css({
             height: height,
-            width: maxWidth
+            width: width
         });
-        return this;
     };
     /**
      * 绑定事件
@@ -1964,12 +1985,12 @@ var DialogImage = /** @class */ (function (_super) {
                 return;
             }
         });
-        this.box.find('.dialog-body img').bind("load", function () {
-            if (instance.box) {
-                instance.resize();
-                return;
-            }
-        });
+        // this.box.find('.dialog-body img').on("load", function() {
+        //     if (instance.box) {
+        //         instance.resize();
+        //         return;
+        //     }
+        // });
         return this;
     };
     DialogImage.prototype.showIndex = function (index) {
@@ -1994,10 +2015,7 @@ var DialogImage = /** @class */ (function (_super) {
         this.src = this.trigger('request', ++this._index);
     };
     DialogImage.prototype.getContentHtml = function () {
-        if (!this.options.content) {
-            this.options.content = this.trigger('request', ++this._index);
-        }
-        return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"><img src="' + this.options.content + '"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
+        return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
     };
     return DialogImage;
 }(DialogContent));

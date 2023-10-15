@@ -603,13 +603,16 @@ interface DialogImageOption extends DialogOption {
 declare class DialogImage extends DialogContent {
     constructor(option: DialogOption, id?: number);
     private _index;
-    private _img;
+    private _target;
     private _src;
+    private _imageWidth;
+    private _imageHeight;
     get src(): string;
     set src(img: string);
     init(): void;
     protected createContent(): this;
     protected setProperty(): this;
+    private resetWithImage;
     /**
      * 绑定事件
      */

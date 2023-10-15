@@ -43,3 +43,52 @@ interface IEditorListeners {
 
 
 type EditorUpdatedCallback<T = IEditorBlock> = (data: T) => void;
+
+
+class EventEmitter {
+
+    private listeners: {
+        target: HTMLElement,
+        type: string;
+        listener: Function;
+    }[] = [];
+
+    public on<K extends keyof HTMLElementEventMap>(target: HTMLElement, type: K, listener: (this: HTMLTextAreaElement, ev: HTMLElementEventMap[K]) => any): EventEmitter;
+    public on(target: HTMLElement, type: string, listener: EventListenerOrEventListenerObject): EventEmitter;
+    public on(target: HTMLElement, type: any, listener: any): EventEmitter {
+        target.addEventListener(type, listener);
+        this.listeners.push({target, type, listener});
+        return this;
+    }
+
+    public off(target: HTMLElement, type?: string): EventEmitter {
+        for (let i = this.listeners.length - 1; i >= 0; i--) {
+            const item = this.listeners[i];
+            if (item.target !== target) {
+                continue;
+            }
+            if (type && type !== item.type) {
+                continue;
+            }
+            this.offListener(item);
+            this.listeners.splice(i, 1);
+        }
+        return this;
+    }
+
+    public clear(): EventEmitter {
+        const items = this.listeners;
+        this.listeners = [];
+        for (const item of items) {
+            this.offListener(item);
+        }
+        return this;
+    }
+
+    private offListener(item: any) {
+        if (!item || !item.target) {
+            return;
+        }
+        item.target.removeEventListener(item.type as any, item.listener as any);
+    }
+}

@@ -14,9 +14,12 @@ class DialogImage extends DialogContent {
 
     private _index: number = -1;
 
-    private _img: JQuery;
+    private _target: JQuery;
 
     private _src: string;
+
+    private _imageWidth: number = 0;
+    private _imageHeight: number = 0;
 
     public get src(): string {
         return this._src;
@@ -26,14 +29,37 @@ class DialogImage extends DialogContent {
         if (!img) {
             img = this.options.content;
         }
+        if (this._src === img) {
+            return;
+        }
         this._src = img;
-        this._img.attr('style', '').attr('src', img);
+        const target = new Image;
+        target.src = img;
+        let isLoaded = false;
+        const loadImage = () => {
+            isLoaded = true;
+            this._target.empty();
+            this._target.append(target);
+            this.resetWithImage($(target), this._imageWidth = target.width, this._imageHeight = target.height);
+        };
+        target.onload = loadImage;
+        setTimeout(() => {
+            if (isLoaded || target.width <= 0) {
+                return;
+            }
+            loadImage();
+        }, 50);
     }
 
     public init() {
         Dialog.addItem(this);
         this.createCore().createContent()
         .appendParent().setProperty().bindEvent();
+        if (!this.options.content) {
+            this.src = this.trigger('request', ++ this._index);
+        } else {
+            this.src = this.options.content;
+        }
         if (this.status == DialogStatus.show) {
             this.showBox();
         }
@@ -41,56 +67,50 @@ class DialogImage extends DialogContent {
 
     protected createContent(): this {
         this.box.html(this.getContentHtml());
-        this._img = this.box.find('.dialog-body img');
+        this._target = this.box.find('.dialog-body');
         return this;
     }
 
     protected setProperty(): this {
-        if (!this._img) {
+        const img = this._target.find('img');
+        if (img.length === 0) {
             return this;
         }
+        if (this._imageHeight <= 0) {
+            this._imageHeight = img.height();
+        }
+        if (this._imageWidth <= 0) {
+            this._imageWidth = img.width();
+        }
+        this.resetWithImage(img, this._imageWidth, this._imageHeight);
+        return this;
+    }
+
+    private resetWithImage(img: JQuery<HTMLImageElement>, width: number, height: number) {
         let target = this.options.target || Dialog.$window;
-        let maxWidth = target.width();
-        let width = this._img.width();
-        let maxHeight = target.height();
-        let height = this._img.height();
-        if (width <= maxWidth && height <= maxHeight) {
-            this.css({
-                left: (maxWidth - width) / 2 + 'px',
-                top: (maxHeight - height) / 2 + 'px',
-                height: height,
-                width: width
-            });
-            return this;
+        const maxWidth = target.width();
+        const maxHeight = target.height();
+        if (width > maxWidth || height > maxHeight) {
+            let wScale = width / maxWidth;
+            let hScale = height / maxHeight;
+            if (wScale >= hScale) {
+                height /= wScale;
+                width = maxWidth;
+            } else {
+                width /= hScale;
+                height = maxHeight;
+            }
         }
-        let wScale = width / maxWidth;
-        let hScale = height / maxHeight;
-        if (wScale >= hScale) {
-            height /= wScale; 
-            this.css({
-                left: 0,
-                top: (maxHeight - height) / 2 + 'px',
-                height: height,
-                width: maxWidth
-            });
-            this._img.css({
-                height: height,
-                width: maxWidth
-            });
-            return this;
-        }
-        width /= hScale;
         this.css({
             left: (maxWidth - width) / 2 + 'px',
-            top: 0,
-            height: maxHeight,
-            width: width
+            top: (maxHeight - height) / 2 + 'px',
+            height,
+            width
         });
-        this._img.css({
-            height: height,
-            width: maxWidth
+        img.css({
+            height,
+            width
         });
-        return this;
     }
 
     /**
@@ -117,12 +137,12 @@ class DialogImage extends DialogContent {
                 return;
             }
         });
-        this.box.find('.dialog-body img').on("load", function() {
-            if (instance.box) {
-                instance.resize();
-                return;
-            }
-        });
+        // this.box.find('.dialog-body img').on("load", function() {
+        //     if (instance.box) {
+        //         instance.resize();
+        //         return;
+        //     }
+        // });
         return this;
     }
 
@@ -153,10 +173,7 @@ class DialogImage extends DialogContent {
     }
 
     protected getContentHtml(): string {
-        if (!this.options.content) {
-            this.options.content = this.trigger('request', ++ this._index);
-        }
-        return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"><img src="'+ this.options.content +'"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
+        return '<i class="fa fa-chevron-left dialog-previous"></i><div class="dialog-body"></div><i class="fa fa-chevron-right dialog-next"></i><i class="fa fa-close dialog-close"></i>';
     }
 }
 

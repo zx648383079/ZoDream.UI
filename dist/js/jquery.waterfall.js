@@ -58,9 +58,6 @@ var HorizontalBar = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    HorizontalBar.prototype.log = function () {
-        console.log(this.items);
-    };
     HorizontalBar.prototype.leftHeight = function (rang) {
         if (rang.x <= 0) {
             return 0;

@@ -15,13 +15,18 @@
     <div class="editor">
 
     </div>
+
+    <button class="toggle">切换</button>
     
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../dist/js/jquery.editor.js"></script>
     <script>
         $(function () {
-            $('.editor').editor();
+            var editor = $('.editor').editor();
+            $(document).on('click', '.toggle', function() {
+                editor.toggleEditor();
+            });
         });
     </script>
 </body>

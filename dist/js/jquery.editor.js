@@ -1089,6 +1089,8 @@ var CodeElement = /** @class */ (function () {
     CodeElement.prototype.blur = function () {
         return this.bodyPanel.blur();
     };
+    CodeElement.prototype.destroy = function () {
+    };
     CodeElement.prototype.init = function () {
         this.linePanel = document.createElement('div');
         this.linePanel.className = 'editor-line-numbers';
@@ -1722,6 +1724,7 @@ var EditorContainer = /** @class */ (function () {
         this.element.blur();
     };
     EditorContainer.prototype.destroy = function () {
+        this.element.destroy();
         this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     };
@@ -1951,6 +1954,8 @@ var DivElement = /** @class */ (function () {
     DivElement.prototype.blur = function () {
         return this.element.blur();
     };
+    DivElement.prototype.destroy = function () {
+    };
     //#region 外部调用的方法
     DivElement.prototype.addHrExecute = function (range) {
         var hr = document.createElement('hr');
@@ -2137,7 +2142,7 @@ var DivElement = /** @class */ (function () {
         this.replaceNodeName(range.startContainer, block.value);
     };
     DivElement.prototype.blockquoteExecute = function (range) {
-        this.toggleParentNode(range, 'blockquote');
+        this.toggleRangeTag(range, 'blockquote');
     };
     DivElement.prototype.listExecute = function (range) {
         var node = range.startContainer;
@@ -2165,62 +2170,71 @@ var DivElement = /** @class */ (function () {
         });
     };
     DivElement.prototype.boldExecute = function (range) {
-        this.toggleParentNode(range, 'b');
+        this.toggleRangeTag(range, 'b');
     };
     DivElement.prototype.subExecute = function (range) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'vertical-align': 'text-bottom',
             'font-size': '8px'
         });
     };
     DivElement.prototype.supExecute = function (range) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'vertical-align': 'text-top',
             'font-size': '8px'
         });
     };
     DivElement.prototype.italicExecute = function (range, block) {
-        this.toggleParentNode(range, 'i');
+        this.toggleRangeTag(range, 'i');
     };
     DivElement.prototype.underlineExecute = function (range) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'text-decoration': 'underline'
         });
     };
     DivElement.prototype.strikeExecute = function (range) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'text-decoration': 'strike'
         });
     };
     DivElement.prototype.fontSizeExecute = function (range, block) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'font-size': block.value
         });
     };
     DivElement.prototype.fontFamilyExecute = function (range, block) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'font-family': block.value
         });
     };
     DivElement.prototype.backgroundExecute = function (range, block) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'background-color': block.value
         });
     };
     DivElement.prototype.foregroundExecute = function (range, block) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             color: block.value
         });
     };
     DivElement.prototype.clearStyleExecute = function (range) {
+        var _this = this;
         this.eachRangeParentNode(range, function (node) {
-            if (node instanceof HTMLElement) {
-                node.removeAttribute('style');
+            if (!(node instanceof HTMLElement)) {
+                return;
+            }
+            node.removeAttribute('style');
+            if (['B', 'I'].indexOf(node.nodeName) >= 0) {
+                return _this.replaceNodeName(node, 'span', false);
+                ;
+            }
+            if (/^H\d$/.test(node.tagName)) {
+                return _this.replaceNodeName(node, _this.blockTagName, false);
             }
         });
     };
     DivElement.prototype.alignExecute = function (range, block) {
-        this.toggleParentStyle(range, {
+        this.toggleRangeStyle(range, {
             'text-align': block.value
         });
     };
@@ -2498,7 +2512,7 @@ var DivElement = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             items[_i - 1] = arguments[_i];
         }
-        if (this.isNotSelected(range)) {
+        if (this.isEmptyRange(range)) {
             this.insertToElement.apply(this, __spreadArray([range.startContainer, range.startOffset], items, false));
             return;
         }
@@ -2531,6 +2545,65 @@ var DivElement = /** @class */ (function () {
     DivElement.prototype.includeSelected = function (range, parent) {
         this.insertLast.apply(this, __spreadArray([parent], this.copySelectedNode(range), false));
         this.replaceSelected(range, parent);
+    };
+    DivElement.prototype.toggleRangeTag = function (range, tag) {
+        var _this = this;
+        tag = tag.toUpperCase();
+        if (this.isEmptyRange(range)) {
+            this.toggleParentNode(range, tag);
+            return;
+        }
+        this.eachTopRange(range, function (node) {
+            var items = _this.splitNodeRange(node, range);
+            if (items.length === 0) {
+                return;
+            }
+            if (!_this.isBlockNode(items[0])) {
+                _this.replaceNode(items[0], document.createElement(tag), function (n) {
+                    _this.insertLast.apply(_this, __spreadArray([n], items, false));
+                });
+                return;
+            }
+            for (var _i = 0, items_4 = items; _i < items_4.length; _i++) {
+                var item = items_4[_i];
+                if (_this.isBlockNode(item)) {
+                    _this.toggleBlockTag(item, tag);
+                    continue;
+                }
+                if (item.nodeName === tag) {
+                    continue;
+                }
+                _this.replaceNodeName(item, tag, false);
+            }
+        });
+    };
+    DivElement.prototype.toggleRangeStyle = function (range, attrs) {
+        var _this = this;
+        if (this.isEmptyRange(range)) {
+            this.toggleParentStyle(range, attrs);
+            return;
+        }
+        this.eachTopRange(range, function (node) {
+            var items = _this.splitNodeRange(node, range);
+            if (items.length === 0) {
+                return;
+            }
+            for (var _i = 0, items_5 = items; _i < items_5.length; _i++) {
+                var item = items_5[_i];
+                if (item instanceof HTMLElement) {
+                    EditorHelper.css(item, attrs);
+                    continue;
+                }
+                EditorHelper.css(_this.replaceNodeName(item, 'span', false), attrs);
+            }
+        });
+    };
+    DivElement.prototype.toggleBlockTag = function (node, tag) {
+        var n = document.createElement(tag);
+        for (var i = node.childNodes.length - 1; i >= 0; i--) {
+            n.append(node.childNodes[i]);
+        }
+        node.append(n);
     };
     /**
      * 切换父级的标签，例如 b strong
@@ -2618,60 +2691,52 @@ var DivElement = /** @class */ (function () {
         }
         return false;
     };
-    DivElement.prototype.replaceNodeName = function (node, tag) {
+    DivElement.prototype.replaceNodeName = function (node, tag, isSelected) {
+        if (isSelected === void 0) { isSelected = true; }
         var n = document.createElement(tag);
         if (node instanceof HTMLElement) {
             if (n.nodeName === node.nodeName) {
-                return;
+                return node;
             }
             n.innerHTML = node.innerHTML;
             this.replaceNode(node, n);
-            this.selectNode(n);
-            return;
         }
-        this.replaceNode(node, n, function () {
-            n.appendChild(node);
-        });
-        this.selectNode(n);
+        else {
+            this.replaceNode(node, n, function (next) {
+                next.appendChild(node);
+            });
+        }
+        if (isSelected) {
+            this.selectNode(n);
+        }
+        return n;
     };
-    /**
-     * 替换节点为
-     * @param node
-     * @param newNode
-     * @param removeFn 删除旧节点还是移动
-     * @returns
-     */
     DivElement.prototype.replaceNode = function (node, newNode, removeFn) {
         var _this = this;
+        var target = newNode instanceof Array ? newNode : [newNode];
         var fn = function () {
             if (removeFn) {
-                removeFn();
+                removeFn(newNode);
                 return;
             }
             _this.removeNode(node);
         };
-        if (!(newNode instanceof Array)) {
-            newNode = [newNode];
-        }
         var borther = node.previousSibling;
         if (borther) {
             fn();
-            this.insertAfter.apply(this, __spreadArray([borther], newNode, false));
+            this.insertAfter.apply(this, __spreadArray([borther], target, false));
             return;
         }
         borther = node.nextSibling;
         if (borther) {
             fn();
-            this.insertBefore.apply(this, __spreadArray([borther], newNode, false));
+            this.insertBefore.apply(this, __spreadArray([borther], target, false));
             return;
         }
         var parent = node.parentNode;
         fn();
-        this.insertLast.apply(this, __spreadArray([parent], newNode, false));
+        this.insertLast.apply(this, __spreadArray([parent], target, false));
         return;
-    };
-    DivElement.prototype.isNotSelected = function (range) {
-        return range.startContainer === range.endContainer && range.startOffset === range.endOffset;
     };
     DivElement.prototype.selectNode = function (node, offset) {
         if (offset === void 0) { offset = 0; }
@@ -2901,7 +2966,7 @@ var DivElement = /** @class */ (function () {
     DivElement.prototype.eachRange = function (range, cb) {
         var begin = range.startContainer;
         var end = range.endContainer;
-        if (cb(begin) === false) {
+        if (cb(begin) === false || end === begin) {
             return;
         }
         var current = begin;
@@ -2925,6 +2990,75 @@ var DivElement = /** @class */ (function () {
             }
             current = next;
         }
+    };
+    /**
+     * 遍历选中的所有元素，最顶端的元素，元素直接无交集
+     * @param range
+     * @param cb
+     * @returns
+     */
+    DivElement.prototype.eachTopRange = function (range, cb) {
+        var begin = range.startContainer;
+        var end = range.endContainer;
+        if (cb(begin) === false || end === begin) {
+            return;
+        }
+        var beginParents = [];
+        this.eachParentNode(begin, function (node) {
+            beginParents.push(node);
+        });
+        var endParents = [];
+        this.eachParentNode(end, function (node) {
+            endParents.push(node);
+        });
+        var current = begin;
+        var _loop_2 = function () {
+            var next = this_2.nextNode(current);
+            if (!next) {
+                return { value: void 0 };
+            }
+            if (next === end) {
+                return "break";
+            }
+            this_2.eachParentNode(next, function (n) {
+                if (beginParents.indexOf(n) >= 0) {
+                    return false;
+                }
+                if (endParents.indexOf(n) >= 0) {
+                    return false;
+                }
+                next = n;
+            });
+            if (beginParents.indexOf(next) >= 0) {
+                current = next;
+                return "continue";
+            }
+            var i = endParents.indexOf(next);
+            if (i === 0) {
+                return "break";
+            }
+            else if (i > 0) {
+                while (next.hasChildNodes()) {
+                    next = next.childNodes[0];
+                    if (endParents.indexOf(next) <= 0) {
+                        break;
+                    }
+                }
+            }
+            if (next !== end && cb(next) === false) {
+                return "break";
+            }
+            current = next;
+        };
+        var this_2 = this;
+        while (current !== end) {
+            var state_1 = _loop_2();
+            if (typeof state_1 === "object")
+                return state_1.value;
+            if (state_1 === "break")
+                break;
+        }
+        cb(end);
     };
     DivElement.prototype.insertElement = function (node, range) {
         this.insertToElement(range.startContainer, range.startOffset, node);
@@ -2984,8 +3118,8 @@ var DivElement = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             items[_i - 1] = arguments[_i];
         }
-        for (var _a = 0, items_4 = items; _a < items_4.length; _a++) {
-            var item = items_4[_a];
+        for (var _a = 0, items_6 = items; _a < items_6.length; _a++) {
+            var item = items_6[_a];
             current.appendChild(item);
         }
     };
@@ -3000,8 +3134,8 @@ var DivElement = /** @class */ (function () {
             items[_i - 1] = arguments[_i];
         }
         var parent = current.parentNode;
-        for (var _a = 0, items_5 = items; _a < items_5.length; _a++) {
-            var item = items_5[_a];
+        for (var _a = 0, items_7 = items; _a < items_7.length; _a++) {
+            var item = items_7[_a];
             parent.insertBefore(item, current);
         }
     };
@@ -3060,13 +3194,13 @@ var DivElement = /** @class */ (function () {
             return false;
         });
         var max = Math.max(beginParentItems.length, endParentItems.length);
-        var _loop_2 = function (i) {
+        var _loop_3 = function (i) {
             var begin = beginParentItems.length - i;
             var end = endParentItems.length - i;
             var beginNode = begin >= 0 ? beginParentItems[begin] : undefined;
             var endNode = end >= 0 ? endParentItems[end] : undefined;
             if (beginNode) {
-                this_2.eachNextBrother(beginNode, function (n) {
+                this_3.eachNextBrother(beginNode, function (n) {
                     if (!n || n === beginNode || n === endNode) {
                         return;
                     }
@@ -3074,7 +3208,7 @@ var DivElement = /** @class */ (function () {
                 }, endNode);
             }
             if (endNode && (!beginNode || endNode.parentNode !== beginNode.parentNode)) {
-                this_2.eachBrother(endNode, function (n) {
+                this_3.eachBrother(endNode, function (n) {
                     if (n === endNode) {
                         return false;
                     }
@@ -3085,9 +3219,9 @@ var DivElement = /** @class */ (function () {
                 }, false);
             }
         };
-        var this_2 = this;
+        var this_3 = this;
         for (var i = 1; i <= max; i++) {
-            _loop_2(i);
+            _loop_3(i);
         }
         if (range.startContainer instanceof Text) {
             var text = range.startContainer.textContent;
@@ -3145,13 +3279,13 @@ var DivElement = /** @class */ (function () {
         var items = [];
         var lastBegin;
         var lastEnd;
-        var _loop_3 = function (i) {
+        var _loop_4 = function (i) {
             var begin = beginParentItems.length - i;
             var end = endParentItems.length - i;
             var beginNode = begin >= 0 ? beginParentItems[begin] : undefined;
             var endNode = end >= 0 ? endParentItems[end] : undefined;
             if (beginNode) {
-                this_3.eachNextBrother(beginNode, function (n) {
+                this_4.eachNextBrother(beginNode, function (n) {
                     var cloneN = n.cloneNode(n === beginNode || n === endNode);
                     if (i < 1) {
                         items.push(cloneN);
@@ -3169,7 +3303,7 @@ var DivElement = /** @class */ (function () {
                 }, endNode);
             }
             if (endNode && (!beginNode || endNode.parentNode !== beginNode.parentNode)) {
-                this_3.eachBrother(endNode, function (n) {
+                this_4.eachBrother(endNode, function (n) {
                     var cloneN = n.cloneNode(n === endNode);
                     if (i < 1) {
                         items.push(cloneN);
@@ -3184,9 +3318,9 @@ var DivElement = /** @class */ (function () {
                 }, false);
             }
         };
-        var this_3 = this;
+        var this_4 = this;
         for (var i = 1; i <= max; i++) {
-            _loop_3(i);
+            _loop_4(i);
         }
         if (!lastBegin) {
             items = [].concat(this.copyRangeNode(range.startContainer, range.startOffset), items);
@@ -3349,7 +3483,14 @@ var DivElement = /** @class */ (function () {
             if (current === this.element) {
                 break;
             }
-            if (cb(current) === false) {
+            var res = cb(current);
+            if (res === false) {
+                break;
+            }
+            if (res instanceof Node) {
+                current = res;
+            }
+            if (!current) {
                 break;
             }
             current = current.parentNode;
@@ -3371,7 +3512,7 @@ var DivElement = /** @class */ (function () {
                 }
                 var res = cb(cur);
                 if (typeof res !== 'boolean') {
-                    return;
+                    return res;
                 }
                 if (res === false) {
                     isEnd = true;
@@ -3397,23 +3538,57 @@ var DivElement = /** @class */ (function () {
         }
         return this.nextNode(node.parentNode);
     };
+    DivElement.prototype.splitNodeRange = function (node, begin, end) {
+        var _a;
+        if (end === void 0) { end = -1; }
+        if (typeof begin === 'object') {
+            _a = this.getNodeRange(node, begin), begin = _a[0], end = _a[1];
+        }
+        if (begin === end) {
+            return [];
+        }
+        if (node instanceof Text) {
+            var len = node.length;
+            if (begin > 0) {
+                node = node.splitText(begin);
+            }
+            if (end > begin && end > 0 && end < len - 1) {
+                node.splitText(end - begin);
+            }
+            return [node];
+        }
+        var count = end > begin && end > 0 && end < node.childNodes.length ? end + 1 : node.childNodes.length;
+        var i = begin > 0 ? begin : 0;
+        if (i <= 0 && count >= node.childNodes.length) {
+            return [node];
+        }
+        var items = [];
+        for (; i < count; i++) {
+            items.push(node.childNodes[i]);
+        }
+        return items;
+    };
     /**
-     * 拆分元素
+     * 获取元素在兄弟中排第几
      * @param node
-     * @param offset
      * @returns
      */
-    DivElement.prototype.splitNode = function (node, offset) {
-        if (offset < 1) {
-            return node;
-        }
+    DivElement.prototype.getNodeIndex = function (node) {
         if (!node.parentNode) {
-            return node;
+            return -1;
         }
-        if (node instanceof Text && node.length > offset) {
-            return node.splitText(offset);
+        var parent = node.parentNode;
+        for (var i = 0; i < parent.childNodes.length; i++) {
+            if (parent.childNodes[i] === node) {
+                return i;
+            }
         }
-        return node;
+        return -1;
+    };
+    DivElement.prototype.getNodeRange = function (node, range) {
+        var begin = node === range.startContainer ? range.startOffset : 0;
+        var end = node === range.endContainer ? range.endOffset : -1;
+        return [begin, end];
     };
     DivElement.prototype.getNodeOffset = function (node) {
         if (node.nodeType !== 1) {
@@ -3471,6 +3646,14 @@ var DivElement = /** @class */ (function () {
         }
         return false;
     };
+    /**
+     * 未选中状态
+     * @param range
+     * @returns
+     */
+    DivElement.prototype.isEmptyRange = function (range) {
+        return range.startContainer === range.endContainer && range.startOffset === range.endOffset;
+    };
     DivElement.prototype.isEmptyLine = function (range) {
         if (range.startOffset !== range.endOffset || range.startOffset > 0) {
             return false;
@@ -3504,7 +3687,7 @@ var DivElement = /** @class */ (function () {
         }
         for (var i = 0; i < node.childNodes.length; i++) {
             var element = node.childNodes[i];
-            if (['P', 'DIV'].indexOf(element.nodeName) >= 0) {
+            if (this.isBlockNode(element)) {
                 if (!this.isEmptyLineNode(element)) {
                     return false;
                 }
@@ -3536,6 +3719,46 @@ var EDITOR_EVENT_SHOW_COLUMN_TOOL = 'tool.column';
 var EDITOR_EVENT_SHOW_LINK_TOOL = 'tool.link';
 var EDITOR_EVENT_SHOW_TABLE_TOOL = 'tool.table';
 var EDITOR_EVENT_CLOSE_TOOL = 'tool.flow.close';
+var EventEmitter = /** @class */ (function () {
+    function EventEmitter() {
+        this.listeners = [];
+    }
+    EventEmitter.prototype.on = function (target, type, listener) {
+        target.addEventListener(type, listener);
+        this.listeners.push({ target: target, type: type, listener: listener });
+        return this;
+    };
+    EventEmitter.prototype.off = function (target, type) {
+        for (var i = this.listeners.length - 1; i >= 0; i--) {
+            var item = this.listeners[i];
+            if (item.target !== target) {
+                continue;
+            }
+            if (type && type !== item.type) {
+                continue;
+            }
+            this.offListener(item);
+            this.listeners.splice(i, 1);
+        }
+        return this;
+    };
+    EventEmitter.prototype.clear = function () {
+        var items = this.listeners;
+        this.listeners = [];
+        for (var _i = 0, items_8 = items; _i < items_8.length; _i++) {
+            var item = items_8[_i];
+            this.offListener(item);
+        }
+        return this;
+    };
+    EventEmitter.prototype.offListener = function (item) {
+        if (!item || !item.target) {
+            return;
+        }
+        item.target.removeEventListener(item.type, item.listener);
+    };
+    return EventEmitter;
+}());
 var EditorBlockType;
 (function (EditorBlockType) {
     EditorBlockType["AddLineBreak"] = "addLineBreak";
@@ -4259,8 +4482,8 @@ var EditorOptionManager = /** @class */ (function () {
             items = [items];
         }
         var isSystem = true;
-        for (var _i = 0, items_6 = items; _i < items_6.length; _i++) {
-            var item = items_6[_i];
+        for (var _i = 0, items_9 = items; _i < items_9.length; _i++) {
+            var item = items_9[_i];
             if (!this.isSystemTool(item)) {
                 isSystem = false;
                 break;
@@ -4284,8 +4507,8 @@ var EditorOptionManager = /** @class */ (function () {
             });
         }
         else {
-            for (var _a = 0, items_7 = items; _a < items_7.length; _a++) {
-                var item = items_7[_a];
+            for (var _a = 0, items_10 = items; _a < items_10.length; _a++) {
+                var item = items_10[_a];
                 var module = this.moduleItems[item];
                 if (this.isBoolEqual(module.actived, active)) {
                     continue;
@@ -4355,8 +4578,8 @@ var EditorOptionManager = /** @class */ (function () {
             return [];
         }
         var data = [];
-        for (var _i = 0, items_8 = items; _i < items_8.length; _i++) {
-            var item = items_8[_i];
+        for (var _i = 0, items_11 = items; _i < items_11.length; _i++) {
+            var item = items_11[_i];
             if (this.isVisible(item) && Object.prototype.hasOwnProperty.call(this.moduleItems, item)) {
                 data.push(this.toTool(this.moduleItems[item]));
             }
@@ -4415,6 +4638,7 @@ var TextareaElement = /** @class */ (function () {
     function TextareaElement(element, container) {
         this.element = element;
         this.container = container;
+        this.emitter = new EventEmitter();
         this.isComposition = false;
         this.bindEvent();
     }
@@ -4576,7 +4800,7 @@ var TextareaElement = /** @class */ (function () {
     //#endregion
     TextareaElement.prototype.insertText = function (text, range, cursor) {
         var v = this.value;
-        this.value = v.substring(0, range.start) + text + v.substring(range.start);
+        this.value = v.substring(0, range.start) + text + v.substring(range.end);
         this.moveCursor(range.start + (!cursor ? text.length : cursor));
     };
     TextareaElement.prototype.replaceSelectLine = function (cb, range) {
@@ -4627,31 +4851,31 @@ var TextareaElement = /** @class */ (function () {
     };
     TextareaElement.prototype.bindEvent = function () {
         var _this = this;
-        this.element.addEventListener('keydown', function (e) {
+        this.emitter.on(this.element, 'keydown', function (e) {
             _this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
-        });
-        this.element.addEventListener('keyup', function (e) {
+        })
+            .on(this.element, 'keyup', function (e) {
             if (_this.isComposition) {
                 return;
             }
             _this.container.saveSelection();
             _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-        });
-        this.element.addEventListener('blur', function () {
+        })
+            .on(this.element, 'blur', function () {
             _this.container.emit(EDITOR_EVENT_INPUT_BLUR);
-        });
-        this.element.addEventListener('paste', function (e) {
+        })
+            .on(this.element, 'paste', function (e) {
             e.preventDefault();
             _this.paste((e.clipboardData || window.clipboardData));
-        });
-        this.element.addEventListener('mouseup', function () {
+        })
+            .on(this.element, 'mouseup', function () {
             _this.container.saveSelection();
             _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
-        });
-        this.element.addEventListener('compositionstart', function () {
+        })
+            .on(this.element, 'compositionstart', function () {
             _this.isComposition = true;
-        });
-        this.element.addEventListener('compositionend', function () {
+        })
+            .on(this.element, 'compositionend', function () {
             _this.isComposition = false;
             _this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             _this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
@@ -4668,22 +4892,25 @@ var TextareaElement = /** @class */ (function () {
         }
         this.insert({ type: EditorBlockType.AddText, value: value });
     };
+    TextareaElement.prototype.destroy = function () {
+        this.emitter.clear();
+    };
     TextareaElement.prototype.isPasteFile = function (data) {
         return data.types.length > 0 && data.types[0] === 'Files';
     };
     TextareaElement.prototype.pasteFile = function (data) {
         var _this = this;
-        var _loop_4 = function (i) {
+        var _loop_5 = function (i) {
             var item = data.files[i];
             var fileType = EditorHelper.fileType(item);
-            this_4.container.option.upload(item, fileType, function (res) {
+            this_5.container.option.upload(item, fileType, function (res) {
                 _this.insert({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
                     title: res.title, size: res.size });
             }, function () { });
         };
-        var this_4 = this;
+        var this_5 = this;
         for (var i = 0; i < data.files.length; i++) {
-            _loop_4(i);
+            _loop_5(i);
         }
     };
     return TextareaElement;
@@ -4885,7 +5112,9 @@ var EditorApp = /** @class */ (function () {
     /**
     *
     */
-    function EditorApp(element, option) {
+    function EditorApp(element, option, isMarkdown) {
+        if (isMarkdown === void 0) { isMarkdown = false; }
+        this.isMarkdown = isMarkdown;
         this.isFullScreen = false;
         this.resizer = new EditorResizerComponent();
         this.option = new EditorOptionManager();
@@ -4912,7 +5141,7 @@ var EditorApp = /** @class */ (function () {
         this.codebox = this.box.find('.editor-code-container');
         var height = this.option.get('height');
         if (height) {
-            this.textbox.parent().css('height', /^\d+$/.test(height) ? height + 'px' : height);
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
         }
         this.container.ready(this.textbox[0]);
         this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));
@@ -4955,11 +5184,47 @@ var EditorApp = /** @class */ (function () {
     EditorApp.prototype.insert = function (block) {
         this.container.insert(block);
     };
+    /**
+     * 切换编辑器模式
+     * @param isMarkdown
+     * @returns
+     */
+    EditorApp.prototype.toggleEditor = function (isMarkdown) {
+        if (typeof isMarkdown === 'undefined') {
+            isMarkdown = !this.isMarkdown;
+        }
+        if (isMarkdown === this.isMarkdown) {
+            return;
+        }
+        this.container.emit(EDITOR_EVENT_CLOSE_TOOL).destroy();
+        this.isMarkdown = isMarkdown;
+        var container = this.box.find('.editor-area');
+        var textbox;
+        if (!this.isMarkdown) {
+            this.codeContainer = new EditorContainer(this.option);
+            this.box.append(this.target);
+            textbox = $("<div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>");
+            this.target.removeClass('editor-view').hide();
+            container.append(textbox);
+        }
+        else {
+            container.empty();
+            container.append(this.target);
+            this.target.addClass('editor-view').attr('spellcheck', 'false').show();
+            textbox = this.target;
+        }
+        this.textbox = textbox;
+        var height = this.option.get('height');
+        if (height) {
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+        }
+        this.container.ready(textbox[0]);
+    };
     EditorApp.prototype.executeModule = function (item, position) {
         var _this = this;
         var isCode = this.box.hasClass('editor-code-mode');
         this.modalContianer.html('');
-        if (item.name === EDITOR_CODE_TOOL) {
+        if (item.name === EDITOR_CODE_TOOL && !this.isMarkdown) {
             this.box.toggleClass('editor-code-mode', !isCode);
             this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
             this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
@@ -5046,7 +5311,9 @@ var EditorApp = /** @class */ (function () {
             _this.resizer.close();
         }).on(EDITOR_EVENT_EDITOR_CHANGE, function () {
             _this.footerBar.text(_this.container.wordLength + ' words');
-            _this.target.val(_this.container.value).trigger('change');
+            if (!_this.isMarkdown) {
+                _this.target.val(_this.container.value).trigger('change');
+            }
         });
         this.codeContainer.on(EDITOR_EVENT_EDITOR_CHANGE, function () {
             _this.container.value = _this.codeContainer.value;
@@ -5128,8 +5395,8 @@ var EditorApp = /** @class */ (function () {
             items[_i] = arguments[_i];
         }
         var maps = {};
-        for (var _a = 0, items_9 = items; _a < items_9.length; _a++) {
-            var item = items_9[_a];
+        for (var _a = 0, items_12 = items; _a < items_12.length; _a++) {
+            var item = items_12[_a];
             maps[item.name] = item;
         }
         this.box.find('.tool-item').each(function (_, ele) {
@@ -5160,19 +5427,32 @@ var EditorApp = /** @class */ (function () {
             this.box.addClass('editor-box');
         }
         this.box.html(this.renderBase());
-        this.target.hide();
-        this.box.append(this.target);
+        if (this.isMarkdown) {
+            this.target.addClass('editor-view');
+            this.box.find('.editor-area').append(this.target);
+        }
+        else {
+            this.target.hide();
+            this.box.append(this.target);
+        }
     };
     EditorApp.prototype.initByInput = function (element) {
         this.target = element;
         this.box = $('<div class="editor-box"></div>');
         this.box.html(this.renderBase());
-        element.hide();
         element.before(this.box);
-        this.box.append(element);
+        if (this.isMarkdown) {
+            element.addClass('editor-view').show();
+            this.box.find('.editor-area').append(element);
+        }
+        else {
+            element.hide();
+            this.box.append(element);
+        }
     };
     EditorApp.prototype.renderBase = function () {
-        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            <div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"editor-flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n        <div class=\"editor-code-container\"></div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>";
+        var inputBox = this.isMarkdown ? '' : "<div class=\"editor-view\" contentEditable=\"true\" spellcheck=\"false\"></div>";
+        return "<div class=\"editor-tool-bar\">\n        <div class=\"tool-bar-top\">\n            <div class=\"tool-left\"></div>\n            <div class=\"tool-right\"></div>\n        </div>\n        <div class=\"tool-bar-bottom\">\n        </div>\n    </div>\n    <div class=\"editor-body\">\n        <div class=\"editor-area\">\n            ".concat(inputBox, "\n        </div>\n        <div class=\"editor-flow-area\">\n            <div class=\"editor-flow-tool-bar\"></div>\n            <div class=\"editor-modal-area\"></div>\n        </div>\n        <div class=\"editor-code-container\"></div>\n    </div>\n    <div class=\"editor-footer\">0 words</div>");
     };
     EditorApp.prototype.renderToolIcon = function (item, target) {
         if (target) {
@@ -5221,11 +5501,12 @@ var EditorApp = /** @class */ (function () {
 }());
 ;
 (function ($) {
-    $.fn.editor = function (option) {
+    $.fn.editor = function (option, isMarkdown) {
+        if (isMarkdown === void 0) { isMarkdown = false; }
         if (this.data('editor')) {
             return;
         }
         this.data('editor', 1);
-        return new EditorApp(this[0], option);
+        return new EditorApp(this[0], option, isMarkdown);
     };
 })(jQuery);

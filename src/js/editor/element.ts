@@ -21,4 +21,6 @@ interface IEditorElement {
     blur(): void;
 
     paste(data: DataTransfer): void;
+
+    destroy(): void;
 }

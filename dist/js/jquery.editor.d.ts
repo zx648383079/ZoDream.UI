@@ -188,6 +188,7 @@ declare class CodeElement implements IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
+    destroy(): void;
     private init;
     private bindResize;
     private bindEvent;
@@ -296,6 +297,7 @@ declare class DivElement implements IEditorElement {
     insert(block: IEditorBlock, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
+    destroy(): void;
     private addHrExecute;
     private indentExecute;
     private outdentExecute;
@@ -346,6 +348,9 @@ declare class DivElement implements IEditorElement {
      * 把选中的作为子项包含进去
      */
     private includeSelected;
+    private toggleRangeTag;
+    private toggleRangeStyle;
+    private toggleBlockTag;
     /**
      * 切换父级的标签，例如 b strong
      */
@@ -376,7 +381,6 @@ declare class DivElement implements IEditorElement {
      * @returns
      */
     private replaceNode;
-    private isNotSelected;
     private selectNode;
     private focusAfter;
     private bindEvent;
@@ -393,6 +397,13 @@ declare class DivElement implements IEditorElement {
      * @param cb
      */
     private eachRange;
+    /**
+     * 遍历选中的所有元素，最顶端的元素，元素直接无交集
+     * @param range
+     * @param cb
+     * @returns
+     */
+    private eachTopRange;
     insertElement(node: Node, range: Range): void;
     private insertToElement;
     /**
@@ -472,16 +483,23 @@ declare class DivElement implements IEditorElement {
      * @returns
      */
     private nextNode;
+    private splitNodeRange;
     /**
-     * 拆分元素
+     * 获取元素在兄弟中排第几
      * @param node
-     * @param offset
      * @returns
      */
-    private splitNode;
+    private getNodeIndex;
+    private getNodeRange;
     private getNodeOffset;
     private getNodeBound;
     private isEndNode;
+    /**
+     * 未选中状态
+     * @param range
+     * @returns
+     */
+    private isEmptyRange;
     private isEmptyLine;
     /**
      * 判断父级是否只有这一个子节点
@@ -528,6 +546,7 @@ interface IEditorElement {
     focus(): void;
     blur(): void;
     paste(data: DataTransfer): void;
+    destroy(): void;
 }
 declare const EDITOR_EVENT_INPUT_KEYDOWN = "input.keydown";
 declare const EDITOR_EVENT_INPUT_BLUR = "input.blur";
@@ -568,6 +587,14 @@ interface IEditorListeners {
     [EDITOR_EVENT_EDITOR_DESTORY]: () => void;
 }
 type EditorUpdatedCallback<T = IEditorBlock> = (data: T) => void;
+declare class EventEmitter {
+    private listeners;
+    on<K extends keyof HTMLElementEventMap>(target: HTMLElement, type: K, listener: (this: HTMLTextAreaElement, ev: HTMLElementEventMap[K]) => any): EventEmitter;
+    on(target: HTMLElement, type: string, listener: EventListenerOrEventListenerObject): EventEmitter;
+    off(target: HTMLElement, type?: string): EventEmitter;
+    clear(): EventEmitter;
+    private offListener;
+}
 interface IPoint {
     x: number;
     y: number;
@@ -782,6 +809,7 @@ declare class TextareaElement implements IEditorElement {
     private element;
     private container;
     constructor(element: HTMLTextAreaElement, container: IEditorContainer);
+    private emitter;
     private isComposition;
     get selection(): IEditorRange;
     set selection(v: IEditorRange);
@@ -813,6 +841,7 @@ declare class TextareaElement implements IEditorElement {
     private moveCursor;
     private bindEvent;
     paste(data: DataTransfer): void;
+    destroy(): void;
     private isPasteFile;
     private pasteFile;
 }
@@ -838,10 +867,11 @@ declare class EditorHelper {
     private static haveFiles;
 }
 declare class EditorApp {
+    private isMarkdown;
     /**
     *
     */
-    constructor(element: HTMLDivElement | HTMLTextAreaElement, option?: IEditorOption);
+    constructor(element: HTMLDivElement | HTMLTextAreaElement, option?: IEditorOption, isMarkdown?: boolean);
     private option;
     container: EditorContainer;
     private codeContainer;
@@ -861,6 +891,12 @@ declare class EditorApp {
     tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent): void;
     tapFlowTool(item: IEditorTool, event: MouseEvent): void;
     insert(block: IEditorBlock | string): void;
+    /**
+     * 切换编辑器模式
+     * @param isMarkdown
+     * @returns
+     */
+    toggleEditor(isMarkdown?: boolean): void;
     private executeModule;
     private getOffsetPosition;
     private toggleFullScreen;

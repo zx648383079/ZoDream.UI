@@ -42,7 +42,6 @@ declare class HorizontalBar {
      */
     get minRang(): IWaterFallRang;
     get bottom(): number;
-    log(): void;
     leftHeight(rang: IWaterFallRang): number;
     rightHeight(rang: IWaterFallRang): number;
     push(rect: IBound): void;

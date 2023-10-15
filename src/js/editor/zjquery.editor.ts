@@ -4,7 +4,8 @@ class EditorApp {
     */
     constructor(
         element: HTMLDivElement|HTMLTextAreaElement,
-        option?: IEditorOption
+        option?: IEditorOption,
+        private isMarkdown = false
     ) {
         this.option = new EditorOptionManager();
         if (option) {
@@ -46,7 +47,7 @@ class EditorApp {
         this.codebox = this.box.find('.editor-code-container');
         const height = this.option.get('height');
         if (height) {
-            this.textbox.parent().css('height', /^\d+$/.test(height) ? height + 'px' : height);
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
         }
         this.container.ready(this.textbox[0] as any);
         this.codeContainer.ready(new CodeElement(this.codebox[0] as any, this.codeContainer));
@@ -93,10 +94,46 @@ class EditorApp {
         this.container.insert(block);
     }
 
+    /**
+     * 切换编辑器模式
+     * @param isMarkdown 
+     * @returns 
+     */
+    public toggleEditor(isMarkdown?: boolean) {
+        if (typeof isMarkdown === 'undefined') {
+            isMarkdown = !this.isMarkdown;
+        }
+        if (isMarkdown === this.isMarkdown) {
+            return;
+        }
+        this.container.emit(EDITOR_EVENT_CLOSE_TOOL).destroy();
+        this.isMarkdown = isMarkdown;
+        const container = this.box.find('.editor-area');
+        let textbox: JQuery;
+        if (!this.isMarkdown) {
+            this.codeContainer = new EditorContainer(this.option);
+            this.box.append(this.target);
+            textbox = $(`<div class="editor-view" contentEditable="true" spellcheck="false"></div>`);
+            this.target.removeClass('editor-view').hide();
+            container.append(textbox);
+        } else {
+            container.empty();
+            container.append(this.target);
+            this.target.addClass('editor-view').attr('spellcheck', 'false').show();
+            textbox = this.target;
+        }
+        this.textbox = textbox;
+        const height = this.option.get('height');
+        if (height) {
+            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+        }
+        this.container.ready(textbox[0] as any);
+    }
+
     private executeModule(item: IEditorTool, position: IPoint) {
         const isCode = this.box.hasClass('editor-code-mode');
         this.modalContianer.html('');
-        if (item.name === EDITOR_CODE_TOOL) {
+        if (item.name === EDITOR_CODE_TOOL && !this.isMarkdown) {
             this.box.toggleClass('editor-code-mode', !isCode);
             this.option.toolToggle(EDITOR_CODE_TOOL, !isCode);
             this.container.emit(EDITOR_EVENT_CLOSE_TOOL);
@@ -187,7 +224,9 @@ class EditorApp {
             this.resizer.close();
         }).on(EDITOR_EVENT_EDITOR_CHANGE, () => {
             this.footerBar.text(this.container.wordLength + ' words');
-            this.target.val(this.container.value).trigger('change');
+            if (!this.isMarkdown) {
+                this.target.val(this.container.value).trigger('change');
+            }
         });
         this.codeContainer.on(EDITOR_EVENT_EDITOR_CHANGE, () => {
             this.container.value = this.codeContainer.value;
@@ -304,20 +343,31 @@ class EditorApp {
             this.box.addClass('editor-box');
         }
         this.box.html(this.renderBase());
-        this.target.hide();
-        this.box.append(this.target);
+        if (this.isMarkdown) {
+            this.target.addClass('editor-view');
+            this.box.find('.editor-area').append(this.target);
+        } else {
+            this.target.hide();
+            this.box.append(this.target);
+        }
     }
 
     private initByInput(element: JQuery) {
         this.target = element as any;
         this.box = $('<div class="editor-box"></div>');
         this.box.html(this.renderBase());
-        element.hide();
         element.before(this.box);
-        this.box.append(element);
+        if (this.isMarkdown) {
+            element.addClass('editor-view').show();
+            this.box.find('.editor-area').append(element);
+        } else {
+            element.hide();
+            this.box.append(element);
+        }
     }
 
     private renderBase() {
+        const inputBox = this.isMarkdown ? '' : `<div class="editor-view" contentEditable="true" spellcheck="false"></div>`;
         return `<div class="editor-tool-bar">
         <div class="tool-bar-top">
             <div class="tool-left"></div>
@@ -328,7 +378,7 @@ class EditorApp {
     </div>
     <div class="editor-body">
         <div class="editor-area">
-            <div class="editor-view" contentEditable="true" spellcheck="false"></div>
+            ${inputBox}
         </div>
         <div class="editor-flow-area">
             <div class="editor-flow-tool-bar"></div>
@@ -391,11 +441,11 @@ class EditorApp {
 
 }
 ;(function($: any) {
-    $.fn.editor = function(option?: IEditorOption) {
+    $.fn.editor = function(option?: IEditorOption, isMarkdown = false) {
         if (this.data('editor')) {
             return;
         }
         this.data('editor', 1);
-        return new EditorApp(this[0], option);
+        return new EditorApp(this[0], option, isMarkdown);
     };
 })(jQuery);

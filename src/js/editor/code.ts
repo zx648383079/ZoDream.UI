@@ -90,6 +90,10 @@ class CodeElement implements IEditorElement {
         return this.bodyPanel.blur();
     }
 
+    public destroy(): void {
+
+    }
+
     private init() {
         this.linePanel = document.createElement('div');
         this.linePanel.className = 'editor-line-numbers';

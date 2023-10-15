@@ -9,6 +9,7 @@ class TextareaElement implements IEditorElement {
         this.bindEvent();
     }
 
+    private emitter = new EventEmitter();
     private isComposition = false;
 
     public get selection(): IEditorRange {
@@ -220,31 +221,31 @@ class TextareaElement implements IEditorElement {
     }
 
     private bindEvent() {
-        this.element.addEventListener('keydown', e => {
+        this.emitter.on(this.element, 'keydown', e => {
             this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
-        });
-        this.element.addEventListener('keyup', e => {
+        })
+        .on(this.element, 'keyup', e => {
             if (this.isComposition) {
                 return;
             }
             this.container.saveSelection();
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
-        });
-        this.element.addEventListener('blur', () => {
+        })
+        .on(this.element, 'blur', () => {
             this.container.emit(EDITOR_EVENT_INPUT_BLUR);
-        });
-        this.element.addEventListener('paste', e => {
+        })
+        .on(this.element, 'paste', e => {
             e.preventDefault();
             this.paste((e.clipboardData || (window as any).clipboardData));
-        });
-        this.element.addEventListener('mouseup', () => {
+        })
+        .on(this.element, 'mouseup', () => {
             this.container.saveSelection();
             this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
-        });
-        this.element.addEventListener('compositionstart', () => {
+        })
+        .on(this.element, 'compositionstart', () => {
             this.isComposition = true;
-        });
-        this.element.addEventListener('compositionend', () => {
+        })
+        .on(this.element, 'compositionend', () => {
             this.isComposition = false;
             this.container.emit(EDITOR_EVENT_SELECTION_CHANGE);
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
@@ -261,6 +262,10 @@ class TextareaElement implements IEditorElement {
             return;
         }
         this.insert({type: EditorBlockType.AddText, value});
+    }
+
+    public destroy(): void {
+        this.emitter.clear();
     }
 
     private isPasteFile(data: DataTransfer): boolean {

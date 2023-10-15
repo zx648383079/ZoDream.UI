@@ -207,6 +207,7 @@ class EditorContainer implements IEditorContainer {
     }
 
     public destroy(): void {
+        this.element.destroy();
         this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     }

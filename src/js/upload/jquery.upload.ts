@@ -145,11 +145,14 @@ class Upload extends Eve {
             processData: false,    //不可缺
             success: function(data: any) {
                 data = _this.trigger('after', data, _this.currentElement);
-                if (data == false) {
+                if (data === false) {
                     console.log('after upload is false');
                     return;
                 }
                 cb && cb(data);
+            },
+            error: function(e: any) {
+                _this.trigger('error', e, _this.currentElement);
             }
         };
         if (this.options.timeout) {
@@ -370,7 +373,8 @@ interface UploadOption {
     ondealfiles?: (file: FileList) => FormData | void,
     onbefore?: (data: FormData, currentElement: JQuery) => any,  //验证要上传的文件
     onafter?: (data: any, currentElement: JQuery) => any,   //验证上传返回数据
-    onsuccess?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回掉
+    onsuccess?: (data: any, currentElement: JQuery) => boolean ,     //成功添加回调
+    onerror?: (error: any, currentElement: JQuery) => boolean ,     //上传失败添加回调
     dynamic?: boolean, //是否动态绑定上传时间
     getElement?: (tag: string, currentElement: JQuery) => JQuery,   //获取容器的方法
     onprogress?: (data: any) => void, // 上传进度

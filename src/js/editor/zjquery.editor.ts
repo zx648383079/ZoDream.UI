@@ -45,10 +45,7 @@ class EditorApp {
         this.renderToolbar(this.option.rightToolbar, this.box.find<HTMLDivElement>('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
         this.codebox = this.box.find('.editor-code-container');
-        const height = this.option.get('height');
-        if (height) {
-            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
-        }
+        this.resetSize();
         this.container.ready(this.textbox[0] as any);
         this.codeContainer.ready(new CodeElement(this.codebox[0] as any, this.codeContainer));
         this.subToolbar = this.box.find<HTMLDivElement>('.editor-tool-bar .tool-bar-bottom');
@@ -58,6 +55,7 @@ class EditorApp {
         this.bindEvent();
         this.resizer.ready(this.modalContianer.parent());
         this.container.value = this.target.val() as any;
+        this.box.data('_instance', this);
     }
 
     public tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent) {
@@ -94,6 +92,10 @@ class EditorApp {
         this.container.insert(block);
     }
 
+    public toggle(display?: boolean) {
+        this.box.toggle(display);
+    }
+
     /**
      * 切换编辑器模式
      * @param isMarkdown 
@@ -123,11 +125,18 @@ class EditorApp {
             textbox = this.target;
         }
         this.textbox = textbox;
+        this.resetSize();
+        this.container.ready(textbox[0] as any);
+    }
+
+    private resetSize() {
         const height = this.option.get('height');
         if (height) {
-            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+            this.textbox.css({
+                height: /^\d+$/.test(height) ? height + 'px' : height,
+                overflow: 'auto',
+            });
         }
-        this.container.ready(textbox[0] as any);
     }
 
     private executeModule(item: IEditorTool, position: IPoint) {

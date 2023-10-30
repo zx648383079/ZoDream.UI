@@ -891,12 +891,14 @@ declare class EditorApp {
     tapTool(item: IEditorTool, isRight: boolean, event: MouseEvent): void;
     tapFlowTool(item: IEditorTool, event: MouseEvent): void;
     insert(block: IEditorBlock | string): void;
+    toggle(display?: boolean): void;
     /**
      * 切换编辑器模式
      * @param isMarkdown
      * @returns
      */
     toggleEditor(isMarkdown?: boolean): void;
+    private resetSize;
     private executeModule;
     private getOffsetPosition;
     private toggleFullScreen;

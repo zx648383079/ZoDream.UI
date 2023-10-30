@@ -5139,10 +5139,7 @@ var EditorApp = /** @class */ (function () {
         this.renderToolbar(this.option.rightToolbar, this.box.find('.tool-bar-top .tool-right'));
         this.textbox = this.box.find('.editor-view');
         this.codebox = this.box.find('.editor-code-container');
-        var height = this.option.get('height');
-        if (height) {
-            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
-        }
+        this.resetSize();
         this.container.ready(this.textbox[0]);
         this.codeContainer.ready(new CodeElement(this.codebox[0], this.codeContainer));
         this.subToolbar = this.box.find('.editor-tool-bar .tool-bar-bottom');
@@ -5152,6 +5149,7 @@ var EditorApp = /** @class */ (function () {
         this.bindEvent();
         this.resizer.ready(this.modalContianer.parent());
         this.container.value = this.target.val();
+        this.box.data('_instance', this);
     };
     EditorApp.prototype.tapTool = function (item, isRight, event) {
         this.container.focus();
@@ -5184,6 +5182,9 @@ var EditorApp = /** @class */ (function () {
     EditorApp.prototype.insert = function (block) {
         this.container.insert(block);
     };
+    EditorApp.prototype.toggle = function (display) {
+        this.box.toggle(display);
+    };
     /**
      * 切换编辑器模式
      * @param isMarkdown
@@ -5214,11 +5215,17 @@ var EditorApp = /** @class */ (function () {
             textbox = this.target;
         }
         this.textbox = textbox;
+        this.resetSize();
+        this.container.ready(textbox[0]);
+    };
+    EditorApp.prototype.resetSize = function () {
         var height = this.option.get('height');
         if (height) {
-            this.textbox.css('height', /^\d+$/.test(height) ? height + 'px' : height);
+            this.textbox.css({
+                height: /^\d+$/.test(height) ? height + 'px' : height,
+                overflow: 'auto',
+            });
         }
-        this.container.ready(textbox[0]);
     };
     EditorApp.prototype.executeModule = function (item, position) {
         var _this = this;

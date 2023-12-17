@@ -1,0 +1,51 @@
+@mixin form-validation-state($state, $color) {
+    .#{$state}-tooltip {
+        display: none;
+        color: $color;
+        max-width: 100%;
+        line-height: $lineHeight;
+    }
+
+    &.is-#{$state} {
+        .form-control {
+            border-color: $color;
+        }
+        .#{$state}-tooltip {
+            display: block;
+        }
+    }
+}
+
+.form-control {
+    padding: $inputPadding;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: $inputLineHeight;
+    appearance: none;
+    border-radius: $radius;
+    border-width: 1px;
+    border-color: var(--#{$prefix}-input-border);
+    background-color: var(--#{$prefix}-input);
+    color: var(--#{$prefix}-input-text);
+    &:focus {
+        border-color: var(--#{$prefix}-input-hover-border);
+        outline: 0;
+        box-shadow: 0 0 0 .25rem var(--#{$prefix}-input-hover-shadow);
+    }
+}
+
+textarea {
+    &.form-control {
+        min-height: $lineHeight;
+    }
+}
+
+.input-group {
+    .tooltip {
+        color: var(--#{$prefix}-secondary-text);
+        font-size: 0.8rem;
+        padding: 0 0 0.625rem 0.625rem;
+    }
+    @include form-validation-state(invalid, $invalid);
+    @include form-validation-state(valid, $valid);
+}

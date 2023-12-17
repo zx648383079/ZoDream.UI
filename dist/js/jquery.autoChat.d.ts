@@ -1,9 +1,9 @@
 /// <reference types="jquery" />
 /// <reference types="jquery" />
 declare enum ChatStatus {
-    STOP = 0,
-    PAUSE = 1,
-    RUNNING = 2,
+    STOP = 0,//停止
+    PAUSE = 1,//暂停
+    RUNNING = 2,//运行中
     COMPLETE = 3
 }
 declare enum ChatDirection {

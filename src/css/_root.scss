@@ -1,0 +1,78 @@
+$isFullyTheme: true !default;
+@if $isFullyTheme {
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --#{$prefix}-primary: #{$dark-primary};
+            --#{$prefix}-primary-hover: #{tint-color($dark-primary, $colorHoverOffset)};
+            --#{$prefix}-primary-active: #{tint-color($dark-primary, $colorActiveOffset)};
+            --#{$prefix}-primary-text: #{$dark-primaryText};
+            
+            --#{$prefix}-body: #{$dark-body};
+            --#{$prefix}-body-text: #{$dark-bodyText};
+            --#{$prefix}-panel: #{$dark-panel};
+            --#{$prefix}-panel-text: #{$dark-bodyText};
+    
+            --#{$prefix}-dialog: #{$dark-dialog};
+            --#{$prefix}-dialog-text: #{$dark-dialogText};
+            --#{$prefix}-dialog-mask: #{$dark-dialogMask};
+            --#{$prefix}-shadow: #{$dark-shadow};
+    
+            --#{$prefix}-secondary: #{$dark-secondary};
+            --#{$prefix}-secondary-text: #{$dark-secondaryText};
+
+            --#{$prefix}-gray: #{$dark-gray};
+            --#{$prefix}-gray-text: #{$dark-grayText};
+    
+            --#{$prefix}-link-text: #{$dark-linkText};
+            --#{$prefix}-link-hover-text: #{$dark-linkHoverText};
+    
+            
+            --#{$prefix}-input: #{$dark-input};
+            --#{$prefix}-input-text: #{$dark-inputText};
+    
+            --#{$prefix}-input-border: #{$dark-inputBorder};
+            --#{$prefix}-input-hover-border: #{$dark-inputHoverBorder};
+            --#{$prefix}-input-hover-shadow: #{$dark-inputHoverShadow};
+        }
+    }
+}
+@media (prefers-color-scheme: light) {
+    :root {
+        --#{$prefix}-primary: #{$primary};
+        --#{$prefix}-primary-hover: #{shade-color($primary, $colorHoverOffset)};
+        --#{$prefix}-primary-active: #{shade-color($primary, $colorActiveOffset)};
+        --#{$prefix}-primary-text: #{$primaryText};
+        @if $isFullyTheme {
+            --#{$prefix}-body: #{$body};
+            --#{$prefix}-body-text: #{$bodyText};
+            --#{$prefix}-panel: #{$panel};
+            --#{$prefix}-panel-text: #{$bodyText};
+    
+
+
+            --#{$prefix}-dialog: #{$dialog};
+            --#{$prefix}-dialog-text: #{$dialogText};
+            --#{$prefix}-dialog-mask: #{$dialogMask};
+
+            --#{$prefix}-gray: #{$gray};
+            --#{$prefix}-gray-text: #{$grayText};
+    
+            --#{$prefix}-secondary: #{$secondary};
+            --#{$prefix}-secondary-text: #{$secondaryText};
+    
+            --#{$prefix}-shadow: #{$shadow};
+    
+            --#{$prefix}-link-text: #{$linkText};
+            --#{$prefix}-link-hover-text: #{$linkHoverText};
+    
+            
+            --#{$prefix}-input: #{$input};
+            --#{$prefix}-input-text: #{$inputText};
+    
+            --#{$prefix}-input-border: #{$inputBorder};
+            --#{$prefix}-input-hover-border: #{$inputHoverBorder};
+            --#{$prefix}-input-hover-shadow: #{$inputHoverShadow};
+
+        }
+    }
+}

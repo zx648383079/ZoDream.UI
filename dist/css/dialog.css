@@ -530,57 +530,53 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 998;
+  background: var(--zre--dialog-mask);
+  z-index: 1190;
   display: none;
 }
 .dialog-bg.dialog-bg-private {
   position: absolute;
-  z-index: 988;
+  z-index: 900;
   display: block;
 }
 
 .dialog {
   position: fixed;
-  z-index: 999;
+  z-index: 1200;
 }
 .dialog.dialog-private {
   position: absolute;
-  z-index: 989;
+  z-index: 1199;
+}
+.dialog.dialog-tip, .dialog.dialog-pop, .dialog.dialog-message {
+  background: var(--zre--primary);
+  color: var(--zre--primary-text);
+  box-shadow: 0 0 1.25rem var(--zre--shadow);
+  min-width: 6.25rem;
+  transition: top 1s;
+  -webkit-transition: top 1s;
+  -moz-transition: top 1s;
+  -ms-transition: top 1s;
+  -o-transition: top 1s;
 }
 .dialog.dialog-tip, .dialog.dialog-pop {
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
   max-width: 66.66%;
-  min-width: 100px;
-  padding: 5px 10px;
+  min-width: 6.25rem;
+  padding: 0.3125rem 0.625rem;
   text-align: center;
   animation: dialog-tip 1s both;
   -webkit-animation: dialog-tip 1s both;
   -moz-animation: dialog-tip 1s both;
   -o-animation: dialog-tip 1s both;
-  transition: top 1s;
-  -webkit-transition: top 1s;
-  -moz-transition: top 1s;
-  -ms-transition: top 1s;
-  -o-transition: top 1s;
 }
 .dialog.dialog-message {
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
   max-width: 33.33%;
-  min-width: 100px;
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
   right: 0;
   animation: dialog-message 0.5s;
   -webkit-animation: dialog-message 0.5s;
   -moz-animation: dialog-message 0.5s;
   -o-animation: dialog-message 0.5s;
-  transition: top 1s;
-  -webkit-transition: top 1s;
-  -moz-transition: top 1s;
-  -ms-transition: top 1s;
-  -o-transition: top 1s;
 }
 .dialog.dialog-pop {
   bottom: auto;
@@ -590,36 +586,38 @@
   content: "";
   width: 0;
   height: 0;
-  border: transparent 20px solid;
+  border: transparent 1.25rem solid;
 }
 .dialog.dialog-pop.dialog-pop-top:before, .dialog.dialog-pop.dialog-pop-leftTop:before, .dialog.dialog-pop.dialog-pop-center:before {
-  bottom: -40px;
+  bottom: -2.5rem;
   left: 50%;
-  margin-left: -20px;
+  margin-left: -1.25rem;
   border-top-color: rgba(0, 0, 0, 0.6);
 }
 .dialog.dialog-pop.dialog-pop-left:before, .dialog.dialog-pop.dialog-pop-leftBottom:before {
-  right: -40px;
-  margin-top: -20px;
+  right: -2.5rem;
+  margin-top: -1.25rem;
   top: 50%;
   border-left-color: rgba(0, 0, 0, 0.6);
 }
 .dialog.dialog-pop.dialog-pop-bottom:before, .dialog.dialog-pop.dialog-pop-rightBottom:before {
-  top: -40px;
+  top: -2.5rem;
   left: 50%;
-  margin-left: -20px;
+  margin-left: -1.25rem;
   border-bottom-color: rgba(0, 0, 0, 0.6);
 }
 .dialog.dialog-pop.dialog-pop-right:before, .dialog.dialog-pop.dialog-pop-rightTop:before {
-  left: -40px;
-  margin-top: -20px;
+  left: -2.5rem;
+  margin-top: -1.25rem;
   top: 50%;
   border-right-color: rgba(0, 0, 0, 0.6);
 }
 .dialog.dialog-page, .dialog.dialog-content, .dialog.dialog-box, .dialog.dialog-form, .dialog.dialog-disk {
-  background: #fff;
-  min-width: 260px;
+  background: var(--zre--dialog);
+  color: var(--zre--dialog-text);
+  min-width: 16.25rem;
   display: none;
+  box-shadow: 0 0 1.25rem var(--zre--shadow);
   animation: dialog-box 0.5s;
   -webkit-animation: dialog-box 0.5s;
   -moz-animation: dialog-box 0.5s;
@@ -627,12 +625,12 @@
 }
 .dialog.dialog-page .dialog-header, .dialog.dialog-content .dialog-header, .dialog.dialog-box .dialog-header, .dialog.dialog-form .dialog-header, .dialog.dialog-disk .dialog-header {
   position: relative;
-  height: 30px;
-  line-height: 30px;
+  background: var(--zre--primary);
+  color: var(--zre--primary-text);
+  height: 40px;
+  line-height: 1.875rem;
   text-align: center;
-  background: #fff;
-  padding: 5px 10px;
-  border-bottom: 1px solid #ccc;
+  padding: 0.3125rem 0.625rem;
 }
 .dialog.dialog-page .dialog-header .dialog-title, .dialog.dialog-content .dialog-header .dialog-title, .dialog.dialog-box .dialog-header .dialog-title, .dialog.dialog-form .dialog-header .dialog-title, .dialog.dialog-disk .dialog-header .dialog-title {
   cursor: move;
@@ -643,20 +641,20 @@
   border: none;
   position: absolute;
   top: 0;
-  color: #fff;
-  line-height: 30px;
+  color: var(--zre--primary-text);
+  line-height: 1.875rem;
 }
 .dialog.dialog-page .dialog-header .fa-arrow-left, .dialog.dialog-content .dialog-header .fa-arrow-left, .dialog.dialog-box .dialog-header .fa-arrow-left, .dialog.dialog-form .dialog-header .fa-arrow-left, .dialog.dialog-disk .dialog-header .fa-arrow-left {
   left: 0;
-  background: #fff;
-  color: #ccc;
-  top: 5px;
+  background-color: var(--zre--primary);
+  color: var(--zre--primary-text);
+  top: 0.3125rem;
 }
 .dialog.dialog-page .dialog-header .dialog-close, .dialog.dialog-content .dialog-header .dialog-close, .dialog.dialog-box .dialog-header .dialog-close, .dialog.dialog-form .dialog-header .dialog-close, .dialog.dialog-disk .dialog-header .dialog-close {
   right: 0;
-  background: #fff;
-  color: #ccc;
-  top: 6px;
+  background: var(--zre--primary);
+  color: var(--zre--primary-text);
+  top: 0.375rem;
 }
 .dialog.dialog-page .dialog-header .dialog-close:hover, .dialog.dialog-content .dialog-header .dialog-close:hover, .dialog.dialog-box .dialog-header .dialog-close:hover, .dialog.dialog-form .dialog-header .dialog-close:hover, .dialog.dialog-disk .dialog-header .dialog-close:hover {
   transform: rotateZ(180deg);
@@ -666,46 +664,47 @@
   -o-transform: rotateZ(180deg);
 }
 .dialog.dialog-page .dialog-body, .dialog.dialog-content .dialog-body, .dialog.dialog-box .dialog-body, .dialog.dialog-form .dialog-body, .dialog.dialog-disk .dialog-body {
-  min-height: 100px;
+  min-height: 6.25rem;
   overflow: auto;
-  padding: 10px;
+  padding: 0.625rem;
 }
 .dialog.dialog-page .dialog-footer button, .dialog.dialog-content .dialog-footer button, .dialog.dialog-box .dialog-footer button, .dialog.dialog-form .dialog-footer button, .dialog.dialog-disk .dialog-footer button {
   width: 50%;
   border: none;
-  line-height: 30px;
-  color: #fff;
+  line-height: 1.875rem;
+  background: var(--zre--primary);
+  color: var(--zre--primary-text);
   padding: 0;
   margin: 0;
 }
 .dialog.dialog-page .dialog-footer button:focus, .dialog.dialog-content .dialog-footer button:focus, .dialog.dialog-box .dialog-footer button:focus, .dialog.dialog-form .dialog-footer button:focus, .dialog.dialog-disk .dialog-footer button:focus {
   outline: -webkit-focus-ring-color auto 0px;
 }
-.dialog.dialog-page .dialog-footer .dialog-yes, .dialog.dialog-content .dialog-footer .dialog-yes, .dialog.dialog-box .dialog-footer .dialog-yes, .dialog.dialog-form .dialog-footer .dialog-yes, .dialog.dialog-disk .dialog-footer .dialog-yes {
+.dialog.dialog-page .dialog-footer .dialog-yes,
+.dialog.dialog-page .dialog-footer .dialog-close, .dialog.dialog-content .dialog-footer .dialog-yes,
+.dialog.dialog-content .dialog-footer .dialog-close, .dialog.dialog-box .dialog-footer .dialog-yes,
+.dialog.dialog-box .dialog-footer .dialog-close, .dialog.dialog-form .dialog-footer .dialog-yes,
+.dialog.dialog-form .dialog-footer .dialog-close, .dialog.dialog-disk .dialog-footer .dialog-yes,
+.dialog.dialog-disk .dialog-footer .dialog-close {
+  border: none;
+  line-height: 1.875rem;
   width: 30%;
-  background: #fff;
-  padding: 3px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 5px;
-  line-height: 30px;
-  color: #333;
+}
+.dialog.dialog-page .dialog-footer .dialog-yes, .dialog.dialog-content .dialog-footer .dialog-yes, .dialog.dialog-box .dialog-footer .dialog-yes, .dialog.dialog-form .dialog-footer .dialog-yes, .dialog.dialog-disk .dialog-footer .dialog-yes {
+  background: var(--zre--primary);
+  color: var(--zre--primary-text);
+  margin-right: 0.3125rem;
 }
 .dialog.dialog-page .dialog-footer .dialog-close, .dialog.dialog-content .dialog-footer .dialog-close, .dialog.dialog-box .dialog-footer .dialog-close, .dialog.dialog-form .dialog-footer .dialog-close, .dialog.dialog-disk .dialog-footer .dialog-close {
-  width: 30%;
-  background: #337ab7;
-  color: #fff;
-  padding: 3px;
-  border: 1px solid #337ab7;
-  border-radius: 5px;
-  line-height: 30px;
+  background: var(--zre--gray);
+  color: var(--zre--gray-text);
 }
 .dialog.dialog-box .dialog-header .dialog-title, .dialog.dialog-form .dialog-header .dialog-title, .dialog.dialog-content .dialog-header .dialog-title {
   text-align: left;
 }
 .dialog.dialog-box .dialog-footer, .dialog.dialog-form .dialog-footer, .dialog.dialog-content .dialog-footer {
-  border-top: 1px solid #ccc;
-  padding: 10px;
+  border-top: 1px solid var(--zre--primary);
+  padding: 2px;
   text-align: right;
 }
 .dialog.dialog-content {
@@ -723,15 +722,13 @@
   bottom: 0;
 }
 .dialog.dialog-page .dialog-header .dialog-close {
-  background: #fff;
-  color: #ccc;
   top: 6px;
 }
 .dialog.dialog-page .dialog-body {
   position: absolute;
-  bottom: 60px;
+  bottom: 2.5rem;
   width: 100%;
-  top: 30px;
+  top: 2.5rem;
 }
 .dialog.dialog-page .dialog-footer {
   position: absolute;
@@ -741,22 +738,22 @@
 }
 .dialog.dialog-form .dialog-body input,
 .dialog.dialog-form .dialog-body textarea {
-  font-size: 20px;
+  font-size: 1.25rem;
   width: 100%;
   box-sizing: border-box;
   border: none;
-  border-bottom: 1px solid #337ab7;
+  border-bottom: 1px solid #333;
   padding: 5px;
 }
 .dialog.dialog-form .dialog-body label {
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 .dialog.dialog-form .dialog-body select {
-  font-size: 20px;
+  font-size: 1.25rem;
   width: 100px;
   float: right;
   border: none;
-  border-bottom: 1px solid #337ab7;
+  border-bottom: 1px solid #333;
   padding: 5px;
 }
 .dialog.dialog-image {
@@ -770,7 +767,7 @@
 .dialog.dialog-image .dialog-next,
 .dialog.dialog-image .dialog-close {
   position: absolute;
-  font-size: 30px;
+  font-size: 1.875rem;
   display: none;
 }
 .dialog.dialog-image .dialog-previous,
@@ -791,9 +788,9 @@
   color: #fff;
   background-color: rgba(204, 204, 204, 0.4);
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  line-height: 50px;
+  width: 3.125rem;
+  height: 3.125rem;
+  line-height: 3.125rem;
   text-align: center;
   cursor: pointer;
 }
@@ -803,12 +800,12 @@
   display: block;
 }
 .dialog.dialog-disk .dialog-body {
-  min-width: 300px;
-  min-height: 500px;
+  min-width: 18.75rem;
+  min-height: 31.25rem;
   position: relative;
 }
 .dialog.dialog-disk .dialog-body .dialog-catalog {
-  width: 100px;
+  width: 6.25rem;
   display: inline-block;
   top: 0;
   bottom: 0;
@@ -849,19 +846,14 @@
 .dialog.dialog-disk .dialog-body .dialog-content .folder-item,
 .dialog.dialog-disk .dialog-body .dialog-content .file-item {
   display: inline-block;
-  width: 100px;
+  width: 6.25rem;
   text-align: center;
-  padding: 20px 5px;
+  padding: 1.25rem 0.3125rem;
   box-sizing: border-box;
 }
 .dialog.dialog-disk .dialog-body .dialog-content .folder-item .fa,
 .dialog.dialog-disk .dialog-body .dialog-content .file-item .fa {
-  font-size: 40px;
-}
-.dialog.dialog-disk .dialog-body .dialog-content .folder-item img,
-.dialog.dialog-disk .dialog-body .dialog-content .file-item img {
-  width: 100%;
-  height: 100%;
+  font-size: 2.5rem;
 }
 .dialog.dialog-disk .dialog-body .dialog-content .folder-item.active, .dialog.dialog-disk .dialog-body .dialog-content .folder-item:hover,
 .dialog.dialog-disk .dialog-body .dialog-content .file-item.active,
@@ -871,14 +863,6 @@
 }
 .dialog.dialog-disk .dialog-footer {
   text-align: center;
-}
-.dialog.dialog-disk.no-catalog .dialog-catalog {
-  display: none;
-}
-.dialog.dialog-disk.no-catalog .dialog-content {
-  display: block;
-  position: static;
-  left: 0;
 }
 .dialog.dialog-closing {
   animation: dialog-closing 0.5s;
@@ -1020,483 +1004,5 @@
     -ms-transform: scale(0.2);
     -o-transform: scale(0.2);
   }
-}
-.dialog-menu {
-  position: fixed;
-  width: 150px;
-  display: none;
-  z-index: 910;
-}
-.dialog-menu ul {
-  margin: 0;
-  padding: 0;
-  background: #fff;
-}
-.dialog-menu ul li {
-  list-style: none;
-  line-height: 30px;
-  position: relative;
-  width: 150px;
-  cursor: pointer;
-}
-.dialog-menu ul li span {
-  display: block;
-  padding: 0 8px;
-}
-.dialog-menu ul li span i:nth-child(2) {
-  position: absolute;
-  right: 10px;
-  line-height: 30px;
-}
-.dialog-menu ul li ul {
-  position: absolute;
-  top: 0;
-  left: 150px;
-  display: none;
-}
-.dialog-menu ul li:hover > span {
-  background: rgba(0, 0, 0, 0.1);
-}
-.dialog-menu ul li:hover > ul {
-  display: block;
-}
-
-.dialog-chat .dialog-box {
-  background: #fff;
-  position: absolute;
-  display: none;
-}
-.dialog-chat .dialog-box .dialog-header {
-  position: relative;
-}
-.dialog-chat .dialog-box .dialog-header .dialog-action {
-  position: absolute;
-  display: inline-block;
-  top: 0;
-  right: 0;
-  font-size: 20px;
-}
-.dialog-chat .dialog-box .dialog-header .dialog-action .fa {
-  padding: 4px;
-}
-.dialog-chat .dialog-box .dialog-header .dialog-title {
-  text-align: center;
-  line-height: 30px;
-}
-.dialog-chat .dialog-box .dialog-tab .dialog-tab-header {
-  line-height: 30px;
-}
-.dialog-chat .dialog-box .dialog-tab .dialog-tab-header .dialog-tab-item {
-  display: inline-block;
-  padding: 0 8px;
-}
-.dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item {
-  display: none;
-}
-.dialog-chat .dialog-box .dialog-tab .dialog-tab-box .dialog-tab-item.active {
-  display: block;
-}
-.dialog-chat .dialog-box .dialog-panel .dialog-panel-header {
-  cursor: pointer;
-}
-.dialog-chat .dialog-box .dialog-panel .dialog-panel-header .dialog-panel-icon {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-}
-.dialog-chat .dialog-box .dialog-panel .dialog-panel-header .dialog-panel-icon:before {
-  content: "\f054";
-}
-.dialog-chat .dialog-box .dialog-panel .dialog-panel-box {
-  display: none;
-}
-.dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-header .dialog-panel-icon:before {
-  content: "\f078";
-}
-.dialog-chat .dialog-box .dialog-panel.expanded .dialog-panel-box {
-  display: block;
-}
-.dialog-chat .dialog-chat-box {
-  width: 200px;
-}
-.dialog-chat .dialog-chat-box .dialog-info {
-  display: inline-block;
-  padding: 20px 8px 15px;
-}
-.dialog-chat .dialog-chat-box .dialog-info .dialog-info-avatar {
-  display: inline-block;
-}
-.dialog-chat .dialog-chat-box .dialog-info .dialog-info-avatar img {
-  width: 60px;
-  border-radius: 50%;
-}
-.dialog-chat .dialog-chat-box .dialog-info .dialog-info-name {
-  display: inline-block;
-}
-.dialog-chat .dialog-chat-box .dialog-info .dialog-info-name * {
-  margin: 0;
-}
-.dialog-chat .dialog-chat-box .dialog-info .dialog-message-count {
-  display: none;
-}
-.dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header {
-  border-bottom: 1px solid;
-  border-top: 1px solid;
-}
-.dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item {
-  width: 33%;
-  box-sizing: border-box;
-  text-align: center;
-}
-.dialog-chat .dialog-chat-box .dialog-tab .dialog-tab-header .dialog-tab-item.active {
-  color: #f00;
-}
-.dialog-chat .dialog-chat-box .dialog-user {
-  position: relative;
-  padding: 8px;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-avatar {
-  display: inline-block;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-avatar img {
-  width: 60px;
-  border-radius: 50%;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-info {
-  display: inline-block;
-  vertical-align: top;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-info * {
-  margin: 0;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-info .time {
-  position: absolute;
-  right: 0;
-}
-.dialog-chat .dialog-chat-box .dialog-user .dialog-user-info .count {
-  position: absolute;
-  right: 0;
-  top: 0;
-  color: #fff;
-  display: block;
-  width: 15px;
-  font-size: 12px;
-  background: #f00;
-  border-radius: 50%;
-  text-align: center;
-}
-.dialog-chat .dialog-chat-room {
-  width: 500px;
-}
-.dialog-chat .dialog-chat-room .dialog-header {
-  border-bottom: 1px solid;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box {
-  height: 400px;
-  overflow-y: auto;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-  margin-right: 5px;
-  background: #f5f5f5;
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-  border-radius: 0px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar-track {
-  border-radius: 0px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar-thumb {
-  border-radius: 0px;
-  background: rgba(0, 0, 0, 0.5);
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar-thumb:active {
-  background: rgba(0, 0, 0, 0.8);
-}
-.dialog-chat .dialog-chat-room .dialog-message-box::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(0, 0, 0, 0.4);
-}
-.dialog-chat .dialog-chat-room .dialog-message-box * {
-  margin: 0;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-more,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-line,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-tip {
-  text-align: center;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right {
-  position: relative;
-  margin: 8px 0;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left:after,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right:after {
-  content: " ";
-  clear: both;
-  display: table;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .avatar,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .avatar {
-  position: absolute;
-  top: 0;
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .content,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .content {
-  max-width: 66%;
-  background: rgba(0, 255, 255, 0.16);
-  line-height: 40px;
-  padding: 0 10px;
-  word-break: break-word;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .content::before,
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .content::before {
-  content: "";
-  position: absolute;
-  z-index: 10;
-  border: 6px solid transparent;
-  top: 15px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .avatar {
-  left: 0;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .content {
-  margin-left: 52px;
-  float: left;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-left .content::before {
-  left: 40px;
-  border-right-color: rgba(0, 255, 255, 0.16);
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .avatar {
-  right: 0;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .content {
-  float: right;
-  margin-right: 52px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-box .message-right .content::before {
-  right: 40px;
-  border-left-color: rgba(0, 255, 255, 0.16);
-}
-.dialog-chat .dialog-chat-room .dialog-message-tools {
-  font-size: 20px;
-  line-height: 30px;
-  border-bottom: 1px solid;
-  border-top: 1px solid;
-}
-.dialog-chat .dialog-chat-room .dialog-message-tools .fa {
-  width: 30px;
-  text-align: center;
-}
-.dialog-chat .dialog-chat-room .dialog-message-text {
-  height: 80px;
-  overflow-y: auto;
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-  margin-right: 5px;
-  background: #f5f5f5;
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-  border-radius: 0px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar-track {
-  border-radius: 0px;
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar-thumb {
-  border-radius: 0px;
-  background: rgba(0, 0, 0, 0.5);
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar-thumb:active {
-  background: rgba(0, 0, 0, 0.8);
-}
-.dialog-chat .dialog-chat-room .dialog-message-text::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(0, 0, 0, 0.4);
-}
-.dialog-chat .dialog-chat-room .dailog-message-action {
-  text-align: right;
-}
-.dialog-chat .dialog-chat-room .dailog-message-action button {
-  width: 100px;
-  line-height: 30px;
-}
-.dialog-chat .dialog-search-box {
-  width: 500px;
-}
-.dialog-chat .dialog-search-box .dialog-tab-header {
-  line-height: 50px;
-  text-align: center;
-}
-.dialog-chat .dialog-search-box .dialog-tab-header .dialog-tab-item {
-  display: inline-block;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
-.dialog-chat .dialog-search-box .dialog-tab-header .dialog-tab-item.active {
-  border-bottom: 5px solid;
-}
-.dialog-chat .dialog-search-box .dialog-search {
-  position: relative;
-  font-size: 20px;
-}
-.dialog-chat .dialog-search-box .dialog-search input {
-  height: 30px;
-  width: 100%;
-  box-sizing: border-box;
-  padding-right: 30px;
-}
-.dialog-chat .dialog-search-box .dialog-search .fa {
-  position: absolute;
-  right: 8px;
-  top: 7px;
-}
-.dialog-chat .dialog-search-box .dialog-search-list .dialog-info {
-  display: inline-block;
-  width: 200px;
-  border: 1px solid;
-  padding: 8px;
-}
-.dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-avatar {
-  display: inline-block;
-}
-.dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-avatar img {
-  width: 60px;
-  border-radius: 50%;
-}
-.dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-name {
-  display: inline-block;
-}
-.dialog-chat .dialog-search-box .dialog-search-list .dialog-info .dialog-info-name * {
-  margin: 0;
-}
-.dialog-chat .dialog-user-box,
-.dialog-chat .dialog-add-box {
-  width: 300px;
-  text-align: center;
-}
-.dialog-chat .dialog-user-box .dialog-user-avatar,
-.dialog-chat .dialog-add-box .dialog-user-avatar {
-  padding: 8px;
-}
-.dialog-chat .dialog-user-box .dialog-user-avatar img,
-.dialog-chat .dialog-add-box .dialog-user-avatar img {
-  width: 100px;
-  border-radius: 50%;
-}
-.dialog-chat .dialog-user-box .dialog-add-action select,
-.dialog-chat .dialog-add-box .dialog-add-action select {
-  display: block;
-  width: 100%;
-  height: 30px;
-}
-.dialog-chat .dialog-user-box .dialog-add-action button,
-.dialog-chat .dialog-add-box .dialog-add-action button {
-  width: 50%;
-  line-height: 30px;
-}
-.dialog-chat .dialog-user-box p,
-.dialog-chat .dialog-add-box p {
-  margin: 0;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-header,
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-tab {
-  display: none;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info {
-  padding: 0;
-  height: 30px;
-  width: 100%;
-  text-align: center;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar {
-  position: absolute;
-  left: 0;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-avatar img {
-  width: 30px;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-name {
-  line-height: 30px;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-info-name p {
-  display: none;
-}
-.dialog-chat.dialog-fixed .dialog-chat-box.dialog-min .dialog-info .dialog-message-count {
-  display: block;
-  position: absolute;
-  left: -12px;
-  top: -11px;
-  line-height: 20px;
-  background: #f00;
-  color: #fff;
-  border-radius: 50%;
-  min-width: 20px;
-}
-.dialog-chat.dialog-chat-page {
-  width: 100%;
-  max-width: 800px;
-  position: relative;
-  margin: 0 auto;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box,
-.dialog-chat.dialog-chat-page .dialog-chat-room {
-  display: block;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box {
-  width: 250px;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-header .dialog-action .fa-minus,
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-header .dialog-action .fa-close {
-  display: none;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item {
-  height: 448px;
-  overflow-y: auto;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-  margin-right: 5px;
-  background: #f5f5f5;
-  -webkit-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-  border-radius: 0px;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar-track {
-  border-radius: 0px;
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar-thumb {
-  border-radius: 0px;
-  background: rgba(0, 0, 0, 0.5);
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.6);
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar-thumb:active {
-  background: rgba(0, 0, 0, 0.8);
-}
-.dialog-chat.dialog-chat-page .dialog-chat-box .dialog-tab .dialog-tab-box .dialog-tab-item::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(0, 0, 0, 0.4);
-}
-.dialog-chat.dialog-chat-page .dialog-chat-room {
-  left: 250px;
 }
 /*# sourceMappingURL=dialog.css.map */

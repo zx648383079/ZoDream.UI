@@ -1,144 +1,233 @@
-@use"sass:math";
-@function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
-  $n: index($breakpoint-names, $name);
-  @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
+@use "sass:math";
+@function breakpoint-next(
+    $name,
+    $breakpoints: $grid-breakpoints,
+    $breakpoint-names: map-keys($breakpoints)
+) {
+    $n: index($breakpoint-names, $name);
+    @return if(
+        $n < length($breakpoint-names),
+        nth($breakpoint-names, $n + 1),
+        null
+    );
 }
-
 
 @function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
-  $min: map-get($breakpoints, $name);
-  @return if($min != 0, $min, null);
+    $min: map-get($breakpoints, $name);
+    @return if($min != 0, $min, null);
 }
-
 
 @function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
-  $next: breakpoint-next($name, $breakpoints);
-  @return if($next, breakpoint-min($next, $breakpoints) - 1px, null);
+    $next: breakpoint-next($name, $breakpoints);
+    @return if($next, breakpoint-min($next, $breakpoints) - 1px, null);
 }
 
+@function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
+    @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
+}
 
 @mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {
-  $min: breakpoint-min($name, $breakpoints);
-  @if $min {
-    @media (min-width: $min) {
-      @content;
+    $min: breakpoint-min($name, $breakpoints);
+    @if $min {
+        @media (min-width: $min) {
+        @content;
+        }
+    } @else {
+        @content;
     }
-  } @else {
-    @content;
-  }
 }
 
 @mixin make-row($gutter: $grid-gutter-width) {
-  @if $enable-flex {
-    display: flex;
-    flex-wrap: wrap;
-  } @else {
-    @include clearfix();
-  }
-  margin-left:  math.div($gutter, -2);
-  margin-right: math.div($gutter, -2);
+    @if $enable-flex {
+        display: flex;
+        flex-wrap: wrap;
+    } @else {
+        @include clearfix();
+    }
+    margin-left: math.div($gutter, -2);
+    margin-right: math.div($gutter, -2);
 }
 
 @mixin make-col($size, $columns: $grid-columns) {
-  @if $enable-flex {
-    flex: 0 0 percentage(math.div($size, $columns));
-    max-width: percentage(math.div($size, $columns));
-  } @else {
-    float: left;
-    width: percentage(math.div($size, $columns));
-  }
+    @if $enable-flex {
+        flex: 0 0 percentage(math.div($size, $columns));
+        max-width: percentage(math.div($size, $columns));
+    } @else {
+        float: left;
+        width: percentage(math.div($size, $columns));
+    }
 }
 
 @mixin make-col-offset($size, $columns: $grid-columns) {
-  margin-left: percentage(math.div($size, $columns));
+    margin-left: percentage(math.div($size, $columns));
 }
 
 @mixin make-col-push($size, $columns: $grid-columns) {
-  left: if($size > 0, percentage(math.div($size, $columns)), auto);
+    left: if($size > 0, percentage(math.div($size, $columns)), auto);
 }
 
 @mixin make-col-pull($size, $columns: $grid-columns) {
-  right: if($size > 0, percentage(math.div($size, $columns)), auto);
+    right: if($size > 0, percentage(math.div($size, $columns)), auto);
+}
+
+@mixin make-col-ready() {
+    // Add box sizing if only the grid is loaded
+    box-sizing: if(variable-exists(include-column-box-sizing) and $include-column-box-sizing, border-box, null);
+    // Prevent columns from becoming too narrow when at smaller grid tiers by
+    // always setting `width: 100%;`. This works because we set the width
+    // later on to override this initial width.
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%; // Prevent `.col-auto`, `.col` (& responsive variants) from breaking out the grid
+    padding-right: calc(var(--#{$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
+    padding-left: calc(var(--#{$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
+    margin-top: var(--#{$prefix}gutter-y);
 }
 
 @mixin make-col-modifier($type, $size, $columns) {
-  @if $type == push {
-    @include make-col-push($size, $columns);
-  } @else if $type == pull {
-    @include make-col-pull($size, $columns);
-  } @else if $type == offset {
-    @include make-col-offset($size, $columns);
-  }
+    @if $type == push {
+        @include make-col-push($size, $columns);
+    } @else if $type == pull {
+        @include make-col-pull($size, $columns);
+    } @else if $type == offset {
+        @include make-col-offset($size, $columns);
+    }
 }
 
-@mixin make-grid-columns($columns: $grid-columns, $gutter: $grid-gutter-width, $breakpoints: $grid-breakpoints) {
-
+@mixin make-grid-columns(
+    $columns: $grid-columns,
+    $gutter: $grid-gutter-width,
+    $breakpoints: $grid-breakpoints
+) {
   // Common properties for all breakpoints
-  %grid-column {
-    position: relative;
-    // Prevent columns from collapsing when empty
-    min-height: 1px;
-    // Inner gutter via padding
-    padding-right: math.div($gutter, 2);
-    padding-left: math.div($gutter, 2);
+    %grid-column {
+        position: relative;
+        // Prevent columns from collapsing when empty
+        min-height: 1px;
+        // Inner gutter via padding
+        padding-right: math.div($gutter, 2);
+        padding-left: math.div($gutter, 2);
 
-    @if $enable-flex {
-      width: 100%;
+        @if $enable-flex {
+            width: 100%;
+        }
     }
-  }
-
-  $breakpoint-counter: 0;
-  @each $breakpoint in map-keys($breakpoints) {
-    $breakpoint-counter: ($breakpoint-counter + 1);
 
     @for $i from 1 through $columns {
-      .col-#{$breakpoint}-#{$i} {
-        @extend %grid-column;
-      }
+        .col-#{$i} {
+            @include make-col($i, $columns)
+        }
     }
 
-    @include media-breakpoint-up($breakpoint, $breakpoints) {
-      // Provide basic `.col-{bp}` classes for equal-width flexbox columns
-      @if $enable-flex {
-        .col-#{$breakpoint} {
-          position: relative;
-          flex-basis: 0;
-          flex-grow: 1;
-          max-width: 100%;
-          min-height: 1px;
-          padding-right: math.div($grid-gutter-width, 2);
-          padding-left:  math.div($grid-gutter-width, 2);
-        }
-      }
+    $breakpoint-counter: 0;
+    @each $breakpoint in map-keys($breakpoints) {
+        $breakpoint-counter: ($breakpoint-counter + 1);
 
-      @for $i from 1 through $columns {
-        .col-#{$breakpoint}-#{$i} {
-          @include make-col($i, $columns);
-        }
-      }
+        
 
-      @each $modifier in (pull, push) {
-        @for $i from 0 through $columns {
-          .#{$modifier}-#{$breakpoint}-#{$i} {
-            @include make-col-modifier($modifier, $i, $columns)
-          }
+        @for $i from 1 through $columns {
+            .col-#{$breakpoint}-#{$i} {
+                @extend %grid-column;
+            }
         }
-      }
 
-      // `$columns - 1` because offsetting by the width of an entire row isn't possible
-      @for $i from 0 through ($columns - 1) {
-        @if $breakpoint-counter != 1 or $i != 0 { // Avoid emitting useless .offset-xs-0
-          .offset-#{$breakpoint}-#{$i} {
-            @include make-col-modifier(offset, $i, $columns)
-          }
+        @include media-breakpoint-up($breakpoint, $breakpoints) {
+        // Provide basic `.col-{bp}` classes for equal-width flexbox columns
+            @if $enable-flex {
+                .col-#{$breakpoint} {
+                    position: relative;
+                    flex-basis: 0;
+                    flex-grow: 1;
+                    max-width: 100%;
+                    min-height: 1px;
+                    padding-right: math.div($grid-gutter-width, 2);
+                    padding-left: math.div($grid-gutter-width, 2);
+                }
+            }
+
+            @for $i from 1 through $columns {
+                .col-#{$breakpoint}-#{$i} {
+                    @include make-col($i, $columns);
+                }
+            }
+
+            @each $modifier in (pull, push) {
+                    @for $i from 0 through $columns {
+                        .#{$modifier}-#{$breakpoint}-#{$i} {
+                            @include make-col-modifier($modifier, $i, $columns);
+                        }
+                    }
+            }
+
+        // `$columns - 1` because offsetting by the width of an entire row isn't possible
+            @for $i from 0 through ($columns - 1) {
+                @if $breakpoint-counter != 1 or $i != 0 {
+                    // Avoid emitting useless .offset-xs-0
+                    .offset-#{$breakpoint}-#{$i} {
+                        @include make-col-modifier(offset, $i, $columns);
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
 
+@mixin make-container($gutter: $container-padding-x) {
+    --#{$prefix}gutter-x: #{$gutter};
+    --#{$prefix}gutter-y: 0;
+    width: 100%;
+    padding-right: calc(
+        var(--#{$prefix}gutter-x) * 0.5
+    ); // stylelint-disable-line function-disallowed-list
+    padding-left: calc(
+        var(--#{$prefix}gutter-x) * 0.5
+    ); // stylelint-disable-line function-disallowed-list
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@each $breakpoint, $container-max-width in $container-max-widths {
+    .container-#{$breakpoint} {
+      @extend .container-fluid;
+    }
+
+    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+        %responsive-container-#{$breakpoint} {
+            max-width: $container-max-width;
+        }
+
+        // Extend each breakpoint which is smaller or equal to the current breakpoint
+        $extend-breakpoint: true;
+
+        @each $name, $width in $grid-breakpoints {
+            @if ($extend-breakpoint) {
+                .container#{breakpoint-infix($name, $grid-breakpoints)} {
+                    @extend %responsive-container-#{$breakpoint};
+                }
+
+                // Once the current breakpoint is reached, stop extending
+                @if ($breakpoint == $name) {
+                    $extend-breakpoint: false;
+                }
+            }
+        }
+    }
+}
+
+// Row
+//
+// Rows contain your columns.
+
 .row {
-  @include make-row();
+    @include make-row();
+
+    > * {
+        @include make-col-ready();
+    }
 }
 
 @include make-grid-columns();
+.container,
+.container-fluid {
+    @include make-container();
+}

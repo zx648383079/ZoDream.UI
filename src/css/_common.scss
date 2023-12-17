@@ -1,41 +1,47 @@
-$color: #00BFFF;  //蓝
-$color1: #CD8162; //橙黄
-$color2: #CDBA96; //橙白
-$line: 40px;
-$danger: #f00;
-$primary: #ff77ff;
+$theme-colors: (
+    'primary': #337ab7,
+    'success': #198754,
+    'info': #5bc0de,
+    'danger': $invalid,
+    'warning': #f0ad4e,
+    'secondary': #6c757d
+);
 
-$gray-dark:                 #373a3c !default;
-$gray:                      #55595c !default;
-$gray-light:                #818a91 !default;
-$gray-lighter:              #eceeef !default;
-$gray-lightest:             #f7f7f9 !default;
+$lineHeight: 2.25rem;
 
-$brand-primary:             #0275d8 !default;
-$brand-success:             #5cb85c !default;
-$brand-info:                #5bc0de !default;
-$brand-warning:             #f0ad4e !default;
-$brand-danger:              #d9534f !default;
-$brand-inverse:             $gray-dark !default;
+$enable-flex: false !default;
 
-$lineHeight: 30px;
-
-$enable-flex:               false !default;
-
-$grid-columns:      12 !default;
-$grid-gutter-width: 30px !default;
 $grid-breakpoints: (
-  xs: 0,
-  sm: 544px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px
+    xs: 0,
+    sm: 36rem,
+    md: 48rem,
+    lg: 62rem,
+    xl: 75rem,
+    xxl: 87.5rem,
 ) !default;
 
+$container-max-widths: (
+    sm: 33.75rem,
+    md: 45rem,
+    lg: 60rem,
+    xl: 71.25rem,
+    xxl: 82.5rem,
+) !default;
+
+$grid-columns: 12 !default;
+$grid-gutter-width: 1.5rem !default;
+$grid-row-columns: 6 !default;
+
+// Container padding
+
+$container-padding-x: $grid-gutter-width !default;
+
 @mixin active() {
-    background: $color;
-    color: #fff;
+    background:  var(--#{$prefix}-primary);
+    color:  var(--#{$prefix}-primary-text);
 }
+
+
 * {
     margin: 0;
     padding: 0;
@@ -43,16 +49,26 @@ $grid-breakpoints: (
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--#{$prefix}-body);
+    color: var(--#{$prefix}-body-text);
 }
 
 @mixin clearfix() {
-  &::after {
-    content: "";
-    display: table;
-    clear: both;
-  }
+    &::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
 }
 .clearfix {
-  @include clearfix();
+    @include clearfix();
 }
+
+.text-center {
+    text-align: center;
+}
+

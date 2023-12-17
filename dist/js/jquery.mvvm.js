@@ -26,8 +26,8 @@ var Mvvm = /** @class */ (function () {
     Mvvm.prototype._defineReactive = function (key, value) {
         var instance = this;
         Object.defineProperty(this._data, key, {
-            enumerable: true,
-            configurable: false,
+            enumerable: true, // 可枚举
+            configurable: false, // 不能再define
             get: function () {
                 return value;
             },

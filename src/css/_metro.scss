@@ -1,0 +1,91 @@
+.metro-grid {
+    margin: 10vh 0 20vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    .item {
+        display: inline-block;
+        position: relative;
+        width: 250px;
+        height: 250px;
+        .font-gird {
+            width: 250px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: all 1s;
+            p {
+                text-align: center;
+                line-height: 50px;
+                font-size: 30px;
+                display: none;
+            }
+            img {
+                width: 250px;
+            }
+        }
+        .back-grid {
+            width: 250px;
+            height: 300px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            transition: all 1s;
+            h3 {
+
+            }
+            .item-content {
+                word-break: break-all;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .metro-grid {
+        // width: 510px;
+        margin: 30vh auto;
+        .item {
+            &:hover {
+                .font-gird {
+                    p {
+                        display: block;
+                    }
+                }
+                .back-grid {
+                    display: block;
+                }
+            }
+            &.hover-middle {
+                &:hover {
+                    .font-gird {
+                        left: -125px;
+                    }
+                    .back-grid {
+                        left: 125px;
+                    }
+                }
+            }
+            &.hover-left {
+                &:hover {
+                    .font-gird {
+                        left: -250px;
+                    }
+                    .back-grid {
+                    }
+                }
+            }
+            &.hover-right {
+                &:hover {
+                    .font-gird {
+                        left: 250px;
+                    }
+                    .back-grid {
+                        
+                    }
+                }
+            }
+        }
+    }
+}

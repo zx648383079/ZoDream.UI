@@ -3,8 +3,8 @@ class Tab {
         public element: JQuery,
         public option: TabOption
     ) {
-        this._head = this.element.find(".zd-tab-head ul");
-        this._body = this.element.find(".zd-tab-body");
+        this._head = this.element.find(".tab-header ul");
+        this._body = this.element.find(".tab-body");
         this._bindEvent();
     }
 
@@ -16,17 +16,16 @@ class Tab {
 
     private _bindEvent() {
         let instance = this;
-        this._head.on("click", ".zd-tab-item", function() {
+        this._head.on("click", ".tab-item", function() {
             instance.showItem($(this).index());
-        });
-        this._head.on("click", ".zd-tab-item .fa-times", function() {
+        }).on("click", ".tab-item .fa-times", function() {
             // 当所有标签页关闭时会出错，页面错乱
             instance.removeItem($(this).parent().index());
         });
     }
 
     public setProperty() {
-        let items = this._head.find('.zd-tab-item');
+        let items = this._head.find('.tab-item');
         let width = items.width();
         this._head.width(items.length * width);
     }
@@ -36,8 +35,8 @@ class Tab {
             this.showItem(item);
             return;
         }
-        this._head.append('<li class="zd-tab-item"><span>' + item.name + '</span><i class="fa fa-times"></i></li>');
-        this._body.append('<iframe class="zd-tab-item" height="100%" src="' + item.url + '"></iframe>');
+        this._head.append('<li class="tab-item"><span>' + item.name + '</span><i class="fa fa-times"></i></li>');
+        this._body.append('<iframe class="tab-item" height="100%" src="' + item.url + '"></iframe>');
         this._data.push(item.clone());
         this.showItem(this._data.length - 1);
         this.setProperty();
@@ -60,12 +59,12 @@ class Tab {
         if (index < 0 || index >= this._data.length) {
             return;
         }
-        let item = this._head.find('.zd-tab-item').eq(index);
+        let item = this._head.find('.tab-item').eq(index);
         if (item.hasClass("active")) {
             this.showItem(index - 1);
         }
         item.remove();
-        this._body.find('.zd-tab-item').eq(index).remove();
+        this._body.find('.tab-item').eq(index).remove();
         this._data.splice(index, 1);
     }
 
@@ -84,8 +83,8 @@ class Tab {
         if (index >= this._data.length) {
             index = this._data.length - 1;
         }
-        this._head.find('.zd-tab-item').eq(index).addClass("active").siblings().removeClass("active");
-        this._body.find('.zd-tab-item').eq(index).addClass("active").siblings().removeClass("active");
+        this._head.find('.tab-item').eq(index).addClass("active").siblings().removeClass("active");
+        this._body.find('.tab-item').eq(index).addClass("active").siblings().removeClass("active");
         if (this.option.active) {
             this.option.active(this._data[index]);
         }

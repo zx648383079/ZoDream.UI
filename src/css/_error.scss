@@ -1,0 +1,37 @@
+.page-not-found {
+    margin-top: 10vh;
+    margin-bottom: 30vh;
+    p{
+        text-align: center;
+        font-size: 1.25rem;
+    }
+    .content {
+        text-align: center;
+        img {
+            max-width: 100%;
+        }
+    }
+}
+
+.error-tag {
+    position: relative;
+    margin-bottom: 2rem;
+    .tag-icon {
+        color: #fff;
+        font-size: 10rem;
+        font-weight: 900;
+        transform: rotate(15deg);
+        display: inline-block;
+    }
+    .tag-cover {
+        display: block;
+        background-color: rgba($color: #ccc, $alpha: .4);
+        position: absolute;
+        top: 2rem;
+        left: 50%;
+        margin-left: -8rem;
+        width: 6rem;
+        height: 1.5rem;
+        z-index: 3;
+    }
+}

@@ -178,8 +178,8 @@ var Observer = /** @class */ (function () {
         var dep = new Dep();
         var childObj = observe(value);
         Object.defineProperty(data, key, {
-            enumerable: true,
-            configurable: false,
+            enumerable: true, // 可枚举
+            configurable: false, // 不能再define
             get: function () {
                 if (Dep.target) {
                     dep.depend();

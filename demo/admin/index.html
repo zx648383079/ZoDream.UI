@@ -20,16 +20,16 @@
                     </ul>
                 </div>
                 <div class="table-cell">
-                    <div class="zd-tab">
-                        <div class="zd-tab-head has-over">
+                    <div class="tab-box">
+                        <div class="tab-header has-over">
                             <i class="fa fa-backward"></i>
-                            <div class="zd-tab-head-content">
+                            <div class="tab-header-content">
                                 <ul>
                                 </ul>
                             </div>
                             <i class="fa fa-forward"></i>
                         </div>
-                        <div class="zd-tab-body">
+                        <div class="tab-body">
                         </div>
                     </div>
                 </div>
@@ -89,13 +89,13 @@
                         }
                     },
                     default: 'home',
-                    tab: $(".zd-tab")
+                    tab: $(".tab-box")
                 });
                 $(".navbar .navicon").click(function() {
                     $(".navbar").toggleClass("min");
                 });
                 var setMain = function() {
-                    $(".table .zd-tab-body").height($(document).height() - 30);
+                    $(".table .tab-body").height($(document).height() - 30);
                 };
                 setMain();
                 $(window).resize(function() {

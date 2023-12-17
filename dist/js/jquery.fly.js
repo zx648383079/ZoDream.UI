@@ -36,7 +36,7 @@ var Fly = /** @class */ (function () {
         // 特殊情况，出现顶点left==终点left，将曲率设置为0，做直线运动。
         curvature = end.left == vertex_left ? 0 : (end.top - vertex_top) / Math.pow(end.left - vertex_left, 2);
         $.extend(true, settings, {
-            count: -1,
+            count: -1, // 每次重置为-1
             steps: steps,
             vertex_left: vertex_left,
             vertex_top: vertex_top,

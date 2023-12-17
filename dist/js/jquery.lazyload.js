@@ -12,9 +12,9 @@ var LazyMode;
 })(LazyMode || (LazyMode = {}));
 var LazyItem = /** @class */ (function () {
     function LazyItem(element, callback, mode, diff) {
-        var _this = this;
         if (mode === void 0) { mode = LazyMode.once; }
         if (diff === void 0) { diff = 0; }
+        var _this = this;
         this.element = element;
         this.callback = callback;
         this.mode = mode;

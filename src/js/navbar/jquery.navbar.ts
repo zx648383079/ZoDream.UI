@@ -36,17 +36,15 @@ class Navbar {
         let instance = this;
         this.element.on("click", 'li a', function(e) {
             e.preventDefault();
-        });
-        this.element.on("click", 'li', function() {
+        }).on("click", 'li', function() {
             let item: NavItem = $(this).data() as NavItem;
             instance.openItem(item);
         });
-        $(window).bind('popstate', function(e) {
+        $(window).on('popstate', function(e) {
             // 浏览器返回跳转
             let item: NavItem = (e.originalEvent as any).state;
             instance.tab.showItem(item);
-        });
-        $(window).on('resize', function() {
+        }).on('resize', function() {
             instance._setProperty();
             instance.tab.setProperty();
         });

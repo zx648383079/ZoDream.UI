@@ -4,12 +4,67 @@
         line-height: $lineHeight;
         min-width: $lineHeight;
         text-align: center;
-        border: 1px solid #707;
+        border: 1px solid var(--#{$prefix}-primary);
         box-sizing: border-box;
         cursor: pointer;
         &.active {
             border: none;
             @include active();
+        }
+    }
+}
+
+.pagination {
+    display: inline-block;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+    >li {
+        display: inline;
+        >a,
+        >span {
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: -1px;
+            line-height: 1.42857143;
+            color: var(--#{$prefix}-panel-text);
+            text-decoration: none;
+            background-color: var(--#{$prefix}-panel);
+            border: 1px solid var(--#{$prefix}-input-border);
+            &:hover,
+            &:focus {
+                z-index: 2;
+                color: var(--#{$prefix}-primary-text);
+                background-color: var(--#{$prefix}-primary-hover);
+            }
+        }
+    }
+    >.active {
+        >a,
+        >span {
+            z-index: 3;
+            color: var(--#{$prefix}-primary-text);
+            background-color: var(--#{$prefix}-primary);
+            border-color: var(--#{$prefix}-input-border);
+            cursor: default;
+            &:hover,
+            &:focus {
+                background-color: var(--#{$prefix}-primary-hover);
+            }
+        }
+    }
+    >.disabled {
+        >a,
+        >span {
+            color: var(--#{$prefix}-secondary-text);
+            cursor: default;
+            background-color: transparent;
+            &:hover,
+            &:focus {
+                color: var(--#{$prefix}-secondary-text);
+                background-color: transparent;
+            }
         }
     }
 }

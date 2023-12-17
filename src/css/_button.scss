@@ -1,0 +1,92 @@
+@mixin make-button($name, $bg, $hover, $color) {
+    .btn-#{$name} {
+        --#{$prefix}-btn: #{$bg};
+        --#{$prefix}-btn-text: #{$color};
+        --#{$prefix}-btn-hover: #{$hover};
+        --#{$prefix}-btn-border: #{$hover};
+    }
+    .btn-outline-#{$name} {
+        --#{$prefix}-btn: transparent;
+        --#{$prefix}-btn-text: #{$bg};
+        --#{$prefix}-btn-hover-text: #{$color};
+        --#{$prefix}-btn-hover: #{$bg};
+        --#{$prefix}-btn-border: #{$bg};
+        border: 1px solid var(--#{$prefix}-btn-border);
+    }
+}
+
+
+
+
+.btn {
+    --#{$prefix}-btn: var(--#{$prefix}-primary);
+    --#{$prefix}-btn-text: var(--#{$prefix}-primary-text);
+    --#{$prefix}-btn-hover: var(--#{$prefix}-primary-hover);
+    --#{$prefix}-btn-border: var(--#{$prefix}-primary-active);
+    --#{$prefix}-btn-hover-text: var(--#{$prefix}-btn-text);
+    padding: $inputPadding;
+    background: var(--#{$prefix}-btn);
+    color: var(--#{$prefix}-btn-text);
+    border: none;
+    border-color: var(--#{$prefix}-btn-border);
+    display: inline-block;
+    text-decoration: none;
+    line-height: $inputLineHeight;
+    margin: 0 0.5rem;
+    vertical-align:middle;
+    border-radius: $radius;
+    &.btn-full {
+        width: 100%;
+        margin: 0;
+    }
+    &:hover {
+        background: var(--#{$prefix}-btn-hover);
+        color: var(--#{$prefix}-btn-hover-text);
+    }
+}
+
+@include make-button(default, var(--#{$prefix}-primary), var(--#{$prefix}-primary-hover), var(--#{$prefix}-primary-text));
+
+
+@each $color, $value in $theme-colors {
+    @include make-button(
+        $color, 
+        $value, 
+        shade-color($value, $colorHoverOffset), 
+        #fff
+    );
+}
+
+.btn-group {
+    display: inline-flex;
+    .btn {
+        border-radius: 0;
+        margin: 0;
+        &:first-child {
+            border-radius: $radius 0 0 $radius;
+        }
+        &:last-child {
+            border-radius: 0 $radius $radius 0;
+        }
+    }
+}
+
+.toggle-icon-text {
+    span {
+        display: none;
+    }
+    i {
+        display: inline-block;
+    }
+}
+
+@media (min-width: 48rem) {
+    .toggle-icon-text {
+        span {
+            display: inline-block;
+        }
+        i {
+            display: none;
+        }
+    }
+}

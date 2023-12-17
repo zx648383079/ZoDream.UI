@@ -1,1 +1,1 @@
-{"version":3,"sources":["admin.css"],"names":[],"mappings":"AAAA;EACE,YAAY;EACZ,uBAAuB;AACzB","file":"admin.css","sourcesContent":[".zd-tab iframe {\n  border: none;\n  background: transparent;\n}"]}
+{"version":3,"sources":["admin.css"],"names":[],"mappings":"AAAA;EACE,YAAY;EACZ,uBAAuB;AACzB","file":"admin.css","sourcesContent":[".tab-box iframe {\n  border: none;\n  background: transparent;\n}"]}

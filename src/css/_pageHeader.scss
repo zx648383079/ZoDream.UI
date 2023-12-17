@@ -1,7 +1,7 @@
 .page-header {
     line-height: $lineHeight;
     position: relative;
-    background: $primary;
+    background-color: var(--#{$prefix}-primary);
     .path {
         position: absolute;
     }
@@ -11,7 +11,7 @@
     .actions {
         position: absolute;
         right: 0;
-        top: 0px;
+        top: 0;
     }
     &.fixed {
         position: fixed;

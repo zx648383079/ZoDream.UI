@@ -1,25 +1,25 @@
-.zd-panel {
+.dialog-panel {
     width: 33.33%;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    background: #fff;
+    background: var(--#{$prefix}-panel);
     z-index: 899;
-    .zd-panel-head {
+    .panel-header {
         text-align: center;
         line-height: 30px;
-        background: $primary;
-        color: #fff;
+        background: var(--#{$prefix}-primary);
+        color: var(--#{$prefix}-primary-text);
         .fa-close {
             float: right;
-            line-height: 30px;
-            margin-right: 10px;
+            line-height: 1.875rem;
+            margin-right: 0.625rem;
         }
     }
-    .zd-panel-body {
+    .panel-body {
         height: 100%;
-        padding-bottom: 30px;
+        padding-bottom: 1.875rem;
         box-sizing: border-box;
         overflow-y: auto;
     }
@@ -28,12 +28,29 @@
     }
     &.min {
         bottom: auto;
-        .zd-panel-body {
+        .panel-body {
             display: none;
         }
     }
     &.right {
         right: 0;
         left: auto;
+    }
+}
+
+.panel-container {
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    background-color: var(--#{$prefix}-panel);
+    padding: 1.25rem;
+    .page-empty-tip {
+        font-size: 3em;
+        color: var(--#{$prefix}-secondary-text);
+        font-weight: 700;
+        text-align: center;
+        padding: 2em 0;
+        cursor: default;
+        user-select: none;
     }
 }

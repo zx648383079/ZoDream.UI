@@ -1,21 +1,25 @@
-.zd-tab {
-    .zd-tab-head {
+.tab-box {
+    .tab-header {
         position: relative;
-        .zd-tab-item {
-            &.active,
+        display: flex;
+        user-select: none;
+        .tab-item {
             &:hover {
+                background: #ccc;
+            }
+            &.active {
                 @include active();
                 .fa {
                     display: block;
                 }
             }
             display: inline-block;
-            width: 150px;
-            height: 30px;
-            line-height: 30px;
+            width: 9.375rem;
+            height: $lineHeight;
+            line-height: $lineHeight;
             text-align: center;
             position: relative;
-            .fa-times {
+            .fa-close {
                 position: absolute;
                 right: 10px;
                 top: 6px;
@@ -33,7 +37,7 @@
                     top: 0;
                 }
             }
-            .zd-tab-head-content {
+            .tab-header-content {
                 ul {
                     padding: 0;
                     margin: 0 30px;
@@ -41,15 +45,16 @@
             }
         }
     }
-    .zd-tab-body {
-        .zd-tab-item {
+    .tab-body {
+        .tab-item {
+            display: none;
+            width: 100%;
+            padding: 0.8rem 0;
             &.active {
                 display: block;
                 background: transparent;
                 color: #767676;
             }
-            display: none;
-            width: 100%;
         }
     }
 }

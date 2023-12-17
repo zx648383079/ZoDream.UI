@@ -153,22 +153,21 @@ var Tab = /** @class */ (function () {
         this.element = element;
         this.option = option;
         this._data = [];
-        this._head = this.element.find(".zd-tab-head ul");
-        this._body = this.element.find(".zd-tab-body");
+        this._head = this.element.find(".tab-header ul");
+        this._body = this.element.find(".tab-body");
         this._bindEvent();
     }
     Tab.prototype._bindEvent = function () {
         var instance = this;
-        this._head.on("click", ".zd-tab-item", function () {
+        this._head.on("click", ".tab-item", function () {
             instance.showItem($(this).index());
-        });
-        this._head.on("click", ".zd-tab-item .fa-times", function () {
+        }).on("click", ".tab-item .fa-times", function () {
             // 当所有标签页关闭时会出错，页面错乱
             instance.removeItem($(this).parent().index());
         });
     };
     Tab.prototype.setProperty = function () {
-        var items = this._head.find('.zd-tab-item');
+        var items = this._head.find('.tab-item');
         var width = items.width();
         this._head.width(items.length * width);
     };
@@ -177,8 +176,8 @@ var Tab = /** @class */ (function () {
             this.showItem(item);
             return;
         }
-        this._head.append('<li class="zd-tab-item"><span>' + item.name + '</span><i class="fa fa-times"></i></li>');
-        this._body.append('<iframe class="zd-tab-item" height="100%" src="' + item.url + '"></iframe>');
+        this._head.append('<li class="tab-item"><span>' + item.name + '</span><i class="fa fa-times"></i></li>');
+        this._body.append('<iframe class="tab-item" height="100%" src="' + item.url + '"></iframe>');
         this._data.push(item.clone());
         this.showItem(this._data.length - 1);
         this.setProperty();
@@ -199,12 +198,12 @@ var Tab = /** @class */ (function () {
         if (index < 0 || index >= this._data.length) {
             return;
         }
-        var item = this._head.find('.zd-tab-item').eq(index);
+        var item = this._head.find('.tab-item').eq(index);
         if (item.hasClass("active")) {
             this.showItem(index - 1);
         }
         item.remove();
-        this._body.find('.zd-tab-item').eq(index).remove();
+        this._body.find('.tab-item').eq(index).remove();
         this._data.splice(index, 1);
     };
     Tab.prototype.showItem = function (index) {
@@ -223,8 +222,8 @@ var Tab = /** @class */ (function () {
         if (index >= this._data.length) {
             index = this._data.length - 1;
         }
-        this._head.find('.zd-tab-item').eq(index).addClass("active").siblings().removeClass("active");
-        this._body.find('.zd-tab-item').eq(index).addClass("active").siblings().removeClass("active");
+        this._head.find('.tab-item').eq(index).addClass("active").siblings().removeClass("active");
+        this._body.find('.tab-item').eq(index).addClass("active").siblings().removeClass("active");
         if (this.option.active) {
             this.option.active(this._data[index]);
         }
@@ -273,17 +272,15 @@ var Navbar = /** @class */ (function () {
         var instance = this;
         this.element.on("click", 'li a', function (e) {
             e.preventDefault();
-        });
-        this.element.on("click", 'li', function () {
+        }).on("click", 'li', function () {
             var item = $(this).data();
             instance.openItem(item);
         });
-        $(window).bind('popstate', function (e) {
+        $(window).on('popstate', function (e) {
             // 浏览器返回跳转
             var item = e.originalEvent.state;
             instance.tab.showItem(item);
-        });
-        $(window).resize(function () {
+        }).on('resize', function () {
             instance._setProperty();
             instance.tab.setProperty();
         });
@@ -292,8 +289,8 @@ var Navbar = /** @class */ (function () {
         this._top.height($(window).height() - this._top.offset().top - this._bottom.height());
     };
     Navbar.prototype.open = function (path, isTop) {
-        if (isTop === void 0) { isTop = true; }
         var _a;
+        if (isTop === void 0) { isTop = true; }
         _a = this._pathToId(path, isTop), isTop = _a[0], path = _a[1];
         var id = path.shift();
         if (this.option.data.hasOwnProperty(id)) {
@@ -358,8 +355,8 @@ var Navbar = /** @class */ (function () {
         return;
     };
     Navbar.prototype.removeItem = function (path, isTop) {
-        if (isTop === void 0) { isTop = true; }
         var _a;
+        if (isTop === void 0) { isTop = true; }
         _a = this._pathToId(path, isTop), isTop = _a[0], path = _a[1];
         var id = path.pop();
         if (path.length > 0) {
@@ -384,8 +381,8 @@ var Navbar = /** @class */ (function () {
      * @param isTop
      */
     Navbar.prototype.getItem = function (path, isTop) {
-        if (isTop === void 0) { isTop = true; }
         var _a;
+        if (isTop === void 0) { isTop = true; }
         _a = this._pathToId(path, isTop), isTop = _a[0], path = _a[1];
         var id = path.shift();
         if (isTop && this.option.data.hasOwnProperty(id)) {

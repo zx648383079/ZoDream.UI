@@ -2,15 +2,26 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var ZUtils;
 (function (ZUtils) {
     var time = /** @class */ (function () {
@@ -29,12 +40,12 @@ var ZUtils;
             if (fmt === void 0) { fmt = 'y年m月d日'; }
             var o = {
                 "y+": date.getFullYear(),
-                "m+": this.getRealMonth(date),
-                "d+": date.getDate(),
-                "h+": date.getHours(),
-                "i+": date.getMinutes(),
-                "s+": date.getSeconds(),
-                "q+": Math.floor((date.getMonth() + 3) / 3),
+                "m+": this.getRealMonth(date), //月份 
+                "d+": date.getDate(), //日 
+                "h+": date.getHours(), //小时 
+                "i+": date.getMinutes(), //分 
+                "s+": date.getSeconds(), //秒 
+                "q+": Math.floor((date.getMonth() + 3) / 3), //季度
                 "S": date.getMilliseconds() //毫秒 
             };
             for (var k in o) {
@@ -84,7 +95,7 @@ var Eve = /** @class */ (function () {
         if (!this.hasEvent(event)) {
             return;
         }
-        return (_a = this.options[realEvent]).call.apply(_a, [this].concat(args));
+        return (_a = this.options[realEvent]).call.apply(_a, __spreadArray([this], args, false));
     };
     return Eve;
 }());
@@ -531,67 +542,67 @@ var DateTimer = /** @class */ (function (_super) {
      */
     DateTimer.prototype._bindEvent = function () {
         var instance = this;
-        this.box.find('.month-grid li').click(function () {
+        this.box.find('.month-grid li').on('click', function () {
             instance._clickDay($(this));
         });
-        this.box.find(".previousYear").click(function () {
+        this.box.find(".previousYear").on('click', function () {
             instance.previousYear();
         });
-        this.box.find(".previousMonth").click(function () {
+        this.box.find(".previousMonth").on('click', function () {
             instance.previousMonth();
         });
-        this.box.find(".nextMonth").click(function () {
+        this.box.find(".nextMonth").on('click', function () {
             instance.nextMonth();
         });
-        this.box.find(".nextYear").click(function () {
+        this.box.find(".nextYear").on('click', function () {
             instance.nextYear();
         });
-        this.box.find(".header span").click(function () {
+        this.box.find(".header span").on('click', function () {
             instance.toggleYear();
         });
-        this._yearBox.find("li").click(function () {
+        this._yearBox.find("li").on('click', function () {
             instance._changeYear(parseInt($(this).text()));
         });
-        this._monthBox.find("li").click(function () {
+        this._monthBox.find("li").on('click', function () {
             instance._changeMonth(parseInt($(this).text()));
         });
         // 关闭面板
-        this._yearGrid.find('.fa-close').click(function () {
+        this._yearGrid.find('.fa-close').on('click', function () {
             instance.toggleYear(false);
         });
         if (this._hasTime) {
-            this.box.find(".footer button").click(function () {
+            this.box.find(".footer button").on('click', function () {
                 instance.toggleTime(false)
                     .toggleYear(false).output(true);
             });
-            this.box.find(".footer input").click(function () {
+            this.box.find(".footer input").on('click', function () {
                 instance.toggleTime();
             });
-            this._hourBox.find("li").click(function () {
+            this._hourBox.find("li").on('click', function () {
                 instance._changeHour(parseInt($(this).text()));
             });
-            this._minuteBox.find("li").click(function () {
+            this._minuteBox.find("li").on('click', function () {
                 instance._changeMinute(parseInt($(this).text()));
             });
-            this._secondBox.find("li").click(function () {
+            this._secondBox.find("li").on('click', function () {
                 instance._changeSecond(parseInt($(this).text()));
             });
-            this._dayGrid.find('.fa-close').click(function () {
+            this._dayGrid.find('.fa-close').on('click', function () {
                 instance.toggleTime(false);
             });
         }
         /** 实现隐藏 */
-        this.box.click(function (e) {
+        this.box.on('click', function (e) {
             e.stopPropagation();
         });
         if (this.element) {
-            this.element.click(function (e) {
+            this.element.on('click', function (e) {
                 e.stopPropagation();
                 $('[data-type=datetimer]').hide();
                 instance.init($(this).val() + '');
             });
         }
-        $(document).click(function () {
+        $(document).on('click', function () {
             if (instance.options.autoHide) {
                 instance.box.hide();
             }

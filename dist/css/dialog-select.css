@@ -95,9 +95,7 @@
   height: 2.25rem;
   box-sizing: border-box;
   position: relative;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 .select--with-search .select-input::after {
   content: "";
@@ -141,9 +139,7 @@
   color: #ccc;
   text-align: center;
   font-size: 0.8rem;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   display: none;
 }
 .select--with-search .option-item {

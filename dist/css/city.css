@@ -42,14 +42,15 @@
   width: 6px;
   margin-right: 5px;
   background: #f5f5f5;
-  -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
   border-radius: 0px;
 }
 .selector .selector-body::-webkit-scrollbar-track {
+  -webkit-border-radius: 0px;
   border-radius: 0px;
 }
 .selector .selector-body::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 0px;
   border-radius: 0px;
   background: rgba(0, 0, 0, 0.5);
 }

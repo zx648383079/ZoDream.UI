@@ -18,7 +18,7 @@ class Dialog {
      * 创造弹出框
      * @param option 
      */
-    public static create<T>(option?: DialogOption): T {
+    public static create<T>(option: DialogOption): T {
         if (!option.type) {
             option.type = DialogType.tip;
         }
@@ -79,6 +79,27 @@ class Dialog {
         }
         content.type = DialogType.message;
         return this.create<DialogMessage>(content).show();
+    }
+
+    /**
+     * 确认提示框
+     * @param content 
+     * @param successFn 
+     */
+    public static confirm(content: string | DialogOption, successFn: Function): void;
+    public static confirm(content: string | DialogOption, title: string, successFn: Function): void;
+    public static confirm(content: string | DialogOption, title: string|Function, successFn?: Function) {
+        if (typeof title === 'function') {
+            successFn = title;
+            title = '提示';
+        }
+        const modal = this.box(content, title, true, true);
+        modal.on('done', () => {
+            if (successFn) {
+                successFn();
+            }
+            modal.close();
+        });
     }
 
     public static pop(content: string | DialogPopOption, target: JQuery, time: number = 2000): DialogPop {

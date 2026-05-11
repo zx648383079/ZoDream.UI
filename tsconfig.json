@@ -3,12 +3,15 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    // "sourceMap": true,
+    "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
-    "declaration": true
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types"
+    ],
   },
   "exclude": [
     "bower_components",

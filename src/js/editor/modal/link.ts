@@ -6,8 +6,6 @@ class EditorLinkComponent implements IEditorSharedModal {
     private confirmFn: EditorModalCallback;
     private element: JQuery<HTMLDivElement>;
 
-    constructor() { }
-
     public render() {
         return `<div class="editor-modal-box">
         <div class="input-header-block">

@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-
-    <link href="../bower_components/Font-Awesome/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 
     <link href="../dist/css/editor.css" rel="stylesheet">
     
@@ -18,12 +17,15 @@
 
     <button class="toggle">切换</button>
     
-
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="https://zodream.cn/assets/js/jquery.min.js"></script>
     <script src="../dist/js/jquery.editor.js"></script>
     <script>
         $(function () {
-            var editor = $('.editor').editor();
+            var editor = $('.editor').editor({
+                // toolbar: {
+                //     mode: 'label'
+                // }
+            });
             $(document).on('click', '.toggle', function() {
                 editor.toggleEditor();
             });

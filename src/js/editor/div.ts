@@ -15,7 +15,7 @@ class DivElement implements IEditorElement {
     }
 
     public get selection(): IEditorRange {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         if (sel.rangeCount < 1) {
             const range = document.createRange();
             range.setStart(this.element, this.element.children.length);
@@ -34,7 +34,7 @@ class DivElement implements IEditorElement {
         };
     }
     public set selection(v: IEditorRange) {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         let range: Range;
         if (v.range) {
             range = v.range;
@@ -51,8 +51,8 @@ class DivElement implements IEditorElement {
 
     public get selectedValue(): string {
         const items: string[] = [];
-        const range = this.selection.range;
-        let lastLine: Node;
+        const range = this.selection.range!;
+        let lastLine: Node| undefined| null;
         this.eachRange(range, node => {
             if (node === range.startContainer && range.startContainer === range.endContainer) {
                 items.push(node.textContent.substring(range.startOffset, range.endOffset));
@@ -98,7 +98,7 @@ class DivElement implements IEditorElement {
     }
 
     public selectAll(): void {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         const range = document.createRange();
         range.selectNodeContents(this.element);
         sel.removeAllRanges();
@@ -179,7 +179,7 @@ class DivElement implements IEditorElement {
         if (this.moveTableFocus(cell)) {
             return;
         }
-        this.focusAfter(this.nodeParent(cell, 'table'));
+        this.focusAfter(this.nodeParent(cell, 'table')!);
     }
 
     private addTableExecute(range: Range, block: IEditorTableBlock) {
@@ -217,7 +217,7 @@ class DivElement implements IEditorElement {
         const value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');//.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         const p = document.createElement('div');
         p.innerHTML = value;
-        const items = [];
+        const items: Node[] = [];
         for (let i = 0; i < p.childNodes.length; i++) {
             items.push(p.childNodes[i]);
         }
@@ -247,6 +247,13 @@ class DivElement implements IEditorElement {
         }
         this.insertElement(link, range);
         this.selectNode(link);
+    }
+
+    private addFrameExecute(range: Range, block: IEditorValueBlock) {
+        const frame = document.createElement('iframe');
+        frame.src = block.value;
+        this.insertElement(frame, range);
+        this.selectNode(frame);
     }
 
 
@@ -294,7 +301,7 @@ class DivElement implements IEditorElement {
         p.appendChild(document.createElement('br'));
         this.removeRange(range);
         // this.insertElement(p, range);
-        let next: Node;
+        let next: Node|undefined;
         let done = false;
         this.eachParentNode(begin, node => {
             if (this.isBlockNode(node) && node) {
@@ -454,7 +461,7 @@ class DivElement implements IEditorElement {
     }
 
     private rowSpanExecute(range: Range) {
-        const start = this.getTableCell(range.startContainer);
+        const start = this.getTableCell(range.startContainer)!;
         const end = this.getTableCell(range.endContainer);
         const body = start.parentNode.parentNode as HTMLTableSectionElement;
         const startSpan = this.getTableCellSpan(start);
@@ -587,7 +594,7 @@ class DivElement implements IEditorElement {
         if (!link) {
             return;
         }
-        window.open(link.getAttribute('href'));
+        window.open(link.getAttribute('href')!);
     }
 
 //#endregion
@@ -706,7 +713,7 @@ class DivElement implements IEditorElement {
         }
         this.removeRange(range);
         // this.insertElement(p, range);
-        let next: Node;
+        let next: Node| undefined;
         let done = false;
         this.eachParentNode(range.startContainer, node => {
             if (this.isBlockNode(node) && node) {
@@ -940,7 +947,7 @@ class DivElement implements IEditorElement {
     }
 
     private selectNode(node: Node, offset = 0) {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         const range = document.createRange();
         // range.deleteContents();
         // range = range.cloneRange();

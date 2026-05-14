@@ -49,6 +49,7 @@ enum EditorBlockType {
     AddVideo = 'addVideo',
     AddFile = 'addFile',
     AddCode = 'addCode',
+    AddFrame = 'addFrame',
     H = 'h',
     Bold = 'bold',
     Italic = 'italic',

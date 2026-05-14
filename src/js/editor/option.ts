@@ -9,6 +9,9 @@ interface IUploadResult {
 type UploadFileCallback = (files: File[]|File|FileList, success: (data: IUploadResult|IUploadResult[]) => void, failure: (error: string) => void) => void;
 
 interface IEditorOption {
+    i18n?: { // 翻译字段
+        [source: string]: string;
+    };
     height?: number|string;
     undoCount?: number; // 最大回退步骤
     blockTag?: string,
@@ -18,6 +21,7 @@ interface IEditorOption {
     hiddenModules?: string[]|string;
     visibleModules?: string[]|string;
     toolbar?: {
+        mode?: 'icon' | 'label',
         left?: string[]|string,
         right?: string[]|string,
     };
@@ -43,6 +47,7 @@ interface IEditorToolStatus {
 
 interface IEditorTool extends IEditorToolStatus {
     icon: string;
+    short?: string;
     label: string;
     hotKey?: string;
 }
@@ -58,9 +63,11 @@ interface IEditorModule extends IEditorTool {
 class EditorOptionManager {
 
     private option: IEditorOption = {
+        i18n: I18nStrings,
         undoCount: 10,
         blockTag: 'p',
         toolbar: {
+            mode: 'icon',
             left: ['text', 'paragraph', 'add'],
             right: ['undo', 'redo', 'more']
         },
@@ -80,18 +87,22 @@ class EditorOptionManager {
         [key: string]: IEditorModule
     } = {};
 
-    public toolUpdatedFn: (items: IEditorToolStatus[]) => void;
+    public toolUpdatedFn?: (items: IEditorToolStatus[]) => void;
 
     constructor() {
         this.push(...EditorModules);
     }
 
+    public get toolbarIconMode(): boolean  {
+        return this.option.toolbar?.mode !== 'label';
+    }
+
     public get leftToolbar(): IEditorTool[] {
-        return this.filterTool(this.option.toolbar.left as any);
+        return this.filterTool(this.option.toolbar!.left as any);
     }
 
     public get rightToolbar(): IEditorTool[] {
-        return this.filterTool(this.option.toolbar.right as any);
+        return this.filterTool(this.option.toolbar!.right as any);
     }
 
     public get closeTool(): IEditorTool {
@@ -131,14 +142,33 @@ class EditorOptionManager {
                 this.option[k] = this.mergeObject(this.option[k], option[k]);
             }
         });
+        if (option.i18n) {
+            this.option.i18n = option.i18n;
+        }
         this.option.hiddenModules = this.strToArr(option.hiddenModules);
         this.option.visibleModules = this.strToArr(option.visibleModules);
         if (option.toolbar) {
+            const toolbar = this.option.toolbar;
             this.option.toolbar = {
-                left: this.strToArr(option.toolbar.left),
-                right: this.strToArr(option.toolbar.right)
+                mode: option.toolbar.mode ?? toolbar?.mode,
+                left: option.toolbar.left ? this.strToArr(option.toolbar.left) : toolbar?.left,
+                right: option.toolbar.left ? this.strToArr(option.toolbar.right) : toolbar?.right
             };
         }
+    }
+
+    public trans(text: undefined): undefined;
+    public trans(text: string): string;
+    public trans(text: string|undefined): string|undefined;
+    public trans(text?: string): string|undefined {
+        if (typeof text === 'undefined') {
+            return text;
+        }
+        if (!this.option.i18n) {
+            return text;
+        }
+        const res = this.option.i18n[text];
+        return typeof(res) === 'undefined' ? text : res;
     }
 
     public get(optionKey: string): any {
@@ -150,7 +180,7 @@ class EditorOptionManager {
     }
 
     public tool(...names: string[]): IEditorTool[] {
-        const items = [];
+        const items: IEditorTool[] = [];
         for (const name of names) {
             if (Object.prototype.hasOwnProperty.call(this.moduleItems, name) && this.isVisible(name)) {
                 items.push(this.moduleItems[name]);
@@ -160,7 +190,7 @@ class EditorOptionManager {
     }
 
     public toolChildren(name: string): IEditorTool[] {
-        const items = [];
+        const items: IEditorTool[] = [];
         this.moduleMap(item => {
             if (item.parent == name && this.isVisible(item.name)) {
                 items.push(item);
@@ -215,6 +245,10 @@ class EditorOptionManager {
 
     public push(...modules: IEditorModule[]) {
         for (const item of modules) {
+            if (this.option.i18n) {
+                item.label = this.trans(item.label);
+                item.short = this.trans(item.short);
+            }
             this.moduleItems[item.name] = item;
         }
     }
@@ -256,7 +290,7 @@ class EditorOptionManager {
     public upload(files: File, type: 'image'|'video'|'file', success: (data: IUploadResult) => void, failure: (error: string) => void): void;
     public upload(files: any, type: 'image'|'video'|'file', success: (data: any) => void, failure: (error: string) => void) {
         const uploader = this.option.uploader;
-        let func: UploadFileCallback = typeof uploader === 'function' ? uploader : undefined;
+        let func: UploadFileCallback|undefined = typeof uploader === 'function' ? uploader : undefined;
         if (typeof uploader === 'object') {
             func = uploader[type] ? uploader[type] : uploader.file;
         }
@@ -271,7 +305,7 @@ class EditorOptionManager {
         if (!items) {
             return [];
         }
-        const data = [];
+        const data: IEditorTool[] = [];
         for (const item of items) {
             if (this.isVisible(item) && Object.prototype.hasOwnProperty.call(this.moduleItems, item)) {
                 data.push(this.toTool(this.moduleItems[item]));
@@ -284,6 +318,7 @@ class EditorOptionManager {
         return {
             name: item.name,
             label: item.label,
+            short: item.short,
             icon: this.option.icons && Object.prototype.hasOwnProperty.call(this.option.icons, item.name) ? this.option.icons[item.name] : item.icon,
         };
     }

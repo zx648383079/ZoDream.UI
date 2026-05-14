@@ -42,6 +42,7 @@ async function pageTask() {
 
 async function editorTask() {
     await loader.input('src/js/editor/modal/*.ts',
+        'src/js/editor/i18n/zh-CN.ts',
         'src/js/editor/*.ts')
         .ts('tsconfig.json', !loader.argv.min)
         .output(jsDist + 'jquery.editor.ts');

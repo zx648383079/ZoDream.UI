@@ -16,17 +16,20 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'text',
         icon: 'fa-font',
+        short: 'Text',
         label: 'Edit Text',
     },
     {
         name: 'paragraph',
         icon: 'fa-paragraph',
+        short: 'Paragraph',
         label: 'Edit Paragraph',
     },
     {
         name: EDITOR_ADD_TOOL,
         icon: 'fa-plus',
         label: 'Add Content',
+        short: 'Add',
     },
     {
         name: EDITOR_UNDO_TOOL,
@@ -79,6 +82,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'bold',
         icon: 'fa-bold',
+        short: 'Bold',
         label: 'Font Bold',
         parent: 'text',
         handler(editor) {
@@ -88,6 +92,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'italic',
         icon: 'fa-italic',
+        short: 'Italic',
         label: 'Font Italic',
         parent: 'text',
         handler(editor) {
@@ -97,6 +102,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'underline',
         icon: 'fa-underline',
+        short: 'Underline',
         label: 'Add Underline',
         parent: 'text',
         handler(editor) {
@@ -106,6 +112,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'wavyline',
         icon: 'fa-wavyline',
+        short: 'Wavyline',
         label: 'Add Wavyline',
         parent: 'text',
         handler(editor) {
@@ -115,7 +122,8 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'dashed',
         icon: 'fa-dashed',
-        label: '下标加点',
+        short: 'Mark',
+        label: 'Subscript and dot',
         parent: 'text',
         handler(editor) {
             editor.insert({type: EditorBlockType.Dashed});
@@ -124,7 +132,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'strike',
         icon: 'fa-strikethrough',
-        label: '画线',
+        label: 'Strike Through',
         parent: 'text',
         handler(editor) {
             editor.insert({type: EditorBlockType.Strike});
@@ -133,7 +141,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'sub',
         icon: 'fa-subscript',
-        label: '下标',
+        label: 'Sub',
         parent: 'text',
         handler(editor) {
             editor.insert({type: EditorBlockType.Sub});
@@ -142,7 +150,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'sup',
         icon: 'fa-superscript',
-        label: '上标',
+        label: 'Sup',
         parent: 'text',
         handler(editor) {
             editor.insert({type: EditorBlockType.Sub});
@@ -152,6 +160,7 @@ const EditorModules: IEditorModule[] = [
         name: 'fontsize',
         icon: 'fa-pen-nib',
         label: 'Font Size',
+        short: 'Size',
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler(editor, _, data) {
@@ -162,6 +171,7 @@ const EditorModules: IEditorModule[] = [
         name: 'font',
         icon: 'fa-font',
         label: 'Font Family',
+        short: 'Font',
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler(editor, _, data) {
@@ -172,6 +182,7 @@ const EditorModules: IEditorModule[] = [
         name: 'foreground',
         icon: 'fa-broom',
         label: 'Font Color',
+        short: 'Color',
         parent: 'text',
         modal: new EditorColorComponent,
         handler(editor, _, data) {
@@ -192,6 +203,7 @@ const EditorModules: IEditorModule[] = [
         name: 'clear',
         icon: 'fa-tint-slash',
         label: 'Clear Style',
+        short: 'Clear',
         parent: 'text',
         handler(editor) {
             editor.insert({type: EditorBlockType.ClearStyle});
@@ -203,6 +215,7 @@ const EditorModules: IEditorModule[] = [
         name: 'align-left',
         icon: 'fa-align-left',
         label: 'Algin Left',
+        short: 'Left',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Align, value: 'left'})
@@ -212,6 +225,7 @@ const EditorModules: IEditorModule[] = [
         name: 'align-center',
         icon: 'fa-align-center',
         label: 'Algin Center',
+        short: 'Center',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Align, value: 'center'})
@@ -221,6 +235,7 @@ const EditorModules: IEditorModule[] = [
         name: 'align-right',
         icon: 'fa-align-right',
         label: 'Algin Right',
+        short: 'Right',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Align, value: 'right'})
@@ -230,6 +245,7 @@ const EditorModules: IEditorModule[] = [
         name: 'align-justify',
         icon: 'fa-align-justify',
         label: 'Algin Justify',
+        short: 'Justify',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Align, value: ''})
@@ -239,6 +255,7 @@ const EditorModules: IEditorModule[] = [
         name: 'list',
         icon: 'fa-list',
         label: 'As List',
+        short: 'List',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.List});
@@ -248,6 +265,7 @@ const EditorModules: IEditorModule[] = [
         name: 'indent',
         icon: 'fa-indent',
         label: 'Line Indent',
+        short: 'Indent',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Indent});
@@ -257,6 +275,7 @@ const EditorModules: IEditorModule[] = [
         name: 'outdent',
         icon: 'fa-outdent',
         label: 'Line Outdent',
+        short: 'Outdent',
         parent: 'paragraph',
         handler(editor) {
             editor.insert({type: EditorBlockType.Outdent});
@@ -265,6 +284,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'blockquote',
         icon: 'fa-quote-left',
+        short: 'Blockquote',
         label: 'Add Blockquote',
         parent: 'paragraph',
         handler(editor) {
@@ -278,6 +298,7 @@ const EditorModules: IEditorModule[] = [
         name: 'link',
         icon: 'fa-link',
         label: 'Add Link',
+        short: 'Link',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorLinkComponent,
         handler(editor, range, data) {
@@ -291,6 +312,7 @@ const EditorModules: IEditorModule[] = [
         name: 'image',
         icon: 'fa-image',
         label: 'Add Image',
+        short: 'Image',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorImageComponent,
         handler(editor, range, data) {
@@ -304,6 +326,7 @@ const EditorModules: IEditorModule[] = [
         name: 'video',
         icon: 'fa-file-video',
         label: 'Add Video',
+        short: 'Video',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorVideoComponent,
         handler(editor, range, data) {
@@ -317,6 +340,7 @@ const EditorModules: IEditorModule[] = [
         name: 'table',
         icon: 'fa-table',
         label: 'Add Table',
+        short: 'Table',
         parent: 'add',
         modal: new EditorTableComponent,
         handler(editor, range, data) {
@@ -330,6 +354,7 @@ const EditorModules: IEditorModule[] = [
         name: 'file',
         icon: 'fa-file',
         label: 'Add File',
+        short: 'File',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorFileComponent,
         handler(editor, range, data) {
@@ -343,6 +368,7 @@ const EditorModules: IEditorModule[] = [
         name: 'code',
         icon: 'fa-code',
         label: 'Add Code',
+        short: 'Code',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorCodeComponent,
         handler(editor, range, data) {
@@ -356,9 +382,24 @@ const EditorModules: IEditorModule[] = [
         name: 'line',
         icon: 'fa-minus',
         label: 'Add Line',
+        short: 'Line',
         parent: EDITOR_ADD_TOOL,
         handler(editor) {
             editor.insert({type: EditorBlockType.AddHr});
+        }
+    },
+    {
+        name: 'map',
+        icon: 'fa-map-marked',
+        label: 'Add Map Marker',
+        short: 'Map',
+        parent: EDITOR_ADD_TOOL,
+        modal: new EditorMapComponent,
+        handler(editor, range, data) {
+            editor.insert({
+                type: EditorBlockType.AddText,
+                ...data                
+            }, range);
         }
     },
 
@@ -367,6 +408,7 @@ const EditorModules: IEditorModule[] = [
         name: EDITOR_FULL_SCREEN_TOOL,
         icon: 'fa-expand',
         label: 'Toggle Full Screen',
+        short: 'FullScreen',
         parent: EDITOR_MORE_TOOL,
     },
     {
@@ -389,44 +431,44 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'replace-image',
         icon: 'fa-exchange-alt',
-        label: '替换',
+        label: 'Replace',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'align-image',
         icon: 'fa-align-right',
-        label: '位置',
+        label: 'Position',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'caption-image',
         icon: 'fa-image',
-        label: '图片标题',
+        label: 'Image Title',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'delete-image',
         icon: 'fa-trash',
-        label: '删除图片',
+        label: 'Delete Image',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'link-image',
         icon: 'fa-link',
-        label: '插入链接',
+        label: 'Insert Link',
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'alt-image',
         icon: 'fa-font',
-        label: '图片备注',
-        modal: new EditorTextComponent('备注'),
+        label: 'Image caption',
+        modal: new EditorTextComponent('Caption'),
         parent: EDITOR_IMAGE_TOOL, 
     },
     {
         name: 'size-image',
         icon: 'fa-ruler',
-        label: '调整尺寸',
+        label: 'Adjust size',
         modal: new EditorSizeComponent,
         parent: EDITOR_IMAGE_TOOL, 
     },
@@ -435,31 +477,31 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'replace-video',
         icon: 'fa-exchange',
-        label: '替换',
+        label: 'Replace',
         parent: EDITOR_VIDEO_TOOL, 
     },
     {
         name: 'align-video',
         icon: 'fa-alignright',
-        label: '位置',
+        label: 'Position',
         parent: EDITOR_VIDEO_TOOL, 
     },
     {
         name: 'caption-video',
         icon: 'fa-film',
-        label: '视频标题',
+        label: 'Video Title',
         parent: EDITOR_VIDEO_TOOL, 
     },
     {
         name: 'delete-video',
         icon: 'fa-trash',
-        label: '删除视频',
+        label: 'Delete Video',
         parent: EDITOR_VIDEO_TOOL, 
     },
     {
         name: 'size-video',
         icon: 'fa-ruler',
-        label: '调整尺寸',
+        label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL, 
     },
 
@@ -468,7 +510,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'header-table',
         icon: 'fa-heading',
-        label: '表头',
+        label: 'Table Head',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
             editor.insert({type: EditorBlockType.Thead});
@@ -477,7 +519,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'footer-table',
         icon: 'fa-table',
-        label: '表尾',
+        label: 'Table Foot',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
             editor.insert({type: EditorBlockType.TFoot});
@@ -486,7 +528,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'delete-table',
         icon: 'fa-trash',
-        label: '删除表格',
+        label: 'Delete Table',
         parent: EDITOR_TABLE_TOOL,
         handler(editor) {
             editor.insert({type: EditorBlockType.DeleteTable});
@@ -495,43 +537,43 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'row-table',
         icon: 'fa-table',
-        label: '行',
+        label: 'Row',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'column-table',
         icon: 'fa-table',
-        label: '列',
+        label: 'Column',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'style-table',
         icon: 'fa-table',
-        label: '表格样式',
+        label: 'Table Style',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'cell-table',
         icon: 'fa-table',
-        label: '单元格',
+        label: 'Cell',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'cell-background-table',
         icon: 'fa-brush',
-        label: '单元格背景',
+        label: 'Cell background',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'cell-style-table',
         icon: 'fa-table',
-        label: '单元格样式',
+        label: 'Cell Style',
         parent: EDITOR_TABLE_TOOL, 
     },
     {
         name: 'horizontal-table',
         icon: 'fa-grip-horizontal',
-        label: '横向合并',
+        label: 'Horizontal merger',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
             editor.insert({type: EditorBlockType.ColSpan});
@@ -540,7 +582,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'vertical-table',
         icon: 'fa-grip-vertical',
-        label: '纵向合并',
+        label: 'Vertical merger',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
             editor.insert({type: EditorBlockType.RowSpan});
@@ -551,7 +593,7 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'open-link',
         icon: 'fa-paper-plane',
-        label: '打开链接',
+        label: 'Open Link',
         parent: EDITOR_LINK_TOOL, 
         handler(editor) {
             editor.insert({type: EditorBlockType.OpenLink});
@@ -560,19 +602,19 @@ const EditorModules: IEditorModule[] = [
     {
         name: 'link-style',
         icon: 'fa-brush',
-        label: '更改样式',
+        label: 'Change Style',
         parent: EDITOR_LINK_TOOL, 
     },
     {
         name: 'edit-link',
         icon: 'fa-edit',
-        label: '编辑链接',
+        label: 'Edit Link',
         parent: EDITOR_LINK_TOOL, 
     },
     {
         name: 'unlink',
         icon: 'fa-unlink',
-        label: '断开链接',
+        label: 'Disconnect',
         parent: EDITOR_LINK_TOOL, 
     },
 ];

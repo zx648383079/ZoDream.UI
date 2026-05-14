@@ -1,27 +1,19 @@
-class EditorSizeComponent implements IEditorSharedModal {
-
+class EditorMapComponent implements IEditorSharedModal {
     private confirmFn: EditorModalCallback;
     private element: JQuery<HTMLDivElement>;
 
     public render() {
         return `<div class="editor-modal-box">
-        <div class="tab-bar">
-            <a class="item">
-                <i class="fa fa-arrow-left"></i>
-            </a>
+        <div class="input-header-block">
+            <input type="text" name="coordinate" placeholder="经度,纬度">
+            <label for="">坐标</label>
         </div>
-        <div class="input-flex-group">
-            <div class="input-header-block">
-                <input type="text" name="width">
-                <label for="">宽</label>
-            </div>
-            <div class="input-header-block">
-                <input type="text" name="height">
-                <label for="">高</label>
-            </div>
+        <div class="input-header-block">
+            <input type="text" name="mark">
+            <label for="">标注</label>
         </div>
         <div class="modal-action">
-            <div class="btn btn-outline-primary">更新</div>
+            <div class="btn btn-outline-primary">插入</div>
         </div>
     </div>`;
     }
@@ -30,8 +22,8 @@ class EditorSizeComponent implements IEditorSharedModal {
         EditorHelper.modalInputBind(this.element, data => {
             if (this.confirmFn) {
                 this.confirmFn({
-                    height: data.height,
-                    width: data.width
+                    value: data.coordinate,
+                    mark: data.mark
                 });
             }
         });

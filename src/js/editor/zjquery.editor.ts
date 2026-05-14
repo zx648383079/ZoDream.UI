@@ -401,12 +401,13 @@ class EditorApp {
     private renderToolIcon(item: IEditorTool): string;
     private renderToolIcon(item: IEditorTool, target: JQuery<HTMLDivElement>): void;
     private renderToolIcon(item: IEditorTool, target?: JQuery<HTMLDivElement>): string|void {
+        const iconBody = this.option.toolbarIconMode ? `<i class="fa ${item.icon}"></i>` : `<span>${item.short? item.short : item.label}</span>`;
         if (target) {
             target.toggleClass('active', !!item.actived);
             target.toggleClass('disabled', !!item.disabled);
             target.attr('title', item.label);
             target.data('module', item.name);
-            target.find('i').attr('class', 'fa ' + item.icon);
+            target.html(iconBody);
             return;
         }
         let cls = '';
@@ -417,7 +418,7 @@ class EditorApp {
             cls += ' disabled';
         }
         return `<div class="tool-item${cls}" title="${item.label}" data-module="${item.name}">
-        <i class="fa ${item.icon}"></i>
+        ${iconBody}
     </div>`;
     }
 

@@ -252,6 +252,7 @@ class DivElement implements IEditorElement {
     private addFrameExecute(range: Range, block: IEditorValueBlock) {
         const frame = document.createElement('iframe');
         frame.src = block.value;
+        frame.setAttribute('frameborder', '0');
         this.insertElement(frame, range);
         this.selectNode(frame);
     }

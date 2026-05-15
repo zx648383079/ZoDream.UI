@@ -1,28 +1,21 @@
 @use "sass:math";
-$dialogIndex: 992;
-$lineHeight: 2.25rem;
+@use 'mixins';
+@use 'theme';
 
-@mixin arrow() {
-    &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        right: 0.625rem;
-        margin-top: -2px;
-        border-top: 5px solid #666;
-        border-right: 5px solid transparent;
-        border-left: 5px solid transparent;
-    }
-}
+
+$dialogIndex: 992;
+$line-height: 2.25rem;
+
+
 
 .dialog-select-input {
     padding: 0 1.25rem 0 0.625rem;
-    height: $lineHeight;
-    line-height: $lineHeight;
+    height: $line-height;
+    line-height: $line-height;
     position: relative;
-    border: 1px solid #eee;
+    border: 1px solid var(--#{theme.$prefix}border);
     cursor: pointer;
-    @include arrow();
+    @include mixins.iconArrow();
 }
 .dialog.dialog-select {
     position: fixed;
@@ -31,25 +24,25 @@ $lineHeight: 2.25rem;
     width: 100%;
     display: none;
     z-index: $dialogIndex;
-    background: #fff;
+    background-color: var(--#{theme.$prefix}panel);
     .dialog-header {
         position: relative;
-        height: $lineHeight;
-        line-height: $lineHeight;
+        height: $line-height;
+        line-height: $line-height;
         text-align: center;
-        background: #fff;
-        border-bottom: 1px solid #ccc;
+        background-color: var(--#{theme.$prefix}panel);
+        border-bottom: 1px solid var(--#{theme.$prefix}border);
         z-index: $dialogIndex + 1;
         .dialog-close {
             position: absolute;
             left: 0.9375rem;
-            line-height: $lineHeight;
+            line-height: $line-height;
         }
         .dialog-yes {
             position: absolute;
             right: 0.9375rem;
             top: 0;
-            line-height: $lineHeight;
+            line-height: $line-height;
         }
     }
     .dialog-body {
@@ -62,7 +55,7 @@ $lineHeight: 2.25rem;
             transition: all .3s;
             li {
                 list-style: none;
-                line-height: $lineHeight;
+                line-height: $line-height;
                 color: rgba(0, 0, 0, .3);
                 text-align: center;
                 &.active {
@@ -78,10 +71,10 @@ $lineHeight: 2.25rem;
             padding: 0;
         }
         .dialog-top-hr {
-            top: 2 * $lineHeight;
+            top: 2 * $line-height;
         }
         .dialog-bottom-hr {
-            top: 3 * $lineHeight;
+            top: 3 * $line-height;
         }
     }
     &.dialog-select-column-3 {
@@ -95,28 +88,29 @@ $lineHeight: 2.25rem;
 }
 
 .select--with-search {
-    line-height: $lineHeight;
+    line-height: $line-height;
     display: inline-block;
-    width: 7 * $lineHeight;
+    width: 7 * $line-height;
+    text-align: left;
     position: relative;
     .select-input {
-        border: 1px solid #ccc;
+        border: 1px solid var(--#{theme.$prefix}border);
         padding: 0 .3rem;
-        height: $lineHeight;
+        height: $line-height;
         box-sizing: border-box;
         position: relative;
         user-select: none;
-        @include arrow();
+        @include mixins.iconArrow();
     }
     .select-option-bar {
         position: absolute;
         display: none;
         z-index: $dialogIndex;
         width: 100%;
-        background-color: #fff;
-        border: 1px solid #333;
+        background-color: var(--#{theme.$prefix}panel);
+        border: 1px solid var(--#{theme.$prefix}body-text);
         box-sizing: border-box;
-        box-shadow: 0 6px 6px rgba($color: #000000, $alpha: .1);
+        box-shadow: 0 6px 6px var(--#{theme.$prefix}shadow);
     }
     .search-option-item {
         position: relative;
@@ -125,34 +119,33 @@ $lineHeight: 2.25rem;
             outline: none;
             border: none;
             background-color: transparent;
-            height: $lineHeight;
-            padding-left: $lineHeight - .5rem !important;
+            height: $line-height;
+            padding-left: $line-height - .5rem !important;
         }
         .fa {
             position: absolute;
             left: .3rem;
-            top: math.div($lineHeight, 2) - .4rem;
-            color: #ccc;
+            top: math.div($line-height, 2) - .4rem;
+            color: var(--#{theme.$prefix}input-icon);
         }
     }
     .loading-option-item {
-        border-top: 1px solid #333;
-        color: #ccc;
+        border-top: 1px solid var(--#{theme.$prefix}body-text);
+        color: var(--#{theme.$prefix}input-icon);
         text-align: center;
         font-size: .8rem;
         user-select: none;
         display: none;
     }
     .option-item {
-        border-top: 1px solid #333;
+        border-top: 1px solid var(--#{theme.$prefix}body-text);
         display: block;
         padding: 0 .3rem;
         &:hover {
-            background-color: #f4f4f4;
+            background-color: var(--#{theme.$prefix}input-hovered);
         }
         &.selected {
-            background-color: #f4f4f4;
-            color: #0275d8;
+            background-color: var(--#{theme.$prefix}input-selected);
         }
     }
     &.select-loading {
@@ -162,7 +155,7 @@ $lineHeight: 2.25rem;
     }
     &.focus {
         .select-input {
-            border-color: #333;
+            border-color: var(--#{theme.$prefix}input-focus-border);
             border-bottom: none;
             &::after {
                 transform: rotate(180deg);

@@ -1,41 +1,152 @@
-.login {
-  max-width: 300px;
-  margin: 30vh auto 0;
+.member-container .person-box {
+  margin: 5rem 0;
+  background-color: transparent;
+  padding: 0;
 }
-
-.slider-input {
+.member-container .person-box .avatar {
+  text-align: center;
+}
+.member-container .person-box .avatar img {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+.member-container .person-box .name {
+  font-size: 2rem;
+  font-weight: 700;
   position: relative;
-  width: 300px;
 }
-.slider-input .slider-gird {
-  display: none;
+.member-container .person-box .name .fa {
   position: absolute;
-  top: -157px;
-  background: green;
-  padding: 4px;
-  z-index: 999;
+  top: 0;
+  font-size: 0.8rem;
+  color: green;
 }
-.slider-input .slider-btn {
-  position: relative;
-  background: green;
-  padding: 4px;
+.member-container .person-box .meta {
+  color: #ccc;
 }
-.slider-input .slider-btn .slider-btn-tip {
+.member-container .person-box .desc {
+  margin: 1rem 0;
+}
+.member-container .person-box .btn {
+  display: block;
+  text-align: center;
+}
+.member-container .count-bar {
+  display: flex;
+  margin-top: 10px;
+}
+.member-container .count-bar .count-item {
+  flex: 1;
   text-align: center;
   font-size: 12px;
-  line-height: 20px;
 }
-.slider-input .slider-btn .slider-btn-icon {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  border: 1px solid;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #f00;
+.member-container .count-bar .count-item:not(:last-of-type) {
+  border-right: 1px solid #ccc;
 }
-.slider-input.slider-show .slider-gird {
+.member-container .link-panel {
+  margin-top: 1rem;
+}
+.member-container .link-panel a {
   display: block;
+}
+.member-container .tab-bar .item:first-of-type {
+  border-bottom-left-radius: 0;
+}
+.member-container .tab-bar .item:last-of-type {
+  border-bottom-right-radius: 0;
+}
+.member-container .tab-nav-bar {
+  display: flex;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid #ccc;
+}
+.member-container .tab-nav-bar .tab-bar {
+  flex: 1;
+}
+.member-container .tab-nav-bar .nav-more-bar {
+  position: relative;
+}
+.member-container .tab-nav-bar .nav-more-bar:hover .more-body {
+  display: block;
+}
+.member-container .tab-nav-bar .more-icon {
+  padding: 0 0.5rem;
+  line-height: 2.5rem;
+}
+.member-container .tab-nav-bar .more-body {
+  position: absolute;
+  display: none;
+  right: 0;
+  width: 12rem;
+  z-index: 5;
+  border: 1px solid #eee;
+  border-top: none;
+  background-color: #eee;
+  text-align: left;
+  box-shadow: rgba(51, 51, 51, 0.7) 0 0 10px;
+  border-radius: 0.3125rem;
+}
+.member-container .tab-nav-bar .more-body .item {
+  display: flex;
+  line-height: 2.5rem;
+  padding: 0 0.8rem;
+  cursor: pointer;
+}
+.member-container .tab-nav-bar .more-body .item:hover {
+  background-color: rgba(204, 204, 204, 0.3);
+}
+.member-container .tab-nav-bar .more-body .item.active {
+  background-color: red;
+  color: #fff;
+}
+.member-container .tab-nav-bar .more-body .item:first-of-type {
+  border-top-left-radius: 0.3125rem;
+  border-top-right-radius: 0.3125rem;
+}
+.member-container .tab-nav-bar .more-body .item:last-of-type {
+  border-bottom-left-radius: 0.3125rem;
+  border-bottom-right-radius: 0.3125rem;
+}
+.member-container .tab-nav-bar .more-body .fa {
+  display: inline-block;
+  width: 1.5rem;
+  color: #333;
+  line-height: inherit;
+}
+.member-container .tab-nav-bar.nav-more-open .more-body {
+  display: block;
+}
+.member-container .tab-nav-body {
+  margin-bottom: 3rem;
+}
+
+.column-item {
+  --zre-column-icon: var(--zre-surface);
+  --zre-column-icon-text: var(--zre-surface-text);
+  cursor: pointer;
+}
+.column-item .item-unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  display: inline-block;
+}
+.column-item .item-tag {
+  display: inline-block;
+  font-weight: 100;
+  font-size: 0.8rem;
+  position: absolute;
+  top: -0.3rem;
+  line-height: 1;
+  transform: translateX(-0.5rem);
+}
+.column-item .fa-arrow-down {
+  color: red;
+}
+.column-item .fa-arrow-up {
+  color: green;
 }
 /*# sourceMappingURL=account.css.map */

@@ -1,0 +1,44 @@
+@use 'theme';
+
+$tourIndex: 1300; 
+
+.dialog-lead-tour {
+    .lead-overlay-container {
+        box-sizing: content-box;
+        position: fixed;
+        z-index: $tourIndex - 1;
+        transition: all .3s ease-out;
+        box-shadow: rgba(var(--#{theme.$prefix}mask-rgb), .8) 0px 0px 1px 2px, rgba(var(--#{theme.$prefix}mask-rgb), .5) 0px 0px 0px 312.5rem;
+        opacity: 1;
+    }
+    .lead-dialog-box {
+        display: block;
+        z-index: $tourIndex;
+        width: 100%;
+        max-width: 20rem;
+        margin-top: 0;
+        margin-left: 0;
+        left: 0;
+        top: 0;
+        transform: none;
+        box-shadow: none;
+        .dialog-header {
+            border-bottom: none;
+        }
+        .dialog-footer {
+            border-top: none;
+            display: flex;
+            user-select: none;
+            .btn {
+                cursor: pointer;
+                flex: 1;
+                border-radius: 0;
+                text-align: center;
+            }
+        }
+        .message-body {
+            min-height: 6rem;
+        }
+    }
+}
+

@@ -9,6 +9,7 @@ const EDITOR_CODE_TOOL = 'code';
 const EDITOR_IMAGE_TOOL = 'image_edit';
 const EDITOR_TABLE_TOOL = 'table_edit';
 const EDITOR_VIDEO_TOOL = 'video_edit';
+const EDITOR_OVERLAY_TOOL = 'overlay_edit';
 const EDITOR_LINK_TOOL = 'link_edit';
 
 
@@ -397,8 +398,8 @@ const EditorModules: IEditorModule[] = [
         modal: new EditorMapComponent,
         handler(editor, range, data) {
             editor.insert({
-                type: EditorBlockType.AddText,
-                ...data                
+                type: EditorBlockType.AddFrame,
+                value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),        
             }, range);
         }
     },
@@ -482,7 +483,7 @@ const EditorModules: IEditorModule[] = [
     },
     {
         name: 'align-video',
-        icon: 'fa-alignright',
+        icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_VIDEO_TOOL, 
     },
@@ -503,6 +504,25 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-ruler',
         label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL, 
+    },
+    /// iframe
+    {
+        name: 'align-frame',
+        icon: 'fa-align-right',
+        label: 'Position',
+        parent: EDITOR_OVERLAY_TOOL, 
+    },
+    {
+        name: 'delete-frame',
+        icon: 'fa-trash',
+        label: 'Delete',
+        parent: EDITOR_OVERLAY_TOOL, 
+    },
+    {
+        name: 'size-frame',
+        icon: 'fa-ruler',
+        label: 'Adjust size',
+        parent: EDITOR_OVERLAY_TOOL, 
     },
 
     // 表格处理

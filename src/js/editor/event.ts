@@ -14,6 +14,7 @@ const EDITOR_EVENT_UNDO_CHANGE = 'undo';
 const EDITOR_EVENT_SHOW_ADD_TOOL = 'tool.add';
 const EDITOR_EVENT_SHOW_LINE_BREAK_TOOL = 'tool.line.break';
 const EDITOR_EVENT_SHOW_IMAGE_TOOL = 'tool.image';
+const EDITOR_EVENT_SHOW_OVERLAY_TOOL = 'tool.overlay';
 const EDITOR_EVENT_SHOW_COLUMN_TOOL = 'tool.column';
 const EDITOR_EVENT_SHOW_LINK_TOOL = 'tool.link';
 const EDITOR_EVENT_SHOW_TABLE_TOOL = 'tool.table';

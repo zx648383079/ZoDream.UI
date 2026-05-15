@@ -1,3 +1,5 @@
+@use 'theme';
+
 .list-view {
     .list-item {
         display: inline-block;
@@ -9,5 +11,160 @@
     .list-item {
         display: block;
         width: 100%;
+    }
+}
+
+.option-list-item {
+    border: 1px solid var(--#{theme.$prefix}border);
+    border-radius: .25rem;
+    display: block;
+    padding: .25rem .75rem;
+    &:hover {
+        background-color: var(--#{theme.$prefix}input-hovered);
+    }
+    &.selected {
+        background-color: var(--#{theme.$prefix}input-selected);
+        border-color: var(--#{theme.$prefix}surface);
+        &::after {
+            content: '√';
+            display: block;
+            color: var(--#{theme.$prefix}surface);
+            float: right;
+        }
+    }
+}
+
+.list-scroll-body {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.column-item {
+    --#{theme.$prefix}column: var(--#{theme.$prefix}panel);
+    --#{theme.$prefix}column-text: var(--#{theme.$prefix}body-text);
+    --#{theme.$prefix}column-icon: var(--#{theme.$prefix}surface);
+    --#{theme.$prefix}column-icon-text: var(--#{theme.$prefix}surface-text);
+    display: inline-block;
+    position: relative;
+    height: 6.25rem;
+    background-color: var(--#{theme.$prefix}column);
+    color: var(--#{theme.$prefix}column-text);
+    vertical-align: top;
+    width: 90%;
+    margin: 0.625rem 5%;
+    .icon {
+        position: absolute;
+        width: 6.25rem;
+        height: 6.25rem;
+        text-align: center;
+        background-color: var(--#{theme.$prefix}column-icon);
+        color: var(--#{theme.$prefix}column-icon-text);
+        padding-top: 1.25rem;
+        font-size: 2.5rem;
+    }
+    .content {
+        display: block;
+        margin-left: 6.25rem;
+        padding: 1.25rem 0.625rem;
+    }
+}
+
+.column-full-item {
+    --#{theme.$prefix}column: var(--#{theme.$prefix}panel);
+    --#{theme.$prefix}column-text: var(--#{theme.$prefix}body-text);
+    --#{theme.$prefix}column-extra: var(--#{theme.$prefix}surface);
+    --#{theme.$prefix}column-extra-text: var(--#{theme.$prefix}surface-text);
+    --#{theme.$prefix}column-extra-hovered: var(--#{theme.$prefix}surface-hovered);
+    --#{theme.$prefix}column-overlay: rgba(var(--#{theme.$prefix}surface-rgb), .7);
+    --#{theme.$prefix}column-overlay-text: var(--#{theme.$prefix}surface-text);
+    border-radius: .25rem;
+    box-shadow: 0 0 1px var(--#{theme.$prefix}shadow), 0 1px 3px var(--#{theme.$prefix}shadow);
+    display: block;
+    margin-bottom: 1.25rem;
+    position: relative;
+    background-color: var(--#{theme.$prefix}column);
+    color: var(--#{theme.$prefix}column-text);
+    .overlay {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        border-radius: .25rem;
+        align-items: center;
+        background-color: var(--#{theme.$prefix}column-overlay);
+        display: -ms-flexbox;
+        display: flex;
+        justify-content: center;
+        z-index: 50;
+        i {
+            color: var(--#{theme.$prefix}column-overlay-text);
+            font-size: 3em;
+            animation: spin 1s linear infinite;
+        }
+    }
+    .inner {
+        padding: 0.625rem;
+        z-index: 5;
+    }
+    h3 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+    p {
+        font-size: 1rem;
+    }
+    .icon {
+        color: var(--#{theme.$prefix}column-extra);
+        z-index: 0;
+        i {
+            font-size: 50px;
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            transition: all .3s linear;
+        }
+    }
+    .column-footer {
+        background-color: var(--#{theme.$prefix}column-extra);
+        color: var(--#{theme.$prefix}column-extra-text);
+        display: block;
+        padding: 3px 0;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        z-index: 10;
+        &:hover {
+            background-color: var(--#{theme.$prefix}column-extra-hovered);
+        }
+    }
+    a {
+        color: var(--#{theme.$prefix}column-text);
+    }
+    &:hover {
+        .icon {
+            i {
+                font-size: 3.5rem;
+            }
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (min-width: 48rem) {
+    .column-item {
+        width: 18.75rem;
+        margin: 0.625rem;
     }
 }

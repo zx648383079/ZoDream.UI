@@ -88,3 +88,4 @@ var FlyDefaultOptions = /** @class */ (function () {
         return new Fly(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.fly.js.map

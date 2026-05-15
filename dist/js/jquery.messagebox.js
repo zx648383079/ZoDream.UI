@@ -63,3 +63,4 @@ var MessageBoxDefaultOptions = /** @class */ (function () {
         return new MessageBox(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.messagebox.js.map

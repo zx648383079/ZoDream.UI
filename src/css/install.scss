@@ -1,0 +1,67 @@
+@use "theme";
+.full-page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-header {
+    padding: 0.625rem 1.25rem;
+    background-color: var(--#{theme.$prefix}surface);
+    color: var(--#{theme.$prefix}surface-text);
+}
+
+.page-body {
+    overflow-y: auto;
+    flex: 1;
+    border: 1px solid var(--#{theme.$prefix}surface);
+    padding: 0.3125rem;
+    box-shadow: 0 0 10px inset rgba(var(--#{theme.$prefix}surface-rgb), .3);
+    ol {
+        margin-left: 1.25rem;
+    }
+    code {
+        background-color: rgba(var(--#{theme.$prefix}surface-rgb), .3);
+        padding: 0.3125rem;
+    }
+}
+
+.page-footer {
+    text-align: right;
+    padding: 0.3125rem;
+    .btn {
+        background-color: var(--#{theme.$prefix}surface);
+        color: var(--#{theme.$prefix}surface-text);
+    }
+}
+
+.form-control {
+    height: 1.875rem;
+    box-sizing: border-box;
+}
+
+.module-box {
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.table {
+    th {
+        text-align: right;
+    }
+    td {
+        text-align: left;
+        line-height: 1.875rem;
+    }
+    thead {
+        th {
+            text-align: left;
+        }
+    }
+}
+
+@media (min-height: 48rem) {
+    .full-page {
+        height: 60vh;
+    }
+}

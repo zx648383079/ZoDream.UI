@@ -101,3 +101,4 @@ var GridDefaultOptions = /** @class */ (function () {
         return new Grid(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.grid.js.map

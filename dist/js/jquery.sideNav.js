@@ -201,3 +201,4 @@ var SideNavDefaultOption = /** @class */ (function () {
         return new SideNav(this, option);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.sideNav.js.map

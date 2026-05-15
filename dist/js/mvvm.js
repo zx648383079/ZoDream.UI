@@ -318,3 +318,4 @@ var MVVM = /** @class */ (function () {
     };
     return MVVM;
 }());
+//# sourceMappingURL=mvvm.js.map

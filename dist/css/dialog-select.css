@@ -3,18 +3,18 @@
   height: 2.25rem;
   line-height: 2.25rem;
   position: relative;
-  border: 1px solid #eee;
+  border: 1px solid var(--zre-border);
   cursor: pointer;
 }
 .dialog-select-input::after {
   content: "";
   position: absolute;
   top: 50%;
-  right: 0.625rem;
   margin-top: -2px;
   border-top: 5px solid #666;
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
+  right: 0.625rem;
 }
 
 .dialog.dialog-select {
@@ -24,15 +24,15 @@
   width: 100%;
   display: none;
   z-index: 992;
-  background: #fff;
+  background-color: var(--zre-panel);
 }
 .dialog.dialog-select .dialog-header {
   position: relative;
   height: 2.25rem;
   line-height: 2.25rem;
   text-align: center;
-  background: #fff;
-  border-bottom: 1px solid #ccc;
+  background-color: var(--zre-panel);
+  border-bottom: 1px solid var(--zre-border);
   z-index: 993;
 }
 .dialog.dialog-select .dialog-header .dialog-close {
@@ -87,10 +87,11 @@
   line-height: 2.25rem;
   display: inline-block;
   width: 15.75rem;
+  text-align: left;
   position: relative;
 }
 .select--with-search .select-input {
-  border: 1px solid #ccc;
+  border: 1px solid var(--zre-border);
   padding: 0 0.3rem;
   height: 2.25rem;
   box-sizing: border-box;
@@ -101,21 +102,21 @@
   content: "";
   position: absolute;
   top: 50%;
-  right: 0.625rem;
   margin-top: -2px;
   border-top: 5px solid #666;
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
+  right: 0.625rem;
 }
 .select--with-search .select-option-bar {
   position: absolute;
   display: none;
   z-index: 992;
   width: 100%;
-  background-color: #fff;
-  border: 1px solid #333;
+  background-color: var(--zre-panel);
+  border: 1px solid var(--zre-body-text);
   box-sizing: border-box;
-  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 6px var(--zre-shadow);
 }
 .select--with-search .search-option-item {
   position: relative;
@@ -132,33 +133,32 @@
   position: absolute;
   left: 0.3rem;
   top: 0.725rem;
-  color: #ccc;
+  color: var(--zre-input-icon);
 }
 .select--with-search .loading-option-item {
-  border-top: 1px solid #333;
-  color: #ccc;
+  border-top: 1px solid var(--zre-body-text);
+  color: var(--zre-input-icon);
   text-align: center;
   font-size: 0.8rem;
   user-select: none;
   display: none;
 }
 .select--with-search .option-item {
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--zre-body-text);
   display: block;
   padding: 0 0.3rem;
 }
 .select--with-search .option-item:hover {
-  background-color: #f4f4f4;
+  background-color: var(--zre-input-hovered);
 }
 .select--with-search .option-item.selected {
-  background-color: #f4f4f4;
-  color: #0275d8;
+  background-color: var(--zre-input-selected);
 }
 .select--with-search.select-loading .loading-option-item {
   display: block;
 }
 .select--with-search.focus .select-input {
-  border-color: #333;
+  border-color: var(--zre-input-focus-border);
   border-bottom: none;
 }
 .select--with-search.focus .select-input::after {

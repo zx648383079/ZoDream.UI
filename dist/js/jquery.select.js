@@ -112,3 +112,4 @@ var SelectDefaultOptions = /** @class */ (function () {
         return new Select(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.select.js.map

@@ -7,8 +7,8 @@
  * Copyright (c) 2017 ZoDream
  */
 .loading {
-  width: 80px;
-  height: 40px;
+  width: 5rem;
+  height: 2.5rem;
   margin: 0 auto;
 }
 .loading span {
@@ -52,45 +52,45 @@
 
 @keyframes load1 {
   0%, 100% {
-    height: 40px;
+    height: 2.5rem;
     background: lightgreen;
   }
   50% {
-    height: 70px;
-    margin: -15px 0;
+    height: 4.375rem;
+    margin: -0.9375rem 0;
     background: lightblue;
   }
 }
 @-webkit-keyframes load1 {
   0%, 100% {
-    height: 40px;
+    height: 2.5rem;
     background: lightgreen;
   }
   50% {
-    height: 70px;
-    margin: -15px 0;
+    height: 4.375rem;
+    margin: -0.9375rem 0;
     background: lightblue;
   }
 }
 @-moz-keyframes load1 {
   0%, 100% {
-    height: 40px;
+    height: 2.5rem;
     background: lightgreen;
   }
   50% {
-    height: 70px;
-    margin: -15px 0;
+    height: 4.375rem;
+    margin: -0.9375rem 0;
     background: lightblue;
   }
 }
 @-o-keyframes load1 {
   0%, 100% {
-    height: 40px;
+    height: 2.5rem;
     background: lightgreen;
   }
   50% {
-    height: 70px;
-    margin: -15px 0;
+    height: 4.375rem;
+    margin: -0.9375rem 0;
     background: lightblue;
   }
 }
@@ -980,7 +980,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--zre--dialog-mask);
+  background: var(--zre-dialog-mask);
   z-index: 1190;
   display: none;
 }
@@ -999,9 +999,9 @@
   z-index: 1199;
 }
 .dialog.dialog-tip, .dialog.dialog-pop, .dialog.dialog-message {
-  background: var(--zre--primary);
-  color: var(--zre--primary-text);
-  box-shadow: 0 0 1.25rem var(--zre--shadow);
+  background-color: rgba(var(--zre-mask-rgb), 0.6);
+  color: var(--zre-surface-text);
+  box-shadow: 0 0 1.25rem var(--zre-shadow);
   min-width: 6.25rem;
   transition: top 1s;
   -webkit-transition: top 1s;
@@ -1063,11 +1063,11 @@
   border-right-color: rgba(0, 0, 0, 0.6);
 }
 .dialog.dialog-page, .dialog.dialog-content, .dialog.dialog-box, .dialog.dialog-form, .dialog.dialog-disk {
-  background: var(--zre--dialog);
-  color: var(--zre--dialog-text);
+  background: var(--zre-dialog);
+  color: var(--zre-dialog-text);
   min-width: 16.25rem;
   display: none;
-  box-shadow: 0 0 1.25rem var(--zre--shadow);
+  box-shadow: 0 0 1.25rem var(--zre-shadow);
   animation: dialog-box 0.5s;
   -webkit-animation: dialog-box 0.5s;
   -moz-animation: dialog-box 0.5s;
@@ -1075,8 +1075,8 @@
 }
 .dialog.dialog-page .dialog-header, .dialog.dialog-content .dialog-header, .dialog.dialog-box .dialog-header, .dialog.dialog-form .dialog-header, .dialog.dialog-disk .dialog-header {
   position: relative;
-  background: var(--zre--primary);
-  color: var(--zre--primary-text);
+  background: var(--zre-surface);
+  color: var(--zre-surface-text);
   height: 40px;
   line-height: 1.875rem;
   text-align: center;
@@ -1091,19 +1091,19 @@
   border: none;
   position: absolute;
   top: 0;
-  color: var(--zre--primary-text);
+  color: var(--zre-surface-text);
   line-height: 1.875rem;
 }
 .dialog.dialog-page .dialog-header .fa-arrow-left, .dialog.dialog-content .dialog-header .fa-arrow-left, .dialog.dialog-box .dialog-header .fa-arrow-left, .dialog.dialog-form .dialog-header .fa-arrow-left, .dialog.dialog-disk .dialog-header .fa-arrow-left {
   left: 0;
-  background-color: var(--zre--primary);
-  color: var(--zre--primary-text);
+  background-color: var(--zre-surface);
+  color: var(--zre-surface-text);
   top: 0.3125rem;
 }
 .dialog.dialog-page .dialog-header .dialog-close, .dialog.dialog-content .dialog-header .dialog-close, .dialog.dialog-box .dialog-header .dialog-close, .dialog.dialog-form .dialog-header .dialog-close, .dialog.dialog-disk .dialog-header .dialog-close {
   right: 0;
-  background: var(--zre--primary);
-  color: var(--zre--primary-text);
+  background: var(--zre-surface);
+  color: var(--zre-surface-text);
   top: 0.375rem;
 }
 .dialog.dialog-page .dialog-header .dialog-close:hover, .dialog.dialog-content .dialog-header .dialog-close:hover, .dialog.dialog-box .dialog-header .dialog-close:hover, .dialog.dialog-form .dialog-header .dialog-close:hover, .dialog.dialog-disk .dialog-header .dialog-close:hover {
@@ -1122,8 +1122,8 @@
   width: 50%;
   border: none;
   line-height: 1.875rem;
-  background: var(--zre--primary);
-  color: var(--zre--primary-text);
+  background: var(--zre-surface);
+  color: var(--zre-surface-text);
   padding: 0;
   margin: 0;
 }
@@ -1141,19 +1141,19 @@
   width: 30%;
 }
 .dialog.dialog-page .dialog-footer .dialog-yes, .dialog.dialog-content .dialog-footer .dialog-yes, .dialog.dialog-box .dialog-footer .dialog-yes, .dialog.dialog-form .dialog-footer .dialog-yes, .dialog.dialog-disk .dialog-footer .dialog-yes {
-  background: var(--zre--primary);
-  color: var(--zre--primary-text);
+  background: var(--zre-surface);
+  color: var(--zre-surface-text);
   margin-right: 0.3125rem;
 }
 .dialog.dialog-page .dialog-footer .dialog-close, .dialog.dialog-content .dialog-footer .dialog-close, .dialog.dialog-box .dialog-footer .dialog-close, .dialog.dialog-form .dialog-footer .dialog-close, .dialog.dialog-disk .dialog-footer .dialog-close {
-  background: var(--zre--gray);
-  color: var(--zre--gray-text);
+  background: var(--zre-secondary);
+  color: var(--zre-secondary-text);
 }
 .dialog.dialog-box .dialog-header .dialog-title, .dialog.dialog-form .dialog-header .dialog-title, .dialog.dialog-content .dialog-header .dialog-title {
   text-align: left;
 }
 .dialog.dialog-box .dialog-footer, .dialog.dialog-form .dialog-footer, .dialog.dialog-content .dialog-footer {
-  border-top: 1px solid var(--zre--primary);
+  border-top: 1px solid var(--zre-surface);
   padding: 2px;
   text-align: right;
 }

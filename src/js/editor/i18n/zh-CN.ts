@@ -78,6 +78,7 @@ const I18nStrings: {
     'Replace': '替换',
     'Position': '位置',
     'Image Title': '图片标题',
+    'Delete': '删除',
     'Delete Image': '删除图片',
     'Insert Link': '插入链接',
     'Image caption': '图片备注',

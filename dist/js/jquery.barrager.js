@@ -74,3 +74,4 @@ var DarragerDefaultOptions = /** @class */ (function () {
         return new Darrager(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.barrager.js.map

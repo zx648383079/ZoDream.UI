@@ -49,7 +49,7 @@ class EditorHelper {
         if (!obj) {
             return '';
         }
-        const items = [];
+        const items: string[] = [];
         $.each(obj, (i, v) => {
             if (typeof i !== 'number') {
                 if (i !== 'z-index' && typeof v === 'number') {
@@ -198,7 +198,7 @@ class EditorHelper {
         }
     }
     /**
-     * zhuang
+     * 转化为 html
      * @param items 
      */
     public static toRaw(parent: HTMLElement): string {
@@ -212,9 +212,7 @@ class EditorHelper {
             [['i'], 'em']
         ];
         const tagAttributes = [
-            ['class', 'style'],  // default, for all tags not mentioned
-            '?xml', [],
-            '!doctype', [],
+            ['class'],  // default, for all tags not mentioned
             'a', ['accesskey', 'class', 'href', 'name', 'title', 'rel', 'rev', 'type', 'tabindex'],
             'abbr', ['class', 'title'],
             'acronym', ['class', 'title'],
@@ -246,6 +244,72 @@ class EditorHelper {
         ];
         const clone = parent.cloneNode(true) as HTMLElement;
 
+        const isOverlay = (items: DOMTokenList): boolean => {
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].startsWith('--with-overlay')) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const getReplaceTag = (tag: string): string|undefined => {
+            for (const item of removeTags) {
+                if (item[0].indexOf(tag) >= 0) {
+                    return item[1];
+                }
+            }
+            return undefined;
+        };
+
+        const isRemoveTag = (tag: string): boolean => {
+            return removeTags.indexOf(tag) >= 0;
+        };
+        const filterNodeStyle = (el: HTMLElement) => {
+            if (!el.hasAttribute('style')) {
+                return;  
+            }
+            const style = el.getAttribute('style');
+            if (!style) {
+                return;
+            }
+            const filteredStyle = style
+                .split(';')
+                .map(decl => decl.trim())
+                .filter(decl => {
+                    if (!decl) return false;
+                    const prop = decl.split(':')[0].trim().toLowerCase();
+                    return removeStyles.indexOf(prop) < 0;
+                })
+                .join(';');
+            if (filteredStyle) {
+                el.setAttribute('style', filteredStyle);
+            } else {
+                el.removeAttribute('style');
+            }
+        };
+
+        const getAttributeNames = (tag: string): string[] => {
+            for (let index = 1; index < tagAttributes.length; index += 2) {
+                if (tagAttributes[index] === tag) {
+                    return tagAttributes[index + 1] as string[];
+                }
+            }
+            return tagAttributes[0] as string[];
+        }
+
+        const filterNodeAttr = (el: HTMLElement, tag: string) => {
+            const items = getAttributeNames(tag);
+            const names = el.getAttributeNames();
+            for (const name of names) {
+                if (items.indexOf(name.toLowerCase()) >= 0) {
+                    continue;
+                }
+                el.removeAttribute(name);
+            }
+        };
+
+
         /**
          * 递归处理节点
          */
@@ -256,21 +320,11 @@ class EditorHelper {
                 const tagName = el.tagName.toLowerCase();
 
                 // 检查是否需要移除该标签
-                if (removeTags.indexOf(tagName) >= 0) {
+                if (isRemoveTag(tagName)) {
                     return null; // 移除整个节点
                 }
 
-                
-
-                let hasNotPrefix = false;
-                for (const className in el.classList) {
-                    if (className.startsWith('--not')) {
-                        hasNotPrefix = true;
-                        break;
-                    }
-                }
-
-                if (hasNotPrefix) {
+                if (isOverlay(el.classList)) {
                     // 找到第一个非空子节点（元素或文本）
                     let firstChild: Node | null = null;
                     for (const child of Array.from(el.childNodes)) {
@@ -284,29 +338,9 @@ class EditorHelper {
                     return firstChild;
                 }
 
-                // 处理 style 属性：移除字体相关设置
-                if (el.hasAttribute('style')) {
-                    const style = el.getAttribute('style');
-                    if (style) {
-                        // 移除 font-*, font 简写, letter-spacing, line-height 等
-                        const filteredStyle = style
-                            .split(';')
-                            .map(decl => decl.trim())
-                            .filter(decl => {
-                                if (!decl) return false;
-                                const prop = decl.split(':')[0].trim().toLowerCase();
-                                // 保留非字体相关属性
-                                return removeStyles.indexOf(prop) < 0;
-                            })
-                            .join(';');
-                        
-                        if (filteredStyle) {
-                            el.setAttribute('style', filteredStyle);
-                        } else {
-                            el.removeAttribute('style');
-                        }
-                    }
-                }
+                filterNodeAttr(el, tagName);
+
+                filterNodeStyle(el);
 
                 // 递归处理子节点
                 const children = Array.from(el.childNodes);
@@ -321,7 +355,7 @@ class EditorHelper {
             }
 
             return node;
-        }
+        };
 
         processNode(clone);
         return clone.innerHTML;
@@ -329,53 +363,56 @@ class EditorHelper {
 
     public static toNode(parent: HTMLElement, value: string): void {
         parent.innerHTML = value;
-    
-        /**
-         * 递归处理节点，为每个 iframe 添加包装父级
-         * @param node 当前节点
-         */
+        const overlayTags = ['video', 'iframe'];
+
+        const isOverlayTag = (tag: string): boolean => {
+            return overlayTags.indexOf(tag) >= 0;
+        };
+
         const processNode = (node: Node): void => {
             // 处理元素节点
-            if (node.nodeType === Node.ELEMENT_NODE) {
-                const element = node as HTMLElement;
-                
-                // 如果是 iframe 元素，进行包装
-                if (element.tagName.toLowerCase() === 'iframe') {
-                    wrapOverlay(element);
-                } else {
-                    // 递归处理子节点
-                    const children = Array.from(element.childNodes);
-                    for (const child of children) {
-                        processNode(child);
-                    }
-                }
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return;
             }
-        }
+            const element = node as HTMLElement;
+            if (isOverlayTag(element.tagName.toLowerCase())) {
+                wrapOverlay(element);
+                return;
+            }
+            const children = Array.from(element.childNodes);
+            for (const child of children) {
+                processNode(child);
+            }
+        };
         
-        /**
-         * 为 iframe 元素添加包装 div
-         * @param iframe 原始 iframe 元素
-         */
-        const wrapOverlay = (iframe: HTMLElement): void => {
-            // 创建包装 div
-            const wrapper = document.createElement('div');
-            wrapper.className = '--not-node';
+        const wrapOverlay = (node: HTMLElement): void => {
             
-            // 获取 iframe 的父节点
-            const parent = iframe.parentNode;
-            if (!parent) return;
-            
-            // 将包装 div 插入到 iframe 的位置
-            parent.replaceChild(wrapper, iframe);
-            
-            // 将 iframe 添加到包装 div 中
-            wrapper.appendChild(iframe);
-        }
+            const parent = node.parentNode;
+            if (!parent) {
+                return;
+            }
+            const wrapper = this.createOverlay();
+            parent.replaceChild(wrapper, node);
+            wrapper.appendChild(node);
+        };
         
         // 处理容器内的所有节点
         const children = Array.from(parent.childNodes);
         for (const child of children) {
             processNode(child);
         }
+    }
+
+    public static isOverlay(node: Node): boolean {
+        return node instanceof HTMLDivElement && $(node).hasClass('--with-overlay');
+    }
+
+    public static createOverlay(node?: Node): Node {
+        const wrapper = document.createElement('div');
+        wrapper.className = '--with-overlay';
+        if (node) {
+            wrapper.appendChild(node);
+        }
+        return wrapper;
     }
 }

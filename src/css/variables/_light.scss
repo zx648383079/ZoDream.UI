@@ -1,0 +1,61 @@
+@use '../functions';
+@use '../colors';
+
+$surface: #2f4156;
+$surface-hovered: functions.tint-color($surface, colors.$color-hover-offset) !default;
+$surface-selected: functions.tint-color($surface, colors.$color-active-offset) !default;
+$surface-child: $surface-selected !default;
+$surface-text: rgb(185, 201, 218) !default;
+$surface-selected-text: $surface-text !default;
+
+$body: #f4f4f4;
+$body-text: #333;
+
+$third: #6c757d;
+$third-text: $body-text;
+
+$tertiary: rgba($body, .5) !default;
+$tertiary-text: colors.$gray-100 !default;
+
+
+// 强调色
+$accent: #fff !default;
+$accent-text: #000 !default;
+
+$link-text: #0d6efd;
+$link-hover-text: #0a58ca;
+
+$meta-text: #767676 !default;
+$mask: colors.$black !default;
+$box-shadow: 0 .5rem 1rem rgba($mask, .15) !default;
+$box-shadow-inset: inset 0 1px 2px rgba($mask, .075) !default;
+
+$shadow: rgba(51, 51, 51, 0.7);
+$border:  colors.$gray-300 !default;
+$panel: white;
+
+
+
+
+$repeater: colors.$gray-500 !default; // 占位符
+
+$dialog: rgba(255, 255, 255, .9);
+$dialog-mask: rgba(0, 0, 0, .3);
+$dialog-text: #333;
+
+$button: transparent;
+$button-text: white;
+$button-border: #7B7B7B;
+$button-hover-border:  #A2A2A2;
+
+$input-text:   $body-text !default;
+$input:     $panel !default;
+$input-disabled:    colors.$gray-600 !default;
+$input-hovered: #f4f4f4 !default;
+$input-selected: #ccc !default;
+$input-placeholder:     colors.$gray-700 !default;
+$input-focus-border:              functions.tint-color(colors.$blue, 50%) !default;
+$input-border: $border !default;
+$input-icon: $input-text !default;
+$input-hovered-icon: $input-text !default;
+$input-label: #929292 !default;

@@ -255,3 +255,4 @@ var BoxSliderDefaultOptions = /** @class */ (function () {
         return new BoxSlider(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.boxSlider.js.map

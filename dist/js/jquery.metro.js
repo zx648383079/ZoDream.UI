@@ -125,3 +125,4 @@ var MetroDefaultOptions = /** @class */ (function () {
         return new Metro(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.metro.js.map

@@ -1,3 +1,6 @@
+@use 'theme';
+@use 'mixins';
+@use 'sizes';
 .tab-box {
     .tab-header {
         position: relative;
@@ -5,18 +8,18 @@
         user-select: none;
         .tab-item {
             &:hover {
-                background: #ccc;
+                background: var(--#{theme.$prefix}input-hovered);
             }
             &.active {
-                @include active();
+                @include mixins.active();
                 .fa {
                     display: block;
                 }
             }
             display: inline-block;
             width: 9.375rem;
-            height: $lineHeight;
-            line-height: $lineHeight;
+            height: sizes.$line-height;
+            line-height: sizes.$line-height;
             text-align: center;
             position: relative;
             .fa-close {
@@ -29,9 +32,9 @@
         &.has-over {
             >.fa {
                 position: absolute;
-                width: 30px;
+                width: 1.875rem;
                 text-align: center;
-                line-height: 30px;
+                line-height: 1.875rem;
                 &:last-child {
                     right: 0;
                     top: 0;
@@ -40,7 +43,7 @@
             .tab-header-content {
                 ul {
                     padding: 0;
-                    margin: 0 30px;
+                    margin: 0 1.875rem;
                 }
             }
         }
@@ -53,8 +56,42 @@
             &.active {
                 display: block;
                 background: transparent;
-                color: #767676;
+                // color: #767676;
             }
         }
+    }
+}
+
+.tab-bar {
+    display: block;
+    line-height: 2.5rem;
+    a {
+        color: var(--#{theme.$prefix}body-text);
+    }
+    .item {
+        display: inline-block;
+        padding: 0 1.25rem;
+        cursor: pointer;
+        &:hover {
+            background-color: var(--#{theme.$prefix}hover);
+        }
+        &.active {
+            @include mixins.active();
+        }
+        &:first-of-type {
+            border-top-left-radius: 0.3125rem;
+            border-bottom-left-radius: 0.3125rem;
+        }
+        &:last-of-type {
+            border-top-right-radius: 0.3125rem;
+            border-bottom-right-radius: 0.3125rem;
+        }
+    }
+}
+
+.flip-tab-item {
+    display: none;
+    &.active {
+        display: block;
     }
 }

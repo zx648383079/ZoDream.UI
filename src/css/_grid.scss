@@ -1,8 +1,13 @@
 @use "sass:math";
+@use "sass:map";
+@use "sass:meta";
+@use 'theme';
+@use 'sizes';
+@use 'mixins';
 @function breakpoint-next(
     $name,
-    $breakpoints: $grid-breakpoints,
-    $breakpoint-names: map-keys($breakpoints)
+    $breakpoints: sizes.$grid-breakpoints,
+    $breakpoint-names: map.keys($breakpoints)
 ) {
     $n: index($breakpoint-names, $name);
     @return if(
@@ -12,21 +17,21 @@
     );
 }
 
-@function breakpoint-min($name, $breakpoints: $grid-breakpoints) {
-    $min: map-get($breakpoints, $name);
+@function breakpoint-min($name, $breakpoints: sizes.$grid-breakpoints) {
+    $min: map.get($breakpoints, $name);
     @return if($min != 0, $min, null);
 }
 
-@function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+@function breakpoint-max($name, $breakpoints: sizes.$grid-breakpoints) {
     $next: breakpoint-next($name, $breakpoints);
     @return if($next, breakpoint-min($next, $breakpoints) - 1px, null);
 }
 
-@function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
+@function breakpoint-infix($name, $breakpoints: sizes.$grid-breakpoints) {
     @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
 }
 
-@mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {
+@mixin media-breakpoint-up($name, $breakpoints: sizes.$grid-breakpoints) {
     $min: breakpoint-min($name, $breakpoints);
     @if $min {
         @media (min-width: $min) {
@@ -37,51 +42,51 @@
     }
 }
 
-@mixin make-row($gutter: $grid-gutter-width) {
-    @if $enable-flex {
+@mixin make-row($gutter: sizes.$grid-gutter-width) {
+    @if sizes.$enable-flex {
         display: flex;
         flex-wrap: wrap;
     } @else {
-        @include clearfix();
+        @include mixins.clearfix();
     }
     margin-left: math.div($gutter, -2);
     margin-right: math.div($gutter, -2);
 }
 
-@mixin make-col($size, $columns: $grid-columns) {
-    @if $enable-flex {
-        flex: 0 0 percentage(math.div($size, $columns));
-        max-width: percentage(math.div($size, $columns));
+@mixin make-col($size, $columns: sizes.$grid-columns) {
+    @if sizes.$enable-flex {
+        flex: 0 0 math.percentage(math.div($size, $columns));
+        max-width: math.percentage(math.div($size, $columns));
     } @else {
         float: left;
-        width: percentage(math.div($size, $columns));
+        width: math.percentage(math.div($size, $columns));
     }
 }
 
-@mixin make-col-offset($size, $columns: $grid-columns) {
-    margin-left: percentage(math.div($size, $columns));
+@mixin make-col-offset($size, $columns: sizes.$grid-columns) {
+    margin-left: math.percentage(math.div($size, $columns));
 }
 
-@mixin make-col-push($size, $columns: $grid-columns) {
-    left: if($size > 0, percentage(math.div($size, $columns)), auto);
+@mixin make-col-push($size, $columns: sizes.$grid-columns) {
+    left: if($size > 0, math.percentage(math.div($size, $columns)), auto);
 }
 
-@mixin make-col-pull($size, $columns: $grid-columns) {
-    right: if($size > 0, percentage(math.div($size, $columns)), auto);
+@mixin make-col-pull($size, $columns: sizes.$grid-columns) {
+    right: if($size > 0, math.percentage(math.div($size, $columns)), auto);
 }
 
 @mixin make-col-ready() {
     // Add box sizing if only the grid is loaded
-    box-sizing: if(variable-exists(include-column-box-sizing) and $include-column-box-sizing, border-box, null);
+    box-sizing: if(meta.variable-exists(include-column-box-sizing) and $include-column-box-sizing, border-box, null);
     // Prevent columns from becoming too narrow when at smaller grid tiers by
     // always setting `width: 100%;`. This works because we set the width
     // later on to override this initial width.
     flex-shrink: 0;
     width: 100%;
     max-width: 100%; // Prevent `.col-auto`, `.col` (& responsive variants) from breaking out the grid
-    padding-right: calc(var(--#{$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
-    padding-left: calc(var(--#{$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
-    margin-top: var(--#{$prefix}gutter-y);
+    padding-right: calc(var(--#{theme.$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
+    padding-left: calc(var(--#{theme.$prefix}gutter-x) * .5); // stylelint-disable-line function-disallowed-list
+    margin-top: var(--#{theme.$prefix}gutter-y);
 }
 
 @mixin make-col-modifier($type, $size, $columns) {
@@ -95,9 +100,9 @@
 }
 
 @mixin make-grid-columns(
-    $columns: $grid-columns,
-    $gutter: $grid-gutter-width,
-    $breakpoints: $grid-breakpoints
+    $columns: sizes.$grid-columns,
+    $gutter: sizes.$grid-gutter-width,
+    $breakpoints: sizes.$grid-breakpoints
 ) {
   // Common properties for all breakpoints
     %grid-column {
@@ -108,7 +113,7 @@
         padding-right: math.div($gutter, 2);
         padding-left: math.div($gutter, 2);
 
-        @if $enable-flex {
+        @if sizes.$enable-flex {
             width: 100%;
         }
     }
@@ -120,7 +125,7 @@
     }
 
     $breakpoint-counter: 0;
-    @each $breakpoint in map-keys($breakpoints) {
+    @each $breakpoint in map.keys($breakpoints) {
         $breakpoint-counter: ($breakpoint-counter + 1);
 
         
@@ -133,7 +138,7 @@
 
         @include media-breakpoint-up($breakpoint, $breakpoints) {
         // Provide basic `.col-{bp}` classes for equal-width flexbox columns
-            @if $enable-flex {
+            @if sizes.$enable-flex {
                 .col-#{$breakpoint} {
                     position: relative;
                     flex-basis: 0;
@@ -172,26 +177,26 @@
     }
 }
 
-@mixin make-container($gutter: $container-padding-x) {
-    --#{$prefix}gutter-x: #{$gutter};
-    --#{$prefix}gutter-y: 0;
+@mixin make-container($gutter: sizes.$container-padding-x) {
+    --#{theme.$prefix}gutter-x: #{$gutter};
+    --#{theme.$prefix}gutter-y: 0;
     width: 100%;
     padding-right: calc(
-        var(--#{$prefix}gutter-x) * 0.5
+        var(--#{theme.$prefix}gutter-x) * 0.5
     ); // stylelint-disable-line function-disallowed-list
     padding-left: calc(
-        var(--#{$prefix}gutter-x) * 0.5
+        var(--#{theme.$prefix}gutter-x) * 0.5
     ); // stylelint-disable-line function-disallowed-list
     margin-right: auto;
     margin-left: auto;
 }
 
-@each $breakpoint, $container-max-width in $container-max-widths {
+@each $breakpoint, $container-max-width in sizes.$container-max-widths {
     .container-#{$breakpoint} {
       @extend .container-fluid;
     }
 
-    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint, sizes.$grid-breakpoints) {
         %responsive-container-#{$breakpoint} {
             max-width: $container-max-width;
         }
@@ -199,9 +204,9 @@
         // Extend each breakpoint which is smaller or equal to the current breakpoint
         $extend-breakpoint: true;
 
-        @each $name, $width in $grid-breakpoints {
+        @each $name, $width in sizes.$grid-breakpoints {
             @if ($extend-breakpoint) {
-                .container#{breakpoint-infix($name, $grid-breakpoints)} {
+                .container#{breakpoint-infix($name, sizes.$grid-breakpoints)} {
                     @extend %responsive-container-#{$breakpoint};
                 }
 

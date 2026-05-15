@@ -1,0 +1,63 @@
+@use 'theme';
+
+.dropdown-divider {
+    margin: .5rem 0;
+    height: 0;
+    opacity: 1;
+    overflow: hidden;
+    border-top: 1px solid var(--#{theme.$prefix}border);
+}
+
+.dropdown-pane {
+    display: none;
+    position: absolute;
+    box-shadow: 0px 2px 8px 1px var(--#{theme.$prefix}dropdown-shadow);
+    width: 100%;
+    margin: -5px 0 0;
+
+    background-color: var(--#{theme.$prefix}dropdown);
+    color: var(--#{theme.$prefix}dropdown-text);
+    right: 0;
+    z-index: 66;
+    min-width: 10rem;
+    a {
+        color: var(--#{theme.$prefix}dropdown-text);
+        display: block;
+        padding: 0.25rem .8rem;
+        line-height: 2rem;
+        &:hover {
+            background-color: var(--#{theme.$prefix}dropdown-hovered);
+            color: var(--#{theme.$prefix}dropdown-hovered-text);
+        }
+    }
+    ul {
+        display: block;
+    }
+    li {
+        display: block;
+        padding: 0;
+        text-align: left;
+        height: auto;
+        &:hover {
+            border-bottom: none;
+        }
+    }
+}
+
+.dropdown {
+    --#{theme.$prefix}dropdown: var(--#{theme.$prefix}panel);
+    --#{theme.$prefix}dropdown-text: var(--#{theme.$prefix}body-text);
+    --#{theme.$prefix}dropdown-hovered: var(--#{theme.$prefix}body);
+    --#{theme.$prefix}dropdown-hovered-text: var(--#{theme.$prefix}dropdown-text);
+    --#{theme.$prefix}dropdown-shadow: var(--#{theme.$prefix}shadow);
+    --#{theme.$prefix}dropdown-zindex: 66;
+    // .dropdown-toggle {
+
+    // }
+    &.--with-open {
+        .dropdown-pane {
+            display: block;
+        }
+    }
+}
+

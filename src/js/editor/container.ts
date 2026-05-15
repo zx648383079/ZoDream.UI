@@ -2,7 +2,7 @@ class EditorContainer implements IEditorContainer {
     private selection: IEditorRange;
     private element: IEditorElement;
     private undoStack: string[] = [];
-    private undoIndex: number;
+    private undoIndex: number = 0;
     private asyncTimer = 0;
     private listeners: {
         [key: string]: Function[];
@@ -44,7 +44,7 @@ class EditorContainer implements IEditorContainer {
         //     }
         // });
         this.on(EDITOR_EVENT_INPUT_KEYDOWN, (e: KeyboardEvent) => {
-            const modifiers = [];
+            const modifiers: string[] = [];
             if (e.ctrlKey) {
                 modifiers.push('Ctrl');
             }

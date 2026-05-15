@@ -152,3 +152,4 @@ var CarouselDefaultOptions = /** @class */ (function () {
         return new Carousel(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.carousel.js.map

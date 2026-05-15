@@ -316,3 +316,4 @@ var JSONFormatter = /** @class */ (function () {
         return formatter;
     };
 })(jQuery);
+//# sourceMappingURL=jsonformatter.js.map

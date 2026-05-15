@@ -1,78 +1,128 @@
-$isFullyTheme: true !default;
-@if $isFullyTheme {
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --#{$prefix}-primary: #{$dark-primary};
-            --#{$prefix}-primary-hover: #{tint-color($dark-primary, $colorHoverOffset)};
-            --#{$prefix}-primary-active: #{tint-color($dark-primary, $colorActiveOffset)};
-            --#{$prefix}-primary-text: #{$dark-primaryText};
-            
-            --#{$prefix}-body: #{$dark-body};
-            --#{$prefix}-body-text: #{$dark-bodyText};
-            --#{$prefix}-panel: #{$dark-panel};
-            --#{$prefix}-panel-text: #{$dark-bodyText};
-    
-            --#{$prefix}-dialog: #{$dark-dialog};
-            --#{$prefix}-dialog-text: #{$dark-dialogText};
-            --#{$prefix}-dialog-mask: #{$dark-dialogMask};
-            --#{$prefix}-shadow: #{$dark-shadow};
-    
-            --#{$prefix}-secondary: #{$dark-secondary};
-            --#{$prefix}-secondary-text: #{$dark-secondaryText};
+@use 'theme';
+@use 'colors';
+@use 'functions';
+@use 'variables/dark';
 
-            --#{$prefix}-gray: #{$dark-gray};
-            --#{$prefix}-gray-text: #{$dark-grayText};
-    
-            --#{$prefix}-link-text: #{$dark-linkText};
-            --#{$prefix}-link-hover-text: #{$dark-linkHoverText};
-    
-            
-            --#{$prefix}-input: #{$dark-input};
-            --#{$prefix}-input-text: #{$dark-inputText};
-    
-            --#{$prefix}-input-border: #{$dark-inputBorder};
-            --#{$prefix}-input-hover-border: #{$dark-inputHoverBorder};
-            --#{$prefix}-input-hover-shadow: #{$dark-inputHoverShadow};
-        }
+
+:root,
+[data-theme="light"] {
+     @each $color, $value in colors.$theme-colors {
+        --#{theme.$prefix}#{$color}: #{$value};
     }
+    @each $color, $value in colors.$theme-colors-text {
+        --#{theme.$prefix}#{$color}-text: #{$value};
+    }
+
+    --#{theme.$prefix}body: #{theme.$body};
+    --#{theme.$prefix}body-text: #{theme.$body-text};
+    --#{theme.$prefix}body-rgb: #{functions.to-rgb(theme.$body)};
+    --#{theme.$prefix}body-text-rgb: #{functions.to-rgb(theme.$body-text)};
+    --#{theme.$prefix}border: #{theme.$border};
+    --#{theme.$prefix}panel: #{theme.$panel};
+
+    --#{theme.$prefix}surface: #{theme.$surface};
+    --#{theme.$prefix}surface-rgb: #{functions.to-rgb(theme.$surface)};
+    --#{theme.$prefix}surface-text: #{theme.$surface-text};
+    --#{theme.$prefix}surface-text-rgb: #{functions.to-rgb(theme.$surface-text)};
+    --#{theme.$prefix}surface-hovered: #{theme.$surface-hovered};
+    --#{theme.$prefix}surface-selected: #{theme.$surface-selected};
+    --#{theme.$prefix}surface-selected-text: #{theme.$surface-selected-text};
+    --#{theme.$prefix}surface-child: #{theme.$surface-child};
+    --#{theme.$prefix}repeater: #{theme.$repeater};
+
+
+    --#{theme.$prefix}dialog: #{theme.$dialog};
+    --#{theme.$prefix}dialog-text: #{theme.$dialog-text};
+    --#{theme.$prefix}dialog-mask: #{theme.$dialog-mask};
+
+    --#{theme.$prefix}meta-text: #{theme.$meta-text};
+
+    --#{theme.$prefix}accent: #{theme.$accent};
+    --#{theme.$prefix}accent-text: #{theme.$accent-text};
+
+    --#{theme.$prefix}tertiary: #{theme.$tertiary};
+    --#{theme.$prefix}tertiary-text: #{theme.$tertiary-text};
+
+    --#{theme.$prefix}mask-rgb: #{functions.to-rgb(theme.$mask)};
+
+    --#{theme.$prefix}shadow: #{theme.$shadow};
+
+    --#{theme.$prefix}link-text: #{theme.$link-text};
+    --#{theme.$prefix}link-hovered-text: #{theme.$link-hover-text};
+
+    
+    --#{theme.$prefix}input: #{theme.$input};
+    --#{theme.$prefix}input-text: #{theme.$input-text};
+    --#{theme.$prefix}input-disabled: #{theme.$input-disabled};
+    --#{theme.$prefix}input-hovered: #{theme.$input-hovered};
+    --#{theme.$prefix}input-selected: #{theme.$input-selected};
+
+    --#{theme.$prefix}input-icon: #{theme.$input-icon};
+    --#{theme.$prefix}input-hovered-icon: #{theme.$input-hovered-icon};
+    --#{theme.$prefix}input-label: #{theme.$input-label};
+
+    --#{theme.$prefix}input-placeholder: #{theme.$input-placeholder};
+    --#{theme.$prefix}input-border: #{theme.$input-border};
+    --#{theme.$prefix}input-focus-border: #{theme.$input-focus-border};
 }
-@media (prefers-color-scheme: light) {
+
+@mixin theme-dark {
+    --#{theme.$prefix}body: #{dark.$body};
+    --#{theme.$prefix}body-text: #{dark.$body-text};
+    --#{theme.$prefix}body-rgb: #{functions.to-rgb(dark.$body)};
+    --#{theme.$prefix}body-text-rgb: #{functions.to-rgb(dark.$body-text)};
+    --#{theme.$prefix}border: #{dark.$border};
+    --#{theme.$prefix}panel: #{dark.$panel};
+
+    --#{theme.$prefix}surface: #{dark.$surface};
+    --#{theme.$prefix}surface-rgb: #{functions.to-rgb(dark.$surface)};
+    --#{theme.$prefix}surface-text: #{dark.$surface-text};
+    --#{theme.$prefix}surface-text-rgb: #{functions.to-rgb(dark.$surface-text)};
+    --#{theme.$prefix}surface-hovered: #{dark.$surface-hovered};
+    --#{theme.$prefix}surface-selected: #{dark.$surface-selected};
+    --#{theme.$prefix}surface-selected-text: #{dark.$surface-selected-text};
+    --#{theme.$prefix}surface-child: #{dark.$surface-child};
+    --#{theme.$prefix}repeater: #{dark.$repeater};
+
+    --#{theme.$prefix}dialog: #{dark.$dialog};
+    --#{theme.$prefix}dialog-text: #{dark.$dialog-text};
+    --#{theme.$prefix}dialog-mask: #{dark.$dialog-mask};
+    --#{theme.$prefix}shadow: #{dark.$shadow};
+
+    --#{theme.$prefix}tertiary: #{dark.$secondary};
+    --#{theme.$prefix}meta-text: #{dark.$secondary-text};
+
+    --#{theme.$prefix}meta-text: #{dark.$meta-text};
+
+    --#{theme.$prefix}accent: #{dark.$accent};
+    --#{theme.$prefix}accent-text: #{dark.$accent-text};
+
+    --#{theme.$prefix}tertiary: #{dark.$tertiary};
+    --#{theme.$prefix}tertiary-text: #{dark.$tertiary-text};
+
+    --#{theme.$prefix}link-text: #{dark.$link-text};
+    --#{theme.$prefix}link-hovered-text: #{dark.$link-hover-text};
+
+    
+    --#{theme.$prefix}input: #{dark.$input};
+    --#{theme.$prefix}input-text: #{dark.$input-text};
+    --#{theme.$prefix}input-disabled: #{dark.$input-disabled};
+    --#{theme.$prefix}input-hovered: #{dark.$input-hovered};
+    --#{theme.$prefix}input-selected: #{dark.$input-selected};
+
+    --#{theme.$prefix}input-icon: #{dark.$input-icon};
+    --#{theme.$prefix}input-hovered-icon: #{dark.$input-hovered-icon};
+    --#{theme.$prefix}input-label: #{dark.$input-label};
+
+    --#{theme.$prefix}input-placeholder: #{dark.$input-placeholder};
+    --#{theme.$prefix}input-border: #{dark.$input-border};
+    --#{theme.$prefix}input-focus-border: #{dark.$input-focus-border};
+}
+[data-theme="dark"] {
+    @include theme-dark;
+}
+@media (prefers-color-scheme: dark) {
     :root {
-        --#{$prefix}-primary: #{$primary};
-        --#{$prefix}-primary-hover: #{shade-color($primary, $colorHoverOffset)};
-        --#{$prefix}-primary-active: #{shade-color($primary, $colorActiveOffset)};
-        --#{$prefix}-primary-text: #{$primaryText};
-        @if $isFullyTheme {
-            --#{$prefix}-body: #{$body};
-            --#{$prefix}-body-text: #{$bodyText};
-            --#{$prefix}-panel: #{$panel};
-            --#{$prefix}-panel-text: #{$bodyText};
-    
-
-
-            --#{$prefix}-dialog: #{$dialog};
-            --#{$prefix}-dialog-text: #{$dialogText};
-            --#{$prefix}-dialog-mask: #{$dialogMask};
-
-            --#{$prefix}-gray: #{$gray};
-            --#{$prefix}-gray-text: #{$grayText};
-    
-            --#{$prefix}-secondary: #{$secondary};
-            --#{$prefix}-secondary-text: #{$secondaryText};
-    
-            --#{$prefix}-shadow: #{$shadow};
-    
-            --#{$prefix}-link-text: #{$linkText};
-            --#{$prefix}-link-hover-text: #{$linkHoverText};
-    
-            
-            --#{$prefix}-input: #{$input};
-            --#{$prefix}-input-text: #{$inputText};
-    
-            --#{$prefix}-input-border: #{$inputBorder};
-            --#{$prefix}-input-hover-border: #{$inputHoverBorder};
-            --#{$prefix}-input-hover-shadow: #{$inputHoverShadow};
-
-        }
+        @include theme-dark;
     }
 }

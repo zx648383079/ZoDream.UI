@@ -509,3 +509,4 @@ var ChatDefaultOptions = /** @class */ (function () {
         return new Chat(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.autoChat.js.map

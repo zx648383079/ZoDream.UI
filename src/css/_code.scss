@@ -1,0 +1,161 @@
+@use 'theme';
+@use 'mixins';
+.code-container {
+    --#{theme.$prefix}code: #282c34;
+    --#{theme.$prefix}code-text: #fff;
+    --#{theme.$prefix}code-line: hsla(0, 0%, 100%, .3);
+    --#{theme.$prefix}code-light: rgba(0,0,0,.66);
+    position: relative;
+    background-color: var(--#{theme.$prefix}code);
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+    .icon-copy,
+    .icon-cloud,
+    .icon-full-screen,
+    .icon-minimize {
+        @include mixins.iconFont();
+    }
+    .icon-copy::before {
+        content: "\f0c5";
+    }
+    .icon-full-screen::before {
+        content: "\f065";
+    }
+    .icon-cloud::before {
+        content: "\f0c2";
+    }
+    .icon-minimize::before {
+        content: "\f2d1";
+    }
+    .code-header {
+        padding: .2rem .8rem 0;
+        position: absolute;
+        z-index: 3;
+        width: 100%;
+        height: 2rem;
+        background-color: var(--#{theme.$prefix}code);
+        a {
+            cursor: pointer;
+            color: var(--#{theme.$prefix}code-text) !important;
+            display: inline-flex;
+            font-size: .6rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            vertical-align: top;
+            margin-top: .2rem;
+            text-decoration: none !important;
+            &:not(:last-of-type) {
+                margin-right: 0;
+            }
+            &:nth-of-type(3n) {
+                background-color: #e0443e !important;
+            }
+            &:nth-of-type(3n+1) {
+                background-color: #dea123 !important;
+            }
+            &:nth-of-type(3n+2) {
+                background-color: #1aab29 !important;
+            }
+        }
+        span {
+            color: var(--#{theme.$prefix}code-line);
+            float: right;
+        }
+    }
+    pre {
+        background: transparent !important;
+        position: relative;
+        z-index: 1;
+        line-height: 1.4;
+        padding: 2rem 0 1.25rem .5rem;
+        margin: 0 0 0 3.5rem;
+        overflow-x: auto;
+    }
+    code {
+        color: var(--#{theme.$prefix}code-text);
+        background-color: transparent !important;
+        padding: 0;
+        border-radius: 0;
+        font-size: inherit !important;
+    }
+    .highlight-bar {
+        user-select: none;
+        position: absolute;
+        top: 2rem;
+        left: 0;
+        width: 100%;
+        line-height: 1.4;
+        span {
+            display: block;
+        }
+        .highlighted {
+            background-color: var(--#{theme.$prefix}code-light);
+            position: relative;
+            &::before {
+                content: " ";
+                position: absolute;
+                z-index: 3;
+                left: 0;
+                top: 0;
+                display: block;
+                width: 3.5rem;
+                height: 100%;
+                background-color: var(--#{theme.$prefix}code-light);
+            }
+        }
+    }
+    .line-number-bar {
+        position: absolute;
+        user-select: none;
+        top: 2rem;
+        width: 3.5rem;
+        text-align: center;
+        color: var(--#{theme.$prefix}code-line);
+        line-height: 1.4;
+        z-index: 3;
+        span {
+            display: block;
+        }
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        z-index: 2;
+        top: 2rem;
+        left: 0;
+        width: 3.5rem;
+        bottom: 0;
+        border-radius: 6px 0 0 6px;
+        border-right: 1px solid var(--#{theme.$prefix}code-light);
+        background-color: var(--#{theme.$prefix}code);
+    }
+    &.code-full-screen {
+        position: fixed;
+        margin: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 1199;
+        overflow-y: auto;
+        .icon-full-screen::before {
+            content: "\f066";
+        }
+    }
+    &.code-with-minimize {
+        .line-number-bar,
+        .highlight-bar,
+        pre {
+            display: none;
+        }
+        .code-header {
+            position: static;
+        }
+        .icon-minimize::before {
+            content: "\f2d0";
+        }
+    }
+}

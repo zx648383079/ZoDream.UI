@@ -55,3 +55,4 @@ var CoupletDefaultOption = /** @class */ (function () {
         return new Coupletor(this, option);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.couplet.js.map

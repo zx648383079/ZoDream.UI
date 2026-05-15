@@ -1,9 +1,12 @@
+@use 'theme';
+@use 'sizes';
+
 @mixin form-validation-state($state, $color) {
     .#{$state}-tooltip {
         display: none;
         color: $color;
         max-width: 100%;
-        line-height: $lineHeight;
+        line-height: sizes.$line-height;
     }
 
     &.is-#{$state} {
@@ -17,35 +20,51 @@
 }
 
 .form-control {
-    padding: $inputPadding;
+    --#{theme.$prefix}input-width: auto;
+    min-width: var(--#{theme.$prefix}input-width);
+    padding: sizes.$input-padding;
     font-size: 1rem;
     font-weight: 400;
-    line-height: $inputLineHeight;
+    line-height: sizes.$input-line-height;
     appearance: none;
-    border-radius: $radius;
+    border-radius: sizes.$form-radius;
     border-width: 1px;
-    border-color: var(--#{$prefix}-input-border);
-    background-color: var(--#{$prefix}-input);
-    color: var(--#{$prefix}-input-text);
+    border-color: var(--#{theme.$prefix}input-border);
+    background-color: var(--#{theme.$prefix}input);
+    color: var(--#{theme.$prefix}input-text);
     &:focus {
-        border-color: var(--#{$prefix}-input-hover-border);
+        border-color: var(--#{theme.$prefix}input-focus-border);
         outline: 0;
-        box-shadow: 0 0 0 .25rem var(--#{$prefix}-input-hover-shadow);
+        box-shadow: 0 0 0 .25rem rgba(var(--#{theme.$prefix}surface-rgb), .25);
     }
 }
 
 textarea {
     &.form-control {
-        min-height: $lineHeight;
+        min-height: sizes.$line-height;
+    }
+}
+
+input[type="color"] {
+    &.form-control {
+        min-width: auto;
+        padding: 0;
+        height: 2.25rem;
+    }
+}
+
+.form-control-color {
+    &::-webkit-color-swatch {
+        border-radius: sizes.$form-radius;
     }
 }
 
 .input-group {
     .tooltip {
-        color: var(--#{$prefix}-secondary-text);
+        color: var(--#{theme.$prefix}meta-text);
         font-size: 0.8rem;
         padding: 0 0 0.625rem 0.625rem;
     }
-    @include form-validation-state(invalid, $invalid);
-    @include form-validation-state(valid, $valid);
+    @include form-validation-state(invalid, var(--#{theme.$prefix}danger));
+    @include form-validation-state(valid, var(--#{theme.$prefix}success));
 }

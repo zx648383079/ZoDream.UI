@@ -428,3 +428,4 @@ var WaterFall = /** @class */ (function () {
         return new WaterFall(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.waterfall.js.map

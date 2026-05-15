@@ -6,12 +6,20 @@
  * Copyright (c) 2017 ZoDream
  */
 
-@import "scrollbar";
+@use "scrollbar";
+@use 'theme';
+
 .selector {
+    --#{theme.$prefix}picker: var(--#{theme.$prefix}panel);
+    --#{theme.$prefix}picker-text: var(--#{theme.$prefix}body-text);
+    --#{theme.$prefix}picker-disabled-text: rgba(var(--#{theme.$prefix}body-text-rgb), .2);
+    --#{theme.$prefix}picker-header: var(--#{theme.$prefix}surface);
+    --#{theme.$prefix}picker-header-text: var(--#{theme.$prefix}surface-text);
+    --#{theme.$prefix}picker-border: var(--#{theme.$prefix}border);
     position: fixed;
-    width: 300px;
-    background: #fff;
-    border: 1px solid #0275d8;
+    width: 18.75rem;
+    background-color: var(--#{theme.$prefix}picker);
+    border: 1px solid var(--#{theme.$prefix}picker-border);
     display: none;
     box-sizing: border-box;
     z-index: 999;
@@ -20,25 +28,25 @@
         padding: 0;
     }
     .selector-header {
-        border-bottom: 2px solid #0275d8;
+        border-bottom: 2px solid var(--#{theme.$prefix}picker-border);
         li {
             list-style: none;
             display: inline-block;
-            line-height: 30px;
-            padding: 0 5px;
+            line-height: 1.875rem;
+            padding: 0 0.3125rem;
             text-align: center;
-            min-width: 78px;
+            min-width: 4.875rem;
             
             &.active {
-                background: #0275d8;
-                color: #fff;
+                background-color: var(--#{theme.$prefix}picker-header);
+                color: var(--#{theme.$prefix}picker-header-text);
             }
         }
     }
     .selector-body {
         overflow-y: auto;
-        height: 160px;
-        @include scrollbar();
+        height: 10rem;
+        @include scrollbar.scrollbar();
         ul {
             display: none;
             &.active {
@@ -47,14 +55,14 @@
             li {
                 list-style: none;
                 display: inline-block;
-                line-height: 25px;
-                padding: 0 8px;
+                line-height: 1.5625rem;
+                padding: 0 0.5rem;
                 text-align: center;
-                min-width: 60px;
+                min-width: 3.75rem;
                 &.selected,
                 &:hover {
-                    background: #0275d8;
-                    color: #fff;
+                    background-color: var(--#{theme.$prefix}picker-header);
+                    color: var(--#{theme.$prefix}picker-header-text);
                 }
             }
         }
@@ -63,18 +71,18 @@
         text-align: right;
         .selector-yes {
             width:30%;
-            background: #0275d8;
-            color: #fff;
-            padding: 0 8px;
+            background-color: var(--#{theme.$prefix}picker-header);
+            color: var(--#{theme.$prefix}picker-header-text);
+            padding: 0 0.5rem;
             border: none;
-            line-height: 25px;
+            line-height: 1.5625rem;
             display: inline-block;
         }
     }
     .fa-close {
         position: absolute;
         top: 0;
-        line-height: 30px;
-        right: 5px;
+        line-height: 1.875rem;
+        right: 0.3125rem;
     }
 }

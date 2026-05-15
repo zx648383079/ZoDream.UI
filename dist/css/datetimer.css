@@ -6,12 +6,18 @@
  * Copyright (c) 2017 ZoDream
  */
 .datetimer {
-  width: 350px;
+  --zre-picker: var(--zre-panel);
+  --zre-picker-text: var(--zre-body-text);
+  --zre-picker-disabled-text: rgba(var(--zre-body-text-rgb), .2);
+  --zre-picker-header: var(--zre-surface);
+  --zre-picker-header-text: var(--zre-surface-text);
+  --zre-picker-border: var(--zre-border);
+  width: 21.875rem;
   position: absolute;
   display: none;
   z-index: 999;
   user-select: none;
-  background: #fff;
+  background-color: var(--zre-picker);
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -21,10 +27,10 @@
 .datetimer .header {
   position: relative;
   text-align: center;
-  line-height: 50px;
-  background: #006cff;
-  color: #fff;
-  font-size: 25px;
+  line-height: 2.5rem;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
+  font-size: 1.25rem;
 }
 .datetimer .header span {
   width: 60%;
@@ -32,19 +38,19 @@
 }
 .datetimer .header .previousMonth,
 .datetimer .header .nextYear {
-  margin-left: 10px;
+  margin-left: 0.625rem;
 }
 .datetimer li {
   list-style: none;
 }
 .datetimer .body {
-  height: 350px;
+  height: 21.875rem;
   position: relative;
 }
 .datetimer .body .month-grid,
 .datetimer .body .year-grid,
 .datetimer .body .day-grid {
-  background: #fff;
+  background-color: var(--zre-picker);
   position: absolute;
   top: 0;
   width: 100%;
@@ -56,12 +62,12 @@
   margin: 0;
 }
 .datetimer .body .month-grid ol {
-  background: #eee;
+  background-color: var(--zre-picker-border);
 }
 .datetimer .body .month-grid li {
   display: inline-block;
-  width: 50px;
-  line-height: 50px;
+  width: 3.125rem;
+  line-height: 3.125rem;
   text-align: center;
   box-sizing: border-box;
 }
@@ -69,56 +75,56 @@
   cursor: pointer;
 }
 .datetimer .body .month-grid ul li.active {
-  background: #006cff;
-  color: #fff;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
 }
 .datetimer .body .month-grid ul li.disable {
-  color: #ccc;
+  color: var(--zre-picker-disabled-text);
 }
 .datetimer .body .list-group {
-  width: 80px;
+  width: 5rem;
   display: inline-block;
 }
 .datetimer .body .list-group ul {
-  height: 320px;
+  height: 18.75rem;
 }
 .datetimer .body .list-group ul li {
-  line-height: 30px;
+  line-height: 1.875rem;
 }
 .datetimer .body .list-group ul li.active {
-  background: #006cff;
-  color: #fff;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
 }
 .datetimer .body .day-grid {
   display: none;
 }
 .datetimer .body .day-grid .list-group {
-  width: 60px;
+  width: 3.75rem;
 }
 .datetimer .body .day-grid .list-group:first-child {
-  margin-left: 80px;
+  margin-left: 5rem;
 }
 .datetimer .body .year-grid {
   display: none;
 }
 .datetimer .body .year-grid .list-group:first-child {
-  margin-left: 95px;
+  margin-left: 5.625rem;
 }
 .datetimer .body .year-grid .fa-close,
 .datetimer .body .day-grid .fa-close {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0.3125rem;
+  right: 0.3125rem;
 }
 .datetimer .footer {
-  background: #eee;
+  background: var(--zre-picker-border);
   position: relative;
-  height: 30px;
+  height: 1.875rem;
 }
 .datetimer .footer input {
-  width: 30px;
-  height: 30px;
-  font-size: 16px;
+  width: 1.875rem;
+  height: 1.875rem;
+  font-size: 1rem;
   text-align: center;
   border: none;
   box-sizing: border-box;
@@ -127,10 +133,10 @@
 .datetimer .footer button {
   position: absolute;
   right: 0;
-  width: 100px;
-  background: green;
-  color: #fff;
-  height: 30px;
+  width: 6.25rem;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
+  height: 1.875rem;
   border: none;
 }
 
@@ -141,13 +147,13 @@
 }
 .list-group ul {
   overflow-y: auto;
-  border: 1px solid #eee;
+  border: 1px solid var(--zre-picker-border);
 }
 .list-group ul::-webkit-scrollbar {
   height: 6px;
   width: 6px;
   margin-right: 5px;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   transition: all 0.3s ease-in-out;
   border-radius: 0px;
 }
@@ -170,7 +176,7 @@
   background: rgba(0, 0, 0, 0.4);
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 25rem) {
   .datetimer {
     position: fixed;
     width: 100%;
@@ -178,16 +184,16 @@
     bottom: 0;
   }
   .datetimer .body {
-    height: 350px;
-    width: 350px;
+    height: 19.6875rem;
+    width: 19.6875rem;
     margin: 0 auto;
   }
   .datetimer .body .month-grid li {
-    width: 45px;
-    line-height: 45px;
+    width: 2.8125rem;
+    line-height: 2.8125rem;
   }
   .datetimer .body .list-group ul {
-    height: 320px;
+    height: 18.125rem;
   }
 }
 /*# sourceMappingURL=datetimer.css.map */

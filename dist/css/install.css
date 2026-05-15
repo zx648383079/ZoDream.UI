@@ -1,0 +1,63 @@
+.full-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  padding: 0.625rem 1.25rem;
+  background-color: var(--zre-surface);
+  color: var(--zre-surface-text);
+}
+
+.page-body {
+  overflow-y: auto;
+  flex: 1;
+  border: 1px solid var(--zre-surface);
+  padding: 0.3125rem;
+  box-shadow: 0 0 10px inset rgba(var(--zre-surface-rgb), 0.3);
+}
+.page-body ol {
+  margin-left: 1.25rem;
+}
+.page-body code {
+  background-color: rgba(var(--zre-surface-rgb), 0.3);
+  padding: 0.3125rem;
+}
+
+.page-footer {
+  text-align: right;
+  padding: 0.3125rem;
+}
+.page-footer .btn {
+  background-color: var(--zre-surface);
+  color: var(--zre-surface-text);
+}
+
+.form-control {
+  height: 1.875rem;
+  box-sizing: border-box;
+}
+
+.module-box {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.table th {
+  text-align: right;
+}
+.table td {
+  text-align: left;
+  line-height: 1.875rem;
+}
+.table thead th {
+  text-align: left;
+}
+
+@media (min-height: 48rem) {
+  .full-page {
+    height: 60vh;
+  }
+}
+/*# sourceMappingURL=install.css.map */

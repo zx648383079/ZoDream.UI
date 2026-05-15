@@ -1,7 +1,7 @@
 .path {
     li {
         display: inline-block;
-        padding: 0 6px;
+        padding: 0 0.375rem;
         &::after {
             content: '/';
         }

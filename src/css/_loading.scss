@@ -1,35 +1,37 @@
+@use 'prefix';
+
 .loading{   
-    width: 80px;   
-    height: 40px;   
+    width: 5rem;   
+    height: 2.5rem;   
     margin: 0 auto;
     span{   
         display: inline-block;   
         width: 8px;   
         height: 100%;
         background: lightgreen;
-        @include prefix-animation(load1 1s ease infinite);
+        @include prefix.prefix-animation(load1 1s ease infinite);
         &:nth-child(2){
-            @include prefix-content(animation-delay, 0.2s);
+            @include prefix.prefix-content(animation-delay, 0.2s);
         }
         &:nth-child(3){
-            @include prefix-content(animation-delay, 0.4s);
+            @include prefix.prefix-content(animation-delay, 0.4s);
         }
         &:nth-child(4){
-            @include prefix-content(animation-delay, 0.6s);
+            @include prefix.prefix-content(animation-delay, 0.6s);
         }
         &:nth-child(5){
-            @include prefix-content(animation-delay, 0.8s);
+            @include prefix.prefix-content(animation-delay, 0.8s);
         }
     }
 }
-@include prefix-keyframes(load1){
+@include prefix.prefix-keyframes(load1){
     0%,100%{   
-        height: 40px;   
+        height: 2.5rem;   
         background: lightgreen;   
     }   
     50%{   
-        height: 70px;   
-        margin: -15px 0;   
+        height: 4.375rem;   
+        margin: -0.9375rem 0;   
         background: lightblue;   
     }
 }
@@ -45,32 +47,32 @@
         height: 100%;   
         border-radius: 50%;   
         background: lightgreen;   
-        @include prefix-animation(load2 1.04s ease-in infinite alternate);
+        @include prefix.prefix-animation(load2 1.04s ease-in infinite alternate);
         &:nth-child(1){
-            @include prefix-content(animation-delay, 0.13s);
+            @include prefix.prefix-content(animation-delay, 0.13s);
         }
         &:nth-child(2){
-            @include prefix-content(animation-delay, 0.26s);
+            @include prefix.prefix-content(animation-delay, 0.26s);
         }
         &:nth-child(3){
-            @include prefix-content(animation-delay, 0.39s);
+            @include prefix.prefix-content(animation-delay, 0.39s);
         }
         &:nth-child(4){
-            @include prefix-content(animation-delay, 0.42s);
+            @include prefix.prefix-content(animation-delay, 0.42s);
         }
         &:nth-child(5){
-            @include prefix-content(animation-delay, 0.65s);
+            @include prefix.prefix-content(animation-delay, 0.65s);
         }
     }
 }
-@include prefix-keyframes(load2){
+@include prefix.prefix-keyframes(load2){
     0%{   
         opacity: 1;   
-        @include prefix-content(transform, translate(0px));   
+        @include prefix.prefix-content(transform, translate(0px));   
     }   
     100%{   
         opacity: 0.2;   
-        @include prefix-content(transform, translate(150px));   
+        @include prefix.prefix-content(transform, translate(150px));   
     } 
 }
 
@@ -85,25 +87,25 @@
         height: 100%;   
         margin-right: 5px;   
         background: lightgreen;
-        @include prefix-animation(load3 1.04s ease infinite);
+        @include prefix.prefix-animation(load3 1.04s ease infinite);
         &:nth-child(1){
-            @include prefix-content(animation-delay, 0.13s);
+            @include prefix.prefix-content(animation-delay, 0.13s);
         }
         &:nth-child(2){
-            @include prefix-content(animation-delay, 0.26s);
+            @include prefix.prefix-content(animation-delay, 0.26s);
         }
         &:nth-child(3){
-            @include prefix-content(animation-delay, 0.39s);
+            @include prefix.prefix-content(animation-delay, 0.39s);
         }
         &:nth-child(4){
-            @include prefix-content(animation-delay, 0.42s);
+            @include prefix.prefix-content(animation-delay, 0.42s);
         }
         &:nth-child(5){
-            @include prefix-content(animation-delay, 0.65s);
+            @include prefix.prefix-content(animation-delay, 0.65s);
         }
     }
 }
-@include prefix-keyframes(load3){
+@include prefix.prefix-keyframes(load3){
     0%{   
         opacity: 1;   
     }   
@@ -124,55 +126,55 @@
         border-radius: 50%;   
         background: lightgreen;   
         position: absolute; 
-        @include prefix-animation(load4 1.04s ease infinite);
+        @include prefix.prefix-animation(load4 1.04s ease infinite);
         &:nth-child(1){
             left: 0;   
             top: 50%;   
             margin-top:-8px;
-            @include prefix-content(animation-delay, 0.13s);
+            @include prefix.prefix-content(animation-delay, 0.13s);
         }
         &:nth-child(2){
             left: 14px;   
             top: 14px;
-            @include prefix-content(animation-delay, 0.26s);
+            @include prefix.prefix-content(animation-delay, 0.26s);
         }
         &:nth-child(3){
             left: 50%;   
             top: 0;   
             margin-left: -8px;
-            @include prefix-content(animation-delay, 0.39s);
+            @include prefix.prefix-content(animation-delay, 0.39s);
         }
         &:nth-child(4){
             top: 14px;   
             right: 14px;
-            @include prefix-content(animation-delay, 0.42s);
+            @include prefix.prefix-content(animation-delay, 0.42s);
         }
         &:nth-child(5){
             right: 0;   
             top: 50%;   
             margin-top:-8px;
-            @include prefix-content(animation-delay, 0.65s);
+            @include prefix.prefix-content(animation-delay, 0.65s);
         }
         &:nth-child(6){
             right: 14px;   
             bottom:14px;
-            @include prefix-content(animation-delay, 0.78s);
+            @include prefix.prefix-content(animation-delay, 0.78s);
         }
         &:nth-child(7){
             bottom: 0;   
             left: 50%;   
             margin-left: -8px;
-            @include prefix-content(animation-delay, 0.91s);
+            @include prefix.prefix-content(animation-delay, 0.91s);
         }
         &:nth-child(8){
             bottom: 14px;   
             left: 14px;
-            @include prefix-content(animation-delay, 1.04s);
+            @include prefix.prefix-content(animation-delay, 1.04s);
         }
 
     }
 }
-@include prefix-keyframes(load4){
+@include prefix.prefix-keyframes(load4){
     0%{   
         opacity: 1;   
     }   
@@ -189,7 +191,7 @@
     margin-top:100px;   
     position: relative;   
     background: lightgreen; 
-    @include prefix-animation(load5 1.04s ease-in infinite alternate);
+    @include prefix.prefix-animation(load5 1.04s ease-in infinite alternate);
     span {   
         display: inline-block;   
         width: 16px;   
@@ -199,10 +201,10 @@
         position: absolute;   
         margin-top: -7px;   
         margin-left:-8px;
-        @include prefix-animation(load5_1 1.04s ease-in infinite alternate);
+        @include prefix.prefix-animation(load5_1 1.04s ease-in infinite alternate);
     }
 }
-@include prefix-keyframes(load5){
+@include prefix.prefix-keyframes(load5){
     0%{   
         background: lightgreen;   
     }   
@@ -210,7 +212,7 @@
         background: lightblue;   
     }
 }
-@include prefix-keyframes(load5_1){
+@include prefix.prefix-keyframes(load5_1){
    0%{   
         background: lightgreen;   
     }   
@@ -232,7 +234,7 @@
             border-left: 25px solid #a5dc86;
             border-bottom: 25px solid #a5dc86;
             border-radius: 25px;
-            @include prefix-content(animation, load6 0.5s 0s infinite);
+            @include prefix.prefix-content(animation, load6 0.5s 0s infinite);
         }
         &:nth-child(2) {
             width: 0px;
@@ -242,17 +244,17 @@
             border-left: 25px solid #a5dc86;
             border-bottom: 25px solid #a5dc86;
             border-radius: 25px;
-            @include prefix-content(animation, load6_1 0.5s 0s infinite);
+            @include prefix.prefix-content(animation, load6_1 0.5s 0s infinite);
             margin-top: -50px;
         }
         &:nth-child(3) {
-            @include prefix-content(animation, load6_2 1s 0.33s infinite linear);
+            @include prefix.prefix-content(animation, load6_2 1s 0.33s infinite linear);
         }
         &:nth-child(4) {
-            @include prefix-content(animation, load6_2 1s 0.66s infinite linear);
+            @include prefix.prefix-content(animation, load6_2 1s 0.66s infinite linear);
         }
         &:nth-child(5) {
-            @include prefix-content(animation, load6_2 1s 0.99s infinite linear);
+            @include prefix.prefix-content(animation, load6_2 1s 0.99s infinite linear);
         }
         &:nth-child(3),
         &:nth-child(4),
@@ -265,41 +267,41 @@
             width: 10px;
             height: 10px;
             position: absolute;
-            @include prefix-content(transform, translate(0, -6.25px));
+            @include prefix.prefix-content(transform, translate(0, -6.25px));
             top: 25px;
             left: 100px;
         }
     }
 }
 
-@include prefix-keyframes(load6){
+@include prefix.prefix-keyframes(load6){
     0% {
-        @include prefix-content(transform, rotate(270deg));
+        @include prefix.prefix-content(transform, rotate(270deg));
     }
     50% {
-        @include prefix-content(transform, rotate(360deg));
+        @include prefix.prefix-content(transform, rotate(360deg));
     }
     100% {
-        @include prefix-content(transform, rotate(270deg));
+        @include prefix.prefix-content(transform, rotate(270deg));
     }
 }
-@include prefix-keyframes(load6_1){
+@include prefix.prefix-keyframes(load6_1){
     0% {
-        @include prefix-content(transform, rotate(90deg));
+        @include prefix.prefix-content(transform, rotate(90deg));
     }
     50% {
-        @include prefix-content(transform, rotate(0deg));
+        @include prefix.prefix-content(transform, rotate(0deg));
     }
     100% {
-        @include prefix-content(transform, rotate(90deg));
+        @include prefix.prefix-content(transform, rotate(90deg));
     }
 }
-@include prefix-keyframes(load6_2){
+@include prefix.prefix-keyframes(load6_2){
     75% {
         opacity: 0.7;
     }
     100% {
-        @include prefix-content(transform, translate(-100px, -6.25px));
+        @include prefix.prefix-content(transform, translate(-100px, -6.25px));
     }
 }
 
@@ -308,26 +310,26 @@
 .loading7 {
     span {
         display: block;
-        @include prefix-content(animation-fill-mode, both);
+        @include prefix.prefix-content(animation-fill-mode, both);
         width: 50px;
         height: 50px;
         background: #a5dc86;
         border: 1px solid #a5dc86;
-        @include prefix-content(animation, load7 3s 0s cubic-bezier(.09, .57, .49, .9) infinite);
+        @include prefix.prefix-content(animation, load7 3s 0s cubic-bezier(.09, .57, .49, .9) infinite);
     }
 }
 
-@include prefix-keyframes(load7){
+@include prefix.prefix-keyframes(load7){
     25% {
-        @include prefix-content(transform, perspective(100px) rotateX(180deg) rotateY(0));
+        @include prefix.prefix-content(transform, perspective(100px) rotateX(180deg) rotateY(0));
     }
     50% {
-        @include prefix-content(transform, perspective(100px) rotateX(180deg) rotateY(180deg));
+        @include prefix.prefix-content(transform, perspective(100px) rotateX(180deg) rotateY(180deg));
     }
     75% {
-        @include prefix-content(transform, perspective(100px) rotateX(0) rotateY(180deg));
+        @include prefix.prefix-content(transform, perspective(100px) rotateX(0) rotateY(180deg));
     }
     100% {
-        @include prefix-content(transform, perspective(100px) rotateX(0) rotateY(0));
+        @include prefix.prefix-content(transform, perspective(100px) rotateX(0) rotateY(0));
     }
 }

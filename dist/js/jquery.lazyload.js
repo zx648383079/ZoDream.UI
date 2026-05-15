@@ -211,3 +211,4 @@ var LazyDefaultOptions = /** @class */ (function () {
         return new Lazy(this, options);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.lazyload.js.map

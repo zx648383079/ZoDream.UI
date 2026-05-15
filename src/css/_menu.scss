@@ -1,4 +1,5 @@
-@import "scrollbar";
+@use "scrollbar";
+@use 'theme';
 
 .app-wrapper {
     position: relative;
@@ -6,7 +7,7 @@
     width: 100%;
     .menu-icon-arrow,
     .sidebar-container-toggle,
-    .drop-icon-arrow {
+    .dropdown-arrow {
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
         text-rendering: auto;
@@ -21,51 +22,24 @@
         top: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--#{$prefix}-dialog-mask);
+        background-color: var(--#{theme.$prefix}dialog-mask);
         z-index: 78;
         display: none;
     }
 
-    .drop-icon-arrow {
+    .dropdown-arrow {
         &::before {
             content: "\f0dd";
         }
     }
-
-    .drop-bar {
-        border-radius: .25rem;
-        position: absolute;
-        z-index: 44;
-        width: 8rem;
-        margin-left: -5rem;
-        line-height: 2.25rem;
-        background-color: var(--#{$prefix}-panel);
-        box-shadow: 0 0.125rem 0.75rem 0 var(--#{$prefix}-shadow);
-        display: none;
-        &,
-        ul,
-        li {
-            list-style: none;
-        }
-        a {
-            display: block;
-            user-select: none;
-            padding: .2rem .8rem;
-            &:hover {
-                background-color: var(--#{$prefix}-body);
-            }
-        }
-    }
-    .nav-drop-open {
-        overflow: inherit;
-        .drop-bar {
-            display: block;
-        }
+    .dropdown-pane {
+        margin: 0;
+        right: .8rem;
     }
     .app-header-container {
         line-height: 3.25rem;
         display: flex;
-        background-color: var(--#{$prefix}-panel);
+        background-color: var(--#{theme.$prefix}panel);
         .sidebar-container-toggle {
             display: block;
             padding: 0 .8rem;
@@ -74,7 +48,7 @@
                 content: "\f0c9";
             }
             &:hover {
-                background-color: var(--#{$prefix}-body);
+                background-color: var(--#{theme.$prefix}body);
             }
         }
         .header-body {
@@ -90,15 +64,16 @@
             max-width: 8rem;
             overflow: hidden;
             height: 3rem;
+            color: var(--#{theme.$prefix}body-text);
             img {
                 cursor: pointer;
                 width: 2.5rem;
                 height: 2.5rem;
                 border-radius: 0.625rem;
             }
-        }
-        .nav-drop-open {
-            overflow: inherit;
+            &.--with-open {
+                overflow: inherit;
+            }
         }
         .user-icon {
             padding-top: .4rem;
@@ -119,9 +94,9 @@
         transition: left 1s;
         // padding: 20px 12px 60px 36px;
         overflow-y: auto;
-        background-color: var(--#{$prefix}-primary);
-        color: var(--#{$prefix}-primary-text);
-        @include scrollbar();
+        background-color: var(--#{theme.$prefix}surface);
+        color: var(--#{theme.$prefix}surface-text);
+        @include scrollbar.scrollbar();
         .sidebar-container-toggle {
             display: none;
             position: absolute;
@@ -148,9 +123,9 @@
                 padding: 0 1rem;
                 position: relative;
                 display: block;
-                color: var(--#{$prefix}-primary-text);
+                color: var(--#{theme.$prefix}surface-text);
                 &:hover {
-                    background-color: var(--#{$prefix}-primary-hover);
+                    background-color: var(--#{theme.$prefix}surface-hovered);
                 }
             }
             .menu-icon {
@@ -162,7 +137,7 @@
         }
         .menu-children {
             display: none;
-            background-color: var(--#{$prefix}-primary-active);
+            background-color: var(--#{theme.$prefix}surface-child);
             span {
                 font-weight: normal;
             }
@@ -190,7 +165,7 @@
     .main-container {
         transition: all 1s;
         position: relative;
-        background-color: var(--#{$prefix}-body);
+        background-color: var(--#{theme.$prefix}body);
         flex-grow: unset;
         top: 0;
         min-height: 18.75rem;
@@ -308,7 +283,7 @@
                             position: fixed;
                             display: block;
                             width: 10rem;
-                            background-color: var(--#{$prefix}-primary);
+                            background-color: var(--#{theme.$prefix}surface);
                             margin-left: 1.7rem;
                             top: 0;
                             padding: 0 .8rem;

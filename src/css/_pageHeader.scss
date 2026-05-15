@@ -1,7 +1,10 @@
+@use 'theme';
+@use 'sizes';
+
 .page-header {
-    line-height: $lineHeight;
+    line-height: sizes.$line-height;
     position: relative;
-    background-color: var(--#{$prefix}-primary);
+    background-color: var(--#{theme.$prefix}surface);
     .path {
         position: absolute;
     }

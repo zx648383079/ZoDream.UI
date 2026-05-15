@@ -1091,6 +1091,7 @@ var I18nStrings = {
     'Replace': '替换',
     'Position': '位置',
     'Image Title': '图片标题',
+    'Delete': '删除',
     'Delete Image': '删除图片',
     'Insert Link': '插入链接',
     'Image caption': '图片备注',
@@ -1315,6 +1316,9 @@ var EditorApp = /** @class */ (function () {
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, function (p, cb) {
             _this.toggleFlowbar(_this.option.toolChildren(EDITOR_IMAGE_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
+            _this.resizer.openResize(p, cb);
+        }).on(EDITOR_EVENT_SHOW_OVERLAY_TOOL, function (p, cb) {
+            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_OVERLAY_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
             _this.resizer.openResize(p, cb);
         }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, function (p, cb) {
             _this.resizer.openHorizontalResize(p, cb);
@@ -1713,6 +1717,212 @@ var EditorHelper = /** @class */ (function () {
         else {
             return false;
         }
+    };
+    /**
+     * 转化为 html
+     * @param items
+     */
+    EditorHelper.toRaw = function (parent) {
+        var removeTags = ['script', 'style', 'link', 'meta', 'iframe', 'noscript',
+            'basefont', 'center', 'dir', 'font', 'frame',
+            'frameset', 'isindex', 'menu', 'noframes',
+            's', 'strike', 'u'];
+        var removeStyles = ['font', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
+        var replaceTags = [
+            [['b', 'big'], 'strong'],
+            [['i'], 'em']
+        ];
+        var tagAttributes = [
+            ['class'], // default, for all tags not mentioned
+            'a', ['accesskey', 'class', 'href', 'name', 'title', 'rel', 'rev', 'type', 'tabindex'],
+            'abbr', ['class', 'title'],
+            'acronym', ['class', 'title'],
+            'blockquote', ['cite', 'class'],
+            'button', ['class', 'disabled', 'name', 'type', 'value'],
+            'del', ['cite', 'class', 'datetime'],
+            'form', ['accept', 'action', 'class', 'enctype', 'method', 'name'],
+            'iframe', ['class', 'height', 'frameborder', 'name', 'sandbox', 'seamless', 'src', 'srcdoc', 'width'],
+            'input', ['accept', 'accesskey', 'alt', 'checked', 'class', 'disabled', 'ismap', 'maxlength', 'name', 'size', 'readonly', 'src', 'tabindex', 'type', 'usemap', 'value', 'multiple'],
+            'img', ['alt', 'class', 'height', 'src', 'width'],
+            'ins', ['cite', 'class', 'datetime'],
+            'label', ['accesskey', 'class', 'for'],
+            'legend', ['accesskey', 'class'],
+            'link', ['href', 'rel', 'type'],
+            'meta', ['content', 'http-equiv', 'name', 'scheme', 'charset'],
+            'map', ['name'],
+            'optgroup', ['class', 'disabled', 'label'],
+            'option', ['class', 'disabled', 'label', 'selected', 'value'],
+            'q', ['class', 'cite'],
+            'script', ['src', 'type'],
+            'select', ['class', 'disabled', 'multiple', 'name', 'size', 'tabindex'],
+            'style', ['type'],
+            'table', ['class', 'summary'],
+            'th', ['class', 'colspan', 'rowspan'],
+            'td', ['class', 'colspan', 'rowspan'],
+            'textarea', ['accesskey', 'class', 'cols', 'disabled', 'name', 'readonly', 'rows', 'tabindex'],
+            'param', ['name', 'value'],
+            'embed', ['height', 'src', 'type', 'width']
+        ];
+        var clone = parent.cloneNode(true);
+        var isOverlay = function (items) {
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].startsWith('--with-overlay')) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        var getReplaceTag = function (tag) {
+            for (var _i = 0, removeTags_1 = removeTags; _i < removeTags_1.length; _i++) {
+                var item = removeTags_1[_i];
+                if (item[0].indexOf(tag) >= 0) {
+                    return item[1];
+                }
+            }
+            return undefined;
+        };
+        var isRemoveTag = function (tag) {
+            return removeTags.indexOf(tag) >= 0;
+        };
+        var filterNodeStyle = function (el) {
+            if (!el.hasAttribute('style')) {
+                return;
+            }
+            var style = el.getAttribute('style');
+            if (!style) {
+                return;
+            }
+            var filteredStyle = style
+                .split(';')
+                .map(function (decl) { return decl.trim(); })
+                .filter(function (decl) {
+                if (!decl)
+                    return false;
+                var prop = decl.split(':')[0].trim().toLowerCase();
+                return removeStyles.indexOf(prop) < 0;
+            })
+                .join(';');
+            if (filteredStyle) {
+                el.setAttribute('style', filteredStyle);
+            }
+            else {
+                el.removeAttribute('style');
+            }
+        };
+        var getAttributeNames = function (tag) {
+            for (var index = 1; index < tagAttributes.length; index += 2) {
+                if (tagAttributes[index] === tag) {
+                    return tagAttributes[index + 1];
+                }
+            }
+            return tagAttributes[0];
+        };
+        var filterNodeAttr = function (el, tag) {
+            var items = getAttributeNames(tag);
+            var names = el.getAttributeNames();
+            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
+                var name_1 = names_1[_i];
+                if (items.indexOf(name_1.toLowerCase()) >= 0) {
+                    continue;
+                }
+                el.removeAttribute(name_1);
+            }
+        };
+        /**
+         * 递归处理节点
+         */
+        var processNode = function (node) {
+            // 处理元素节点
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                var el = node;
+                var tagName = el.tagName.toLowerCase();
+                // 检查是否需要移除该标签
+                if (isRemoveTag(tagName)) {
+                    return null; // 移除整个节点
+                }
+                if (isOverlay(el.classList)) {
+                    // 找到第一个非空子节点（元素或文本）
+                    var firstChild = null;
+                    for (var _i = 0, _a = Array.from(el.childNodes); _i < _a.length; _i++) {
+                        var child = _a[_i];
+                        var processed = processNode(child);
+                        if (processed) {
+                            firstChild = processed;
+                            break;
+                        }
+                    }
+                    // 返回第一个子节点，替换当前元素
+                    return firstChild;
+                }
+                filterNodeAttr(el, tagName);
+                filterNodeStyle(el);
+                // 递归处理子节点
+                var children = Array.from(el.childNodes);
+                for (var _b = 0, children_1 = children; _b < children_1.length; _b++) {
+                    var child = children_1[_b];
+                    var processed = processNode(child);
+                    if (processed === null) {
+                        el.removeChild(child);
+                    }
+                    else if (processed !== child) {
+                        el.replaceChild(processed, child);
+                    }
+                }
+            }
+            return node;
+        };
+        processNode(clone);
+        return clone.innerHTML;
+    };
+    EditorHelper.toNode = function (parent, value) {
+        var _this = this;
+        parent.innerHTML = value;
+        var overlayTags = ['video', 'iframe'];
+        var isOverlayTag = function (tag) {
+            return overlayTags.indexOf(tag) >= 0;
+        };
+        var processNode = function (node) {
+            // 处理元素节点
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return;
+            }
+            var element = node;
+            if (isOverlayTag(element.tagName.toLowerCase())) {
+                wrapOverlay(element);
+                return;
+            }
+            var children = Array.from(element.childNodes);
+            for (var _i = 0, children_3 = children; _i < children_3.length; _i++) {
+                var child = children_3[_i];
+                processNode(child);
+            }
+        };
+        var wrapOverlay = function (node) {
+            var parent = node.parentNode;
+            if (!parent) {
+                return;
+            }
+            var wrapper = _this.createOverlay();
+            parent.replaceChild(wrapper, node);
+            wrapper.appendChild(node);
+        };
+        // 处理容器内的所有节点
+        var children = Array.from(parent.childNodes);
+        for (var _i = 0, children_2 = children; _i < children_2.length; _i++) {
+            var child = children_2[_i];
+            processNode(child);
+        }
+    };
+    EditorHelper.isOverlay = function (node) {
+        return node instanceof HTMLDivElement && $(node).hasClass('--with-overlay');
+    };
+    EditorHelper.createOverlay = function (node) {
+        var wrapper = document.createElement('div');
+        wrapper.className = '--with-overlay';
+        if (node) {
+            wrapper.appendChild(node);
+        }
+        return wrapper;
     };
     EditorHelper.OTHER_WORD_CODE = [8220, 8221, 8216, 8217, 65281, 12290, 65292, 12304, 12305, 12289, 65311, 65288, 65289, 12288, 12298, 12299, 65306];
     return EditorHelper;
@@ -2138,10 +2348,10 @@ var EditorOptionManager = /** @class */ (function () {
             names[_i] = arguments[_i];
         }
         var items = [];
-        for (var _a = 0, names_1 = names; _a < names_1.length; _a++) {
-            var name_1 = names_1[_a];
-            if (Object.prototype.hasOwnProperty.call(this.moduleItems, name_1) && this.isVisible(name_1)) {
-                items.push(this.moduleItems[name_1]);
+        for (var _a = 0, names_2 = names; _a < names_2.length; _a++) {
+            var name_2 = names_2[_a];
+            if (Object.prototype.hasOwnProperty.call(this.moduleItems, name_2) && this.isVisible(name_2)) {
+                items.push(this.moduleItems[name_2]);
             }
         }
         return items;
@@ -2327,6 +2537,7 @@ var EDITOR_CODE_TOOL = 'code';
 var EDITOR_IMAGE_TOOL = 'image_edit';
 var EDITOR_TABLE_TOOL = 'table_edit';
 var EDITOR_VIDEO_TOOL = 'video_edit';
+var EDITOR_OVERLAY_TOOL = 'overlay_edit';
 var EDITOR_LINK_TOOL = 'link_edit';
 var EditorModules = [
     {
@@ -2690,7 +2901,10 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorMapComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddText }, data), range);
+            editor.insert({
+                type: EditorBlockType.AddFrame,
+                value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),
+            }, range);
         }
     },
     // 更多
@@ -2770,7 +2984,7 @@ var EditorModules = [
     },
     {
         name: 'align-video',
-        icon: 'fa-alignright',
+        icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_VIDEO_TOOL,
     },
@@ -2791,6 +3005,25 @@ var EditorModules = [
         icon: 'fa-ruler',
         label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL,
+    },
+    /// iframe
+    {
+        name: 'align-frame',
+        icon: 'fa-align-right',
+        label: 'Position',
+        parent: EDITOR_OVERLAY_TOOL,
+    },
+    {
+        name: 'delete-frame',
+        icon: 'fa-trash',
+        label: 'Delete',
+        parent: EDITOR_OVERLAY_TOOL,
+    },
+    {
+        name: 'size-frame',
+        icon: 'fa-ruler',
+        label: 'Adjust size',
+        parent: EDITOR_OVERLAY_TOOL,
     },
     // 表格处理
     {
@@ -2958,6 +3191,7 @@ var EDITOR_EVENT_UNDO_CHANGE = 'undo';
 var EDITOR_EVENT_SHOW_ADD_TOOL = 'tool.add';
 var EDITOR_EVENT_SHOW_LINE_BREAK_TOOL = 'tool.line.break';
 var EDITOR_EVENT_SHOW_IMAGE_TOOL = 'tool.image';
+var EDITOR_EVENT_SHOW_OVERLAY_TOOL = 'tool.overlay';
 var EDITOR_EVENT_SHOW_COLUMN_TOOL = 'tool.column';
 var EDITOR_EVENT_SHOW_LINK_TOOL = 'tool.link';
 var EDITOR_EVENT_SHOW_TABLE_TOOL = 'tool.table';
@@ -3098,10 +3332,10 @@ var DivElement = /** @class */ (function () {
     });
     Object.defineProperty(DivElement.prototype, "value", {
         get: function () {
-            return this.element.innerHTML;
+            return EditorHelper.toRaw(this.element);
         },
         set: function (v) {
-            this.element.innerHTML = v;
+            EditorHelper.toNode(this.element, v);
         },
         enumerable: false,
         configurable: true
@@ -3240,7 +3474,8 @@ var DivElement = /** @class */ (function () {
         var ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
-        this.replaceSelected(range, ele);
+        var ndoe = EditorHelper.createOverlay(ele);
+        this.replaceSelected(range, ndoe);
     };
     DivElement.prototype.addFileExecute = function (range, block) {
         var ele = document.createElement('a');
@@ -3261,8 +3496,9 @@ var DivElement = /** @class */ (function () {
     DivElement.prototype.addFrameExecute = function (range, block) {
         var frame = document.createElement('iframe');
         frame.src = block.value;
-        this.insertElement(frame, range);
-        this.selectNode(frame);
+        frame.setAttribute('frameborder', '0');
+        var ndoe = EditorHelper.createOverlay(frame);
+        this.replaceSelected(range, ndoe);
     };
     DivElement.prototype.addLineBreakExecute = function (range) {
         var _this = this;
@@ -4059,6 +4295,12 @@ var DivElement = /** @class */ (function () {
                 _this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, _this.getNodeBound(img_1), function (data) { return _this.updateNode(img_1, data); });
                 return;
             }
+            if (EditorHelper.isOverlay(e.target)) {
+                var node_1 = e.target;
+                _this.selectNode(node_1);
+                _this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, _this.getNodeBound(node_1), function (data) { return _this.updateNode(node_1, data); });
+                return;
+            }
             var range = _this.selection.range;
             if (_this.isInBlock(range)) {
                 return;
@@ -4153,6 +4395,10 @@ var DivElement = /** @class */ (function () {
             var bound = data;
             node.style.width = bound.width + 'px';
             node.style.height = bound.height + 'px';
+        }
+        console.log(data);
+        if (EditorHelper.isOverlay(node) && node.firstElementChild) {
+            this.updateNode(node.firstElementChild, data);
         }
     };
     /**
@@ -4907,6 +5153,7 @@ var EditorContainer = /** @class */ (function () {
         if (option === void 0) { option = new EditorOptionManager(); }
         this.option = option;
         this.undoStack = [];
+        this.undoIndex = 0;
         this.asyncTimer = 0;
         this.listeners = {};
         // document.addEventListener('mousemove', e => {

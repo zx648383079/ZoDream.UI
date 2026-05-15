@@ -1,5 +1,5 @@
-@import 'theme';
-@import 'mixin';
+@use 'theme';
+@use 'mixins';
 .dialog-cookie-bar {
     display: none;
     z-index: 9999;
@@ -9,7 +9,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color:  var(--#{$prefix}-dialog-mask);
+        background-color:  var(--#{theme.$prefix}dialog-mask);
     }
     .dialog-cookie-body {
         position: fixed;
@@ -17,9 +17,9 @@
         left: 0;
         right: 0;
         z-index: 2;
-        background-color: var(--#{$prefix}-dialog);
-        color: var(--#{$prefix}-dialog-text);
-        box-shadow: 0 0 1.25rem $shadow;
+        background-color: var(--#{theme.$prefix}dialog);
+        color: var(--#{theme.$prefix}dialog-text);
+        box-shadow: 0 0 1.25rem var(--#{theme.$prefix}shadow);
     }
     .dialog-header {
         padding: .8rem 1rem 0;
@@ -38,14 +38,14 @@
         margin-top: .8rem;
         .expand-icon-arrow {
             position: relative;
-            @include iconArrow(false);
+            @include mixins.iconArrow(false);
         }
         .card-header {
             border: 1px solid #ccc;
             padding: .8rem;
             border-radius: .25rem;
-            background-color: var(--#{$prefix}-panel);
-            color: var(--#{$prefix}-panel-text);
+            background-color: var(--#{theme.$prefix}panel);
+            color: var(--#{theme.$prefix}body-text);
             display: flex;
             align-items: center;
             min-height: 3rem;
@@ -61,7 +61,7 @@
             display: none;
             padding: .4rem .4rem 0;
         }
-        &.open {
+        &.--with-open {
             .expand-icon-arrow {
                 &::after {
                     transform: rotate(180deg);

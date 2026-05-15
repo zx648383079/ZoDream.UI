@@ -21,3 +21,4 @@ $(function () {
         tabBody.trigger('tab:actived', index);
     };
 });
+//# sourceMappingURL=admin.js.map

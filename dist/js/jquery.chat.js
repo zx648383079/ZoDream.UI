@@ -468,3 +468,4 @@ $(function () {
         $(this).closest('.dialog-box').hide();
     });
 });
+//# sourceMappingURL=jquery.chat.js.map

@@ -127,6 +127,24 @@
   background-color: white;
   padding: 0.8em;
 }
+.editor-box .--with-overlay {
+  position: relative;
+}
+.editor-box .--with-overlay > * {
+  width: 100%;
+}
+.editor-box .--with-overlay::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  background-color: black;
+  z-index: 1;
+}
 .editor-box .editor-footer {
   text-align: right;
   font-size: 0.8rem;

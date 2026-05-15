@@ -135,3 +135,4 @@ var Compare = /** @class */ (function () {
         return new Compare(this, option);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.compare.js.map

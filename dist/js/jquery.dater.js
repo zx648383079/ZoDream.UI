@@ -207,3 +207,4 @@ var DaterDefaultOption = /** @class */ (function () {
         return new Dater(this, option);
     };
 })(jQuery);
+//# sourceMappingURL=jquery.dater.js.map

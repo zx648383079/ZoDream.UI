@@ -1,17 +1,22 @@
+@use 'theme';
+@use 'sizes';
+@use 'functions';
+@use 'colors';
+
 @mixin make-button($name, $bg, $hover, $color) {
     .btn-#{$name} {
-        --#{$prefix}-btn: #{$bg};
-        --#{$prefix}-btn-text: #{$color};
-        --#{$prefix}-btn-hover: #{$hover};
-        --#{$prefix}-btn-border: #{$hover};
+        --#{theme.$prefix}btn: #{$bg};
+        --#{theme.$prefix}btn-text: #{$color};
+        --#{theme.$prefix}btn-hover: #{$hover};
+        --#{theme.$prefix}btn-border: #{$hover};
     }
     .btn-outline-#{$name} {
-        --#{$prefix}-btn: transparent;
-        --#{$prefix}-btn-text: #{$bg};
-        --#{$prefix}-btn-hover-text: #{$color};
-        --#{$prefix}-btn-hover: #{$bg};
-        --#{$prefix}-btn-border: #{$bg};
-        border: 1px solid var(--#{$prefix}-btn-border);
+        --#{theme.$prefix}btn: transparent;
+        --#{theme.$prefix}btn-text: #{$bg};
+        --#{theme.$prefix}btn-hover-text: #{$color};
+        --#{theme.$prefix}btn-hover: #{$bg};
+        --#{theme.$prefix}btn-border: #{$bg};
+        border: 1px solid var(--#{theme.$prefix}btn-border);
     }
 }
 
@@ -19,40 +24,40 @@
 
 
 .btn {
-    --#{$prefix}-btn: var(--#{$prefix}-primary);
-    --#{$prefix}-btn-text: var(--#{$prefix}-primary-text);
-    --#{$prefix}-btn-hover: var(--#{$prefix}-primary-hover);
-    --#{$prefix}-btn-border: var(--#{$prefix}-primary-active);
-    --#{$prefix}-btn-hover-text: var(--#{$prefix}-btn-text);
-    padding: $inputPadding;
-    background: var(--#{$prefix}-btn);
-    color: var(--#{$prefix}-btn-text);
+    --#{theme.$prefix}btn: var(--#{theme.$prefix}surface);
+    --#{theme.$prefix}btn-text: var(--#{theme.$prefix}surface-text);
+    --#{theme.$prefix}btn-hover: var(--#{theme.$prefix}surface-hovered);
+    --#{theme.$prefix}btn-border: var(--#{theme.$prefix}surface-selected);
+    --#{theme.$prefix}btn-hover-text: var(--#{theme.$prefix}btn-text);
+    padding: sizes.$input-padding;
+    background-color: var(--#{theme.$prefix}btn);
+    color: var(--#{theme.$prefix}btn-text);
     border: none;
-    border-color: var(--#{$prefix}-btn-border);
+    border-color: var(--#{theme.$prefix}btn-border);
     display: inline-block;
     text-decoration: none;
-    line-height: $inputLineHeight;
+    line-height: sizes.$input-line-height;
     margin: 0 0.5rem;
     vertical-align:middle;
-    border-radius: $radius;
+    border-radius: sizes.$form-radius;
     &.btn-full {
         width: 100%;
         margin: 0;
     }
     &:hover {
-        background: var(--#{$prefix}-btn-hover);
-        color: var(--#{$prefix}-btn-hover-text);
+        background-color: var(--#{theme.$prefix}btn-hover);
+        color: var(--#{theme.$prefix}btn-hover-text);
     }
 }
 
-@include make-button(default, var(--#{$prefix}-primary), var(--#{$prefix}-primary-hover), var(--#{$prefix}-primary-text));
+@include make-button(default, var(--#{theme.$prefix}surface), var(--#{theme.$prefix}surface-hovered), var(--#{theme.$prefix}surface-text));
 
 
-@each $color, $value in $theme-colors {
+@each $color, $value in colors.$theme-colors {
     @include make-button(
         $color, 
         $value, 
-        shade-color($value, $colorHoverOffset), 
+        functions.shade-color($value, colors.$color-hover-offset), 
         #fff
     );
 }
@@ -63,10 +68,12 @@
         border-radius: 0;
         margin: 0;
         &:first-child {
-            border-radius: $radius 0 0 $radius;
+            border-top-left-radius: sizes.$form-radius;
+            border-bottom-left-radius: sizes.$form-radius;
         }
         &:last-child {
-            border-radius: 0 $radius $radius 0;
+            border-top-right-radius: sizes.$form-radius;
+            border-bottom-right-radius: sizes.$form-radius;
         }
     }
 }

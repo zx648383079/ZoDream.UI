@@ -1,20 +1,18 @@
-$radius: .5rem;
-$shadow: rgba(0,0,0,.125);
+@use 'theme';
+
 
 .scroll-panel {
     height: 80vh;
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 1px $shadow, 0 1px 3px $shadow;
-    background-color: var(--#{$prefix}-panel);
+    box-shadow: 0 0 1px var(--#{theme.$prefix}shadow), 0 1px 3px var(--#{theme.$prefix}shadow);
+    background-color: var(--#{theme.$prefix}panel);
     .panel-body {
         flex: 1;
         overflow-y: auto;
-        border: 1px solid #ccc;
-        // border-radius: $radius;
-        // padding: $radius 0;
-        box-shadow: $shadow 0 0 0.625rem inset;
+        border: 1px solid var(--#{theme.$prefix}border);
+        box-shadow: var(--#{theme.$prefix}shadow) 0 0 0.625rem inset;
     }
     .panel-footer {
         display: flex;
@@ -23,7 +21,7 @@ $shadow: rgba(0,0,0,.125);
     .panel-swiper-item {
         display: flex;
         &:hover {
-            background-color: $body;
+            background-color: var(--#{theme.$prefix}body);
         }
         &:not(:first-child) {
             margin-top: .1rem;
@@ -44,20 +42,20 @@ $shadow: rgba(0,0,0,.125);
         .item-author {
             flex: 1;
             font-size: .8rem;
-            color: #777;
+            color: var(--#{theme.$prefix}meta-text);
             margin-left: .8rem;
         }
         .item-version {
             user-select: none;
             .iconfont {
-                color: var(--bs-danger);
+                color: var(--#{theme.$prefix}danger);
             }
         }
         .item-name {
             font-weight: 700;
         }
         .item-body {
-            color: #666;
+            color: var(--#{theme.$prefix}meta-text);
             padding-top: .2rem;
         }
     }
@@ -70,12 +68,6 @@ $shadow: rgba(0,0,0,.125);
             align-items: center;
             justify-content: center;
             padding: 0 .5rem;
-            // background-color: var(--bs-btn-bg);
-            // color: var(--bs-btn-color);
-            // &:hover {
-            //     background-color: var(--bs-btn-hover-bg);
-            //     color: var(--bs-btn-hover-color);
-            // }
         }
     }
 }

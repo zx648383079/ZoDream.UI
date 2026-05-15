@@ -1,16 +1,18 @@
+@use 'theme';
+
 .dialog-panel {
     width: 33.33%;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    background: var(--#{$prefix}-panel);
+    background: var(--#{theme.$prefix}panel);
     z-index: 899;
     .panel-header {
         text-align: center;
         line-height: 30px;
-        background: var(--#{$prefix}-primary);
-        color: var(--#{$prefix}-primary-text);
+        background: var(--#{theme.$prefix}surface);
+        color: var(--#{theme.$prefix}surface-text);
         .fa-close {
             float: right;
             line-height: 1.875rem;
@@ -39,18 +41,18 @@
 }
 
 .panel-container {
-    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    box-shadow: 0 0 1px var(--#{theme.$prefix}shadow), 0 1px 3px var(--#{theme.$prefix}shadow);
     margin-bottom: 1rem;
     margin-top: 1rem;
-    background-color: var(--#{$prefix}-panel);
+    background-color: var(--#{theme.$prefix}panel);
     padding: 1.25rem;
-    .page-empty-tip {
-        font-size: 3em;
-        color: var(--#{$prefix}-secondary-text);
-        font-weight: 700;
-        text-align: center;
-        padding: 2em 0;
-        cursor: default;
-        user-select: none;
-    }
+}
+.page-empty-tip {
+    font-size: 3em;
+    color: var(--#{theme.$prefix}repeater);
+    font-weight: 700;
+    text-align: center;
+    padding: 2em 0;
+    cursor: default;
+    user-select: none;
 }

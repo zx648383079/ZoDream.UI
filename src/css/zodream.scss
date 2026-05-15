@@ -1,20 +1,61 @@
-@import 'function';
-@import 'theme';
-@import "mixin";
-@import 'root';
-@import "common";
-@import 'margin';
-@import "grid";
-@import "panel";
-@import "process";
-@import "table";
-@import "form";
-@import "navbar";
-@import "tab";
-@import "path";
-@import "pageHeader";
-@import "pager";
-@import "list";
-@import "bread";
-//@import "metro";
-@import "error";
+@use 'theme';
+@use 'mixins';
+@use 'root';
+@use 'margin';
+@use "grid";
+@use 'dropdown';
+@use "panel";
+@use "table";
+@use "form";
+@use "navbar";
+@use "tab";
+@use "path";
+@use "pageHeader";
+@use "pager";
+@use "list";
+@use "code";
+//@use "metro";
+@use "error";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--#{theme.$prefix}body);
+    color: var(--#{theme.$prefix}body-text);
+}
+
+
+.clearfix {
+    @include mixins.clearfix();
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+
+@media (min-width: 48.75rem) {
+    .demo-tip {
+        position: fixed;
+        right: 0;
+        top: 0;
+        background-image: url('/assets/images/demo.png');
+        background-repeat: no-repeat;
+        background-size: 100%;
+        width: 12.5rem;
+        height: 12.5rem;
+        z-index: 30;
+    }
+}

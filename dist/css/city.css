@@ -6,10 +6,16 @@
  * Copyright (c) 2017 ZoDream
  */
 .selector {
+  --zre-picker: var(--zre-panel);
+  --zre-picker-text: var(--zre-body-text);
+  --zre-picker-disabled-text: rgba(var(--zre-body-text-rgb), .2);
+  --zre-picker-header: var(--zre-surface);
+  --zre-picker-header-text: var(--zre-surface-text);
+  --zre-picker-border: var(--zre-border);
   position: fixed;
-  width: 300px;
-  background: #fff;
-  border: 1px solid #0275d8;
+  width: 18.75rem;
+  background-color: var(--zre-picker);
+  border: 1px solid var(--zre-picker-border);
   display: none;
   box-sizing: border-box;
   z-index: 999;
@@ -19,29 +25,29 @@
   padding: 0;
 }
 .selector .selector-header {
-  border-bottom: 2px solid #0275d8;
+  border-bottom: 2px solid var(--zre-picker-border);
 }
 .selector .selector-header li {
   list-style: none;
   display: inline-block;
-  line-height: 30px;
-  padding: 0 5px;
+  line-height: 1.875rem;
+  padding: 0 0.3125rem;
   text-align: center;
-  min-width: 78px;
+  min-width: 4.875rem;
 }
 .selector .selector-header li.active {
-  background: #0275d8;
-  color: #fff;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
 }
 .selector .selector-body {
   overflow-y: auto;
-  height: 160px;
+  height: 10rem;
 }
 .selector .selector-body::-webkit-scrollbar {
   height: 6px;
   width: 6px;
   margin-right: 5px;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   transition: all 0.3s ease-in-out;
   border-radius: 0px;
 }
@@ -72,31 +78,31 @@
 .selector .selector-body ul li {
   list-style: none;
   display: inline-block;
-  line-height: 25px;
-  padding: 0 8px;
+  line-height: 1.5625rem;
+  padding: 0 0.5rem;
   text-align: center;
-  min-width: 60px;
+  min-width: 3.75rem;
 }
 .selector .selector-body ul li.selected, .selector .selector-body ul li:hover {
-  background: #0275d8;
-  color: #fff;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
 }
 .selector .selector-footer {
   text-align: right;
 }
 .selector .selector-footer .selector-yes {
   width: 30%;
-  background: #0275d8;
-  color: #fff;
-  padding: 0 8px;
+  background-color: var(--zre-picker-header);
+  color: var(--zre-picker-header-text);
+  padding: 0 0.5rem;
   border: none;
-  line-height: 25px;
+  line-height: 1.5625rem;
   display: inline-block;
 }
 .selector .fa-close {
   position: absolute;
   top: 0;
-  line-height: 30px;
-  right: 5px;
+  line-height: 1.875rem;
+  right: 0.3125rem;
 }
 /*# sourceMappingURL=city.css.map */

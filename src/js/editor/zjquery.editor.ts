@@ -225,6 +225,9 @@ class EditorApp {
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, (p, cb) => {
             this.toggleFlowbar(this.option.toolChildren(EDITOR_IMAGE_TOOL), {...p, y: p.y + p.height + 20});
             this.resizer.openResize(p, cb);
+        }).on(EDITOR_EVENT_SHOW_OVERLAY_TOOL, (p, cb) => {
+            this.toggleFlowbar(this.option.toolChildren(EDITOR_OVERLAY_TOOL), {...p, y: p.y + p.height + 20});
+            this.resizer.openResize(p, cb);
         }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, (p, cb) => {
             this.resizer.openHorizontalResize(p, cb);
         }).on(EDITOR_EVENT_CLOSE_TOOL, () => {

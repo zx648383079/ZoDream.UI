@@ -1,8 +1,10 @@
-@import 'mixin';
+@use 'mixins';
+@use 'sizes';
+@use 'theme';
 .table {
     display: table;
     width: 100%;
-    border-color: #dee2e6;
+    border-color: var(--#{theme.$prefix}border);
     caption-side: bottom;
     border-collapse: collapse;
     tbody, td, tfoot, th, thead, tr {
@@ -13,7 +15,7 @@
     td,
     th {
         padding: .5rem .5rem;
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid var(--#{theme.$prefix}border);
     }
     .table-row {
         display: table-row;
@@ -27,7 +29,7 @@
     tbody {
         tr {
             &:hover {
-                background-color: rgba(0, 0, 0, .075);
+                background-color: rgba(var(--#{theme.$prefix}surface-rgb), .075);
             }
         }
     }
@@ -37,7 +39,7 @@
     tbody {
         tr {
             &:nth-of-type(odd) {
-                background-color: rgba(0, 0, 0, .05);
+                background-color: rgba(var(--#{theme.$prefix}surface-rgb), .05);
             }
         }
     }
@@ -60,18 +62,18 @@ table {
         select {
             width: 100%;
             border: none;
-            border-bottom: 1px solid #555;
-            height: $lineHeight;
+            border-bottom: 1px solid var(--#{theme.$prefix}input-border);
+            height: sizes.$line-height;
         }
         .sort-desc {
             &::after {
-                @include iconFont();
+                @include mixins.iconFont();
                 content: "\f15e";
             }
         }
         .sort-asc {
             &::after {
-                @include iconFont();
+                @include mixins.iconFont();
                 content: "\f15d";
             }
         }
@@ -84,8 +86,8 @@ table {
         text-align: left;
     }
     .tree-item-arrow {
-        color: #1890ff;
-        @include icon('\f65e');
+        color: var(--#{theme.$prefix}surface);
+        @include mixins.icon('\f65e');
         font-size: 2em;
     }
     .tree-item {
@@ -96,12 +98,12 @@ table {
     }
     .tree-next-level {
         .tree-item-arrow {
-            color: #0dcaf0;
+            color: var(--#{theme.$prefix}surface-child);
         }
     }
     .tree-item-open {
         .tree-item-arrow {
-            color: #dc3545;
+            color: var(--#{theme.$prefix}surface-selected);
             &::before {
                 content: "\f65d";
             }
@@ -111,10 +113,13 @@ table {
 
 .page-multiple-table {
     .page-multiple-toggle {
-        color: #dc3545;
-        background-color: transparent;
-        border: 1px solid #d43f3a;
+        --#{theme.$prefix}btn: transparent;
+        --#{theme.$prefix}btn-text: var(--#{theme.$prefix}danger);
+        --#{theme.$prefix}btn-hover: var(--#{theme.$prefix}danger);
+        --#{theme.$prefix}btn-hover-text: var(--#{theme.$prefix}danger-text);
+        --#{theme.$prefix}btn-border: var(--#{theme.$prefix}danger);
         cursor: pointer;
+        border: 1px solid var(--#{theme.$prefix}btn-border);
     }
     .page-multiple-th,
     .page-multiple-td,
@@ -129,9 +134,10 @@ table {
 
     &.page-multiple-enable {
         .page-multiple-toggle {
-            color: #fff;
-            background-color: #dc3545;
-            border: none;
+            --#{theme.$prefix}btn: var(--#{theme.$prefix}danger);
+            --#{theme.$prefix}btn-text: var(--#{theme.$prefix}danger-text);
+            --#{theme.$prefix}btn-hover: transparent;
+            --#{theme.$prefix}btn-hover-text: var(--#{theme.$prefix}danger);
         }
         .page-multiple-th,
         .page-multiple-td {

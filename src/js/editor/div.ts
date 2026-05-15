@@ -84,10 +84,10 @@ class DivElement implements IEditorElement {
     }
 
     public get value(): string {
-        return this.element.innerHTML;
+        return EditorHelper.toRaw(this.element);
     }
     public set value(v: string) {
-        this.element.innerHTML = v;
+        EditorHelper.toNode(this.element, v);
     }
 
     public get length(): number {
@@ -228,7 +228,8 @@ class DivElement implements IEditorElement {
         const ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
-        this.replaceSelected(range, ele);
+        const ndoe = EditorHelper.createOverlay(ele);
+        this.replaceSelected(range, ndoe);
     }
 
     private addFileExecute(range: Range, block: IEditorFileBlock) {
@@ -253,8 +254,8 @@ class DivElement implements IEditorElement {
         const frame = document.createElement('iframe');
         frame.src = block.value;
         frame.setAttribute('frameborder', '0');
-        this.insertElement(frame, range);
-        this.selectNode(frame);
+        const ndoe = EditorHelper.createOverlay(frame);
+        this.replaceSelected(range, ndoe);
     }
 
 
@@ -1067,6 +1068,12 @@ class DivElement implements IEditorElement {
                 this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, this.getNodeBound(img), data => this.updateNode(img, data));
                 return;
             }
+            if (EditorHelper.isOverlay(e.target as any)) {
+                const node = e.target as HTMLDivElement;
+                this.selectNode(node);
+                this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, this.getNodeBound(node), data => this.updateNode(node, data));
+                return;
+            }
             const range = this.selection.range;
             if (this.isInBlock(range)) {
                 return;
@@ -1164,6 +1171,11 @@ class DivElement implements IEditorElement {
             const bound = data as IEditorResizeBlock;
             node.style.width = bound.width + 'px';
             node.style.height = bound.height + 'px';
+        }
+        console.log(data);
+        
+        if (EditorHelper.isOverlay(node) && node.firstElementChild) {
+            this.updateNode(node.firstElementChild as any, data);
         }
     }
 

@@ -1,0 +1,31 @@
+$form-radius: .375rem;
+$line-height: 2.25rem;
+$input-line-height: 1.5;
+$input-padding: .375rem .75rem;
+
+$enable-flex: false !default;
+
+$grid-breakpoints: (
+    xs: 0,
+    sm: 36rem,
+    md: 48rem,
+    lg: 62rem,
+    xl: 75rem,
+    xxl: 87.5rem,
+) !default;
+
+$container-max-widths: (
+    sm: 33.75rem,
+    md: 45rem,
+    lg: 60rem,
+    xl: 71.25rem,
+    xxl: 82.5rem,
+) !default;
+
+$grid-columns: 12 !default;
+$grid-gutter-width: 1.5rem !default;
+$grid-row-columns: 6 !default;
+
+// Container padding
+
+$container-padding-x: $grid-gutter-width !default;

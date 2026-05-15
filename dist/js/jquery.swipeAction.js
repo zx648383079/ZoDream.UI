@@ -120,3 +120,4 @@ var SwipeActionDefaultOption = /** @class */ (function () {
         });
     };
 })(jQuery);
+//# sourceMappingURL=jquery.swipeAction.js.map

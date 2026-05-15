@@ -1,3 +1,4 @@
+@use 'theme';
 .page-not-found {
     margin-top: 10vh;
     margin-bottom: 30vh;
@@ -13,11 +14,26 @@
     }
 }
 
+.toast-panel {
+    margin: 30vh auto;
+    text-align: center;
+    .panel-icon {
+        font-size: 3rem;
+        color: var(--#{theme.$prefix}danger);
+        margin-bottom: 1rem;
+    }
+    &.toast-success {
+        .panel-icon {
+            color:  var(--#{theme.$prefix}success);
+        }
+    }
+}
+
 .error-tag {
     position: relative;
     margin-bottom: 2rem;
     .tag-icon {
-        color: #fff;
+        color: var(--#{theme.$prefix}surface-text);
         font-size: 10rem;
         font-weight: 900;
         transform: rotate(15deg);
@@ -25,7 +41,7 @@
     }
     .tag-cover {
         display: block;
-        background-color: rgba($color: #ccc, $alpha: .4);
+        background-color: rgba(var(--#{theme.$prefix}surface-rgb), .4);
         position: absolute;
         top: 2rem;
         left: 50%;
@@ -33,5 +49,34 @@
         width: 6rem;
         height: 1.5rem;
         z-index: 3;
+    }
+}
+
+.safety-contianer {
+    width: 100%;
+    max-width: 20rem;
+    margin: 40vh auto;
+    .verify-control {
+        user-select: none;
+        margin-top: .8rem;
+        height: 6rem;
+        border: 0.125rem solid var(--#{theme.$prefix}border);
+        border-radius: .25rem;
+        display: flex;
+        .control-body {
+            width: 6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .control-meta {
+            flex: 1;
+            padding: 2rem .8rem;
+        }
+    }
+    .--with-waiting {
+        &:hover {
+            border-color: var(--#{theme.$prefix}primary);
+        }
     }
 }

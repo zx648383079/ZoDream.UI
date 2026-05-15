@@ -197,4 +197,185 @@ class EditorHelper {
             return false;
         }
     }
+    /**
+     * zhuang
+     * @param items 
+     */
+    public static toRaw(parent: HTMLElement): string {
+        const removeTags = ['script', 'style', 'link', 'meta', 'iframe', 'noscript', 
+            'basefont', 'center', 'dir', 'font', 'frame', 
+            'frameset', 'isindex', 'menu', 'noframes', 
+            's', 'strike', 'u'];
+        const removeStyles = ['font', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
+        const replaceTags = [
+            [['b', 'big'], 'strong'],
+            [['i'], 'em']
+        ];
+        const tagAttributes = [
+            ['class', 'style'],  // default, for all tags not mentioned
+            '?xml', [],
+            '!doctype', [],
+            'a', ['accesskey', 'class', 'href', 'name', 'title', 'rel', 'rev', 'type', 'tabindex'],
+            'abbr', ['class', 'title'],
+            'acronym', ['class', 'title'],
+            'blockquote', ['cite', 'class'],
+            'button', ['class', 'disabled', 'name', 'type', 'value'],
+            'del', ['cite', 'class', 'datetime'],
+            'form', ['accept', 'action', 'class', 'enctype', 'method', 'name'],
+            'iframe', ['class', 'height', 'frameborder', 'name', 'sandbox', 'seamless', 'src', 'srcdoc', 'width'],
+            'input', ['accept', 'accesskey', 'alt', 'checked', 'class', 'disabled', 'ismap', 'maxlength', 'name', 'size', 'readonly', 'src', 'tabindex', 'type', 'usemap', 'value', 'multiple'],
+            'img', ['alt', 'class', 'height', 'src', 'width'],
+            'ins', ['cite', 'class', 'datetime'],
+            'label', ['accesskey', 'class', 'for'],
+            'legend', ['accesskey', 'class'],
+            'link', ['href', 'rel', 'type'],
+            'meta', ['content', 'http-equiv', 'name', 'scheme', 'charset'],
+            'map', ['name'],
+            'optgroup', ['class', 'disabled', 'label'],
+            'option', ['class', 'disabled', 'label', 'selected', 'value'],
+            'q', ['class', 'cite'],
+            'script', ['src', 'type'],
+            'select', ['class', 'disabled', 'multiple', 'name', 'size', 'tabindex'],
+            'style', ['type'],
+            'table', ['class', 'summary'],
+            'th', ['class', 'colspan', 'rowspan'],
+            'td', ['class', 'colspan', 'rowspan'],
+            'textarea', ['accesskey', 'class', 'cols', 'disabled', 'name', 'readonly', 'rows', 'tabindex'],
+            'param', ['name', 'value'],
+            'embed', ['height', 'src', 'type', 'width']
+        ];
+        const clone = parent.cloneNode(true) as HTMLElement;
+
+        /**
+         * 递归处理节点
+         */
+        const processNode = (node: Node): Node | null => {
+            // 处理元素节点
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const el = node as HTMLElement;
+                const tagName = el.tagName.toLowerCase();
+
+                // 检查是否需要移除该标签
+                if (removeTags.indexOf(tagName) >= 0) {
+                    return null; // 移除整个节点
+                }
+
+                
+
+                let hasNotPrefix = false;
+                for (const className in el.classList) {
+                    if (className.startsWith('--not')) {
+                        hasNotPrefix = true;
+                        break;
+                    }
+                }
+
+                if (hasNotPrefix) {
+                    // 找到第一个非空子节点（元素或文本）
+                    let firstChild: Node | null = null;
+                    for (const child of Array.from(el.childNodes)) {
+                        const processed = processNode(child);
+                        if (processed) {
+                            firstChild = processed;
+                            break;
+                        }
+                    }
+                    // 返回第一个子节点，替换当前元素
+                    return firstChild;
+                }
+
+                // 处理 style 属性：移除字体相关设置
+                if (el.hasAttribute('style')) {
+                    const style = el.getAttribute('style');
+                    if (style) {
+                        // 移除 font-*, font 简写, letter-spacing, line-height 等
+                        const filteredStyle = style
+                            .split(';')
+                            .map(decl => decl.trim())
+                            .filter(decl => {
+                                if (!decl) return false;
+                                const prop = decl.split(':')[0].trim().toLowerCase();
+                                // 保留非字体相关属性
+                                return removeStyles.indexOf(prop) < 0;
+                            })
+                            .join(';');
+                        
+                        if (filteredStyle) {
+                            el.setAttribute('style', filteredStyle);
+                        } else {
+                            el.removeAttribute('style');
+                        }
+                    }
+                }
+
+                // 递归处理子节点
+                const children = Array.from(el.childNodes);
+                for (const child of children) {
+                    const processed = processNode(child);
+                    if (processed === null) {
+                        el.removeChild(child);
+                    } else if (processed !== child) {
+                        el.replaceChild(processed, child);
+                    }
+                }
+            }
+
+            return node;
+        }
+
+        processNode(clone);
+        return clone.innerHTML;
+    }
+
+    public static toNode(parent: HTMLElement, value: string): void {
+        parent.innerHTML = value;
+    
+        /**
+         * 递归处理节点，为每个 iframe 添加包装父级
+         * @param node 当前节点
+         */
+        const processNode = (node: Node): void => {
+            // 处理元素节点
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node as HTMLElement;
+                
+                // 如果是 iframe 元素，进行包装
+                if (element.tagName.toLowerCase() === 'iframe') {
+                    wrapOverlay(element);
+                } else {
+                    // 递归处理子节点
+                    const children = Array.from(element.childNodes);
+                    for (const child of children) {
+                        processNode(child);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * 为 iframe 元素添加包装 div
+         * @param iframe 原始 iframe 元素
+         */
+        const wrapOverlay = (iframe: HTMLElement): void => {
+            // 创建包装 div
+            const wrapper = document.createElement('div');
+            wrapper.className = '--not-node';
+            
+            // 获取 iframe 的父节点
+            const parent = iframe.parentNode;
+            if (!parent) return;
+            
+            // 将包装 div 插入到 iframe 的位置
+            parent.replaceChild(wrapper, iframe);
+            
+            // 将 iframe 添加到包装 div 中
+            wrapper.appendChild(iframe);
+        }
+        
+        // 处理容器内的所有节点
+        const children = Array.from(parent.childNodes);
+        for (const child of children) {
+            processNode(child);
+        }
+    }
 }

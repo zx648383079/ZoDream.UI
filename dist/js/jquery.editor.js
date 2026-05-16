@@ -1718,212 +1718,6 @@ var EditorHelper = /** @class */ (function () {
             return false;
         }
     };
-    /**
-     * 转化为 html
-     * @param items
-     */
-    EditorHelper.toRaw = function (parent) {
-        var removeTags = ['script', 'style', 'link', 'meta', 'noscript',
-            'basefont', 'center', 'dir', 'font', 'frame',
-            'frameset', 'isindex', 'menu', 'noframes',
-            's', 'strike', 'u'];
-        var removeStyles = ['font', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
-        var replaceTags = [
-            [['b', 'big'], 'strong'],
-            [['i'], 'em']
-        ];
-        var tagAttributes = [
-            ['class'], // default, for all tags not mentioned
-            'a', ['accesskey', 'class', 'href', 'name', 'title', 'rel', 'rev', 'type', 'tabindex'],
-            'abbr', ['class', 'title'],
-            'acronym', ['class', 'title'],
-            'blockquote', ['cite', 'class'],
-            'button', ['class', 'disabled', 'name', 'type', 'value'],
-            'del', ['cite', 'class', 'datetime'],
-            'form', ['accept', 'action', 'class', 'enctype', 'method', 'name'],
-            'iframe', ['class', 'height', 'frameborder', 'name', 'sandbox', 'seamless', 'src', 'srcdoc', 'width'],
-            'input', ['accept', 'accesskey', 'alt', 'checked', 'class', 'disabled', 'ismap', 'maxlength', 'name', 'size', 'readonly', 'src', 'tabindex', 'type', 'usemap', 'value', 'multiple'],
-            'img', ['alt', 'class', 'height', 'src', 'width'],
-            'ins', ['cite', 'class', 'datetime'],
-            'label', ['accesskey', 'class', 'for'],
-            'legend', ['accesskey', 'class'],
-            'link', ['href', 'rel', 'type'],
-            'meta', ['content', 'http-equiv', 'name', 'scheme', 'charset'],
-            'map', ['name'],
-            'optgroup', ['class', 'disabled', 'label'],
-            'option', ['class', 'disabled', 'label', 'selected', 'value'],
-            'q', ['class', 'cite'],
-            'script', ['src', 'type'],
-            'select', ['class', 'disabled', 'multiple', 'name', 'size', 'tabindex'],
-            'style', ['type'],
-            'table', ['class', 'summary'],
-            'th', ['class', 'colspan', 'rowspan'],
-            'td', ['class', 'colspan', 'rowspan'],
-            'textarea', ['accesskey', 'class', 'cols', 'disabled', 'name', 'readonly', 'rows', 'tabindex'],
-            'param', ['name', 'value'],
-            'embed', ['height', 'src', 'type', 'width']
-        ];
-        var clone = parent.cloneNode(true);
-        var isOverlay = function (items) {
-            for (var i = 0; i < items.length; i++) {
-                if (items[i].startsWith('--with-overlay')) {
-                    return true;
-                }
-            }
-            return false;
-        };
-        var getReplaceTag = function (tag) {
-            for (var _i = 0, removeTags_1 = removeTags; _i < removeTags_1.length; _i++) {
-                var item = removeTags_1[_i];
-                if (item[0].indexOf(tag) >= 0) {
-                    return item[1];
-                }
-            }
-            return undefined;
-        };
-        var isRemoveTag = function (tag) {
-            return removeTags.indexOf(tag) >= 0;
-        };
-        var filterNodeStyle = function (el) {
-            if (!el.hasAttribute('style')) {
-                return;
-            }
-            var style = el.getAttribute('style');
-            if (!style) {
-                return;
-            }
-            var filteredStyle = style
-                .split(';')
-                .map(function (decl) { return decl.trim(); })
-                .filter(function (decl) {
-                if (!decl)
-                    return false;
-                var prop = decl.split(':')[0].trim().toLowerCase();
-                return removeStyles.indexOf(prop) < 0;
-            })
-                .join(';');
-            if (filteredStyle) {
-                el.setAttribute('style', filteredStyle);
-            }
-            else {
-                el.removeAttribute('style');
-            }
-        };
-        var getAttributeNames = function (tag) {
-            for (var index = 1; index < tagAttributes.length; index += 2) {
-                if (tagAttributes[index] === tag) {
-                    return tagAttributes[index + 1];
-                }
-            }
-            return tagAttributes[0];
-        };
-        var filterNodeAttr = function (el, tag) {
-            var items = getAttributeNames(tag);
-            var names = el.getAttributeNames();
-            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
-                var name_1 = names_1[_i];
-                if (items.indexOf(name_1.toLowerCase()) >= 0) {
-                    continue;
-                }
-                el.removeAttribute(name_1);
-            }
-        };
-        /**
-         * 递归处理节点
-         */
-        var processNode = function (node) {
-            // 处理元素节点
-            if (node.nodeType === Node.ELEMENT_NODE) {
-                var el = node;
-                var tagName = el.tagName.toLowerCase();
-                // 检查是否需要移除该标签
-                if (isRemoveTag(tagName)) {
-                    return null; // 移除整个节点
-                }
-                if (isOverlay(el.classList)) {
-                    // 找到第一个非空子节点（元素或文本）
-                    var firstChild = null;
-                    for (var _i = 0, _a = Array.from(el.childNodes); _i < _a.length; _i++) {
-                        var child = _a[_i];
-                        var processed = processNode(child);
-                        if (processed) {
-                            firstChild = processed;
-                            break;
-                        }
-                    }
-                    // 返回第一个子节点，替换当前元素
-                    return firstChild;
-                }
-                filterNodeAttr(el, tagName);
-                filterNodeStyle(el);
-                // 递归处理子节点
-                var children = Array.from(el.childNodes);
-                for (var _b = 0, children_1 = children; _b < children_1.length; _b++) {
-                    var child = children_1[_b];
-                    var processed = processNode(child);
-                    if (processed === null) {
-                        el.removeChild(child);
-                    }
-                    else if (processed !== child) {
-                        el.replaceChild(processed, child);
-                    }
-                }
-            }
-            return node;
-        };
-        processNode(clone);
-        return clone.innerHTML;
-    };
-    EditorHelper.toNode = function (parent, value) {
-        var _this = this;
-        parent.innerHTML = value;
-        var overlayTags = ['video', 'iframe'];
-        var isOverlayTag = function (tag) {
-            return overlayTags.indexOf(tag) >= 0;
-        };
-        var processNode = function (node) {
-            // 处理元素节点
-            if (node.nodeType !== Node.ELEMENT_NODE) {
-                return;
-            }
-            var element = node;
-            if (isOverlayTag(element.tagName.toLowerCase())) {
-                wrapOverlay(element);
-                return;
-            }
-            var children = Array.from(element.childNodes);
-            for (var _i = 0, children_3 = children; _i < children_3.length; _i++) {
-                var child = children_3[_i];
-                processNode(child);
-            }
-        };
-        var wrapOverlay = function (node) {
-            var parent = node.parentNode;
-            if (!parent) {
-                return;
-            }
-            var wrapper = _this.createOverlay();
-            parent.replaceChild(wrapper, node);
-            wrapper.appendChild(node);
-        };
-        // 处理容器内的所有节点
-        var children = Array.from(parent.childNodes);
-        for (var _i = 0, children_2 = children; _i < children_2.length; _i++) {
-            var child = children_2[_i];
-            processNode(child);
-        }
-    };
-    EditorHelper.isOverlay = function (node) {
-        return node instanceof HTMLDivElement && $(node).hasClass('--with-overlay');
-    };
-    EditorHelper.createOverlay = function (node) {
-        var wrapper = document.createElement('div');
-        wrapper.className = '--with-overlay';
-        if (node) {
-            wrapper.appendChild(node);
-        }
-        return wrapper;
-    };
     EditorHelper.OTHER_WORD_CODE = [8220, 8221, 8216, 8217, 65281, 12290, 65292, 12304, 12305, 12289, 65311, 65288, 65289, 12288, 12298, 12299, 65306];
     return EditorHelper;
 }());
@@ -2348,10 +2142,10 @@ var EditorOptionManager = /** @class */ (function () {
             names[_i] = arguments[_i];
         }
         var items = [];
-        for (var _a = 0, names_2 = names; _a < names_2.length; _a++) {
-            var name_2 = names_2[_a];
-            if (Object.prototype.hasOwnProperty.call(this.moduleItems, name_2) && this.isVisible(name_2)) {
-                items.push(this.moduleItems[name_2]);
+        for (var _a = 0, names_1 = names; _a < names_1.length; _a++) {
+            var name_1 = names_1[_a];
+            if (Object.prototype.hasOwnProperty.call(this.moduleItems, name_1) && this.isVisible(name_1)) {
+                items.push(this.moduleItems[name_1]);
             }
         }
         return items;
@@ -3342,10 +3136,10 @@ var DivElement = /** @class */ (function () {
     });
     Object.defineProperty(DivElement.prototype, "value", {
         get: function () {
-            return EditorHelper.toRaw(this.element);
+            return EditorHtmlCleaner.toRaw(this.element);
         },
         set: function (v) {
-            EditorHelper.toNode(this.element, v);
+            EditorHtmlCleaner.toNode(this.element, v);
         },
         enumerable: false,
         configurable: true
@@ -3471,9 +3265,8 @@ var DivElement = /** @class */ (function () {
         this.replaceSelected(range, span);
     };
     DivElement.prototype.addRawExecute = function (range, block) {
-        var value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''); //.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         var p = document.createElement('div');
-        p.innerHTML = value;
+        EditorHtmlCleaner.toNode(p, block.value, true);
         var items = [];
         for (var i = 0; i < p.childNodes.length; i++) {
             items.push(p.childNodes[i]);
@@ -3484,7 +3277,7 @@ var DivElement = /** @class */ (function () {
         var ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
-        var ndoe = EditorHelper.createOverlay(ele);
+        var ndoe = EditorHtmlCleaner.createOverlay(ele);
         this.replaceSelected(range, ndoe);
     };
     DivElement.prototype.addFileExecute = function (range, block) {
@@ -3507,7 +3300,7 @@ var DivElement = /** @class */ (function () {
         var frame = document.createElement('iframe');
         frame.src = block.value;
         frame.setAttribute('frameborder', '0');
-        var ndoe = EditorHelper.createOverlay(frame);
+        var ndoe = EditorHtmlCleaner.createOverlay(frame);
         this.replaceSelected(range, ndoe);
     };
     DivElement.prototype.addLineBreakExecute = function (range) {
@@ -4305,7 +4098,7 @@ var DivElement = /** @class */ (function () {
                 _this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, _this.getNodeBound(img_1), function (data) { return _this.updateNode(img_1, data); });
                 return;
             }
-            if (EditorHelper.isOverlay(e.target)) {
+            if (EditorHtmlCleaner.isOverlay(e.target)) {
                 var node_1 = e.target;
                 _this.selectNode(node_1);
                 _this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, _this.getNodeBound(node_1), function (data) { return _this.updateNode(node_1, data); });
@@ -4413,7 +4206,7 @@ var DivElement = /** @class */ (function () {
             }
             node.style.height = bound.height + 'px';
         }
-        if (EditorHelper.isOverlay(node) && node.firstElementChild) {
+        if (EditorHtmlCleaner.isOverlay(node) && node.firstElementChild) {
             this.updateNode(node.firstElementChild, data);
         }
     };
@@ -5991,5 +5784,258 @@ var CodeElement = /** @class */ (function () {
         }
     };
     return CodeElement;
+}());
+var EditorHtmlCleaner = /** @class */ (function () {
+    function EditorHtmlCleaner() {
+    }
+    EditorHtmlCleaner.classStartsWith = function (items) {
+        if (items instanceof HTMLElement) {
+            items = items.classList;
+        }
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].startsWith(this.overlayTag)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    EditorHtmlCleaner.getReplaceTag = function (tag) {
+        for (var _i = 0, _a = this.removeTags; _i < _a.length; _i++) {
+            var item = _a[_i];
+            if (item[0].indexOf(tag) >= 0) {
+                return item[1];
+            }
+        }
+        return undefined;
+    };
+    EditorHtmlCleaner.replaceTag = function (node, tag) {
+        var res = document.createElement(tag);
+        var attributes = node.attributes;
+        for (var i = 0; i < attributes.length; i++) {
+            var attr = attributes[i];
+            res.setAttribute(attr.name, attr.value);
+        }
+        while (node.firstChild) {
+            res.appendChild(node.firstChild);
+        }
+        return res;
+    };
+    EditorHtmlCleaner.isRemoveTag = function (tag) {
+        return this.removeTags.indexOf(tag) >= 0;
+    };
+    EditorHtmlCleaner.filterNodeStyle = function (el, excludes) {
+        if (!el.hasAttribute('style')) {
+            return;
+        }
+        var style = el.getAttribute('style');
+        if (!style) {
+            return;
+        }
+        var filteredStyle = style
+            .split(';')
+            .map(function (decl) { return decl.trim(); })
+            .filter(function (decl) {
+            if (!decl)
+                return false;
+            var prop = decl.split(':')[0].trim().toLowerCase();
+            return excludes.indexOf(prop) < 0;
+        })
+            .join(';');
+        if (filteredStyle) {
+            el.setAttribute('style', filteredStyle);
+        }
+        else {
+            el.removeAttribute('style');
+        }
+    };
+    EditorHtmlCleaner.getAttributeNames = function (tag) {
+        for (var index = 1; index < this.tagAttributes.length; index += 2) {
+            if (this.tagAttributes[index] === tag) {
+                return this.tagAttributes[index + 1];
+            }
+        }
+        return this.tagAttributes[0];
+    };
+    EditorHtmlCleaner.filterNodeAttr = function (el, tag) {
+        var items = __spreadArray(__spreadArray([], this.getAttributeNames(tag), true), ['style'], false);
+        var names = el.getAttributeNames();
+        for (var _i = 0, names_2 = names; _i < names_2.length; _i++) {
+            var name_2 = names_2[_i];
+            if (items.indexOf(name_2.toLowerCase()) >= 0) {
+                continue;
+            }
+            el.removeAttribute(name_2);
+        }
+    };
+    EditorHtmlCleaner.isOverlay = function (node) {
+        return node instanceof HTMLDivElement && node.classList.contains(this.overlayTag);
+    };
+    EditorHtmlCleaner.createOverlay = function (node) {
+        var wrapper = document.createElement('div');
+        wrapper.className = this.overlayTag;
+        if (node) {
+            wrapper.appendChild(node);
+        }
+        return wrapper;
+    };
+    /**
+     * 节点是否需要遮罩
+     * @param tag
+     * @returns
+     */
+    EditorHtmlCleaner.isOverlayTag = function (tag) {
+        return this.overlayTags.indexOf(tag) >= 0;
+    };
+    /**
+     * 添加到节点上
+     * @param parent
+     * @param value
+     * @param cleansing 是否需要删除一些节点，清除背景
+     */
+    EditorHtmlCleaner.toNode = function (parent, value, cleansing) {
+        if (cleansing === void 0) { cleansing = false; }
+        parent.innerHTML = value;
+        for (var i = parent.childNodes.length - 1; i >= 0; i--) {
+            this.decorateNode(parent.childNodes[i], cleansing);
+        }
+    };
+    /**
+     * 处理元素节点，添加遮罩
+     * @param node
+     * @returns
+     */
+    EditorHtmlCleaner.decorateNode = function (node, cleansing) {
+        var _a;
+        if (cleansing === void 0) { cleansing = false; }
+        // 处理元素节点
+        if (!(node instanceof HTMLElement)) {
+            return;
+        }
+        var tagName = node.tagName.toLowerCase();
+        if (cleansing) {
+            if (this.isRemoveTag(tagName)) {
+                (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(node);
+                return;
+            }
+            this.filterNodeStyle(node, this.removeStylesIf);
+        }
+        if (this.isOverlayTag(tagName)) {
+            this.addOverlay(node);
+            return;
+        }
+        for (var i = node.childNodes.length - 1; i >= 0; i--) {
+            this.decorateNode(node.childNodes[i], cleansing);
+        }
+    };
+    EditorHtmlCleaner.addOverlay = function (node) {
+        var parent = node.parentNode;
+        if (!parent) {
+            return;
+        }
+        var wrapper = this.createOverlay();
+        parent.replaceChild(wrapper, node);
+        wrapper.appendChild(node);
+    };
+    /**
+     * 转化为 html
+     * @param items
+     */
+    EditorHtmlCleaner.toRaw = function (parent) {
+        var clone = parent.cloneNode(true);
+        this.cleanNode(clone);
+        return clone.innerHTML;
+    };
+    /**
+     * 清理不需要的节点，去除遮罩
+     * @param node
+     * @returns
+     */
+    EditorHtmlCleaner.cleanNode = function (node) {
+        // 处理元素节点
+        if (node instanceof HTMLElement) {
+            var tagName = node.tagName.toLowerCase();
+            // 检查是否需要移除该标签
+            if (this.isRemoveTag(tagName)) {
+                return null; // 移除整个节点
+            }
+            var toTag = this.getReplaceTag(tagName);
+            if (toTag) {
+                node = this.replaceTag(node, toTag);
+            }
+            if (this.isOverlay(node)) {
+                // 找到第一个非空子节点（元素或文本）
+                var firstChild = null;
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    var processed = this.cleanNode(node.childNodes[i]);
+                    if (processed) {
+                        firstChild = processed;
+                        break;
+                    }
+                }
+                // 返回第一个子节点，替换当前元素
+                return firstChild;
+            }
+            this.filterNodeAttr(node, tagName);
+            this.filterNodeStyle(node, this.removeStyles);
+            for (var i = node.childNodes.length - 1; i >= 0; i--) {
+                var child = node.childNodes[i];
+                var processed = this.cleanNode(child);
+                if (processed === null) {
+                    node.removeChild(child);
+                }
+                else if (processed !== child) {
+                    node.replaceChild(processed, child);
+                }
+            }
+        }
+        return node;
+    };
+    EditorHtmlCleaner.overlayTag = '--with-overlay';
+    EditorHtmlCleaner.overlayTags = ['video', 'iframe'];
+    EditorHtmlCleaner.removeTags = ['script', 'style', 'link', 'meta', 'noscript',
+        'basefont', 'center', 'dir', 'font', 'frame',
+        'frameset', 'isindex', 'menu', 'noframes',
+        's', 'strike', 'u'];
+    EditorHtmlCleaner.removeStyles = ['font', 'font-family', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
+    /**
+     * 粘贴的时候删除
+     */
+    EditorHtmlCleaner.removeStylesIf = ['color', 'background', 'background-color'];
+    EditorHtmlCleaner.replaceTags = [
+        [['b', 'big'], 'strong'],
+        [['i'], 'em']
+    ];
+    EditorHtmlCleaner.tagAttributes = [
+        ['class'], // default, for all tags not mentioned
+        'a', ['accesskey', 'class', 'href', 'name', 'title', 'rel', 'rev', 'type', 'tabindex'],
+        'abbr', ['class', 'title'],
+        'acronym', ['class', 'title'],
+        'blockquote', ['cite', 'class'],
+        'button', ['class', 'disabled', 'name', 'type', 'value'],
+        'del', ['cite', 'class', 'datetime'],
+        'form', ['accept', 'action', 'class', 'enctype', 'method', 'name'],
+        'iframe', ['class', 'height', 'frameborder', 'name', 'sandbox', 'seamless', 'src', 'srcdoc', 'width'],
+        'input', ['accept', 'accesskey', 'alt', 'checked', 'class', 'disabled', 'ismap', 'maxlength', 'name', 'size', 'readonly', 'src', 'tabindex', 'type', 'usemap', 'value', 'multiple'],
+        'img', ['alt', 'class', 'height', 'src', 'width'],
+        'ins', ['cite', 'class', 'datetime'],
+        'label', ['accesskey', 'class', 'for'],
+        'legend', ['accesskey', 'class'],
+        'link', ['href', 'rel', 'type'],
+        'meta', ['content', 'http-equiv', 'name', 'scheme', 'charset'],
+        'map', ['name'],
+        'optgroup', ['class', 'disabled', 'label'],
+        'option', ['class', 'disabled', 'label', 'selected', 'value'],
+        'q', ['class', 'cite'],
+        'script', ['src', 'type'],
+        'select', ['class', 'disabled', 'multiple', 'name', 'size', 'tabindex'],
+        'style', ['type'],
+        'table', ['class', 'summary'],
+        'th', ['class', 'colspan', 'rowspan'],
+        'td', ['class', 'colspan', 'rowspan'],
+        'textarea', ['accesskey', 'class', 'cols', 'disabled', 'name', 'readonly', 'rows', 'tabindex'],
+        'param', ['name', 'value'],
+        'embed', ['height', 'src', 'type', 'width']
+    ];
+    return EditorHtmlCleaner;
 }());
 //# sourceMappingURL=jquery.editor.js.map

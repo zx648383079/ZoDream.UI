@@ -84,10 +84,10 @@ class DivElement implements IEditorElement {
     }
 
     public get value(): string {
-        return EditorHelper.toRaw(this.element);
+        return EditorHtmlCleaner.toRaw(this.element);
     }
     public set value(v: string) {
-        EditorHelper.toNode(this.element, v);
+        EditorHtmlCleaner.toNode(this.element, v);
     }
 
     public get length(): number {
@@ -214,9 +214,8 @@ class DivElement implements IEditorElement {
     }
 
     private addRawExecute(range: Range, block: IEditorTextCommand) {
-        const value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');//.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         const p = document.createElement('div');
-        p.innerHTML = value;
+        EditorHtmlCleaner.toNode(p, block.value, true);
         const items: Node[] = [];
         for (let i = 0; i < p.childNodes.length; i++) {
             items.push(p.childNodes[i]);
@@ -228,7 +227,7 @@ class DivElement implements IEditorElement {
         const ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
-        const ndoe = EditorHelper.createOverlay(ele);
+        const ndoe = EditorHtmlCleaner.createOverlay(ele);
         this.replaceSelected(range, ndoe);
     }
 
@@ -254,7 +253,7 @@ class DivElement implements IEditorElement {
         const frame = document.createElement('iframe');
         frame.src = block.value;
         frame.setAttribute('frameborder', '0');
-        const ndoe = EditorHelper.createOverlay(frame);
+        const ndoe = EditorHtmlCleaner.createOverlay(frame);
         this.replaceSelected(range, ndoe);
     }
 
@@ -1068,7 +1067,7 @@ class DivElement implements IEditorElement {
                 this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, this.getNodeBound(img), data => this.updateNode(img, data));
                 return;
             }
-            if (EditorHelper.isOverlay(e.target as any)) {
+            if (EditorHtmlCleaner.isOverlay(e.target as any)) {
                 const node = e.target as HTMLDivElement;
                 this.selectNode(node);
                 this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, this.getNodeBound(node), data => this.updateNode(node, data));
@@ -1178,7 +1177,7 @@ class DivElement implements IEditorElement {
             }
             node.style.height = bound.height + 'px';
         }
-        if (EditorHelper.isOverlay(node) && node.firstElementChild) {
+        if (EditorHtmlCleaner.isOverlay(node) && node.firstElementChild) {
             this.updateNode(node.firstElementChild as any, data);
         }
     }

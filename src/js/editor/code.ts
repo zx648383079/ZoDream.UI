@@ -1,7 +1,7 @@
 class CodeElement implements IEditorElement {
 
-    private linePanel: HTMLDivElement;
-    private bodyPanel: HTMLDivElement;
+    private linePanel!: HTMLDivElement;
+    private bodyPanel!: HTMLDivElement;
     private isComposition = false;
 
     constructor(
@@ -12,7 +12,7 @@ class CodeElement implements IEditorElement {
     }
 
     public get selection(): IEditorRange {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         const range = sel.getRangeAt(0);
         return {
             start: range.startOffset,
@@ -21,7 +21,7 @@ class CodeElement implements IEditorElement {
         };
     }
     public set selection(v: IEditorRange) {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         let range: Range;
         if (v.range) {
             range = v.range;
@@ -39,11 +39,11 @@ class CodeElement implements IEditorElement {
         return '';
     }
     public set selectedValue(v: string) {
-        const range = this.selection.range;
+        const range = this.selection.range!;
         this.addTextExecute(range, {value: v} as any);
     }
     public get value(): string {
-        const items = [];
+        const items: string[] = [];
         this.eachLine(dt => {
             items.push(dt.textContent.replace('\n', ''));
         });
@@ -62,24 +62,24 @@ class CodeElement implements IEditorElement {
         return EditorHelper.wordLength(this.value);
     }
     public selectAll(): void {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         const range = document.createRange();
         range.selectNodeContents(this.bodyPanel);
         sel.removeAllRanges();
         sel.addRange(range);
     }
 
-    public insert(block: IEditorBlock, range?: IEditorRange): void {
+    public execute(block: IEditorCommand, range?: IEditorRange): void {
         if (!range) {
             range = this.selection;
         }
-        const type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        const type = block.type === EditorCommandType.AddRaw ? EditorCommandType.AddText : block.type;
         const func = this[type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range.range, block);
             return;
         }
-        throw new Error(`insert type error:[${block.type}]`);
+        throw new Error(`command type error:[${block.type}]`);
     }
 
 
@@ -136,7 +136,7 @@ class CodeElement implements IEditorElement {
             if (this.isComposition) {
                 return;
             }
-            this.selectRangeLine(this.selection.range);
+            this.selectRangeLine(this.selection.range!);
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             if (e.key === 'Backspace') {
                 this.updateLineCount();
@@ -144,7 +144,7 @@ class CodeElement implements IEditorElement {
         });
         this.element.addEventListener('mouseup', () => {
             this.container.saveSelection();
-            this.selectRangeLine(this.selection.range);
+            this.selectRangeLine(this.selection.range!);
         });
         this.element.addEventListener('paste', e => {
             e.preventDefault();
@@ -167,11 +167,11 @@ class CodeElement implements IEditorElement {
         if (!value) {
             return;
         }
-        this.insert({type: EditorBlockType.AddText, value});
+        this.execute({type: EditorCommandType.AddText, value});
     }
 //#region 外部调用的方法
 
-    private addTextExecute(range: Range, block: IEditorTextBlock) {
+    private addTextExecute(range: Range, block: IEditorTextCommand) {
         const [begin, end] = this.getRangeLineNo(range);
         const items = block.value.split('\n');
         items[0] = this.getLinePrevious(range) + items[0];
@@ -217,14 +217,14 @@ class CodeElement implements IEditorElement {
     }
 
     private getLinePrevious(range: Range): string {
-        const items = [];
+        const items: string[] = [];
         this.eachLinePrevious(range, line => {
             items.push(line);
         });
         return items.reverse().join('');
     }
     private getLineNext(range: Range): string {
-        const items = [];
+        const items: string[] = [];
         this.eachLineNext(range, line => {
             items.push(line);
         });
@@ -246,13 +246,13 @@ class CodeElement implements IEditorElement {
         while (true) {
             if (current.previousSibling) {
                 current = current.previousSibling;
-                cb(current.textContent);
+                cb(current.textContent!);
                 continue;
             }
             if (current.parentNode instanceof HTMLDivElement) {
                 break;
             }
-            current = current.parentNode;
+            current = current.parentNode!;
         }
     }
 
@@ -272,22 +272,22 @@ class CodeElement implements IEditorElement {
                     break;
                 }
                 current = current.nextSibling;
-                cb(current.textContent);
+                cb(current.textContent!);
                 continue;
             }
             if (current.parentNode instanceof HTMLDivElement) {
                 break;
             }
-            current = current.parentNode;
+            current = current.parentNode!;
         }
     }
 
     private getRangeLineNo(range: Range): [number, number] {
-        const begin = this.findLine(range.startContainer);
+        const begin = this.findLine(range.startContainer)!;
         const beginNo = this.getLineNo(begin);
         let endNo = beginNo;
         if (range.startContainer !== range.endContainer) {
-            const end = this.findLine(range.endContainer);
+            const end = this.findLine(range.endContainer)!;
             if (begin !== end) {
                 endNo = this.getLineNo(end);
             }
@@ -318,7 +318,7 @@ class CodeElement implements IEditorElement {
             if (node === this.bodyPanel) {
                 return undefined;
             }
-            node = node.parentNode;
+            node = node.parentNode!;
         }
         return node;
     }
@@ -360,7 +360,7 @@ class CodeElement implements IEditorElement {
         if (selectIndex > this.bodyPanel.children.length) {
             return;
         }
-        this.selectNode(this.bodyPanel.children[selectIndex - 1].firstChild, 0);
+        this.selectNode(this.bodyPanel.children[selectIndex - 1].firstChild!, 0);
         this.selectLine(selectIndex);
     }
 
@@ -428,7 +428,7 @@ class CodeElement implements IEditorElement {
     }
 
     private selectNode(node: Node, offset = 0) {
-        const sel = window.getSelection();
+        const sel = window.getSelection()!;
         let range = sel.getRangeAt(0);
         range.deleteContents();
         range = range.cloneRange();

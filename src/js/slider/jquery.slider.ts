@@ -97,6 +97,7 @@ interface SliderOptions {
     pointevent?: string,   // 跳转触发事件
     auto?: boolean,  //是否自动播放
     align?: string,   // 对齐方式
+    only?: boolean,   // 是否限制显示宽度为刚好显示几个
     onchange?: (start: Point, end: Point) => any; //切换事件
 }
 

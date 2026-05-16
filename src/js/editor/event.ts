@@ -43,7 +43,7 @@ interface IEditorListeners {
 
 
 
-type EditorUpdatedCallback<T = IEditorBlock> = (data: T) => void;
+type EditorUpdatedCallback<T = IEditorCommand> = (data: T) => void;
 
 
 class EventEmitter {

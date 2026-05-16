@@ -320,8 +320,13 @@ var SliderItem = /** @class */ (function (_super) {
         this._setTime();
         var instance = this;
         var maxWidth = this.element.width();
-        var width = 0;
         var itemWidth = this.getItemWidth();
+        if (this.options.only) {
+            maxWidth = this.element.parent().width();
+            maxWidth = Math.min(Math.floor(maxWidth / itemWidth), this._length) * itemWidth;
+            this.element.width(maxWidth);
+        }
+        var width = 0;
         var itemHeight = this.getItemHeight(itemWidth);
         $.each(this._data, function (i, point) {
             if (itemWidth > 0) {

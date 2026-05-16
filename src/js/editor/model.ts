@@ -13,7 +13,7 @@ interface IBound extends IPoint, ISize {
 }
 
 interface IEditor {
-    insert(block: IEditorBlock|string): void;
+    execute(block: IEditorCommand|string): void;
 }
 interface IImageUploadEvent {
     files: FileList;
@@ -38,7 +38,7 @@ interface IEditorSharedModal<T = any> extends IEditorModal<T> {
     modalReady(module: IEditorModule, parent: JQuery<HTMLDivElement>, option: EditorOptionManager): void;
 }
 
-enum EditorBlockType {
+enum EditorCommandType {
     AddLineBreak = 'addLineBreak',
     AddHr = 'addHr',
     AddText = 'addText',
@@ -79,56 +79,57 @@ enum EditorBlockType {
     Outdent = 'outdent',
     NodeResize = 'nodeResize',
     NodeMove = 'nodeMove',
+    NodeRemove = 'nodeRemove',
 }
 
-interface IEditorBlock {
+interface IEditorCommand {
     [key: string]: any;
-    type: EditorBlockType|string;
+    type: EditorCommandType|string;
 }
 
-interface IEditorValueBlock extends IEditorBlock {
+interface IEditorValueCommand extends IEditorCommand {
     value: string,
 }
 
-interface IEditorSizeBlock extends IEditorBlock {
+interface IEditorSizeCommand extends IEditorCommand {
     width: string|number;
     height: string|number;
 }
 
-interface IEditorResizeBlock extends IEditorSizeBlock {
+interface IEditorResizeCommand extends IEditorSizeCommand {
     x: number;
     y: number;
 }
 
-interface IEditorTableBlock extends IEditorBlock {
+interface IEditorTableCommand extends IEditorCommand {
     row: number;
     column: number;
 }
 
-interface IEditorVideoBlock extends IEditorBlock {
+interface IEditorVideoCommand extends IEditorCommand {
     code: string;
     value: string;
     autoplay: boolean;
 }
 
-interface IEditorFileBlock extends IEditorValueBlock {
+interface IEditorFileCommand extends IEditorValueCommand {
     title: string,
     size: number;
 }
 
-interface IEditorLinkBlock extends IEditorValueBlock {
+interface IEditorLinkCommand extends IEditorValueCommand {
     title: string,
     target: boolean;
 }
 
-interface IEditorCodeBlock extends IEditorValueBlock {
+interface IEditorCodeCommand extends IEditorValueCommand {
     language: string;
 }
 
-interface IEditorTextBlock extends IEditorValueBlock {
+interface IEditorTextCommand extends IEditorValueCommand {
     cursor?: number; // 移动指针
 }
-interface IEditorInclueBlock extends IEditorBlock {
+interface IEditorInclueCommand extends IEditorCommand {
     begin: string,
     end: string;
     cursor?: number; // 移动指针

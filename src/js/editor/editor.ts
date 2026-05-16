@@ -11,8 +11,8 @@ interface IEditorContainer {
      * 保证监听鼠标移动事件的唯一性
      */
     // mouseMove(move?: (p: IPoint) => void, finish?: (p: IPoint) => void): void;
-    insert(block: IEditorBlock|string, range?: IEditorRange): void;
-    execute(module: string|IEditorTool, range?: IEditorRange, data?: any): void;
+    execute(block: IEditorCommand|string, range?: IEditorRange): void;
+    use(module: string|IEditorTool, range?: IEditorRange, data?: any): void;
     paste(data: DataTransfer): void;
     saveSelection(): void;
     undo(): void;

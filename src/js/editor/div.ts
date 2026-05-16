@@ -55,7 +55,7 @@ class DivElement implements IEditorElement {
         let lastLine: Node| undefined| null;
         this.eachRange(range, node => {
             if (node === range.startContainer && range.startContainer === range.endContainer) {
-                items.push(node.textContent.substring(range.startOffset, range.endOffset));
+                items.push(node.textContent!.substring(range.startOffset, range.endOffset));
                 return;
             }
             if (node.nodeName === 'BR') {
@@ -63,7 +63,7 @@ class DivElement implements IEditorElement {
                 lastLine = undefined;
                 return;
             }
-            if (lastLine !== node.parentNode && node.parentNode !== this.element && ['P', 'DIV', 'TR'].indexOf(node.parentNode.nodeName) >= 0) {
+            if (lastLine !== node.parentNode && node.parentNode !== this.element && ['P', 'DIV', 'TR'].indexOf(node.parentNode!.nodeName) >= 0) {
                 // 这里可以加一个判断 p div tr
                 if (lastLine) {
                     items.push('\n');
@@ -71,16 +71,16 @@ class DivElement implements IEditorElement {
                 lastLine = node.parentNode;
             }
             if (node === range.startContainer) {
-                items.push(node.textContent.substring(range.startOffset));
+                items.push(node.textContent!.substring(range.startOffset));
             } else if (node === range.endContainer) {
-                items.push(node.textContent.substring(0, range.endOffset));
+                items.push(node.textContent!.substring(0, range.endOffset));
             }
         });
         return items.join('');
     }
 
     public set selectedValue(val: string) {
-        this.insert({type: EditorBlockType.AddText, text: val});
+        this.execute({type: EditorCommandType.AddText, text: val});
     }
 
     public get value(): string {
@@ -105,7 +105,7 @@ class DivElement implements IEditorElement {
         sel.addRange(range);
     }
 
-    public insert(block: IEditorBlock, range?: IEditorRange): void {
+    public execute(block: IEditorCommand, range?: IEditorRange): void {
         if (!range) {
             range = this.selection;
         }
@@ -115,7 +115,7 @@ class DivElement implements IEditorElement {
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             return;
         }
-        throw new Error(`insert type error:[${block.type}]`);
+        throw new Error(`command type error:[${block.type}]`);
     }
     public focus(): void {
         this.element.focus({preventScroll: true});
@@ -182,7 +182,7 @@ class DivElement implements IEditorElement {
         this.focusAfter(this.nodeParent(cell, 'table')!);
     }
 
-    private addTableExecute(range: Range, block: IEditorTableBlock) {
+    private addTableExecute(range: Range, block: IEditorTableCommand) {
         const table = document.createElement('table');
         table.style.width = '100%';
         const tbody = table.createTBody();
@@ -200,20 +200,20 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, table);
     }
 
-    private addImageExecute(range: Range, block: IEditorFileBlock) {
+    private addImageExecute(range: Range, block: IEditorFileCommand) {
         const image = document.createElement('img');
         image.src = block.value;
         image.title = block.title || '';
         this.replaceSelected(range, image);
     }
 
-    private addTextExecute(range: Range, block: IEditorTextBlock) {
+    private addTextExecute(range: Range, block: IEditorTextCommand) {
         const span = document.createElement('span');
         span.innerText = block.value;
         this.replaceSelected(range, span);
     }
 
-    private addRawExecute(range: Range, block: IEditorTextBlock) {
+    private addRawExecute(range: Range, block: IEditorTextCommand) {
         const value = block.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');//.replace(/<([\/]?)(div)((:?\s*)(:?[^>]*)(:?\s*))>/g, '<$1p$3>');
         const p = document.createElement('div');
         p.innerHTML = value;
@@ -224,7 +224,7 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, ...items);
     }
 
-    private addVideoExecute(range: Range, block: IEditorVideoBlock) {
+    private addVideoExecute(range: Range, block: IEditorVideoCommand) {
         const ele = document.createElement('video');
         ele.src = block.value;
         ele.title = block.title || '';
@@ -232,14 +232,14 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, ndoe);
     }
 
-    private addFileExecute(range: Range, block: IEditorFileBlock) {
+    private addFileExecute(range: Range, block: IEditorFileCommand) {
         const ele = document.createElement('a');
         ele.href = block.value;
         ele.title = block.title || '';
         this.replaceSelected(range, ele);
     }
 
-    private addLinkExecute(range: Range, block: IEditorLinkBlock) {
+    private addLinkExecute(range: Range, block: IEditorLinkCommand) {
         const link = document.createElement('a');
         link.href = block.value;
         link.text = block.title;
@@ -250,7 +250,7 @@ class DivElement implements IEditorElement {
         this.selectNode(link);
     }
 
-    private addFrameExecute(range: Range, block: IEditorValueBlock) {
+    private addFrameExecute(range: Range, block: IEditorValueCommand) {
         const frame = document.createElement('iframe');
         frame.src = block.value;
         frame.setAttribute('frameborder', '0');
@@ -286,7 +286,7 @@ class DivElement implements IEditorElement {
                 if (this.moveTableFocus(li)) {
                     return;
                 }
-                this.focusAfter(this.nodeParent(li, 'table'));
+                this.focusAfter(this.nodeParent(li, 'table')!);
                 return;
             }
         }
@@ -294,7 +294,7 @@ class DivElement implements IEditorElement {
         this.eachBlockNext(range.endContainer, range.endOffset, node => {
             // 会出现嵌套的情况
             if (node === begin) {
-                begin = begin.parentNode;
+                begin = begin.parentNode!;
                 beginOffset = 0;
                 addBlock = true;
             }
@@ -329,7 +329,7 @@ class DivElement implements IEditorElement {
         this.selectNode(p);
     }
 
-    private hExecute(range: Range, block: IEditorValueBlock) {
+    private hExecute(range: Range, block: IEditorValueCommand) {
         this.replaceNodeName(range.startContainer, block.value);
     }
     private blockquoteExecute(range: Range) {
@@ -380,7 +380,7 @@ class DivElement implements IEditorElement {
         });
     }
 
-    private italicExecute(range: Range, block: IEditorValueBlock) {
+    private italicExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeTag(range, 'i');
     }
     private underlineExecute(range: Range) {
@@ -395,22 +395,22 @@ class DivElement implements IEditorElement {
         });
     }
 
-    private fontSizeExecute(range: Range, block: IEditorValueBlock) {
+    private fontSizeExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeStyle(range, {
             'font-size': block.value
         });
     }
-    private fontFamilyExecute(range: Range, block: IEditorValueBlock) {
+    private fontFamilyExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeStyle(range, {
             'font-family': block.value
         });
     }
-    private backgroundExecute(range: Range, block: IEditorValueBlock) {
+    private backgroundExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeStyle(range, {
             'background-color': block.value
         });
     }
-    private foregroundExecute(range: Range, block: IEditorValueBlock) {
+    private foregroundExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeStyle(range, {
             color: block.value
         });
@@ -432,7 +432,7 @@ class DivElement implements IEditorElement {
     }
 
 
-    private alignExecute(range: Range, block: IEditorValueBlock) {
+    private alignExecute(range: Range, block: IEditorValueCommand) {
         this.toggleRangeStyle(range, {
             'text-align': block.value
         });
@@ -464,8 +464,8 @@ class DivElement implements IEditorElement {
 
     private rowSpanExecute(range: Range) {
         const start = this.getTableCell(range.startContainer)!;
-        const end = this.getTableCell(range.endContainer);
-        const body = start.parentNode.parentNode as HTMLTableSectionElement;
+        const end = this.getTableCell(range.endContainer)!;
+        const body = start.parentNode!.parentNode as HTMLTableSectionElement;
         const startSpan = this.getTableCellSpan(start);
         if (start === end) {
             if (start.rowSpan < 2) {
@@ -505,7 +505,7 @@ class DivElement implements IEditorElement {
         if (start.parentNode === end.parentNode) {
             return;
         }
-        if (body !== end.parentNode.parentNode) {
+        if (body !== end.parentNode!.parentNode) {
             return;
         }
         // 获取 td|th table
@@ -545,8 +545,8 @@ class DivElement implements IEditorElement {
     }
 
     private colSpanExecute(range: Range) {
-        const start = this.getTableCell(range.startContainer);
-        const end = this.getTableCell(range.endContainer);
+        const start = this.getTableCell(range.startContainer)!;
+        const end = this.getTableCell(range.endContainer)!;
         if (start === end) {
             if (start.colSpan < 2) {
                 return;
@@ -862,7 +862,7 @@ class DivElement implements IEditorElement {
             return node.parentNode as any;
         }
         const items = tag.toUpperCase().split(',');
-        let parent: HTMLElement;
+        let parent: HTMLElement|undefined;
         this.eachParentNode(node, item => {
             if (items.indexOf(item.nodeName) >= 0) {
                 parent = item as any;
@@ -942,7 +942,7 @@ class DivElement implements IEditorElement {
             this.insertBefore(borther, ...target);
             return;
         }
-        const parent = node.parentNode;
+        const parent = node.parentNode!;
         fn();
         this.insertLast(parent, ...target);
         return;
@@ -967,7 +967,7 @@ class DivElement implements IEditorElement {
             this.selectNode(node.nextSibling);
             return;
         }
-        this.selectNode(node.parentNode, node.parentNode.childNodes.length);
+        this.selectNode(node.parentNode!, node.parentNode!.childNodes.length);
     }
 
     private bindEvent() {
@@ -975,7 +975,7 @@ class DivElement implements IEditorElement {
             this.container.saveSelection();
             if (e.key === 'Tab') {
                 e.preventDefault();
-                this.tabExecute(this.selection.range);
+                this.tabExecute(this.selection.range!);
             } else {
                 this.container.emit(EDITOR_EVENT_INPUT_KEYDOWN, e);
             }
@@ -985,7 +985,7 @@ class DivElement implements IEditorElement {
             if (this.isComposition) {
                 return;
             }
-            const range = this.selection.range;
+            const range = this.selection.range!;
             if (this.isEmptyLine(range)) {
                 this.container.emit(EDITOR_EVENT_SHOW_ADD_TOOL, this.getNodeOffset(range.startContainer).y);
                 return;
@@ -1074,7 +1074,7 @@ class DivElement implements IEditorElement {
                 this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, this.getNodeBound(node), data => this.updateNode(node, data));
                 return;
             }
-            const range = this.selection.range;
+            const range = this.selection.range!;
             if (this.isInBlock(range)) {
                 return;
             }
@@ -1104,7 +1104,7 @@ class DivElement implements IEditorElement {
         if (!value) {
             return;
         }
-        this.insert({type: EditorBlockType.AddText, value});
+        this.execute({type: EditorCommandType.AddText, value});
     }
 
     private isPasteFile(data: DataTransfer): boolean {
@@ -1120,7 +1120,7 @@ class DivElement implements IEditorElement {
             const item = data.files[i];
             const fileType = EditorHelper.fileType(item);
             this.container.option.upload(item, fileType, res => {
-                this.insert({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                this.execute({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
                     title: res.title, size: res.size});
             }, () => {});
         }
@@ -1131,11 +1131,11 @@ class DivElement implements IEditorElement {
         if (!value) {
             return '';
         }
-        this.insert({type: EditorBlockType.AddRaw, value});
+        this.execute({type: EditorCommandType.AddRaw, value});
     }
 
     private moveTableCol(node: HTMLTableCellElement) {
-        const table: HTMLTableElement = node.closest('table');
+        const table: HTMLTableElement = node.closest('table') as any;
         if (!table) {
             return;
         }
@@ -1166,14 +1166,18 @@ class DivElement implements IEditorElement {
         });
     }
 
-    private updateNode(node: HTMLElement, data: IEditorBlock) {
-        if (data.type === EditorBlockType.NodeResize) {
-            const bound = data as IEditorResizeBlock;
-            node.style.width = bound.width + 'px';
+    private updateNode(node: HTMLElement, data: IEditorCommand) {
+        if (data.type === EditorCommandType.NodeResize) {
+            const bound = data as IEditorResizeCommand;
+            if (bound.width) {
+                if (typeof bound.width === 'number' && bound.width > this.element.offsetWidth *.9) {
+                    node.style.width = '100%';
+                } else {
+                    node.style.width = bound.width + 'px';
+                }
+            }
             node.style.height = bound.height + 'px';
         }
-        console.log(data);
-        
         if (EditorHelper.isOverlay(node) && node.firstElementChild) {
             this.updateNode(node.firstElementChild as any, data);
         }
@@ -1200,8 +1204,8 @@ class DivElement implements IEditorElement {
                 cb(next);
                 break;
             }
-            while (next.hasChildNodes()) {
-                next = next.firstChild;
+            while (next && next.hasChildNodes()) {
+                next = next.firstChild!;
                 if (next === end) {
                     break;
                 }
@@ -1225,11 +1229,11 @@ class DivElement implements IEditorElement {
         if (cb(begin) === false || end === begin) {
             return;
         }
-        const beginParents = [];
+        const beginParents: Node[] = [];
         this.eachParentNode(begin, node => {
             beginParents.push(node);
         });
-        const endParents = [];
+        const endParents: Node[] = [];
         this.eachParentNode(end, node => {
             endParents.push(node);
         });
@@ -1334,7 +1338,7 @@ class DivElement implements IEditorElement {
      * @param items 
      */
     private insertBefore(current: Node, ...items: Node[]) {
-        const parent = current.parentNode;
+        const parent = current.parentNode!;
         for (const item of items) {
             parent.insertBefore(item, current);
         }
@@ -1351,7 +1355,7 @@ class DivElement implements IEditorElement {
             this.insertBefore(current.nextSibling, ...items);
             return;
         }
-        this.insertLast(current.parentNode, ...items);
+        this.insertLast(current.parentNode!, ...items);
     }
 
     private insertToChildIndex(newEle: HTMLElement, parent: Node, index: number) {
@@ -1470,9 +1474,9 @@ class DivElement implements IEditorElement {
             return false;
         });
         const max = Math.max(beginParentItems.length, endParentItems.length);
-        let items = [];
-        let lastBegin: Node;
-        let lastEnd: Node;
+        let items: Node[] = [];
+        let lastBegin: Node|undefined;
+        let lastEnd: Node|undefined;
         for (let i = 1; i <= max; i++) {
             const begin = beginParentItems.length - i;
             const end = endParentItems.length - i;
@@ -1484,7 +1488,7 @@ class DivElement implements IEditorElement {
                     if (i < 1) {
                         items.push(cloneN);
                     } else {
-                        lastBegin.appendChild(cloneN);
+                        lastBegin!.appendChild(cloneN);
                     }
                     if (n === beginNode) {
                         lastBegin = cloneN;
@@ -1501,7 +1505,7 @@ class DivElement implements IEditorElement {
                     if (i < 1) {
                         items.push(cloneN);
                     } else {
-                        lastEnd.appendChild(cloneN);
+                        lastEnd!.appendChild(cloneN);
                     }
                     if (n === endNode) {
                         lastEnd = cloneN;
@@ -1511,7 +1515,7 @@ class DivElement implements IEditorElement {
             }
         }
         if (!lastBegin) {
-            items = [].concat(this.copyRangeNode(range.startContainer, range.startOffset), items);
+            items = [...this.copyRangeNode(range.startContainer, range.startOffset), ...items];
         } else {
             this.insertLast(lastBegin, ...this.copyRangeNode(range.startContainer, range.startOffset));
         }
@@ -1520,16 +1524,17 @@ class DivElement implements IEditorElement {
         } else {
             this.insertLast(lastEnd, ...this.copyRangeNode(range.endContainer, 0, range.endOffset));
         }
+        return items;
     }
 
     private copyRangeNode(current: Node, start: number, end?: number): Node[] {
         if (current instanceof Text) {
             return [new Text(current.textContent.substring(start, end))];
         }
-        const items = [];
+        const items: Node[] = [];
         for (let i = start; i < current.childNodes.length; i++) {
             if (end && i > end) {
-                return;
+                break;
             }
             items.push(current.childNodes[i].cloneNode(true));
         }
@@ -1606,10 +1611,10 @@ class DivElement implements IEditorElement {
         let node = current;
         while (true) {
             if (!node.nextSibling) {
-                if (this.element === node.parentNode || this.isBlockNode(node.parentNode)) {
+                if (this.element === node.parentNode || this.isBlockNode(node.parentNode!)) {
                     break;
                 }
-                node = node.parentNode;
+                node = node.parentNode!;
                 continue;
             }
             node = node.nextSibling;
@@ -1656,7 +1661,7 @@ class DivElement implements IEditorElement {
      */
     private getNodeStyle(node: Node): string[] {
         const styleTag = ['B', 'EM', 'I', 'STRONG'];
-        const items = [];
+        const items: string[] = [];
         this.eachParentNode(node, cur => {
             if (styleTag.indexOf(cur.nodeName) >= 0) {
                 items.push(cur.nodeName);
@@ -1686,7 +1691,7 @@ class DivElement implements IEditorElement {
             if (!current) {
                 break;
             }
-            current = current.parentNode;
+            current = current.parentNode!;
         }
     }
 
@@ -1730,7 +1735,7 @@ class DivElement implements IEditorElement {
         if (node.parentNode === this.element) {
             return undefined;
         }
-        return this.nextNode(node.parentNode); 
+        return this.nextNode(node.parentNode!); 
     }
 
     private splitNodeRange(node: Node, range: Range): Node[];
@@ -1758,7 +1763,7 @@ class DivElement implements IEditorElement {
         if (i <= 0 && count >= node.childNodes.length) {
             return [node];
         }
-        const items = [];
+        const items: Node[] = [];
         for (; i < count; i++) {
             items.push(node.childNodes[i]);
         }
@@ -1791,7 +1796,7 @@ class DivElement implements IEditorElement {
 
     private getNodeOffset(node: Node):IPoint {
         if (node.nodeType !== 1) {
-            node = node.parentNode;
+            node = node.parentNode!;
         }
         if (node === this.element) {
             const style = getComputedStyle(this.element);
@@ -1814,7 +1819,7 @@ class DivElement implements IEditorElement {
 
     private getNodeBound(node: Node): IBound {
         if (node.nodeType !== 1) {
-            node = node.parentNode;
+            node = node.parentNode!;
         }
         if (node === this.element) {
             const style = getComputedStyle(this.element);

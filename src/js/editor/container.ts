@@ -1,6 +1,6 @@
 class EditorContainer implements IEditorContainer {
-    private selection: IEditorRange;
-    private element: IEditorElement;
+    private selection?: IEditorRange;
+    private element?: IEditorElement;
     private undoStack: string[] = [];
     private undoIndex: number = 0;
     private asyncTimer = 0;
@@ -63,17 +63,17 @@ class EditorContainer implements IEditorContainer {
             const module = this.option.hotKeyModule(modifiers.join('+'));
             if (module) {
                 e.preventDefault();
-                this.execute(module);
+                this.use(module);
                 return;
             }
             if (e.key === 'Enter') {
                 e.preventDefault();
-                this.insert({type: EditorBlockType.AddLineBreak});
+                this.execute({type: EditorCommandType.AddLineBreak});
                 return;
             }
             if (e.key === 'Tab') {
                 e.preventDefault();
-                this.insert({type: EditorBlockType.Indent});
+                this.execute({type: EditorCommandType.Indent});
             }
         });
         this.on(EDITOR_EVENT_INPUT_BLUR, () => {
@@ -124,7 +124,7 @@ class EditorContainer implements IEditorContainer {
     public set value(content: string) {
         if (!this.element) {
             this.once(EDITOR_EVENT_EDITOR_READY, () => {
-                this.element.value = content;
+                this.element!.value = content;
             });
             return;
         }
@@ -141,29 +141,29 @@ class EditorContainer implements IEditorContainer {
 
     private checkSelection() {
         if (!this.selection) {
-            this.selection = this.element.selection;
+            this.selection = this.element!.selection;
         }
     }
 
     public selectAll(): void {
-        this.element.selectAll();
+        this.element?.selectAll();
     }
 
     public saveSelection() {
-        this.selection = this.element.selection;
+        this.selection = this.element!.selection;
     }
 
-    public insert(block: IEditorBlock|string, range?: IEditorRange): void {
+    public execute(block: IEditorCommand|string, range?: IEditorRange): void {
         if (typeof block !== 'object') {
             block = {
-                type: EditorBlockType.AddText,
+                type: EditorCommandType.AddText,
                 value: block,
             }
         }
-        this.element.insert(block, range ?? this.selection);
+        this.element!.execute(block, range ?? this.selection);
     }
     
-    public execute(module: string|IEditorTool, range?: IEditorRange, data?: any): void {
+    public use(module: string|IEditorTool, range?: IEditorRange, data?: any): void {
         const instance = this.option.toModule(module);
         if (!instance || !instance.handler) {
             return;
@@ -172,11 +172,11 @@ class EditorContainer implements IEditorContainer {
     }
 
     public paste(data: DataTransfer) {
-        this.element.paste(data);
+        this.element!.paste(data);
     }
 
     public clear(focus: boolean = true) {
-        this.element.value = '';
+        this.element!.value = '';
         if (!focus) {
             return;
         }
@@ -188,8 +188,8 @@ class EditorContainer implements IEditorContainer {
      */
     public focus() {
         this.checkSelection();
-        this.element.selection = this.selection;
-        this.element.focus();
+        this.element!.selection = this.selection!;
+        this.element!.focus();
     }
 
     public asynSave() {
@@ -203,11 +203,11 @@ class EditorContainer implements IEditorContainer {
     }
 
     public blur() {
-        this.element.blur();
+        this.element?.blur();
     }
 
     public destroy(): void {
-        this.element.destroy();
+        this.element?.destroy();
         this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     }

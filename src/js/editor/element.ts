@@ -16,7 +16,7 @@ interface IEditorElement {
     get wordLength(): number;
 
     selectAll(): void;
-    insert(block: IEditorBlock, range?: IEditorRange): void;
+    execute(block: IEditorCommand, range?: IEditorRange): void;
     focus(): void;
     blur(): void;
 

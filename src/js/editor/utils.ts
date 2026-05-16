@@ -202,7 +202,7 @@ class EditorHelper {
      * @param items 
      */
     public static toRaw(parent: HTMLElement): string {
-        const removeTags = ['script', 'style', 'link', 'meta', 'iframe', 'noscript', 
+        const removeTags = ['script', 'style', 'link', 'meta', 'noscript', 
             'basefont', 'center', 'dir', 'font', 'frame', 
             'frameset', 'isindex', 'menu', 'noframes', 
             's', 'strike', 'u'];

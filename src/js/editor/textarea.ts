@@ -63,7 +63,7 @@ class TextareaElement implements IEditorElement {
         };
     }
 
-    public insert(block: IEditorBlock, range?: IEditorRange): void {
+    public execute(block: IEditorCommand, range?: IEditorRange): void {
         if (!range) {
             range = this.selection;
         }
@@ -71,13 +71,13 @@ class TextareaElement implements IEditorElement {
             this.includeBlock(block.begin, block.end, range);
             return;
         }
-        const type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        const type = block.type === EditorCommandType.AddRaw ? EditorCommandType.AddText : block.type;
         const func = this[type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range, block);
             return;
         }
-        throw new Error(`insert type error:[${block.type}]`);
+        throw new Error(`command type error:[${block.type}]`);
     }
     public focus(): void {
         this.element.focus();
@@ -120,13 +120,13 @@ class TextareaElement implements IEditorElement {
     }
 
 
-    private addTextExecute(range: IEditorRange, block: IEditorTextBlock) {
+    private addTextExecute(range: IEditorRange, block: IEditorTextCommand) {
         const v = this.value;
         this.value = v.substring(0, range.start) + block.value + v.substring(range.end);
         this.moveCursor(range.start + (!block.cursor ? block.value.length : block.cursor));
     }
 
-    private addCodeExecute(range: IEditorRange, block: IEditorCodeBlock) {
+    private addCodeExecute(range: IEditorRange, block: IEditorCodeCommand) {
         const v = this.value;
         const selected = v.substring(range.start, range.end);
         
@@ -142,7 +142,7 @@ class TextareaElement implements IEditorElement {
         this.moveCursor(range.start + cursor);
     }
 
-    private addLinkExecute(range: IEditorRange, block: IEditorLinkBlock) {
+    private addLinkExecute(range: IEditorRange, block: IEditorLinkCommand) {
         if (!block.value) {
             block.value = '';
         } 
@@ -155,7 +155,7 @@ class TextareaElement implements IEditorElement {
         }, range, block.value ? block.value.length + 4 : 3);
     }
 
-    private addImageExecute(range: IEditorRange, block: IEditorFileBlock) {
+    private addImageExecute(range: IEditorRange, block: IEditorFileCommand) {
         this.replaceSelect(s => {
             if (s.trim().length === 0 && block.title) {
                 s = block.title;
@@ -261,7 +261,7 @@ class TextareaElement implements IEditorElement {
         if (!value) {
             return;
         }
-        this.insert({type: EditorBlockType.AddText, value});
+        this.execute({type: EditorCommandType.AddText, value});
     }
 
     public destroy(): void {
@@ -277,7 +277,7 @@ class TextareaElement implements IEditorElement {
             const item = data.files[i];
             const fileType = EditorHelper.fileType(item);
             this.container.option.upload(item, fileType, res => {
-                this.insert({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                this.execute({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
                     title: res.title, size: res.size});
             }, () => {});
         }

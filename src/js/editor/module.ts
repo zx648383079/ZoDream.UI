@@ -66,7 +66,7 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-enter',
         label: 'Link Break',
         handler(editor) {
-            editor.insert({type: EditorBlockType.AddLineBreak});
+            editor.execute({type: EditorCommandType.AddLineBreak});
         }
     },
     // 文字处理
@@ -77,7 +77,7 @@ const EditorModules: IEditorModule[] = [
         parent: 'text',
         modal: new EditorDropdownComponent(true),
         handler(editor, _, data) {
-            editor.insert({...data, type: EditorBlockType.H});
+            editor.execute({...data, type: EditorCommandType.H});
         },
     },
     {
@@ -87,7 +87,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Font Bold',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Bold});
+            editor.execute({type: EditorCommandType.Bold});
         },
     },
     {
@@ -97,7 +97,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Font Italic',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Italic});
+            editor.execute({type: EditorCommandType.Italic});
         },
     },
     {
@@ -107,7 +107,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Add Underline',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Underline});
+            editor.execute({type: EditorCommandType.Underline});
         },
     },
     {
@@ -117,7 +117,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Add Wavyline',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Wavyline});
+            editor.execute({type: EditorCommandType.Wavyline});
         },
     },
     {
@@ -127,7 +127,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Subscript and dot',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Dashed});
+            editor.execute({type: EditorCommandType.Dashed});
         },
     },
     {
@@ -136,7 +136,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Strike Through',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Strike});
+            editor.execute({type: EditorCommandType.Strike});
         },
     },
     {
@@ -145,7 +145,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Sub',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Sub});
+            editor.execute({type: EditorCommandType.Sub});
         },
     },
     {
@@ -154,7 +154,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Sup',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Sub});
+            editor.execute({type: EditorCommandType.Sub});
         },
     },
     {
@@ -165,7 +165,7 @@ const EditorModules: IEditorModule[] = [
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler(editor, _, data) {
-            editor.insert({...data, type: EditorBlockType.FontSize});
+            editor.execute({...data, type: EditorCommandType.FontSize});
         },
     },
     {
@@ -176,7 +176,7 @@ const EditorModules: IEditorModule[] = [
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler(editor, _, data) {
-            editor.insert({...data, type: EditorBlockType.FontFamily});
+            editor.execute({...data, type: EditorCommandType.FontFamily});
         },
     },
     {
@@ -187,7 +187,7 @@ const EditorModules: IEditorModule[] = [
         parent: 'text',
         modal: new EditorColorComponent,
         handler(editor, _, data) {
-            editor.insert({...data, type: EditorBlockType.Foreground});
+            editor.execute({...data, type: EditorCommandType.Foreground});
         },
     },
     {
@@ -197,7 +197,7 @@ const EditorModules: IEditorModule[] = [
         parent: 'text',
         modal: new EditorColorComponent,
         handler(editor, _, data) {
-            editor.insert({...data, type: EditorBlockType.Background});
+            editor.execute({...data, type: EditorCommandType.Background});
         },
     },
     {
@@ -207,7 +207,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Clear',
         parent: 'text',
         handler(editor) {
-            editor.insert({type: EditorBlockType.ClearStyle});
+            editor.execute({type: EditorCommandType.ClearStyle});
         },
     },
 
@@ -219,7 +219,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Left',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Align, value: 'left'})
+            editor.execute({type: EditorCommandType.Align, value: 'left'})
         },
     },
     {
@@ -229,7 +229,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Center',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Align, value: 'center'})
+            editor.execute({type: EditorCommandType.Align, value: 'center'})
         },
     },
     {
@@ -239,7 +239,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Right',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Align, value: 'right'})
+            editor.execute({type: EditorCommandType.Align, value: 'right'})
         },
     },
     {
@@ -249,7 +249,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Justify',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Align, value: ''})
+            editor.execute({type: EditorCommandType.Align, value: ''})
         },
     },
     {
@@ -259,7 +259,7 @@ const EditorModules: IEditorModule[] = [
         short: 'List',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.List});
+            editor.execute({type: EditorCommandType.List});
         },
     },
     {
@@ -269,7 +269,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Indent',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Indent});
+            editor.execute({type: EditorCommandType.Indent});
         },
     },
     {
@@ -279,7 +279,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Outdent',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Outdent});
+            editor.execute({type: EditorCommandType.Outdent});
         },
     },
     {
@@ -289,7 +289,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Add Blockquote',
         parent: 'paragraph',
         handler(editor) {
-            editor.insert({type: EditorBlockType.Blockquote});
+            editor.execute({type: EditorCommandType.Blockquote});
         },
     },
 
@@ -303,8 +303,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorLinkComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddLink,
+            editor.execute({
+                type: EditorCommandType.AddLink,
                 ...data                
             }, range);
         },
@@ -317,8 +317,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorImageComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddImage,
+            editor.execute({
+                type: EditorCommandType.AddImage,
                 ...data                
             }, range);
         },
@@ -331,8 +331,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorVideoComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddVideo,
+            editor.execute({
+                type: EditorCommandType.AddVideo,
                 ...data                
             }, range);
         },
@@ -345,8 +345,8 @@ const EditorModules: IEditorModule[] = [
         parent: 'add',
         modal: new EditorTableComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddTable,
+            editor.execute({
+                type: EditorCommandType.AddTable,
                 ...data                
             }, range);
         },
@@ -359,8 +359,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorFileComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddFile,
+            editor.execute({
+                type: EditorCommandType.AddFile,
                 ...data                
             }, range);
         },
@@ -373,8 +373,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorCodeComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddCode,
+            editor.execute({
+                type: EditorCommandType.AddCode,
                 ...data                
             }, range);
         },
@@ -386,7 +386,7 @@ const EditorModules: IEditorModule[] = [
         short: 'Line',
         parent: EDITOR_ADD_TOOL,
         handler(editor) {
-            editor.insert({type: EditorBlockType.AddHr});
+            editor.execute({type: EditorCommandType.AddHr});
         }
     },
     {
@@ -397,8 +397,8 @@ const EditorModules: IEditorModule[] = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorMapComponent,
         handler(editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddFrame,
+            editor.execute({
+                type: EditorCommandType.AddFrame,
                 value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),        
             }, range);
         }
@@ -452,6 +452,9 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-trash',
         label: 'Delete Image',
         parent: EDITOR_IMAGE_TOOL, 
+        handler(editor) {
+            editor.execute({type: EditorCommandType.NodeRemove});
+        },
     },
     {
         name: 'link-image',
@@ -498,6 +501,9 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-trash',
         label: 'Delete Video',
         parent: EDITOR_VIDEO_TOOL, 
+        handler(editor) {
+            editor.execute({type: EditorCommandType.NodeRemove});
+        },
     },
     {
         name: 'size-video',
@@ -517,6 +523,9 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-trash',
         label: 'Delete',
         parent: EDITOR_OVERLAY_TOOL, 
+        handler(editor) {
+            editor.execute({type: EditorCommandType.NodeRemove});
+        },
     },
     {
         name: 'size-frame',
@@ -533,7 +542,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Table Head',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
-            editor.insert({type: EditorBlockType.Thead});
+            editor.execute({type: EditorCommandType.Thead});
         },
     },
     {
@@ -542,7 +551,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Table Foot',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
-            editor.insert({type: EditorBlockType.TFoot});
+            editor.execute({type: EditorCommandType.TFoot});
         },
     },
     {
@@ -551,7 +560,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Delete Table',
         parent: EDITOR_TABLE_TOOL,
         handler(editor) {
-            editor.insert({type: EditorBlockType.DeleteTable});
+            editor.execute({type: EditorCommandType.DeleteTable});
         },
     },
     {
@@ -596,7 +605,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Horizontal merger',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
-            editor.insert({type: EditorBlockType.ColSpan});
+            editor.execute({type: EditorCommandType.ColSpan});
         },
     },
     {
@@ -605,7 +614,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Vertical merger',
         parent: EDITOR_TABLE_TOOL, 
         handler(editor) {
-            editor.insert({type: EditorBlockType.RowSpan});
+            editor.execute({type: EditorCommandType.RowSpan});
         },
     },
     // 链接处理
@@ -616,7 +625,7 @@ const EditorModules: IEditorModule[] = [
         label: 'Open Link',
         parent: EDITOR_LINK_TOOL, 
         handler(editor) {
-            editor.insert({type: EditorBlockType.OpenLink});
+            editor.execute({type: EditorCommandType.OpenLink});
         },
     },
     {

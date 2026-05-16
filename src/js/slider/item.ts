@@ -30,7 +30,7 @@ class SliderItem extends Eve {
         this.bindResize();
     }
 
-    public options: SliderOptions;
+    public options!: SliderOptions;
     private _data: Array<Point> = [];
     private _length: number = 0;
     private _index: number = 0;
@@ -236,8 +236,13 @@ class SliderItem extends Eve {
         this._setTime();
         let instance = this;
         let maxWidth = this.element.width();
-        let width = 0;
         const itemWidth = this.getItemWidth();
+        if (this.options.only) {
+            maxWidth = this.element.parent().width();
+            maxWidth = Math.min(Math.floor(maxWidth / itemWidth), this._length) * itemWidth;
+            this.element.width(maxWidth);
+        }
+        let width = 0;
         const itemHeight = this.getItemHeight(itemWidth);
         $.each(this._data, function(i, point) {
             if (itemWidth > 0) {
@@ -246,7 +251,7 @@ class SliderItem extends Eve {
             if (itemHeight > 0) {
                 point.height = itemHeight;
             }
-            point.applyWidthAndHeight(!(instance.options.height > 0));
+            point.applyWidthAndHeight(!(instance.options.height! > 0));
             width += point.width;
             point.x = -width;
         });

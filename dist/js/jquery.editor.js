@@ -396,11 +396,11 @@ var EditorResizerComponent = /** @class */ (function () {
                 return;
             }
             if (toolType === 1) {
-                _this.updatedHandler(__assign({ type: EditorBlockType.NodeResize }, _this.rectBound));
+                _this.updatedHandler(__assign({ type: EditorCommandType.NodeResize }, _this.rectBound));
                 return;
             }
             else if (toolType === 2 || toolType === 3) {
-                _this.updatedHandler(__assign({ type: EditorBlockType.NodeMove }, _this.rectBound));
+                _this.updatedHandler(__assign({ type: EditorCommandType.NodeMove }, _this.rectBound));
             }
         });
     };
@@ -1187,7 +1187,7 @@ var EditorApp = /** @class */ (function () {
         this.executeModule(item, this.getOffsetPosition(event));
     };
     EditorApp.prototype.insert = function (block) {
-        this.container.insert(block);
+        this.container.execute(block);
     };
     EditorApp.prototype.toggle = function (display) {
         this.box.toggle(display);
@@ -1259,7 +1259,7 @@ var EditorApp = /** @class */ (function () {
             return;
         }
         if (!module.modal) {
-            this.container.execute(module);
+            this.container.use(module);
             return;
         }
         var modal = module.modal;
@@ -1268,7 +1268,7 @@ var EditorApp = /** @class */ (function () {
         }
         modal.open({}, function (res) {
             _this.hideModal();
-            _this.container.execute(module, undefined, res);
+            _this.container.use(module, undefined, res);
         }, position);
     };
     EditorApp.prototype.getOffsetPosition = function (event) {
@@ -1723,7 +1723,7 @@ var EditorHelper = /** @class */ (function () {
      * @param items
      */
     EditorHelper.toRaw = function (parent) {
-        var removeTags = ['script', 'style', 'link', 'meta', 'iframe', 'noscript',
+        var removeTags = ['script', 'style', 'link', 'meta', 'noscript',
             'basefont', 'center', 'dir', 'font', 'frame',
             'frameset', 'isindex', 'menu', 'noframes',
             's', 'strike', 'u'];
@@ -2003,7 +2003,7 @@ var TextareaElement = /** @class */ (function () {
             end: this.value.length
         };
     };
-    TextareaElement.prototype.insert = function (block, range) {
+    TextareaElement.prototype.execute = function (block, range) {
         if (!range) {
             range = this.selection;
         }
@@ -2011,13 +2011,13 @@ var TextareaElement = /** @class */ (function () {
             this.includeBlock(block.begin, block.end, range);
             return;
         }
-        var type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        var type = block.type === EditorCommandType.AddRaw ? EditorCommandType.AddText : block.type;
         var func = this[type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range, block);
             return;
         }
-        throw new Error("insert type error:[".concat(block.type, "]"));
+        throw new Error("command type error:[".concat(block.type, "]"));
     };
     TextareaElement.prototype.focus = function () {
         this.element.focus();
@@ -2186,7 +2186,7 @@ var TextareaElement = /** @class */ (function () {
         if (!value) {
             return;
         }
-        this.insert({ type: EditorBlockType.AddText, value: value });
+        this.execute({ type: EditorCommandType.AddText, value: value });
     };
     TextareaElement.prototype.destroy = function () {
         this.emitter.clear();
@@ -2200,7 +2200,7 @@ var TextareaElement = /** @class */ (function () {
             var item = data.files[i];
             var fileType = EditorHelper.fileType(item);
             this_1.container.option.upload(item, fileType, function (res) {
-                _this.insert({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                _this.execute({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
                     title: res.title, size: res.size });
             }, function () { });
         };
@@ -2591,7 +2591,7 @@ var EditorModules = [
         icon: 'fa-enter',
         label: 'Link Break',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.AddLineBreak });
+            editor.execute({ type: EditorCommandType.AddLineBreak });
         }
     },
     // 文字处理
@@ -2602,7 +2602,7 @@ var EditorModules = [
         parent: 'text',
         modal: new EditorDropdownComponent(true),
         handler: function (editor, _, data) {
-            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.H }));
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.H }));
         },
     },
     {
@@ -2612,7 +2612,7 @@ var EditorModules = [
         label: 'Font Bold',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Bold });
+            editor.execute({ type: EditorCommandType.Bold });
         },
     },
     {
@@ -2622,7 +2622,7 @@ var EditorModules = [
         label: 'Font Italic',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Italic });
+            editor.execute({ type: EditorCommandType.Italic });
         },
     },
     {
@@ -2632,7 +2632,7 @@ var EditorModules = [
         label: 'Add Underline',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Underline });
+            editor.execute({ type: EditorCommandType.Underline });
         },
     },
     {
@@ -2642,7 +2642,7 @@ var EditorModules = [
         label: 'Add Wavyline',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Wavyline });
+            editor.execute({ type: EditorCommandType.Wavyline });
         },
     },
     {
@@ -2652,7 +2652,7 @@ var EditorModules = [
         label: 'Subscript and dot',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Dashed });
+            editor.execute({ type: EditorCommandType.Dashed });
         },
     },
     {
@@ -2661,7 +2661,7 @@ var EditorModules = [
         label: 'Strike Through',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Strike });
+            editor.execute({ type: EditorCommandType.Strike });
         },
     },
     {
@@ -2670,7 +2670,7 @@ var EditorModules = [
         label: 'Sub',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Sub });
+            editor.execute({ type: EditorCommandType.Sub });
         },
     },
     {
@@ -2679,7 +2679,7 @@ var EditorModules = [
         label: 'Sup',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Sub });
+            editor.execute({ type: EditorCommandType.Sub });
         },
     },
     {
@@ -2690,7 +2690,7 @@ var EditorModules = [
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler: function (editor, _, data) {
-            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.FontSize }));
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontSize }));
         },
     },
     {
@@ -2701,7 +2701,7 @@ var EditorModules = [
         parent: 'text',
         modal: new EditorDropdownComponent,
         handler: function (editor, _, data) {
-            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.FontFamily }));
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontFamily }));
         },
     },
     {
@@ -2712,7 +2712,7 @@ var EditorModules = [
         parent: 'text',
         modal: new EditorColorComponent,
         handler: function (editor, _, data) {
-            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.Foreground }));
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Foreground }));
         },
     },
     {
@@ -2722,7 +2722,7 @@ var EditorModules = [
         parent: 'text',
         modal: new EditorColorComponent,
         handler: function (editor, _, data) {
-            editor.insert(__assign(__assign({}, data), { type: EditorBlockType.Background }));
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Background }));
         },
     },
     {
@@ -2732,7 +2732,7 @@ var EditorModules = [
         short: 'Clear',
         parent: 'text',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.ClearStyle });
+            editor.execute({ type: EditorCommandType.ClearStyle });
         },
     },
     // 段落处理
@@ -2743,7 +2743,7 @@ var EditorModules = [
         short: 'Left',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Align, value: 'left' });
+            editor.execute({ type: EditorCommandType.Align, value: 'left' });
         },
     },
     {
@@ -2753,7 +2753,7 @@ var EditorModules = [
         short: 'Center',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Align, value: 'center' });
+            editor.execute({ type: EditorCommandType.Align, value: 'center' });
         },
     },
     {
@@ -2763,7 +2763,7 @@ var EditorModules = [
         short: 'Right',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Align, value: 'right' });
+            editor.execute({ type: EditorCommandType.Align, value: 'right' });
         },
     },
     {
@@ -2773,7 +2773,7 @@ var EditorModules = [
         short: 'Justify',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Align, value: '' });
+            editor.execute({ type: EditorCommandType.Align, value: '' });
         },
     },
     {
@@ -2783,7 +2783,7 @@ var EditorModules = [
         short: 'List',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.List });
+            editor.execute({ type: EditorCommandType.List });
         },
     },
     {
@@ -2793,7 +2793,7 @@ var EditorModules = [
         short: 'Indent',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Indent });
+            editor.execute({ type: EditorCommandType.Indent });
         },
     },
     {
@@ -2803,7 +2803,7 @@ var EditorModules = [
         short: 'Outdent',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Outdent });
+            editor.execute({ type: EditorCommandType.Outdent });
         },
     },
     {
@@ -2813,7 +2813,7 @@ var EditorModules = [
         label: 'Add Blockquote',
         parent: 'paragraph',
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Blockquote });
+            editor.execute({ type: EditorCommandType.Blockquote });
         },
     },
     // 添加
@@ -2825,7 +2825,7 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorLinkComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddLink }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range);
         },
     },
     {
@@ -2836,7 +2836,7 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorImageComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddImage }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range);
         },
     },
     {
@@ -2847,7 +2847,7 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorVideoComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddVideo }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddVideo }, data), range);
         },
     },
     {
@@ -2858,7 +2858,7 @@ var EditorModules = [
         parent: 'add',
         modal: new EditorTableComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddTable }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddTable }, data), range);
         },
     },
     {
@@ -2869,7 +2869,7 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorFileComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddFile }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddFile }, data), range);
         },
     },
     {
@@ -2880,7 +2880,7 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorCodeComponent,
         handler: function (editor, range, data) {
-            editor.insert(__assign({ type: EditorBlockType.AddCode }, data), range);
+            editor.execute(__assign({ type: EditorCommandType.AddCode }, data), range);
         },
     },
     {
@@ -2890,7 +2890,7 @@ var EditorModules = [
         short: 'Line',
         parent: EDITOR_ADD_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.AddHr });
+            editor.execute({ type: EditorCommandType.AddHr });
         }
     },
     {
@@ -2901,8 +2901,8 @@ var EditorModules = [
         parent: EDITOR_ADD_TOOL,
         modal: new EditorMapComponent,
         handler: function (editor, range, data) {
-            editor.insert({
-                type: EditorBlockType.AddFrame,
+            editor.execute({
+                type: EditorCommandType.AddFrame,
                 value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),
             }, range);
         }
@@ -2954,6 +2954,9 @@ var EditorModules = [
         icon: 'fa-trash',
         label: 'Delete Image',
         parent: EDITOR_IMAGE_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.NodeRemove });
+        },
     },
     {
         name: 'link-image',
@@ -2999,6 +3002,9 @@ var EditorModules = [
         icon: 'fa-trash',
         label: 'Delete Video',
         parent: EDITOR_VIDEO_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.NodeRemove });
+        },
     },
     {
         name: 'size-video',
@@ -3018,6 +3024,9 @@ var EditorModules = [
         icon: 'fa-trash',
         label: 'Delete',
         parent: EDITOR_OVERLAY_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.NodeRemove });
+        },
     },
     {
         name: 'size-frame',
@@ -3032,7 +3041,7 @@ var EditorModules = [
         label: 'Table Head',
         parent: EDITOR_TABLE_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.Thead });
+            editor.execute({ type: EditorCommandType.Thead });
         },
     },
     {
@@ -3041,7 +3050,7 @@ var EditorModules = [
         label: 'Table Foot',
         parent: EDITOR_TABLE_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.TFoot });
+            editor.execute({ type: EditorCommandType.TFoot });
         },
     },
     {
@@ -3050,7 +3059,7 @@ var EditorModules = [
         label: 'Delete Table',
         parent: EDITOR_TABLE_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.DeleteTable });
+            editor.execute({ type: EditorCommandType.DeleteTable });
         },
     },
     {
@@ -3095,7 +3104,7 @@ var EditorModules = [
         label: 'Horizontal merger',
         parent: EDITOR_TABLE_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.ColSpan });
+            editor.execute({ type: EditorCommandType.ColSpan });
         },
     },
     {
@@ -3104,7 +3113,7 @@ var EditorModules = [
         label: 'Vertical merger',
         parent: EDITOR_TABLE_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.RowSpan });
+            editor.execute({ type: EditorCommandType.RowSpan });
         },
     },
     // 链接处理
@@ -3114,7 +3123,7 @@ var EditorModules = [
         label: 'Open Link',
         parent: EDITOR_LINK_TOOL,
         handler: function (editor) {
-            editor.insert({ type: EditorBlockType.OpenLink });
+            editor.execute({ type: EditorCommandType.OpenLink });
         },
     },
     {
@@ -3136,47 +3145,48 @@ var EditorModules = [
         parent: EDITOR_LINK_TOOL,
     },
 ];
-var EditorBlockType;
-(function (EditorBlockType) {
-    EditorBlockType["AddLineBreak"] = "addLineBreak";
-    EditorBlockType["AddHr"] = "addHr";
-    EditorBlockType["AddText"] = "addText";
-    EditorBlockType["AddRaw"] = "addRaw";
-    EditorBlockType["AddImage"] = "addImage";
-    EditorBlockType["AddLink"] = "addLink";
-    EditorBlockType["AddTable"] = "addTable";
-    EditorBlockType["AddVideo"] = "addVideo";
-    EditorBlockType["AddFile"] = "addFile";
-    EditorBlockType["AddCode"] = "addCode";
-    EditorBlockType["AddFrame"] = "addFrame";
-    EditorBlockType["H"] = "h";
-    EditorBlockType["Bold"] = "bold";
-    EditorBlockType["Italic"] = "italic";
-    EditorBlockType["Underline"] = "underline";
-    EditorBlockType["Strike"] = "strike";
-    EditorBlockType["Wavyline"] = "wavyline";
-    EditorBlockType["Dashed"] = "dashed";
-    EditorBlockType["Sub"] = "sub";
-    EditorBlockType["Sup"] = "sup";
-    EditorBlockType["FontSize"] = "fontSize";
-    EditorBlockType["FontFamily"] = "fontFamily";
-    EditorBlockType["Background"] = "background";
-    EditorBlockType["Foreground"] = "foreground";
-    EditorBlockType["ClearStyle"] = "clearStyle";
-    EditorBlockType["Align"] = "align";
-    EditorBlockType["List"] = "list";
-    EditorBlockType["Blockquote"] = "blockquote";
-    EditorBlockType["Thead"] = "thead";
-    EditorBlockType["TFoot"] = "tfoot";
-    EditorBlockType["DeleteTable"] = "delTable";
-    EditorBlockType["RowSpan"] = "rowSpan";
-    EditorBlockType["ColSpan"] = "colSpan";
-    EditorBlockType["OpenLink"] = "openLink";
-    EditorBlockType["Indent"] = "indent";
-    EditorBlockType["Outdent"] = "outdent";
-    EditorBlockType["NodeResize"] = "nodeResize";
-    EditorBlockType["NodeMove"] = "nodeMove";
-})(EditorBlockType || (EditorBlockType = {}));
+var EditorCommandType;
+(function (EditorCommandType) {
+    EditorCommandType["AddLineBreak"] = "addLineBreak";
+    EditorCommandType["AddHr"] = "addHr";
+    EditorCommandType["AddText"] = "addText";
+    EditorCommandType["AddRaw"] = "addRaw";
+    EditorCommandType["AddImage"] = "addImage";
+    EditorCommandType["AddLink"] = "addLink";
+    EditorCommandType["AddTable"] = "addTable";
+    EditorCommandType["AddVideo"] = "addVideo";
+    EditorCommandType["AddFile"] = "addFile";
+    EditorCommandType["AddCode"] = "addCode";
+    EditorCommandType["AddFrame"] = "addFrame";
+    EditorCommandType["H"] = "h";
+    EditorCommandType["Bold"] = "bold";
+    EditorCommandType["Italic"] = "italic";
+    EditorCommandType["Underline"] = "underline";
+    EditorCommandType["Strike"] = "strike";
+    EditorCommandType["Wavyline"] = "wavyline";
+    EditorCommandType["Dashed"] = "dashed";
+    EditorCommandType["Sub"] = "sub";
+    EditorCommandType["Sup"] = "sup";
+    EditorCommandType["FontSize"] = "fontSize";
+    EditorCommandType["FontFamily"] = "fontFamily";
+    EditorCommandType["Background"] = "background";
+    EditorCommandType["Foreground"] = "foreground";
+    EditorCommandType["ClearStyle"] = "clearStyle";
+    EditorCommandType["Align"] = "align";
+    EditorCommandType["List"] = "list";
+    EditorCommandType["Blockquote"] = "blockquote";
+    EditorCommandType["Thead"] = "thead";
+    EditorCommandType["TFoot"] = "tfoot";
+    EditorCommandType["DeleteTable"] = "delTable";
+    EditorCommandType["RowSpan"] = "rowSpan";
+    EditorCommandType["ColSpan"] = "colSpan";
+    EditorCommandType["OpenLink"] = "openLink";
+    EditorCommandType["Indent"] = "indent";
+    EditorCommandType["Outdent"] = "outdent";
+    EditorCommandType["NodeResize"] = "nodeResize";
+    EditorCommandType["NodeMove"] = "nodeMove";
+    EditorCommandType["NodeRemove"] = "nodeRemove";
+})(EditorCommandType || (EditorCommandType = {}));
 var EDITOR_EVENT_INPUT_KEYDOWN = 'input.keydown';
 var EDITOR_EVENT_INPUT_BLUR = 'input.blur';
 var EDITOR_EVENT_INPUT_CLICK = 'input.click';
@@ -3325,7 +3335,7 @@ var DivElement = /** @class */ (function () {
             return items.join('');
         },
         set: function (val) {
-            this.insert({ type: EditorBlockType.AddText, text: val });
+            this.execute({ type: EditorCommandType.AddText, text: val });
         },
         enumerable: false,
         configurable: true
@@ -3361,7 +3371,7 @@ var DivElement = /** @class */ (function () {
         sel.removeAllRanges();
         sel.addRange(range);
     };
-    DivElement.prototype.insert = function (block, range) {
+    DivElement.prototype.execute = function (block, range) {
         if (!range) {
             range = this.selection;
         }
@@ -3371,7 +3381,7 @@ var DivElement = /** @class */ (function () {
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
             return;
         }
-        throw new Error("insert type error:[".concat(block.type, "]"));
+        throw new Error("command type error:[".concat(block.type, "]"));
     };
     DivElement.prototype.focus = function () {
         this.element.focus({ preventScroll: true });
@@ -4330,7 +4340,7 @@ var DivElement = /** @class */ (function () {
         if (!value) {
             return;
         }
-        this.insert({ type: EditorBlockType.AddText, value: value });
+        this.execute({ type: EditorCommandType.AddText, value: value });
     };
     DivElement.prototype.isPasteFile = function (data) {
         return data.types.length > 0 && data.types[0] === 'Files';
@@ -4344,7 +4354,7 @@ var DivElement = /** @class */ (function () {
             var item = data.files[i];
             var fileType = EditorHelper.fileType(item);
             this_2.container.option.upload(item, fileType, function (res) {
-                _this.insert({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                _this.execute({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
                     title: res.title, size: res.size });
             }, function () { });
         };
@@ -4358,7 +4368,7 @@ var DivElement = /** @class */ (function () {
         if (!value) {
             return '';
         }
-        this.insert({ type: EditorBlockType.AddRaw, value: value });
+        this.execute({ type: EditorCommandType.AddRaw, value: value });
     };
     DivElement.prototype.moveTableCol = function (node) {
         var table = node.closest('table');
@@ -4391,12 +4401,18 @@ var DivElement = /** @class */ (function () {
         });
     };
     DivElement.prototype.updateNode = function (node, data) {
-        if (data.type === EditorBlockType.NodeResize) {
+        if (data.type === EditorCommandType.NodeResize) {
             var bound = data;
-            node.style.width = bound.width + 'px';
+            if (bound.width) {
+                if (typeof bound.width === 'number' && bound.width > this.element.offsetWidth * .9) {
+                    node.style.width = '100%';
+                }
+                else {
+                    node.style.width = bound.width + 'px';
+                }
+            }
             node.style.height = bound.height + 'px';
         }
-        console.log(data);
         if (EditorHelper.isOverlay(node) && node.firstElementChild) {
             this.updateNode(node.firstElementChild, data);
         }
@@ -4422,7 +4438,7 @@ var DivElement = /** @class */ (function () {
                 cb(next);
                 break;
             }
-            while (next.hasChildNodes()) {
+            while (next && next.hasChildNodes()) {
                 next = next.firstChild;
                 if (next === end) {
                     break;
@@ -4766,7 +4782,7 @@ var DivElement = /** @class */ (function () {
             _loop_5(i);
         }
         if (!lastBegin) {
-            items = [].concat(this.copyRangeNode(range.startContainer, range.startOffset), items);
+            items = __spreadArray(__spreadArray([], this.copyRangeNode(range.startContainer, range.startOffset), true), items, true);
         }
         else {
             this.insertLast.apply(this, __spreadArray([lastBegin], this.copyRangeNode(range.startContainer, range.startOffset), false));
@@ -4777,6 +4793,7 @@ var DivElement = /** @class */ (function () {
         else {
             this.insertLast.apply(this, __spreadArray([lastEnd], this.copyRangeNode(range.endContainer, 0, range.endOffset), false));
         }
+        return items;
     };
     DivElement.prototype.copyRangeNode = function (current, start, end) {
         if (current instanceof Text) {
@@ -4785,7 +4802,7 @@ var DivElement = /** @class */ (function () {
         var items = [];
         for (var i = start; i < current.childNodes.length; i++) {
             if (end && i > end) {
-                return;
+                break;
             }
             items.push(current.childNodes[i].cloneNode(true));
         }
@@ -5206,17 +5223,17 @@ var EditorContainer = /** @class */ (function () {
             var module = _this.option.hotKeyModule(modifiers.join('+'));
             if (module) {
                 e.preventDefault();
-                _this.execute(module);
+                _this.use(module);
                 return;
             }
             if (e.key === 'Enter') {
                 e.preventDefault();
-                _this.insert({ type: EditorBlockType.AddLineBreak });
+                _this.execute({ type: EditorCommandType.AddLineBreak });
                 return;
             }
             if (e.key === 'Tab') {
                 e.preventDefault();
-                _this.insert({ type: EditorBlockType.Indent });
+                _this.execute({ type: EditorCommandType.Indent });
             }
         });
         this.on(EDITOR_EVENT_INPUT_BLUR, function () {
@@ -5305,21 +5322,22 @@ var EditorContainer = /** @class */ (function () {
         }
     };
     EditorContainer.prototype.selectAll = function () {
-        this.element.selectAll();
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.selectAll();
     };
     EditorContainer.prototype.saveSelection = function () {
         this.selection = this.element.selection;
     };
-    EditorContainer.prototype.insert = function (block, range) {
+    EditorContainer.prototype.execute = function (block, range) {
         if (typeof block !== 'object') {
             block = {
-                type: EditorBlockType.AddText,
+                type: EditorCommandType.AddText,
                 value: block,
             };
         }
-        this.element.insert(block, range !== null && range !== void 0 ? range : this.selection);
+        this.element.execute(block, range !== null && range !== void 0 ? range : this.selection);
     };
-    EditorContainer.prototype.execute = function (module, range, data) {
+    EditorContainer.prototype.use = function (module, range, data) {
         var instance = this.option.toModule(module);
         if (!instance || !instance.handler) {
             return;
@@ -5356,10 +5374,12 @@ var EditorContainer = /** @class */ (function () {
         }, 2000);
     };
     EditorContainer.prototype.blur = function () {
-        this.element.blur();
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.blur();
     };
     EditorContainer.prototype.destroy = function () {
-        this.element.destroy();
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.destroy();
         this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     };
@@ -5533,17 +5553,17 @@ var CodeElement = /** @class */ (function () {
         sel.removeAllRanges();
         sel.addRange(range);
     };
-    CodeElement.prototype.insert = function (block, range) {
+    CodeElement.prototype.execute = function (block, range) {
         if (!range) {
             range = this.selection;
         }
-        var type = block.type === EditorBlockType.AddRaw ? EditorBlockType.AddText : block.type;
+        var type = block.type === EditorCommandType.AddRaw ? EditorCommandType.AddText : block.type;
         var func = this[type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range.range, block);
             return;
         }
-        throw new Error("insert type error:[".concat(block.type, "]"));
+        throw new Error("command type error:[".concat(block.type, "]"));
     };
     CodeElement.prototype.focus = function () {
         this.bodyPanel.focus({ preventScroll: true });
@@ -5626,7 +5646,7 @@ var CodeElement = /** @class */ (function () {
         if (!value) {
             return;
         }
-        this.insert({ type: EditorBlockType.AddText, value: value });
+        this.execute({ type: EditorCommandType.AddText, value: value });
     };
     //#region 外部调用的方法
     CodeElement.prototype.addTextExecute = function (range, block) {

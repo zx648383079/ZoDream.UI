@@ -88,8 +88,8 @@ class EditorApp {
         this.executeModule(item, this.getOffsetPosition(event));
     }
 
-    public insert(block: IEditorBlock|string): void {
-        this.container.insert(block);
+    public insert(block: IEditorCommand|string): void {
+        this.container.execute(block);
     }
 
     public toggle(display?: boolean) {
@@ -163,7 +163,7 @@ class EditorApp {
             return;
         }
         if (!module.modal) {
-            this.container.execute(module);
+            this.container.use(module);
             return;
         }
         const modal = module.modal;
@@ -172,7 +172,7 @@ class EditorApp {
         }
         modal.open({}, res => {
             this.hideModal();
-            this.container.execute(module, undefined, res);
+            this.container.use(module, undefined, res);
         }, position);
     }
 

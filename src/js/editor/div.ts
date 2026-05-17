@@ -97,6 +97,20 @@ class DivElement implements IEditorElement {
         return EditorHelper.wordLength(this.element.innerText);
     }
 
+    public get height(): number {
+        return this.element.clientHeight;
+    }
+    public set height(value: number) {
+        this.element.style.height = Math.max(200, value) + 'px';
+    }
+
+    /**
+     * 内容的实际高度
+     */
+    public get documentHeight(): number {
+        return this.element.scrollHeight;
+    }
+
     public selectAll(): void {
         const sel = window.getSelection()!;
         const range = document.createRange();
@@ -105,11 +119,30 @@ class DivElement implements IEditorElement {
         sel.addRange(range);
     }
 
+    public toggle(force?: boolean): void {
+        if (!this.element) {
+            return;
+        }
+        const ele = this.element;
+        if (typeof force === 'undefined') {
+            force = ele.style.display === 'none';
+        }
+        ele.style.display = force ? 'block' : 'none';
+    }
+    
+    public relativeTo(point: IPoint): IPoint {
+        const rect = this.element.getBoundingClientRect();
+        return {
+            x: point.x - rect.left,
+            y: point.y - rect.top
+        };
+    }
+
     public execute(block: IEditorCommand, range?: IEditorRange): void {
         if (!range) {
             range = this.selection;
         }
-        const func = this[block.type + 'Execute'];
+        const func = (this as any)[block.type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range.range, block);
             this.container.emit(EDITOR_EVENT_EDITOR_CHANGE);
@@ -1119,7 +1152,7 @@ class DivElement implements IEditorElement {
             const item = data.files[i];
             const fileType = EditorHelper.fileType(item);
             this.container.option.upload(item, fileType, res => {
-                this.execute({type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                this.execute({type: ('add' + fileType[0].toUpperCase() + fileType.substring(1)) as any, value: res.url,
                     title: res.title, size: res.size});
             }, () => {});
         }

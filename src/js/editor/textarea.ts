@@ -55,11 +55,43 @@ class TextareaElement implements IEditorElement {
     public get wordLength(): number {
         return EditorHelper.wordLength(this.value);
     }
+    public get height(): number {
+        return this.element.clientHeight;
+    }
+    public set height(value: number) {
+        this.element.style.height = Math.max(200, value) + 'px';
+    }
+
+    /**
+     * 内容的实际高度
+     */
+    public get documentHeight(): number {
+        return this.element.scrollHeight;
+    }
 
     public selectAll(): void {
         this.selection = {
             start: 0,
             end: this.value.length
+        };
+    }
+
+    public toggle(force?: boolean): void {
+        if (!this.element) {
+            return;
+        }
+        const ele = this.element;
+        if (typeof force === 'undefined') {
+            force = ele.style.display === 'none';
+        }
+        ele.style.display = force ? 'block' : 'none';
+    }
+
+    public relativeTo(point: IPoint): IPoint {
+        const rect = this.element.getBoundingClientRect();
+        return {
+            x: point.x - rect.left,
+            y: point.y - rect.top
         };
     }
 
@@ -72,7 +104,7 @@ class TextareaElement implements IEditorElement {
             return;
         }
         const type = block.type === EditorCommandType.AddRaw ? EditorCommandType.AddText : block.type;
-        const func = this[type + 'Execute'];
+        const func = (this as any)[type + 'Execute'];
         if (typeof func === 'function') {
             func.call(this, range, block);
             return;

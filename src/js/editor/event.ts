@@ -29,6 +29,7 @@ interface IEditorListeners {
     [EDITOR_EVENT_CLOSE_TOOL]: () => void;
     [EDITOR_EVENT_SHOW_LINE_BREAK_TOOL]: (p: IPoint) => void;
     [EDITOR_EVENT_SHOW_IMAGE_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
+    [EDITOR_EVENT_SHOW_OVERLAY_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;
     [EDITOR_EVENT_SHOW_LINK_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
     [EDITOR_EVENT_SHOW_TABLE_TOOL]: (p: IPoint, cb: EditorUpdatedCallback) => void;
     [EDITOR_EVENT_SHOW_COLUMN_TOOL]: (b: IBound, cb: EditorUpdatedCallback) => void;

@@ -212,6 +212,10 @@ class EditorContainer implements IEditorContainer {
         this.listeners = {};
     }
 
+    public toggle(force?: boolean): void {
+        this.element?.toggle(force);
+    }
+
     public undo(): void {
         if (!this.canUndo) {
             this.emit(EDITOR_EVENT_UNDO_CHANGE);

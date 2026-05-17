@@ -1791,10 +1791,47 @@ var TextareaElement = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TextareaElement.prototype, "height", {
+        get: function () {
+            return this.element.clientHeight;
+        },
+        set: function (value) {
+            this.element.style.height = Math.max(200, value) + 'px';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TextareaElement.prototype, "documentHeight", {
+        /**
+         * 内容的实际高度
+         */
+        get: function () {
+            return this.element.scrollHeight;
+        },
+        enumerable: false,
+        configurable: true
+    });
     TextareaElement.prototype.selectAll = function () {
         this.selection = {
             start: 0,
             end: this.value.length
+        };
+    };
+    TextareaElement.prototype.toggle = function (force) {
+        if (!this.element) {
+            return;
+        }
+        var ele = this.element;
+        if (typeof force === 'undefined') {
+            force = ele.style.display === 'none';
+        }
+        ele.style.display = force ? 'block' : 'none';
+    };
+    TextareaElement.prototype.relativeTo = function (point) {
+        var rect = this.element.getBoundingClientRect();
+        return {
+            x: point.x - rect.left,
+            y: point.y - rect.top
         };
     };
     TextareaElement.prototype.execute = function (block, range) {
@@ -3158,12 +3195,49 @@ var DivElement = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(DivElement.prototype, "height", {
+        get: function () {
+            return this.element.clientHeight;
+        },
+        set: function (value) {
+            this.element.style.height = Math.max(200, value) + 'px';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(DivElement.prototype, "documentHeight", {
+        /**
+         * 内容的实际高度
+         */
+        get: function () {
+            return this.element.scrollHeight;
+        },
+        enumerable: false,
+        configurable: true
+    });
     DivElement.prototype.selectAll = function () {
         var sel = window.getSelection();
         var range = document.createRange();
         range.selectNodeContents(this.element);
         sel.removeAllRanges();
         sel.addRange(range);
+    };
+    DivElement.prototype.toggle = function (force) {
+        if (!this.element) {
+            return;
+        }
+        var ele = this.element;
+        if (typeof force === 'undefined') {
+            force = ele.style.display === 'none';
+        }
+        ele.style.display = force ? 'block' : 'none';
+    };
+    DivElement.prototype.relativeTo = function (point) {
+        var rect = this.element.getBoundingClientRect();
+        return {
+            x: point.x - rect.left,
+            y: point.y - rect.top
+        };
     };
     DivElement.prototype.execute = function (block, range) {
         if (!range) {
@@ -4147,7 +4221,7 @@ var DivElement = /** @class */ (function () {
             var item = data.files[i];
             var fileType = EditorHelper.fileType(item);
             this_2.container.option.upload(item, fileType, function (res) {
-                _this.execute({ type: 'add' + fileType[0].toUpperCase() + fileType.substring(1), value: res.url,
+                _this.execute({ type: ('add' + fileType[0].toUpperCase() + fileType.substring(1)), value: res.url,
                     title: res.title, size: res.size });
             }, function () { });
         };
@@ -5176,6 +5250,10 @@ var EditorContainer = /** @class */ (function () {
         this.emit(EDITOR_EVENT_EDITOR_DESTORY);
         this.listeners = {};
     };
+    EditorContainer.prototype.toggle = function (force) {
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.toggle(force);
+    };
     EditorContainer.prototype.undo = function () {
         if (!this.canUndo) {
             this.emit(EDITOR_EVENT_UNDO_CHANGE);
@@ -5339,12 +5417,49 @@ var CodeElement = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(CodeElement.prototype, "height", {
+        get: function () {
+            return this.element.clientHeight;
+        },
+        set: function (value) {
+            this.element.style.height = Math.max(200, value) + 'px';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(CodeElement.prototype, "documentHeight", {
+        /**
+         * 内容的实际高度
+         */
+        get: function () {
+            return this.element.scrollHeight;
+        },
+        enumerable: false,
+        configurable: true
+    });
     CodeElement.prototype.selectAll = function () {
         var sel = window.getSelection();
         var range = document.createRange();
         range.selectNodeContents(this.bodyPanel);
         sel.removeAllRanges();
         sel.addRange(range);
+    };
+    CodeElement.prototype.toggle = function (force) {
+        if (!this.element) {
+            return;
+        }
+        var ele = this.element;
+        if (typeof force === 'undefined') {
+            force = ele.style.display === 'none';
+        }
+        ele.style.display = force ? 'block' : 'none';
+    };
+    CodeElement.prototype.relativeTo = function (point) {
+        var rect = this.element.getBoundingClientRect();
+        return {
+            x: point.x - rect.left,
+            y: point.y - rect.top
+        };
     };
     CodeElement.prototype.execute = function (block, range) {
         if (!range) {

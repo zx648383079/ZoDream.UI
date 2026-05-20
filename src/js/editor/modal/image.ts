@@ -54,7 +54,7 @@ class EditorImageComponent implements IEditorSharedModal {
         });
         EditorHelper.modalFileUpload(this.element, this.uploadFiles.bind(this));
         EditorHelper.modalInputBind(this.element, data => {
-            this.output({
+            this.output(<IEditorImageCommand>{
                 value: data.url
             });
         });
@@ -84,7 +84,7 @@ class EditorImageComponent implements IEditorSharedModal {
         this.element.addClass('editor-modal-loading');
         this.option.upload(files[0], 'image', res => {
             this.element.removeClass('editor-modal-loading');
-            this.output({
+            this.output(<IEditorImageCommand>{
                 value: res.url,
                 title: res.title
             });

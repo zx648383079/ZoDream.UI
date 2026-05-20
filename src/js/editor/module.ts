@@ -434,18 +434,33 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-exchange-alt',
         label: 'Replace',
         parent: EDITOR_IMAGE_TOOL, 
+        modal: new EditorImageComponent,
+        handler(editor, range, data) {
+            editor.execute({
+                type: EditorCommandType.AddImage,
+                ...data                
+            }, range);
+        },
     },
     {
         name: 'align-image',
         icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_IMAGE_TOOL, 
+        modal: new EditorDropdownComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.Align});
+        },
     },
     {
         name: 'caption-image',
         icon: 'fa-image',
         label: 'Image Title',
-        parent: EDITOR_IMAGE_TOOL, 
+        parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorTextComponent('Title'),
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        },
     },
     {
         name: 'delete-image',
@@ -460,21 +475,31 @@ const EditorModules: IEditorModule[] = [
         name: 'link-image',
         icon: 'fa-link',
         label: 'Insert Link',
-        parent: EDITOR_IMAGE_TOOL, 
+        parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorLinkComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.AddLink});
+        },
     },
     {
         name: 'alt-image',
         icon: 'fa-font',
         label: 'Image caption',
         modal: new EditorTextComponent('Caption'),
-        parent: EDITOR_IMAGE_TOOL, 
+        parent: EDITOR_IMAGE_TOOL,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        },
     },
     {
         name: 'size-image',
         icon: 'fa-ruler',
         label: 'Adjust size',
+        parent: EDITOR_IMAGE_TOOL,
         modal: new EditorSizeComponent,
-        parent: EDITOR_IMAGE_TOOL, 
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeResize});
+        },
     },
     
     // 视频处理
@@ -483,18 +508,33 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-exchange',
         label: 'Replace',
         parent: EDITOR_VIDEO_TOOL, 
+        modal: new EditorVideoComponent,
+        handler(editor, range, data) {
+            editor.execute({
+                type: EditorCommandType.AddVideo,
+                ...data                
+            }, range);
+        },
     },
     {
         name: 'align-video',
         icon: 'fa-align-right',
         label: 'Position',
-        parent: EDITOR_VIDEO_TOOL, 
+        parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorDropdownComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.Align});
+        },
     },
     {
         name: 'caption-video',
         icon: 'fa-film',
         label: 'Video Title',
         parent: EDITOR_VIDEO_TOOL, 
+        modal: new EditorTextComponent('Title'),
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        },
     },
     {
         name: 'delete-video',
@@ -509,14 +549,22 @@ const EditorModules: IEditorModule[] = [
         name: 'size-video',
         icon: 'fa-ruler',
         label: 'Adjust size',
-        parent: EDITOR_VIDEO_TOOL, 
+        parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorSizeComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeResize});
+        },
     },
     /// iframe
     {
         name: 'align-frame',
         icon: 'fa-align-right',
         label: 'Position',
-        parent: EDITOR_OVERLAY_TOOL, 
+        parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorDropdownComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.Align});
+        },
     },
     {
         name: 'delete-frame',
@@ -531,7 +579,11 @@ const EditorModules: IEditorModule[] = [
         name: 'size-frame',
         icon: 'fa-ruler',
         label: 'Adjust size',
-        parent: EDITOR_OVERLAY_TOOL, 
+        parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorSizeComponent,
+        handler(editor, _, data) {
+            editor.execute({...data, type: EditorCommandType.NodeResize});
+        },
     },
 
     // 表格处理
@@ -564,41 +616,65 @@ const EditorModules: IEditorModule[] = [
         },
     },
     {
-        name: 'row-table',
-        icon: 'fa-table',
-        label: 'Row',
-        parent: EDITOR_TABLE_TOOL, 
+        name: 'add-row-table',
+        icon: 'fa-add-row',
+        label: 'Add Row',
+        parent: EDITOR_TABLE_TOOL,
+        handler(editor) {
+            editor.execute({type: EditorCommandType.AddRow});
+        },
     },
     {
-        name: 'column-table',
-        icon: 'fa-table',
-        label: 'Column',
+        name: 'add-column-table',
+        icon: 'fa-add-col',
+        label: 'Add Column',
         parent: EDITOR_TABLE_TOOL, 
+        handler(editor) {
+            editor.execute({type: EditorCommandType.AddCol});
+        },
     },
     {
-        name: 'style-table',
-        icon: 'fa-table',
-        label: 'Table Style',
-        parent: EDITOR_TABLE_TOOL, 
+        name: 'delete-row-table',
+        icon: 'fa-delete-row',
+        label: 'Delete Row',
+        parent: EDITOR_TABLE_TOOL,
+        handler(editor) {
+            editor.execute({type: EditorCommandType.DeleteRow});
+        },
     },
     {
-        name: 'cell-table',
-        icon: 'fa-table',
-        label: 'Cell',
-        parent: EDITOR_TABLE_TOOL, 
+        name: 'delete-column-table',
+        icon: 'fa-delete-col',
+        label: 'Delete Column',
+        parent: EDITOR_TABLE_TOOL,
+        handler(editor) {
+            editor.execute({type: EditorCommandType.DeleteCol});
+        },
     },
-    {
-        name: 'cell-background-table',
-        icon: 'fa-brush',
-        label: 'Cell background',
-        parent: EDITOR_TABLE_TOOL, 
-    },
-    {
-        name: 'cell-style-table',
-        icon: 'fa-table',
-        label: 'Cell Style',
-        parent: EDITOR_TABLE_TOOL, 
-    },
+    // {
+    //     name: 'style-table',
+    //     icon: 'fa-table',
+    //     label: 'Table Style',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-table',
+    //     icon: 'fa-table',
+    //     label: 'Cell',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-background-table',
+    //     icon: 'fa-brush',
+    //     label: 'Cell background',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-style-table',
+    //     icon: 'fa-table',
+    //     label: 'Cell Style',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
     {
         name: 'horizontal-table',
         icon: 'fa-grip-horizontal',
@@ -628,22 +704,32 @@ const EditorModules: IEditorModule[] = [
             editor.execute({type: EditorCommandType.OpenLink});
         },
     },
-    {
-        name: 'link-style',
-        icon: 'fa-brush',
-        label: 'Change Style',
-        parent: EDITOR_LINK_TOOL, 
-    },
+    // {
+    //     name: 'link-style',
+    //     icon: 'fa-brush',
+    //     label: 'Change Style',
+    //     parent: EDITOR_LINK_TOOL, 
+    // },
     {
         name: 'edit-link',
         icon: 'fa-edit',
         label: 'Edit Link',
         parent: EDITOR_LINK_TOOL, 
+        modal: new EditorLinkComponent,
+        handler(editor, range, data) {
+            editor.execute({
+                type: EditorCommandType.AddLink,
+                ...data                
+            }, range);
+        },
     },
     {
         name: 'unlink',
         icon: 'fa-unlink',
         label: 'Disconnect',
-        parent: EDITOR_LINK_TOOL, 
+        parent: EDITOR_LINK_TOOL,
+        handler(editor) {
+            editor.execute({type: EditorCommandType.Unlink});
+        },
     },
 ];

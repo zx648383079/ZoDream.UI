@@ -697,3 +697,50 @@ $toolHeight: 2.5rem;
         background: lightblue;   
     }
 }
+
+@mixin subAddIcon {
+    &::after {
+        content: '\f067';
+        font-size: .5rem;
+        margin-left: -.2rem;
+        color: var(--#{theme.$prefix}success);
+    }
+}
+
+@mixin subDeleteIcon {
+    &::after {
+        content: '\f00d';
+        font-size: .5rem;
+        margin-left: -.2rem;
+        color: var(--#{theme.$prefix}danger);
+    }
+}
+
+
+.fa-add-row {
+    &::before {
+        content: '\f58d';
+    }
+    @include subAddIcon;
+}
+
+.fa-delete-row {
+    &::before {
+        content: '\f58d';
+    }
+    @include subDeleteIcon;
+}
+
+.fa-add-col {
+    &::before {
+        content: '\f58e';
+    }
+    @include subAddIcon;
+}
+
+.fa-delete-col {
+    &::before {
+        content: '\f58e';
+    }
+    @include subDeleteIcon;
+}

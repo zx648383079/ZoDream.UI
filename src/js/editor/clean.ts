@@ -8,7 +8,7 @@ class EditorHtmlCleaner {
             'basefont', 'center', 'dir', 'font', 'frame', 
             'frameset', 'isindex', 'menu', 'noframes', 
             's', 'strike', 'u'];
-    private static removeStyles = ['font', 'font-family', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
+    private static removeStyles = ['font', 'font-family', 'letter-spacing', 'font-stretch', 'font-size-adjust', 'cursor'];
     /**
      * 粘贴的时候删除
      */

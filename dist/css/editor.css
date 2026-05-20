@@ -725,4 +725,43 @@
     background: lightblue;
   }
 }
+.fa-add-row::before {
+  content: "\f58d";
+}
+.fa-add-row::after {
+  content: "\f067";
+  font-size: 0.5rem;
+  margin-left: -0.2rem;
+  color: var(--zre-success);
+}
+
+.fa-delete-row::before {
+  content: "\f58d";
+}
+.fa-delete-row::after {
+  content: "\f00d";
+  font-size: 0.5rem;
+  margin-left: -0.2rem;
+  color: var(--zre-danger);
+}
+
+.fa-add-col::before {
+  content: "\f58e";
+}
+.fa-add-col::after {
+  content: "\f067";
+  font-size: 0.5rem;
+  margin-left: -0.2rem;
+  color: var(--zre-success);
+}
+
+.fa-delete-col::before {
+  content: "\f58e";
+}
+.fa-delete-col::after {
+  content: "\f00d";
+  font-size: 0.5rem;
+  margin-left: -0.2rem;
+  color: var(--zre-danger);
+}
 /*# sourceMappingURL=editor.css.map */

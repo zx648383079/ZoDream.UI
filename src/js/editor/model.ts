@@ -71,14 +71,20 @@ enum EditorCommandType {
     Thead = 'thead',
     TFoot = 'tfoot',
     DeleteTable = 'delTable',
+    DeleteRow = 'delRow',
+    DeleteCol = 'delCol',
+    AddRow = 'addRow',
+    AddCol = 'addCol',
     RowSpan = 'rowSpan',
     ColSpan = 'colSpan',
 
     OpenLink = 'openLink',
+    Unlink = 'unlink',
     Indent = 'indent',
     Outdent = 'outdent',
     NodeResize = 'nodeResize',
     NodeMove = 'nodeMove',
+    NodeTitle = 'nodeTitle',
     NodeRemove = 'nodeRemove',
 }
 
@@ -106,10 +112,14 @@ interface IEditorTableCommand extends IEditorCommand {
     column: number;
 }
 
-interface IEditorVideoCommand extends IEditorCommand {
+interface IEditorVideoCommand extends IEditorValueCommand {
     code: string;
-    value: string;
     autoplay: boolean;
+}
+
+interface IEditorImageCommand extends IEditorValueCommand {
+    title: string,
+    caption: string;
 }
 
 interface IEditorFileCommand extends IEditorValueCommand {

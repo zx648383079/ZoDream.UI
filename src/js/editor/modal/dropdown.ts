@@ -23,7 +23,26 @@ const EditorFontItems: IEditorOptionItem[] = [
         name: '黑体',
         value: 'sans-serif',
     }
-]
+];
+
+const EditorAlignItems: IEditorOptionItem[] = [
+    {
+        name: '左对齐',
+        value: 'left',
+    },
+    {
+        name: '居中',
+        value: 'Center',
+    },
+    {
+        name: '右对齐',
+        value: 'right',
+    },
+    {
+        name: '默认',
+        value: '',
+    },
+];
 
 class EditorDropdownComponent implements IEditorSharedModal {
     private items: IEditorOptionItem[] = [];
@@ -67,7 +86,7 @@ class EditorDropdownComponent implements IEditorSharedModal {
                 return i;
             });
         } else if (module.name === 'fontsize') {
-            const items = [];
+            const items: IEditorOptionItem[] = [];
             let last = 7;
             let step = 1;
             for (let i = 0; i < 16; i++) {
@@ -83,7 +102,7 @@ class EditorDropdownComponent implements IEditorSharedModal {
             }
             this.items = items;
         } else if (module.name === 'head') {
-            const items = [];
+            const items: IEditorOptionItem[] = [];
             for (let i = 1; i < 7; i++) {
                 const value = `h${i}`;
                 items.push({
@@ -92,6 +111,8 @@ class EditorDropdownComponent implements IEditorSharedModal {
                 });
             }
             this.items = items;
+        } else if (module.name.startsWith('align')) {
+            this.items = EditorAlignItems;
         }
         this.element.html(this.renderItems(this.isNodeTag));
     }

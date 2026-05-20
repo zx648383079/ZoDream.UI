@@ -233,10 +233,11 @@ class DivElement implements IEditorElement {
         this.replaceSelected(range, table);
     }
 
-    private addImageExecute(range: Range, block: IEditorFileCommand) {
+    private addImageExecute(range: Range, block: IEditorImageCommand) {
         const image = document.createElement('img');
         image.src = block.value;
         image.title = block.title || '';
+        image.alt = block.caption || '';
         this.replaceSelected(range, image);
     }
 
@@ -280,6 +281,35 @@ class DivElement implements IEditorElement {
         }
         this.insertElement(link, range);
         this.selectNode(link);
+    }
+
+    private getLinkBlock(ele: HTMLAnchorElement): any {
+        return {
+            value: ele.getAttribute('href'),
+            title: ele.innerText,
+            target: ele.getAttribute('target') === '_blank'
+        };
+    }
+
+    private getImageBlock(ele: HTMLImageElement): any {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title'),
+            caption: ele.getAttribute('alt'),
+        };
+    }
+
+    private getVideoBlock(ele: HTMLVideoElement): any {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title')
+        };
+    }
+
+    private getFrameBlock(ele: HTMLIFrameElement): any {
+        return {
+            value: ele.getAttribute('src'),
+        };
     }
 
     private addFrameExecute(range: Range, block: IEditorValueCommand) {
@@ -616,6 +646,74 @@ class DivElement implements IEditorElement {
         }
     }
 
+    private addRowExecute(range: Range) {
+        const start = this.getTableCell(range.startContainer)!;
+        const tr = start.parentNode as HTMLTableRowElement;
+        // const tbody = tr.parentNode as HTMLTableSectionElement;
+        const newTr = tr.cloneNode(true) as HTMLTableRowElement;
+        for (let i = 0; i < newTr.cells.length; i++) {
+            const td = newTr.cells[i];
+            td.innerHTML = '<br/>';
+        }
+        this.insertAfter(tr, newTr);
+    }
+
+    private addColExecute(range: Range) {
+        const start = this.getTableCell(range.startContainer)!;
+        const startSpan = this.getTableCellSpan(start) + start.colSpan;
+        const table = start.parentNode?.parentNode?.parentNode as HTMLTableElement;
+        const trs = table.querySelectorAll('tr');
+        for (let i = 0; i < trs.length; i++) {
+            const tr = trs[i];
+            let start = 0;
+            for (let j = 0; j < tr.cells.length; j++) {
+                const cell = tr.cells[j];
+                const next = start + cell.colSpan;
+                if (next >= startSpan) {
+                    const newTd = document.createElement(cell.tagName);
+                    newTd.setAttribute('style', cell.getAttribute('style')!);
+                    newTd.appendChild(document.createElement('br'));
+                    this.insertAfter(cell, newTd);
+                    break;
+                }
+                start = next;
+            }
+        }
+        
+    }
+
+    private delRowExecute(range: Range) {
+        const start = this.getTableCell(range.startContainer)!;
+        const tr = start.parentNode as HTMLTableRowElement;
+        const tbody = tr.parentNode as HTMLTableSectionElement;
+        tr.remove();
+    }
+
+    private delColExecute(range: Range) {
+        const start = this.getTableCell(range.startContainer)!;
+        const tr = start.parentNode as HTMLTableRowElement;
+        const startSpan = this.getTableCellSpan(start) + start.colSpan;
+        const table = start.parentNode?.parentNode?.parentNode as HTMLTableElement;
+        const trs = table.querySelectorAll('tr');
+        for (let i = 0; i < trs.length; i++) {
+            const tr = trs[i];
+            let start = 0;
+            for (let j = 0; j < tr.cells.length; j++) {
+                const cell = tr.cells[j];
+                const next = start + cell.colSpan;
+                if (next > startSpan) {
+                    if (cell.colSpan > 1) {
+                        cell.colSpan --;
+                    } else {
+                        cell.remove();
+                    }
+                    break;
+                }
+                start = next;
+            }
+        }
+    }
+
     private delTableExecute(range: Range) {
         const table = this.nodeParent(range.startContainer, 'table');
         if (table) {
@@ -629,6 +727,16 @@ class DivElement implements IEditorElement {
             return;
         }
         window.open(link.getAttribute('href')!);
+    }
+
+    private unlinkExecute(range: Range) {
+        const link = this.nodeParent(range.startContainer, 'a');
+        if (!link) {
+            return;
+        }
+        const newNode = document.createElement('span');
+        newNode.innerHTML = link.innerHTML;
+        this.replaceNode(link, newNode);
     }
 
 //#endregion

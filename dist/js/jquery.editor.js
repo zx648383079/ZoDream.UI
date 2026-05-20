@@ -612,6 +612,24 @@ var EditorFontItems = [
         value: 'sans-serif',
     }
 ];
+var EditorAlignItems = [
+    {
+        name: '左对齐',
+        value: 'left',
+    },
+    {
+        name: '居中',
+        value: 'Center',
+    },
+    {
+        name: '右对齐',
+        value: 'right',
+    },
+    {
+        name: '默认',
+        value: '',
+    },
+];
 var EditorDropdownComponent = /** @class */ (function () {
     function EditorDropdownComponent(isNodeTag) {
         if (isNodeTag === void 0) { isNodeTag = false; }
@@ -676,6 +694,9 @@ var EditorDropdownComponent = /** @class */ (function () {
                 });
             }
             this.items = items;
+        }
+        else if (module.name.startsWith('align')) {
+            this.items = EditorAlignItems;
         }
         this.element.html(this.renderItems(this.isNodeTag));
     };
@@ -1104,6 +1125,10 @@ var I18nStrings = {
     'Delete Table': '删除表格',
     'Row': '行',
     'Column': '列',
+    'Add Row': '添加行',
+    'Add Column': '添加列',
+    'Delete Row': '删除行',
+    'Delete Column': '删除列',
     'Table Style': '表格样式',
     'Cell': '单元格',
     'Cell background': '单元格背景',
@@ -1183,8 +1208,9 @@ var EditorApp = /** @class */ (function () {
             this.toggleFlowbar(__spreadArray([this.container.option.closeTool], items, true));
             return;
         }
+        var offset = this.getOffsetPosition(event);
         this.toggleFlowbar();
-        this.executeModule(item, this.getOffsetPosition(event));
+        this.executeModule(item, offset);
     };
     EditorApp.prototype.insert = function (block) {
         this.container.execute(block);
@@ -2767,18 +2793,30 @@ var EditorModules = [
         icon: 'fa-exchange-alt',
         label: 'Replace',
         parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorImageComponent,
+        handler: function (editor, range, data) {
+            editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range);
+        },
     },
     {
         name: 'align-image',
         icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorDropdownComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        },
     },
     {
         name: 'caption-image',
         icon: 'fa-image',
         label: 'Image Title',
         parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorTextComponent('Title'),
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        },
     },
     {
         name: 'delete-image',
@@ -2794,6 +2832,10 @@ var EditorModules = [
         icon: 'fa-link',
         label: 'Insert Link',
         parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorLinkComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.AddLink }));
+        },
     },
     {
         name: 'alt-image',
@@ -2801,13 +2843,19 @@ var EditorModules = [
         label: 'Image caption',
         modal: new EditorTextComponent('Caption'),
         parent: EDITOR_IMAGE_TOOL,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        },
     },
     {
         name: 'size-image',
         icon: 'fa-ruler',
         label: 'Adjust size',
-        modal: new EditorSizeComponent,
         parent: EDITOR_IMAGE_TOOL,
+        modal: new EditorSizeComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        },
     },
     // 视频处理
     {
@@ -2815,18 +2863,30 @@ var EditorModules = [
         icon: 'fa-exchange',
         label: 'Replace',
         parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorVideoComponent,
+        handler: function (editor, range, data) {
+            editor.execute(__assign({ type: EditorCommandType.AddVideo }, data), range);
+        },
     },
     {
         name: 'align-video',
         icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorDropdownComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        },
     },
     {
         name: 'caption-video',
         icon: 'fa-film',
         label: 'Video Title',
         parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorTextComponent('Title'),
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        },
     },
     {
         name: 'delete-video',
@@ -2842,6 +2902,10 @@ var EditorModules = [
         icon: 'fa-ruler',
         label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL,
+        modal: new EditorSizeComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        },
     },
     /// iframe
     {
@@ -2849,6 +2913,10 @@ var EditorModules = [
         icon: 'fa-align-right',
         label: 'Position',
         parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorDropdownComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        },
     },
     {
         name: 'delete-frame',
@@ -2864,6 +2932,10 @@ var EditorModules = [
         icon: 'fa-ruler',
         label: 'Adjust size',
         parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorSizeComponent,
+        handler: function (editor, _, data) {
+            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        },
     },
     // 表格处理
     {
@@ -2894,41 +2966,65 @@ var EditorModules = [
         },
     },
     {
-        name: 'row-table',
-        icon: 'fa-table',
-        label: 'Row',
+        name: 'add-row-table',
+        icon: 'fa-add-row',
+        label: 'Add Row',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.AddRow });
+        },
     },
     {
-        name: 'column-table',
-        icon: 'fa-table',
-        label: 'Column',
+        name: 'add-column-table',
+        icon: 'fa-add-col',
+        label: 'Add Column',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.AddCol });
+        },
     },
     {
-        name: 'style-table',
-        icon: 'fa-table',
-        label: 'Table Style',
+        name: 'delete-row-table',
+        icon: 'fa-delete-row',
+        label: 'Delete Row',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.DeleteRow });
+        },
     },
     {
-        name: 'cell-table',
-        icon: 'fa-table',
-        label: 'Cell',
+        name: 'delete-column-table',
+        icon: 'fa-delete-col',
+        label: 'Delete Column',
         parent: EDITOR_TABLE_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.DeleteCol });
+        },
     },
-    {
-        name: 'cell-background-table',
-        icon: 'fa-brush',
-        label: 'Cell background',
-        parent: EDITOR_TABLE_TOOL,
-    },
-    {
-        name: 'cell-style-table',
-        icon: 'fa-table',
-        label: 'Cell Style',
-        parent: EDITOR_TABLE_TOOL,
-    },
+    // {
+    //     name: 'style-table',
+    //     icon: 'fa-table',
+    //     label: 'Table Style',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-table',
+    //     icon: 'fa-table',
+    //     label: 'Cell',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-background-table',
+    //     icon: 'fa-brush',
+    //     label: 'Cell background',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
+    // {
+    //     name: 'cell-style-table',
+    //     icon: 'fa-table',
+    //     label: 'Cell Style',
+    //     parent: EDITOR_TABLE_TOOL, 
+    // },
     {
         name: 'horizontal-table',
         icon: 'fa-grip-horizontal',
@@ -2957,23 +3053,30 @@ var EditorModules = [
             editor.execute({ type: EditorCommandType.OpenLink });
         },
     },
-    {
-        name: 'link-style',
-        icon: 'fa-brush',
-        label: 'Change Style',
-        parent: EDITOR_LINK_TOOL,
-    },
+    // {
+    //     name: 'link-style',
+    //     icon: 'fa-brush',
+    //     label: 'Change Style',
+    //     parent: EDITOR_LINK_TOOL, 
+    // },
     {
         name: 'edit-link',
         icon: 'fa-edit',
         label: 'Edit Link',
         parent: EDITOR_LINK_TOOL,
+        modal: new EditorLinkComponent,
+        handler: function (editor, range, data) {
+            editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range);
+        },
     },
     {
         name: 'unlink',
         icon: 'fa-unlink',
         label: 'Disconnect',
         parent: EDITOR_LINK_TOOL,
+        handler: function (editor) {
+            editor.execute({ type: EditorCommandType.Unlink });
+        },
     },
 ];
 var EditorCommandType;
@@ -3009,13 +3112,19 @@ var EditorCommandType;
     EditorCommandType["Thead"] = "thead";
     EditorCommandType["TFoot"] = "tfoot";
     EditorCommandType["DeleteTable"] = "delTable";
+    EditorCommandType["DeleteRow"] = "delRow";
+    EditorCommandType["DeleteCol"] = "delCol";
+    EditorCommandType["AddRow"] = "addRow";
+    EditorCommandType["AddCol"] = "addCol";
     EditorCommandType["RowSpan"] = "rowSpan";
     EditorCommandType["ColSpan"] = "colSpan";
     EditorCommandType["OpenLink"] = "openLink";
+    EditorCommandType["Unlink"] = "unlink";
     EditorCommandType["Indent"] = "indent";
     EditorCommandType["Outdent"] = "outdent";
     EditorCommandType["NodeResize"] = "nodeResize";
     EditorCommandType["NodeMove"] = "nodeMove";
+    EditorCommandType["NodeTitle"] = "nodeTitle";
     EditorCommandType["NodeRemove"] = "nodeRemove";
 })(EditorCommandType || (EditorCommandType = {}));
 var EDITOR_EVENT_INPUT_KEYDOWN = 'input.keydown';
@@ -3331,6 +3440,7 @@ var DivElement = /** @class */ (function () {
         var image = document.createElement('img');
         image.src = block.value;
         image.title = block.title || '';
+        image.alt = block.caption || '';
         this.replaceSelected(range, image);
     };
     DivElement.prototype.addTextExecute = function (range, block) {
@@ -3369,6 +3479,31 @@ var DivElement = /** @class */ (function () {
         }
         this.insertElement(link, range);
         this.selectNode(link);
+    };
+    DivElement.prototype.getLinkBlock = function (ele) {
+        return {
+            value: ele.getAttribute('href'),
+            title: ele.innerText,
+            target: ele.getAttribute('target') === '_blank'
+        };
+    };
+    DivElement.prototype.getImageBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title'),
+            caption: ele.getAttribute('alt'),
+        };
+    };
+    DivElement.prototype.getVideoBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title')
+        };
+    };
+    DivElement.prototype.getFrameBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+        };
     };
     DivElement.prototype.addFrameExecute = function (range, block) {
         var frame = document.createElement('iframe');
@@ -3692,6 +3827,72 @@ var DivElement = /** @class */ (function () {
             }
         }
     };
+    DivElement.prototype.addRowExecute = function (range) {
+        var start = this.getTableCell(range.startContainer);
+        var tr = start.parentNode;
+        // const tbody = tr.parentNode as HTMLTableSectionElement;
+        var newTr = tr.cloneNode(true);
+        for (var i = 0; i < newTr.cells.length; i++) {
+            var td = newTr.cells[i];
+            td.innerHTML = '<br/>';
+        }
+        this.insertAfter(tr, newTr);
+    };
+    DivElement.prototype.addColExecute = function (range) {
+        var _a, _b;
+        var start = this.getTableCell(range.startContainer);
+        var startSpan = this.getTableCellSpan(start) + start.colSpan;
+        var table = (_b = (_a = start.parentNode) === null || _a === void 0 ? void 0 : _a.parentNode) === null || _b === void 0 ? void 0 : _b.parentNode;
+        var trs = table.querySelectorAll('tr');
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var start_1 = 0;
+            for (var j = 0; j < tr.cells.length; j++) {
+                var cell = tr.cells[j];
+                var next = start_1 + cell.colSpan;
+                if (next >= startSpan) {
+                    var newTd = document.createElement(cell.tagName);
+                    newTd.setAttribute('style', cell.getAttribute('style'));
+                    newTd.appendChild(document.createElement('br'));
+                    this.insertAfter(cell, newTd);
+                    break;
+                }
+                start_1 = next;
+            }
+        }
+    };
+    DivElement.prototype.delRowExecute = function (range) {
+        var start = this.getTableCell(range.startContainer);
+        var tr = start.parentNode;
+        var tbody = tr.parentNode;
+        tr.remove();
+    };
+    DivElement.prototype.delColExecute = function (range) {
+        var _a, _b;
+        var start = this.getTableCell(range.startContainer);
+        var tr = start.parentNode;
+        var startSpan = this.getTableCellSpan(start) + start.colSpan;
+        var table = (_b = (_a = start.parentNode) === null || _a === void 0 ? void 0 : _a.parentNode) === null || _b === void 0 ? void 0 : _b.parentNode;
+        var trs = table.querySelectorAll('tr');
+        for (var i = 0; i < trs.length; i++) {
+            var tr_1 = trs[i];
+            var start_2 = 0;
+            for (var j = 0; j < tr_1.cells.length; j++) {
+                var cell = tr_1.cells[j];
+                var next = start_2 + cell.colSpan;
+                if (next > startSpan) {
+                    if (cell.colSpan > 1) {
+                        cell.colSpan--;
+                    }
+                    else {
+                        cell.remove();
+                    }
+                    break;
+                }
+                start_2 = next;
+            }
+        }
+    };
     DivElement.prototype.delTableExecute = function (range) {
         var table = this.nodeParent(range.startContainer, 'table');
         if (table) {
@@ -3704,6 +3905,15 @@ var DivElement = /** @class */ (function () {
             return;
         }
         window.open(link.getAttribute('href'));
+    };
+    DivElement.prototype.unlinkExecute = function (range) {
+        var link = this.nodeParent(range.startContainer, 'a');
+        if (!link) {
+            return;
+        }
+        var newNode = document.createElement('span');
+        newNode.innerHTML = link.innerHTML;
+        this.replaceNode(link, newNode);
     };
     //#endregion
     DivElement.prototype.getModuleItems = function (range) {
@@ -6111,7 +6321,7 @@ var EditorHtmlCleaner = /** @class */ (function () {
         'basefont', 'center', 'dir', 'font', 'frame',
         'frameset', 'isindex', 'menu', 'noframes',
         's', 'strike', 'u'];
-    EditorHtmlCleaner.removeStyles = ['font', 'font-family', 'letter-spacing', 'font-stretch', 'font-size-adjust'];
+    EditorHtmlCleaner.removeStyles = ['font', 'font-family', 'letter-spacing', 'font-stretch', 'font-size-adjust', 'cursor'];
     /**
      * 粘贴的时候删除
      */

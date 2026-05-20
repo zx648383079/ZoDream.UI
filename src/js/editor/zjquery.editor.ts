@@ -84,8 +84,9 @@ class EditorApp {
             this.toggleFlowbar([this.container.option.closeTool, ...items]);
             return;
         }
+        const offset = this.getOffsetPosition(event);
         this.toggleFlowbar();
-        this.executeModule(item, this.getOffsetPosition(event));
+        this.executeModule(item, offset);
     }
 
     public insert(block: IEditorCommand|string): void {
@@ -181,7 +182,7 @@ class EditorApp {
         if (event.currentTarget) {
             const target = $(event.currentTarget);
             if (target.hasClass('tool-item')) {
-                const offset = target.offset()
+                const offset = target.offset();
                 return {
                     x: offset.left - rect.left,
                     y: offset.top + target.height() - rect.top,

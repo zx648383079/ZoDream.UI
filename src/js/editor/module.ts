@@ -76,8 +76,8 @@ const EditorModules: IEditorModule[] = [
         label: 'H1-H6',
         parent: 'text',
         modal: new EditorDropdownComponent(true),
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.H});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.H}));
         },
     },
     {
@@ -164,8 +164,8 @@ const EditorModules: IEditorModule[] = [
         short: 'Size',
         parent: 'text',
         modal: new EditorDropdownComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.FontSize});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.FontSize}));
         },
     },
     {
@@ -175,8 +175,8 @@ const EditorModules: IEditorModule[] = [
         short: 'Font',
         parent: 'text',
         modal: new EditorDropdownComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.FontFamily});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.FontFamily}));
         },
     },
     {
@@ -186,8 +186,8 @@ const EditorModules: IEditorModule[] = [
         short: 'Color',
         parent: 'text',
         modal: new EditorColorComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.Foreground});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.Foreground}))
         },
     },
     {
@@ -196,8 +196,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Background',
         parent: 'text',
         modal: new EditorColorComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.Background});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.Background}));
         },
     },
     {
@@ -302,11 +302,13 @@ const EditorModules: IEditorModule[] = [
         short: 'Link',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorLinkComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next({
+                value: range?.text,
+            }, data => editor.execute({
                 type: EditorCommandType.AddLink,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -316,11 +318,11 @@ const EditorModules: IEditorModule[] = [
         short: 'Image',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorImageComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
                 type: EditorCommandType.AddImage,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -330,11 +332,11 @@ const EditorModules: IEditorModule[] = [
         short: 'Video',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorVideoComponent,
-        handler(editor, range, data) {
-            editor.execute({
-                type: EditorCommandType.AddVideo,
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
+                type: EditorCommandType.AddImage,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -344,11 +346,11 @@ const EditorModules: IEditorModule[] = [
         short: 'Table',
         parent: 'add',
         modal: new EditorTableComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
                 type: EditorCommandType.AddTable,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -358,11 +360,11 @@ const EditorModules: IEditorModule[] = [
         short: 'File',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorFileComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
                 type: EditorCommandType.AddFile,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -372,11 +374,11 @@ const EditorModules: IEditorModule[] = [
         short: 'Code',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorCodeComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
                 type: EditorCommandType.AddCode,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -396,11 +398,11 @@ const EditorModules: IEditorModule[] = [
         short: 'Map',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorMapComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(data => editor.execute({
                 type: EditorCommandType.AddFrame,
                 value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),        
-            }, range);
+            }, range));
         }
     },
 
@@ -417,7 +419,7 @@ const EditorModules: IEditorModule[] = [
         icon: 'fa-braille',
         label: 'Select All',
         parent: EDITOR_MORE_TOOL,
-        handler(editor, range, data) {
+        handler(editor) {
             editor.selectAll();
         },
     },
@@ -435,11 +437,11 @@ const EditorModules: IEditorModule[] = [
         label: 'Replace',
         parent: EDITOR_IMAGE_TOOL, 
         modal: new EditorImageComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(range?.properties, data => editor.execute({
                 type: EditorCommandType.AddImage,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -448,8 +450,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Position',
         parent: EDITOR_IMAGE_TOOL, 
         modal: new EditorDropdownComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.Align});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.Align}));
         },
     },
     {
@@ -458,8 +460,10 @@ const EditorModules: IEditorModule[] = [
         label: 'Image Title',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorTextComponent('Title'),
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        handler(editor, range) {
+            return editor.next({
+                value: range?.property('title'),
+            }, data => editor.execute({...data, type: EditorCommandType.NodeTitle}));
         },
     },
     {
@@ -477,8 +481,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Insert Link',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorLinkComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.AddLink});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.AddLink}));
         },
     },
     {
@@ -487,8 +491,10 @@ const EditorModules: IEditorModule[] = [
         label: 'Image caption',
         modal: new EditorTextComponent('Caption'),
         parent: EDITOR_IMAGE_TOOL,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        handler(editor, range) {
+            return editor.next({
+                value: range?.property('alt'),
+            }, data => editor.execute({...data, type: EditorCommandType.NodeTitle}));
         },
     },
     {
@@ -497,8 +503,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Adjust size',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorSizeComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeResize});
+        handler(editor, range) {
+            return editor.next(range?.offset, data => editor.execute({...data, type: EditorCommandType.NodeResize}));
         },
     },
     
@@ -509,11 +515,11 @@ const EditorModules: IEditorModule[] = [
         label: 'Replace',
         parent: EDITOR_VIDEO_TOOL, 
         modal: new EditorVideoComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(range?.properties, data => editor.execute({
                 type: EditorCommandType.AddVideo,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {
@@ -522,8 +528,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Position',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorDropdownComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.Align});
+        handler(editor) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.Align}));
         },
     },
     {
@@ -532,8 +538,10 @@ const EditorModules: IEditorModule[] = [
         label: 'Video Title',
         parent: EDITOR_VIDEO_TOOL, 
         modal: new EditorTextComponent('Title'),
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeTitle});
+        handler(editor, range) {
+            return editor.next({
+                value: range?.property('title'),
+            }, data => editor.execute({...data, type: EditorCommandType.NodeTitle}));
         },
     },
     {
@@ -551,8 +559,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorSizeComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeResize});
+        handler(editor, range) {
+            return editor.next(range?.offset, data => editor.execute({...data, type: EditorCommandType.NodeResize}));
         },
     },
     /// iframe
@@ -562,8 +570,21 @@ const EditorModules: IEditorModule[] = [
         label: 'Position',
         parent: EDITOR_OVERLAY_TOOL,
         modal: new EditorDropdownComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.Align});
+        handler(editor,) {
+            return editor.next(data => editor.execute({...data, type: EditorCommandType.Align}));
+        },
+    },
+    {
+        name: 'edit-frame',
+        icon: 'fa-exchange',
+        label: 'Replace',
+        parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorMapComponent,
+        handler(editor, range) {
+            return editor.next(range?.properties, data => editor.execute({
+                type: EditorCommandType.AddFrame,
+                ...data                
+            }, range));
         },
     },
     {
@@ -581,8 +602,8 @@ const EditorModules: IEditorModule[] = [
         label: 'Adjust size',
         parent: EDITOR_OVERLAY_TOOL,
         modal: new EditorSizeComponent,
-        handler(editor, _, data) {
-            editor.execute({...data, type: EditorCommandType.NodeResize});
+        handler(editor, range) {
+            return editor.next(range?.offset, data => editor.execute({...data, type: EditorCommandType.NodeResize}));
         },
     },
 
@@ -716,11 +737,11 @@ const EditorModules: IEditorModule[] = [
         label: 'Edit Link',
         parent: EDITOR_LINK_TOOL, 
         modal: new EditorLinkComponent,
-        handler(editor, range, data) {
-            editor.execute({
+        handler(editor, range) {
+            return editor.next(range?.properties, data => editor.execute({
                 type: EditorCommandType.AddLink,
                 ...data                
-            }, range);
+            }, range));
         },
     },
     {

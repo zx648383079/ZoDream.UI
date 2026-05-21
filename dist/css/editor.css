@@ -1,21 +1,15 @@
 .editor-box {
-  background-color: #fff;
+  background-color: var(--zre-panel);
   color: #495057;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--zre-border);
   border-radius: 0.25rem;
   position: relative;
-}
-.editor-box .fa-wavyline::before {
-  content: "~";
-}
-.editor-box .fa-dashed::before {
-  content: ".";
 }
 .editor-box .editor-tool-bar,
 .editor-box .editor-flow-tool-bar {
   line-height: 2.5rem;
-  color: #333;
+  color: var(--zre-body-text);
 }
 .editor-box .editor-tool-bar .tool-item,
 .editor-box .editor-flow-tool-bar .tool-item {
@@ -44,17 +38,17 @@
 }
 .editor-box .editor-tool-bar .tool-item.disabled,
 .editor-box .editor-flow-tool-bar .tool-item.disabled {
-  color: #777;
+  color: var(--zre-input-disabled);
   cursor: not-allowed;
 }
 .editor-box .editor-tool-bar {
-  background-color: #fff;
+  background-color: var(--zre-panel);
   box-sizing: border-box;
-  border-bottom: 1px solid #ced4da;
+  border-bottom: 1px solid var(--zre-border);
   padding: 0 0.8rem;
 }
 .editor-box .editor-tool-bar .editor-label {
-  color: #333;
+  color: var(--zre-body-text);
   cursor: default;
   user-select: none;
   font-weight: 700;
@@ -71,9 +65,9 @@
   padding: 0.375rem 0.75rem;
 }
 .editor-box .editor-area textarea:focus {
-  border-color: #80bdff;
+  border-color: var(--zre-input-focus-border);
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(var(--zre-surface-rgb), 0.25);
 }
 .editor-box .editor-code-container {
   display: none;
@@ -83,17 +77,17 @@
   overflow-x: auto;
   position: relative;
   z-index: 0;
-  border: 1px solid silver;
+  border: 1px solid var(--zre-border);
 }
 .editor-box .editor-code-container .editor-line-numbers {
-  background-color: #f5f5f5;
+  background-color: var(--zre-body);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   padding: 0.4rem 0;
 }
 .editor-box .editor-code-container .editor-line-active {
-  background-color: rgba(204, 238, 255, 0.2666666667);
+  background-color: var(--zre-input-selected);
 }
 .editor-box .editor-code-container .editor-line-no {
   padding: 0 3px 0 5px;
@@ -124,26 +118,8 @@
   top: 0;
   bottom: 0;
   overflow: auto;
-  background-color: white;
+  background-color: var(--zre-panel);
   padding: 0.8em;
-}
-.editor-box .--with-overlay {
-  position: relative;
-}
-.editor-box .--with-overlay > * {
-  width: 100%;
-}
-.editor-box .--with-overlay::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-  background-color: black;
-  z-index: 1;
 }
 .editor-box .editor-footer {
   text-align: right;
@@ -158,7 +134,7 @@
   justify-content: space-between;
 }
 .editor-box .tool-bar-bottom {
-  background-color: #f4f4f4;
+  background-color: var(--zre-body);
   margin: 0 -0.8rem;
   padding: 0 0.8rem;
 }
@@ -176,7 +152,7 @@
   border: none;
 }
 .editor-box table td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--zre-border);
 }
 .editor-box img {
   max-width: 100%;
@@ -190,7 +166,7 @@
   right: 0;
   left: 0;
   z-index: 99;
-  box-shadow: 0 0 4px gray;
+  box-shadow: 0 0 4px var(--zre-border);
 }
 .editor-box.editor-code-mode .editor-area {
   display: none;
@@ -205,7 +181,7 @@
   left: -2rem;
   margin-top: -0.6rem;
   line-height: 2.5rem;
-  background-color: #f4f4f4;
+  background-color: var(--zre-body);
   box-shadow: 0 0 0.2rem 0.2rem #ccc;
   border-radius: 0.25rem;
 }
@@ -237,8 +213,8 @@
   top: 0;
   width: 20rem;
   min-height: 6rem;
-  background-color: #f4f4f4;
-  box-shadow: 0 0 0.2rem 0.2rem #ccc;
+  background-color: var(--zre-panel);
+  box-shadow: 0 0 0.2rem 0.2rem var(--zre-border);
   border-radius: 0.25rem;
 }
 .editor-modal-box .input-header-block {
@@ -251,13 +227,13 @@
   padding: 0.2rem 0.8rem;
   background-color: transparent;
   border-radius: 0.25rem;
-  border-color: #ccc;
+  border-color: var(--zre-border);
   margin: 0;
   box-sizing: border-box;
 }
 .editor-modal-box .input-header-block input:focus,
 .editor-modal-box .input-header-block textarea:focus {
-  border-color: #333;
+  border-color: var(--zre-input-focus-border);
 }
 .editor-modal-box .input-header-block input:focus + label,
 .editor-modal-box .input-header-block textarea:focus + label {
@@ -272,7 +248,7 @@
 .editor-modal-box .input-header-block label {
   display: block;
   padding: 0 0.4rem;
-  background-color: #f4f4f4;
+  background-color: var(--zre-input);
   position: absolute;
   left: 0.8rem;
   top: 0.6rem;
@@ -300,8 +276,6 @@
 .editor-modal-box .btn {
   box-sizing: border-box;
   padding: 0 0.75rem;
-  border: 1px solid #0d6efd;
-  color: #0d6efd;
   border-radius: 0.25rem;
   display: inline-block;
   line-height: 2.5rem;
@@ -310,17 +284,13 @@
   vertical-align: middle;
   cursor: pointer;
 }
-.editor-modal-box .btn:hover {
-  background-color: #0d6efd;
-  color: #fff;
-}
 .editor-modal-box .drag-input {
   display: block;
   user-select: none;
   border-radius: 0.25rem;
   padding: 2rem 0 1rem;
   text-align: center;
-  border: 0.2rem dotted #ccc;
+  border: 0.2rem dotted var(--zre-border);
 }
 .editor-modal-box .drag-input p {
   margin: 0;
@@ -331,7 +301,7 @@
   overflow: hidden;
 }
 .editor-modal-box .drag-input:hover {
-  background-color: rgba(204, 204, 204, 0.4);
+  background-color: var(--zre-input-hovered);
 }
 .editor-modal-box .tab-bar {
   margin: -0.8rem -0.8rem 0.8rem;
@@ -346,11 +316,10 @@
   cursor: pointer;
 }
 .editor-modal-box .tab-bar .item:hover {
-  background-color: rgba(204, 204, 204, 0.3019607843);
+  background-color: var(--zre-input-hovered);
 }
 .editor-modal-box .tab-bar .item.active {
-  background-color: red;
-  color: #fff;
+  background-color: var(--zre-input-selected);
 }
 .editor-modal-box .tab-bar .item:first-of-type {
   border-bottom-left-radius: 0;
@@ -438,7 +407,7 @@
 }
 .editor-dropdown-modal .option-bar li:hover,
 .editor-dropdown-modal .option-bar .option-item:hover {
-  background-color: #ccc;
+  background-color: var(--zre-input-hovered);
 }
 
 .editor-color-modal {
@@ -576,7 +545,7 @@
   z-index: 1;
   pointer-events: all;
   border: 1px solid #ff7700;
-  background-color: white;
+  background-color: var(--zre-panel);
 }
 .editor-resizer-modal .eight-corner .cursor.l {
   left: -0.4375rem;
@@ -665,7 +634,7 @@
   display: inline-block;
   width: 1rem;
   height: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--zre-border);
   margin-right: 0.2rem;
 }
 .editor-table-modal .table-grid .table-cell.active {
@@ -725,6 +694,14 @@
     background: lightblue;
   }
 }
+.fa-wavyline::before {
+  content: "~";
+}
+
+.fa-dashed::before {
+  content: ".";
+}
+
 .fa-add-row::before {
   content: "\f58d";
 }

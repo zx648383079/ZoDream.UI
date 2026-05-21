@@ -39,6 +39,10 @@ class EditorCodeComponent implements IEditorSharedModal {
 
     public open(data: any, cb: EditorModalCallback) {
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            code: data.value ?? '',
+            language: data.language ?? ''
+        });
         this.confirmFn = cb;
     }
 }

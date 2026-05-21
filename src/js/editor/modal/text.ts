@@ -44,6 +44,9 @@ class EditorTextComponent implements IEditorSharedModal {
 
     public open(data: any, cb: EditorModalCallback) {
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            value: data.value ?? '',
+        });
         this.confirmFn = cb;
     }
 }

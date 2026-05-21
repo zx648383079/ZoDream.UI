@@ -1,3 +1,4 @@
+
 /**
  * 富文本模式
  */
@@ -20,18 +21,10 @@ class DivElement implements IEditorElement {
             const range = document.createRange();
             range.setStart(this.element, this.element.children.length);
             range.setEnd(this.element, this.element.children.length);
-            return {
-                start: this.element.children.length,
-                end: this.element.children.length,
-                range: range.cloneRange()
-            };
+            return new EditorElementRange(range, this.element);
         }
         const range = sel.getRangeAt(0);
-        return {
-            start: range.startOffset,
-            end: range.endOffset,
-            range: range.cloneRange()
-        };
+        return new EditorElementRange(range.cloneRange(), this.element);
     }
     public set selection(v: IEditorRange) {
         const sel = window.getSelection()!;
@@ -50,33 +43,7 @@ class DivElement implements IEditorElement {
     }
 
     public get selectedValue(): string {
-        const items: string[] = [];
-        const range = this.selection.range!;
-        let lastLine: Node| undefined| null;
-        this.eachRange(range, node => {
-            if (node === range.startContainer && range.startContainer === range.endContainer) {
-                items.push(node.textContent!.substring(range.startOffset, range.endOffset));
-                return;
-            }
-            if (node.nodeName === 'BR') {
-                items.push('\n');
-                lastLine = undefined;
-                return;
-            }
-            if (lastLine !== node.parentNode && node.parentNode !== this.element && ['P', 'DIV', 'TR'].indexOf(node.parentNode!.nodeName) >= 0) {
-                // 这里可以加一个判断 p div tr
-                if (lastLine) {
-                    items.push('\n');
-                }
-                lastLine = node.parentNode;
-            }
-            if (node === range.startContainer) {
-                items.push(node.textContent!.substring(range.startOffset));
-            } else if (node === range.endContainer) {
-                items.push(node.textContent!.substring(0, range.endOffset));
-            }
-        });
-        return items.join('');
+        return this.selection.text;
     }
 
     public set selectedValue(val: string) {
@@ -283,35 +250,6 @@ class DivElement implements IEditorElement {
         this.selectNode(link);
     }
 
-    private getLinkBlock(ele: HTMLAnchorElement): any {
-        return {
-            value: ele.getAttribute('href'),
-            title: ele.innerText,
-            target: ele.getAttribute('target') === '_blank'
-        };
-    }
-
-    private getImageBlock(ele: HTMLImageElement): any {
-        return {
-            value: ele.getAttribute('src'),
-            title: ele.getAttribute('title'),
-            caption: ele.getAttribute('alt'),
-        };
-    }
-
-    private getVideoBlock(ele: HTMLVideoElement): any {
-        return {
-            value: ele.getAttribute('src'),
-            title: ele.getAttribute('title')
-        };
-    }
-
-    private getFrameBlock(ele: HTMLIFrameElement): any {
-        return {
-            value: ele.getAttribute('src'),
-        };
-    }
-
     private addFrameExecute(range: Range, block: IEditorValueCommand) {
         const frame = document.createElement('iframe');
         frame.src = block.value;
@@ -495,6 +433,26 @@ class DivElement implements IEditorElement {
 
 
     private alignExecute(range: Range, block: IEditorValueCommand) {
+        if (range.startContainer instanceof HTMLImageElement) {
+            const attrs: any = {};
+            switch (block.value) {
+                case 'center':
+                    attrs['float'] = 'none';
+                    attrs['display'] = 'block';
+                    attrs['text-align'] = block.value;
+                    break;
+                case 'left':
+                case 'right':
+                    attrs['float'] = block.value;
+                    break;
+                default:
+                    attrs['float'] = 'none';
+                    attrs['display'] = 'inline-block';
+                    break;
+            }
+            this.toggleRangeStyle(range, attrs);
+            return;
+        }
         this.toggleRangeStyle(range, {
             'text-align': block.value
         });
@@ -1205,13 +1163,13 @@ class DivElement implements IEditorElement {
             if (e.target instanceof HTMLImageElement) {
                 const img = e.target as HTMLImageElement;
                 this.selectNode(img);
-                this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, this.getNodeBound(img), data => this.updateNode(img, data));
+                this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, this.selection, data => this.updateNode(img, data));
                 return;
             }
             if (EditorHtmlCleaner.isOverlay(e.target as any)) {
                 const node = e.target as HTMLDivElement;
                 this.selectNode(node);
-                this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, this.getNodeBound(node), data => this.updateNode(node, data));
+                this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, this.selection, data => this.updateNode(node, data));
                 return;
             }
             const range = this.selection.range!;
@@ -1329,32 +1287,7 @@ class DivElement implements IEditorElement {
      * @param cb 
      */
     private eachRange(range: Range, cb: (node: Node) => void|false) {
-        const begin = range.startContainer;
-        const end = range.endContainer;
-        if (cb(begin) === false || end === begin) {
-            return;
-        }
-        let current = begin;
-        while (current !== end) {
-            let next = this.nextNode(current);
-            if (!next) {
-                break;
-            }
-            if (next === end) {
-                cb(next);
-                break;
-            }
-            while (next && next.hasChildNodes()) {
-                next = next.firstChild!;
-                if (next === end) {
-                    break;
-                }
-            }
-            if (cb(next) === false) {
-                break;
-            }
-            current = next;
-        }
+        EditorElementRange.each(range, cb, this.element);
     }
 
     /**
@@ -1379,7 +1312,7 @@ class DivElement implements IEditorElement {
         });
         let current = begin;
         while (current !== end) {
-            let next = this.nextNode(current);
+            let next = EditorElementRange.next(current, this.element);
             if (!next) {
                 return;
             }
@@ -1863,20 +1796,6 @@ class DivElement implements IEditorElement {
         });
     }
 
-    /**
-     * 获取下一个相邻的元素，不判断最小子元素
-     * @param node 
-     * @returns 
-     */
-    private nextNode(node: Node): Node|undefined {
-        if (node.nextSibling) {
-            return node.nextSibling;
-        }
-        if (node.parentNode === this.element) {
-            return undefined;
-        }
-        return this.nextNode(node.parentNode!); 
-    }
 
     private splitNodeRange(node: Node, range: Range): Node[];
     private splitNodeRange(node: Node, begin: number): Node[];
@@ -1957,28 +1876,7 @@ class DivElement implements IEditorElement {
         };
     }
 
-    private getNodeBound(node: Node): IBound {
-        if (node.nodeType !== 1) {
-            node = node.parentNode!;
-        }
-        if (node === this.element) {
-            const style = getComputedStyle(this.element);
-            return {
-                x: parseFloat(style.getPropertyValue('padding-left')),
-                y: parseFloat(style.getPropertyValue('padding-top')),
-                width: 0,
-                height: 0,
-            };
-        }
-        const ele = node as HTMLDivElement;
-        const rect = ele.getBoundingClientRect();
-        return {
-            y: ele.offsetTop,
-            x: ele.offsetLeft,
-            width: rect.width,
-            height: rect.height
-        };
-    }
+    
 
     private isEndNode(node: Node, offset: number): boolean {
         if (node instanceof Text) {

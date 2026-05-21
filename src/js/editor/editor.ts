@@ -12,7 +12,9 @@ interface IEditorContainer {
      */
     // mouseMove(move?: (p: IPoint) => void, finish?: (p: IPoint) => void): void;
     execute(block: IEditorCommand|string, range?: IEditorRange): void;
-    use(module: string|IEditorTool, range?: IEditorRange, data?: any): void;
+    next(callback: EditorModuleCallbackHandler): IEditorModuleNextHandler;
+    next(data: any, callback: EditorModuleCallbackHandler): IEditorModuleNextHandler;
+    use(module: string|IEditorTool, range?: IEditorRange): IEditorModuleNextHandler|void;
     paste(data: DataTransfer): void;
     saveSelection(): void;
     undo(): void;

@@ -1,3 +1,43 @@
+class EditorTextRange implements IEditorRange {
+
+    constructor(
+        private element: HTMLTextAreaElement,
+        private selectionStart = -1,
+        private selectionEnd = -1,
+    ) {
+        if (this.selectionStart < 0) {
+            this.selectionStart = this.element.selectionStart;
+            this.selectionEnd = this.element.selectionEnd
+        }
+    }
+
+
+
+    public get start(): number {
+        return this.selectionStart;
+    }
+    public get end(): number {
+        return this.selectionEnd;
+    }
+
+    public get text(): string {
+        return this.element.value.substring(this.start, this.end);
+    }
+    public get range(): Range | undefined {
+        return undefined;
+    }
+    public get offset(): IBound {
+        return this.element.getBoundingClientRect()
+    }
+    public get properties(): any {
+        return {};
+    }
+    public property(name: string): any {
+        return undefined;
+    }
+    
+}
+
 
 /**
  * markdown 模式
@@ -13,10 +53,7 @@ class TextareaElement implements IEditorElement {
     private isComposition = false;
 
     public get selection(): IEditorRange {
-        return {
-            start: this.element.selectionStart,
-            end: this.element.selectionEnd
-        };
+        return new EditorTextRange(this.element);
     }
     public set selection(v: IEditorRange) {
         this.element.selectionStart = v.start;
@@ -36,10 +73,7 @@ class TextareaElement implements IEditorElement {
         const s = this.selection;
         const v = this.value;
         this.value = v.substring(0, s.start) + val + v.substring(s.end);
-        this.selection = {
-            start: s.start,
-            end: s.start + val.length
-        };
+        this.selection = new EditorTextRange(this.element, s.start, s.start + val.length);
     }
 
     public get value(): string {
@@ -70,10 +104,7 @@ class TextareaElement implements IEditorElement {
     }
 
     public selectAll(): void {
-        this.selection = {
-            start: 0,
-            end: this.value.length
-        };
+        this.selection = new EditorTextRange(this.element, 0, this.value.length);
     }
 
     public toggle(force?: boolean): void {
@@ -218,10 +249,7 @@ class TextareaElement implements IEditorElement {
         const selected = v.substring(begin, range.end);
         const replace = cb(selected);
         this.value = v.substring(0, begin) + replace + v.substring(range.end);
-        this.selection = {
-            start: begin,
-            end: begin + replace.length
-        };
+        this.selection = new EditorTextRange(this.element, begin, begin + replace.length);
         this.focus();
     }
 
@@ -245,10 +273,7 @@ class TextareaElement implements IEditorElement {
      * @param pos 
      */
     private moveCursor(pos: number) {
-        this.selection = {
-            start: pos,
-            end: pos,
-        };
+        this.selection = new EditorTextRange(this.element, pos, pos);
         this.focus();
     }
 

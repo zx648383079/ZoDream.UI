@@ -1,7 +1,4 @@
 class EditorApp {
-    /**
-    *
-    */
     constructor(
         element: HTMLDivElement|HTMLTextAreaElement,
         option?: IEditorOption,
@@ -25,6 +22,7 @@ class EditorApp {
     }
 
     private option: EditorOptionManager;
+    private selectedRange?: IEditorRange;
     public container: EditorContainer;
     private codeContainer: EditorContainer;
     private box: JQuery<HTMLDivElement>;
@@ -163,17 +161,20 @@ class EditorApp {
         if (!module) {
             return;
         }
-        if (!module.modal) {
-            this.container.use(module);
+        const next = this.container.use(module);
+        if (!module.modal || !next) {
             return;
         }
         const modal = module.modal;
         if (typeof (modal as any).modalReady === 'function') {
             (modal as IEditorSharedModal).modalReady(module, this.modalContianer, this.option);
         }
-        modal.open({}, res => {
+        if (this.selectedRange) {
+            position = this.selectedRange.offset;
+        }
+        modal.open(next.data ?? {}, res => {
             this.hideModal();
-            this.container.use(module, undefined, res);
+            next.callback(res, this.container, this.selectedRange);
         }, position);
     }
 
@@ -224,11 +225,15 @@ class EditorApp {
             this.resizer.close();
             this.toggleFlowbar(this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, (p, cb) => {
-            this.toggleFlowbar(this.option.toolChildren(EDITOR_IMAGE_TOOL), {...p, y: p.y + p.height + 20});
-            this.resizer.openResize(p, cb);
+            this.selectedRange = p;
+            const bound = p.offset;
+            this.toggleFlowbar(this.option.toolChildren(EDITOR_IMAGE_TOOL), {...bound, y: bound.y + bound.height + 20});
+            this.resizer.openResize(bound, cb);
         }).on(EDITOR_EVENT_SHOW_OVERLAY_TOOL, (p, cb) => {
-            this.toggleFlowbar(this.option.toolChildren(EDITOR_OVERLAY_TOOL), {...p, y: p.y + p.height + 20});
-            this.resizer.openResize(p, cb);
+            this.selectedRange = p;
+            const bound = p.offset;
+            this.toggleFlowbar(this.option.toolChildren(EDITOR_OVERLAY_TOOL), {...bound, y: bound.y + bound.height + 20});
+            this.resizer.openResize(bound, cb);
         }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, (p, cb) => {
             this.resizer.openHorizontalResize(p, cb);
         }).on(EDITOR_EVENT_CLOSE_TOOL, () => {

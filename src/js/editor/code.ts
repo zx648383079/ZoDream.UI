@@ -14,11 +14,7 @@ class CodeElement implements IEditorElement {
     public get selection(): IEditorRange {
         const sel = window.getSelection()!;
         const range = sel.getRangeAt(0);
-        return {
-            start: range.startOffset,
-            end: range.endOffset,
-            range: range.cloneRange()
-        };
+        return new EditorElementRange(range.cloneRange(), this.bodyPanel);
     }
     public set selection(v: IEditorRange) {
         const sel = window.getSelection()!;

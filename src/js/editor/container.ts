@@ -162,13 +162,27 @@ class EditorContainer implements IEditorContainer {
         }
         this.element!.execute(block, range ?? this.selection);
     }
+
+    public next(callback: EditorModuleCallbackHandler): IEditorModuleNextHandler;
+    public next(data: any, callback: EditorModuleCallbackHandler): IEditorModuleNextHandler;
+    public next(data: any|EditorModuleCallbackHandler, callback?: EditorModuleCallbackHandler): IEditorModuleNextHandler {
+        if (typeof data === 'function') {
+            return {
+                callback: data
+            };
+        }
+        return {
+            data,
+            callback: callback!
+        };
+    }
     
-    public use(module: string|IEditorTool, range?: IEditorRange, data?: any): void {
+    public use(module: string|IEditorTool, range?: IEditorRange): IEditorModuleNextHandler|void {
         const instance = this.option.toModule(module);
         if (!instance || !instance.handler) {
             return;
         }
-        instance.handler(this, range ?? this.selection, data);
+        return instance.handler(this, range ?? this.selection) as any;
     }
 
     public paste(data: DataTransfer) {

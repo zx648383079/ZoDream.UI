@@ -109,7 +109,11 @@ var EditorTextComponent = /** @class */ (function () {
         this.bindEvent();
     };
     EditorTextComponent.prototype.open = function (data, cb) {
+        var _a;
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            value: (_a = data.value) !== null && _a !== void 0 ? _a : '',
+        });
         this.confirmFn = cb;
     };
     return EditorTextComponent;
@@ -204,7 +208,12 @@ var EditorSizeComponent = /** @class */ (function () {
         this.bindEvent();
     };
     EditorSizeComponent.prototype.open = function (data, cb) {
+        var _a, _b;
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            height: (_a = data.height) !== null && _a !== void 0 ? _a : '',
+            width: (_b = data.width) !== null && _b !== void 0 ? _b : ''
+        });
         this.confirmFn = cb;
     };
     return EditorSizeComponent;
@@ -441,7 +450,12 @@ var EditorMapComponent = /** @class */ (function () {
         this.bindEvent();
     };
     EditorMapComponent.prototype.open = function (data, cb) {
+        var _a, _b;
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            coordinate: (_a = data.value) !== null && _a !== void 0 ? _a : '',
+            mark: (_b = data.mark) !== null && _b !== void 0 ? _b : ''
+        });
         this.confirmFn = cb;
     };
     return EditorMapComponent;
@@ -472,7 +486,13 @@ var EditorLinkComponent = /** @class */ (function () {
         this.bindEvent();
     };
     EditorLinkComponent.prototype.open = function (data, cb) {
+        var _a, _b;
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            url: (_a = data.value) !== null && _a !== void 0 ? _a : '',
+            title: (_b = data.title) !== null && _b !== void 0 ? _b : '',
+            is_blank: !!data.target
+        });
         this.confirmFn = cb;
     };
     return EditorLinkComponent;
@@ -1030,7 +1050,12 @@ var EditorCodeComponent = /** @class */ (function () {
         this.bindEvent();
     };
     EditorCodeComponent.prototype.open = function (data, cb) {
+        var _a, _b;
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            code: (_a = data.value) !== null && _a !== void 0 ? _a : '',
+            language: (_b = data.language) !== null && _b !== void 0 ? _b : ''
+        });
         this.confirmFn = cb;
     };
     return EditorCodeComponent;
@@ -1141,9 +1166,6 @@ var I18nStrings = {
     'Disconnect': '断开链接'
 };
 var EditorApp = /** @class */ (function () {
-    /**
-    *
-    */
     function EditorApp(element, option, isMarkdown) {
         if (isMarkdown === void 0) { isMarkdown = false; }
         this.isMarkdown = isMarkdown;
@@ -1262,6 +1284,7 @@ var EditorApp = /** @class */ (function () {
     };
     EditorApp.prototype.executeModule = function (item, position) {
         var _this = this;
+        var _a;
         var isCode = this.box.hasClass('editor-code-mode');
         this.modalContianer.html('');
         if (item.name === EDITOR_CODE_TOOL && !this.isMarkdown) {
@@ -1284,17 +1307,20 @@ var EditorApp = /** @class */ (function () {
         if (!module) {
             return;
         }
-        if (!module.modal) {
-            this.container.use(module);
+        var next = this.container.use(module);
+        if (!module.modal || !next) {
             return;
         }
         var modal = module.modal;
         if (typeof modal.modalReady === 'function') {
             modal.modalReady(module, this.modalContianer, this.option);
         }
-        modal.open({}, function (res) {
+        if (this.selectedRange) {
+            position = this.selectedRange.offset;
+        }
+        modal.open((_a = next.data) !== null && _a !== void 0 ? _a : {}, function (res) {
             _this.hideModal();
-            _this.container.use(module, undefined, res);
+            next.callback(res, _this.container, _this.selectedRange);
         }, position);
     };
     EditorApp.prototype.getOffsetPosition = function (event) {
@@ -1341,11 +1367,15 @@ var EditorApp = /** @class */ (function () {
             _this.resizer.close();
             _this.toggleFlowbar(_this.container.option.toolChildren(EDITOR_LINK_TOOL), p);
         }).on(EDITOR_EVENT_SHOW_IMAGE_TOOL, function (p, cb) {
-            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_IMAGE_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
-            _this.resizer.openResize(p, cb);
+            _this.selectedRange = p;
+            var bound = p.offset;
+            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_IMAGE_TOOL), __assign(__assign({}, bound), { y: bound.y + bound.height + 20 }));
+            _this.resizer.openResize(bound, cb);
         }).on(EDITOR_EVENT_SHOW_OVERLAY_TOOL, function (p, cb) {
-            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_OVERLAY_TOOL), __assign(__assign({}, p), { y: p.y + p.height + 20 }));
-            _this.resizer.openResize(p, cb);
+            _this.selectedRange = p;
+            var bound = p.offset;
+            _this.toggleFlowbar(_this.option.toolChildren(EDITOR_OVERLAY_TOOL), __assign(__assign({}, bound), { y: bound.y + bound.height + 20 }));
+            _this.resizer.openResize(bound, cb);
         }).on(EDITOR_EVENT_SHOW_COLUMN_TOOL, function (p, cb) {
             _this.resizer.openHorizontalResize(p, cb);
         }).on(EDITOR_EVENT_CLOSE_TOOL, function () {
@@ -1747,6 +1777,65 @@ var EditorHelper = /** @class */ (function () {
     EditorHelper.OTHER_WORD_CODE = [8220, 8221, 8216, 8217, 65281, 12290, 65292, 12304, 12305, 12289, 65311, 65288, 65289, 12288, 12298, 12299, 65306];
     return EditorHelper;
 }());
+var EditorTextRange = /** @class */ (function () {
+    function EditorTextRange(element, selectionStart, selectionEnd) {
+        if (selectionStart === void 0) { selectionStart = -1; }
+        if (selectionEnd === void 0) { selectionEnd = -1; }
+        this.element = element;
+        this.selectionStart = selectionStart;
+        this.selectionEnd = selectionEnd;
+        if (this.selectionStart < 0) {
+            this.selectionStart = this.element.selectionStart;
+            this.selectionEnd = this.element.selectionEnd;
+        }
+    }
+    Object.defineProperty(EditorTextRange.prototype, "start", {
+        get: function () {
+            return this.selectionStart;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorTextRange.prototype, "end", {
+        get: function () {
+            return this.selectionEnd;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorTextRange.prototype, "text", {
+        get: function () {
+            return this.element.value.substring(this.start, this.end);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorTextRange.prototype, "range", {
+        get: function () {
+            return undefined;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorTextRange.prototype, "offset", {
+        get: function () {
+            return this.element.getBoundingClientRect();
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorTextRange.prototype, "properties", {
+        get: function () {
+            return {};
+        },
+        enumerable: false,
+        configurable: true
+    });
+    EditorTextRange.prototype.property = function (name) {
+        return undefined;
+    };
+    return EditorTextRange;
+}());
 /**
  * markdown 模式
  */
@@ -1760,10 +1849,7 @@ var TextareaElement = /** @class */ (function () {
     }
     Object.defineProperty(TextareaElement.prototype, "selection", {
         get: function () {
-            return {
-                start: this.element.selectionStart,
-                end: this.element.selectionEnd
-            };
+            return new EditorTextRange(this.element);
         },
         set: function (v) {
             this.element.selectionStart = v.start;
@@ -1785,10 +1871,7 @@ var TextareaElement = /** @class */ (function () {
             var s = this.selection;
             var v = this.value;
             this.value = v.substring(0, s.start) + val + v.substring(s.end);
-            this.selection = {
-                start: s.start,
-                end: s.start + val.length
-            };
+            this.selection = new EditorTextRange(this.element, s.start, s.start + val.length);
         },
         enumerable: false,
         configurable: true
@@ -1838,10 +1921,7 @@ var TextareaElement = /** @class */ (function () {
         configurable: true
     });
     TextareaElement.prototype.selectAll = function () {
-        this.selection = {
-            start: 0,
-            end: this.value.length
-        };
+        this.selection = new EditorTextRange(this.element, 0, this.value.length);
     };
     TextareaElement.prototype.toggle = function (force) {
         if (!this.element) {
@@ -1971,10 +2051,7 @@ var TextareaElement = /** @class */ (function () {
         var selected = v.substring(begin, range.end);
         var replace = cb(selected);
         this.value = v.substring(0, begin) + replace + v.substring(range.end);
-        this.selection = {
-            start: begin,
-            end: begin + replace.length
-        };
+        this.selection = new EditorTextRange(this.element, begin, begin + replace.length);
         this.focus();
     };
     TextareaElement.prototype.includeBlock = function (begin, end, range) {
@@ -1996,10 +2073,7 @@ var TextareaElement = /** @class */ (function () {
      * @param pos
      */
     TextareaElement.prototype.moveCursor = function (pos) {
-        this.selection = {
-            start: pos,
-            end: pos,
-        };
+        this.selection = new EditorTextRange(this.element, pos, pos);
         this.focus();
     };
     TextareaElement.prototype.bindEvent = function () {
@@ -2067,6 +2141,196 @@ var TextareaElement = /** @class */ (function () {
         }
     };
     return TextareaElement;
+}());
+var EditorElementRange = /** @class */ (function () {
+    function EditorElementRange(source, element, node) {
+        this.source = source;
+        this.element = element;
+        this.node = node;
+        if (!this.node) {
+            this.node = this.source.startContainer;
+        }
+    }
+    Object.defineProperty(EditorElementRange.prototype, "start", {
+        get: function () {
+            return this.source.startOffset;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorElementRange.prototype, "end", {
+        get: function () {
+            return this.source.endOffset;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorElementRange.prototype, "text", {
+        get: function () {
+            var _a;
+            if (this.node) {
+                return (_a = this.node.textContent) !== null && _a !== void 0 ? _a : '';
+            }
+            return EditorElementRange.toText(this.source, this.element);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorElementRange.prototype, "range", {
+        get: function () {
+            return this.source;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorElementRange.prototype, "offset", {
+        get: function () {
+            var _a;
+            return this.getNodeBound((_a = this.node) !== null && _a !== void 0 ? _a : this.element);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(EditorElementRange.prototype, "properties", {
+        get: function () {
+            return {};
+        },
+        enumerable: false,
+        configurable: true
+    });
+    EditorElementRange.prototype.property = function (name) {
+        return undefined;
+    };
+    EditorElementRange.prototype.getNodeBound = function (node) {
+        if (node.nodeType !== 1) {
+            node = node.parentNode;
+        }
+        if (node === this.element) {
+            var style = getComputedStyle(this.element);
+            return {
+                x: parseFloat(style.getPropertyValue('padding-left')),
+                y: parseFloat(style.getPropertyValue('padding-top')),
+                width: 0,
+                height: 0,
+            };
+        }
+        var ele = node;
+        var rect = ele.getBoundingClientRect();
+        return {
+            y: ele.offsetTop,
+            x: ele.offsetLeft,
+            width: rect.width,
+            height: rect.height
+        };
+    };
+    EditorElementRange.prototype.getLinkBlock = function (ele) {
+        return {
+            value: ele.getAttribute('href'),
+            title: ele.innerText,
+            target: ele.getAttribute('target') === '_blank'
+        };
+    };
+    EditorElementRange.prototype.getImageBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title'),
+            caption: ele.getAttribute('alt'),
+        };
+    };
+    EditorElementRange.prototype.getVideoBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+            title: ele.getAttribute('title')
+        };
+    };
+    EditorElementRange.prototype.getFrameBlock = function (ele) {
+        return {
+            value: ele.getAttribute('src'),
+        };
+    };
+    /**
+     * 将 range 转成字符
+     * @param range
+     * @param exclude
+     * @returns
+     */
+    EditorElementRange.toText = function (range, exclude) {
+        var items = [];
+        var lastLine;
+        this.each(range, function (node) {
+            if (node === range.startContainer && range.startContainer === range.endContainer) {
+                items.push(node.textContent.substring(range.startOffset, range.endOffset));
+                return;
+            }
+            if (node.nodeName === 'BR') {
+                items.push('\n');
+                lastLine = undefined;
+                return;
+            }
+            if (lastLine !== node.parentNode && node.parentNode !== exclude && ['P', 'DIV', 'TR'].indexOf(node.parentNode.nodeName) >= 0) {
+                // 这里可以加一个判断 p div tr
+                if (lastLine) {
+                    items.push('\n');
+                }
+                lastLine = node.parentNode;
+            }
+            if (node === range.startContainer) {
+                items.push(node.textContent.substring(range.startOffset));
+            }
+            else if (node === range.endContainer) {
+                items.push(node.textContent.substring(0, range.endOffset));
+            }
+        }, exclude);
+        return items.join('');
+    };
+    /**
+     * 遍历选中的所有元素，最末端的元素，无子元素
+     * @param range
+     * @param cb
+     */
+    EditorElementRange.each = function (range, cb, exclude) {
+        var begin = range.startContainer;
+        var end = range.endContainer;
+        if (cb(begin) === false || end === begin) {
+            return;
+        }
+        var current = begin;
+        while (current !== end) {
+            var next = this.next(current, exclude);
+            if (!next) {
+                break;
+            }
+            if (next === end) {
+                cb(next);
+                break;
+            }
+            while (next && next.hasChildNodes()) {
+                next = next.firstChild;
+                if (next === end) {
+                    break;
+                }
+            }
+            if (cb(next) === false) {
+                break;
+            }
+            current = next;
+        }
+    };
+    /**
+     * 获取下一个相邻的元素，不判断最小子元素
+     * @param node
+     * @returns
+     */
+    EditorElementRange.next = function (node, exclude) {
+        if (node.nextSibling) {
+            return node.nextSibling;
+        }
+        if (node.parentNode === exclude) {
+            return undefined;
+        }
+        return this.next(node.parentNode);
+    };
+    return EditorElementRange;
 }());
 var EditorOptionManager = /** @class */ (function () {
     function EditorOptionManager() {
@@ -2458,8 +2722,8 @@ var EditorModules = [
         label: 'H1-H6',
         parent: 'text',
         modal: new EditorDropdownComponent(true),
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.H }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.H })); });
         },
     },
     {
@@ -2546,8 +2810,8 @@ var EditorModules = [
         short: 'Size',
         parent: 'text',
         modal: new EditorDropdownComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontSize }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontSize })); });
         },
     },
     {
@@ -2557,8 +2821,8 @@ var EditorModules = [
         short: 'Font',
         parent: 'text',
         modal: new EditorDropdownComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontFamily }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.FontFamily })); });
         },
     },
     {
@@ -2568,8 +2832,8 @@ var EditorModules = [
         short: 'Color',
         parent: 'text',
         modal: new EditorColorComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Foreground }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Foreground })); });
         },
     },
     {
@@ -2578,8 +2842,8 @@ var EditorModules = [
         label: 'Background',
         parent: 'text',
         modal: new EditorColorComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Background }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Background })); });
         },
     },
     {
@@ -2681,8 +2945,10 @@ var EditorModules = [
         short: 'Link',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorLinkComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range);
+        handler: function (editor, range) {
+            return editor.next({
+                value: range === null || range === void 0 ? void 0 : range.text,
+            }, function (data) { return editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range); });
         },
     },
     {
@@ -2692,8 +2958,8 @@ var EditorModules = [
         short: 'Image',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorImageComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range);
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range); });
         },
     },
     {
@@ -2703,8 +2969,8 @@ var EditorModules = [
         short: 'Video',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorVideoComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddVideo }, data), range);
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range); });
         },
     },
     {
@@ -2714,8 +2980,8 @@ var EditorModules = [
         short: 'Table',
         parent: 'add',
         modal: new EditorTableComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddTable }, data), range);
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute(__assign({ type: EditorCommandType.AddTable }, data), range); });
         },
     },
     {
@@ -2725,8 +2991,8 @@ var EditorModules = [
         short: 'File',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorFileComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddFile }, data), range);
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute(__assign({ type: EditorCommandType.AddFile }, data), range); });
         },
     },
     {
@@ -2736,8 +3002,8 @@ var EditorModules = [
         short: 'Code',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorCodeComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddCode }, data), range);
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute(__assign({ type: EditorCommandType.AddCode }, data), range); });
         },
     },
     {
@@ -2757,11 +3023,11 @@ var EditorModules = [
         short: 'Map',
         parent: EDITOR_ADD_TOOL,
         modal: new EditorMapComponent,
-        handler: function (editor, range, data) {
-            editor.execute({
+        handler: function (editor, range) {
+            return editor.next(function (data) { return editor.execute({
                 type: EditorCommandType.AddFrame,
                 value: '/home/map?point=' + data.value + '&marker=' + encodeURIComponent(data.mark),
-            }, range);
+            }, range); });
         }
     },
     // 更多
@@ -2777,7 +3043,7 @@ var EditorModules = [
         icon: 'fa-braille',
         label: 'Select All',
         parent: EDITOR_MORE_TOOL,
-        handler: function (editor, range, data) {
+        handler: function (editor) {
             editor.selectAll();
         },
     },
@@ -2794,8 +3060,8 @@ var EditorModules = [
         label: 'Replace',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorImageComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range);
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.properties, function (data) { return editor.execute(__assign({ type: EditorCommandType.AddImage }, data), range); });
         },
     },
     {
@@ -2804,8 +3070,8 @@ var EditorModules = [
         label: 'Position',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorDropdownComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align })); });
         },
     },
     {
@@ -2814,8 +3080,10 @@ var EditorModules = [
         label: 'Image Title',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorTextComponent('Title'),
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        handler: function (editor, range) {
+            return editor.next({
+                value: range === null || range === void 0 ? void 0 : range.property('title'),
+            }, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle })); });
         },
     },
     {
@@ -2833,8 +3101,8 @@ var EditorModules = [
         label: 'Insert Link',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorLinkComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.AddLink }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.AddLink })); });
         },
     },
     {
@@ -2843,8 +3111,10 @@ var EditorModules = [
         label: 'Image caption',
         modal: new EditorTextComponent('Caption'),
         parent: EDITOR_IMAGE_TOOL,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        handler: function (editor, range) {
+            return editor.next({
+                value: range === null || range === void 0 ? void 0 : range.property('alt'),
+            }, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle })); });
         },
     },
     {
@@ -2853,8 +3123,8 @@ var EditorModules = [
         label: 'Adjust size',
         parent: EDITOR_IMAGE_TOOL,
         modal: new EditorSizeComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.offset, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize })); });
         },
     },
     // 视频处理
@@ -2864,8 +3134,8 @@ var EditorModules = [
         label: 'Replace',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorVideoComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddVideo }, data), range);
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.properties, function (data) { return editor.execute(__assign({ type: EditorCommandType.AddVideo }, data), range); });
         },
     },
     {
@@ -2874,8 +3144,8 @@ var EditorModules = [
         label: 'Position',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorDropdownComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align })); });
         },
     },
     {
@@ -2884,8 +3154,10 @@ var EditorModules = [
         label: 'Video Title',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorTextComponent('Title'),
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle }));
+        handler: function (editor, range) {
+            return editor.next({
+                value: range === null || range === void 0 ? void 0 : range.property('title'),
+            }, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeTitle })); });
         },
     },
     {
@@ -2903,8 +3175,8 @@ var EditorModules = [
         label: 'Adjust size',
         parent: EDITOR_VIDEO_TOOL,
         modal: new EditorSizeComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.offset, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize })); });
         },
     },
     /// iframe
@@ -2914,8 +3186,18 @@ var EditorModules = [
         label: 'Position',
         parent: EDITOR_OVERLAY_TOOL,
         modal: new EditorDropdownComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align }));
+        handler: function (editor) {
+            return editor.next(function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.Align })); });
+        },
+    },
+    {
+        name: 'edit-frame',
+        icon: 'fa-exchange',
+        label: 'Replace',
+        parent: EDITOR_OVERLAY_TOOL,
+        modal: new EditorMapComponent,
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.properties, function (data) { return editor.execute(__assign({ type: EditorCommandType.AddFrame }, data), range); });
         },
     },
     {
@@ -2933,8 +3215,8 @@ var EditorModules = [
         label: 'Adjust size',
         parent: EDITOR_OVERLAY_TOOL,
         modal: new EditorSizeComponent,
-        handler: function (editor, _, data) {
-            editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize }));
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.offset, function (data) { return editor.execute(__assign(__assign({}, data), { type: EditorCommandType.NodeResize })); });
         },
     },
     // 表格处理
@@ -3065,8 +3347,8 @@ var EditorModules = [
         label: 'Edit Link',
         parent: EDITOR_LINK_TOOL,
         modal: new EditorLinkComponent,
-        handler: function (editor, range, data) {
-            editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range);
+        handler: function (editor, range) {
+            return editor.next(range === null || range === void 0 ? void 0 : range.properties, function (data) { return editor.execute(__assign({ type: EditorCommandType.AddLink }, data), range); });
         },
     },
     {
@@ -3210,18 +3492,10 @@ var DivElement = /** @class */ (function () {
                 var range_1 = document.createRange();
                 range_1.setStart(this.element, this.element.children.length);
                 range_1.setEnd(this.element, this.element.children.length);
-                return {
-                    start: this.element.children.length,
-                    end: this.element.children.length,
-                    range: range_1.cloneRange()
-                };
+                return new EditorElementRange(range_1, this.element);
             }
             var range = sel.getRangeAt(0);
-            return {
-                start: range.startOffset,
-                end: range.endOffset,
-                range: range.cloneRange()
-            };
+            return new EditorElementRange(range.cloneRange(), this.element);
         },
         set: function (v) {
             var sel = window.getSelection();
@@ -3244,35 +3518,7 @@ var DivElement = /** @class */ (function () {
     });
     Object.defineProperty(DivElement.prototype, "selectedValue", {
         get: function () {
-            var _this = this;
-            var items = [];
-            var range = this.selection.range;
-            var lastLine;
-            this.eachRange(range, function (node) {
-                if (node === range.startContainer && range.startContainer === range.endContainer) {
-                    items.push(node.textContent.substring(range.startOffset, range.endOffset));
-                    return;
-                }
-                if (node.nodeName === 'BR') {
-                    items.push('\n');
-                    lastLine = undefined;
-                    return;
-                }
-                if (lastLine !== node.parentNode && node.parentNode !== _this.element && ['P', 'DIV', 'TR'].indexOf(node.parentNode.nodeName) >= 0) {
-                    // 这里可以加一个判断 p div tr
-                    if (lastLine) {
-                        items.push('\n');
-                    }
-                    lastLine = node.parentNode;
-                }
-                if (node === range.startContainer) {
-                    items.push(node.textContent.substring(range.startOffset));
-                }
-                else if (node === range.endContainer) {
-                    items.push(node.textContent.substring(0, range.endOffset));
-                }
-            });
-            return items.join('');
+            return this.selection.text;
         },
         set: function (val) {
             this.execute({ type: EditorCommandType.AddText, text: val });
@@ -3480,31 +3726,6 @@ var DivElement = /** @class */ (function () {
         this.insertElement(link, range);
         this.selectNode(link);
     };
-    DivElement.prototype.getLinkBlock = function (ele) {
-        return {
-            value: ele.getAttribute('href'),
-            title: ele.innerText,
-            target: ele.getAttribute('target') === '_blank'
-        };
-    };
-    DivElement.prototype.getImageBlock = function (ele) {
-        return {
-            value: ele.getAttribute('src'),
-            title: ele.getAttribute('title'),
-            caption: ele.getAttribute('alt'),
-        };
-    };
-    DivElement.prototype.getVideoBlock = function (ele) {
-        return {
-            value: ele.getAttribute('src'),
-            title: ele.getAttribute('title')
-        };
-    };
-    DivElement.prototype.getFrameBlock = function (ele) {
-        return {
-            value: ele.getAttribute('src'),
-        };
-    };
     DivElement.prototype.addFrameExecute = function (range, block) {
         var frame = document.createElement('iframe');
         frame.src = block.value;
@@ -3679,6 +3900,26 @@ var DivElement = /** @class */ (function () {
         });
     };
     DivElement.prototype.alignExecute = function (range, block) {
+        if (range.startContainer instanceof HTMLImageElement) {
+            var attrs = {};
+            switch (block.value) {
+                case 'center':
+                    attrs['float'] = 'none';
+                    attrs['display'] = 'block';
+                    attrs['text-align'] = block.value;
+                    break;
+                case 'left':
+                case 'right':
+                    attrs['float'] = block.value;
+                    break;
+                default:
+                    attrs['float'] = 'none';
+                    attrs['display'] = 'inline-block';
+                    break;
+            }
+            this.toggleRangeStyle(range, attrs);
+            return;
+        }
         this.toggleRangeStyle(range, {
             'text-align': block.value
         });
@@ -4379,13 +4620,13 @@ var DivElement = /** @class */ (function () {
             if (e.target instanceof HTMLImageElement) {
                 var img_1 = e.target;
                 _this.selectNode(img_1);
-                _this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, _this.getNodeBound(img_1), function (data) { return _this.updateNode(img_1, data); });
+                _this.container.emit(EDITOR_EVENT_SHOW_IMAGE_TOOL, _this.selection, function (data) { return _this.updateNode(img_1, data); });
                 return;
             }
             if (EditorHtmlCleaner.isOverlay(e.target)) {
                 var node_1 = e.target;
                 _this.selectNode(node_1);
-                _this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, _this.getNodeBound(node_1), function (data) { return _this.updateNode(node_1, data); });
+                _this.container.emit(EDITOR_EVENT_SHOW_OVERLAY_TOOL, _this.selection, function (data) { return _this.updateNode(node_1, data); });
                 return;
             }
             var range = _this.selection.range;
@@ -4500,32 +4741,7 @@ var DivElement = /** @class */ (function () {
      * @param cb
      */
     DivElement.prototype.eachRange = function (range, cb) {
-        var begin = range.startContainer;
-        var end = range.endContainer;
-        if (cb(begin) === false || end === begin) {
-            return;
-        }
-        var current = begin;
-        while (current !== end) {
-            var next = this.nextNode(current);
-            if (!next) {
-                break;
-            }
-            if (next === end) {
-                cb(next);
-                break;
-            }
-            while (next && next.hasChildNodes()) {
-                next = next.firstChild;
-                if (next === end) {
-                    break;
-                }
-            }
-            if (cb(next) === false) {
-                break;
-            }
-            current = next;
-        }
+        EditorElementRange.each(range, cb, this.element);
     };
     /**
      * 遍历选中的所有元素，最顶端的元素，元素直接无交集
@@ -4549,7 +4765,7 @@ var DivElement = /** @class */ (function () {
         });
         var current = begin;
         var _loop_3 = function () {
-            var next = this_3.nextNode(current);
+            var next = EditorElementRange.next(current, this_3.element);
             if (!next) {
                 return { value: void 0 };
             }
@@ -5061,20 +5277,6 @@ var DivElement = /** @class */ (function () {
             }
         });
     };
-    /**
-     * 获取下一个相邻的元素，不判断最小子元素
-     * @param node
-     * @returns
-     */
-    DivElement.prototype.nextNode = function (node) {
-        if (node.nextSibling) {
-            return node.nextSibling;
-        }
-        if (node.parentNode === this.element) {
-            return undefined;
-        }
-        return this.nextNode(node.parentNode);
-    };
     DivElement.prototype.splitNodeRange = function (node, begin, end) {
         var _a;
         if (end === void 0) { end = -1; }
@@ -5147,28 +5349,6 @@ var DivElement = /** @class */ (function () {
         return {
             y: node.offsetTop,
             x: node.offsetLeft
-        };
-    };
-    DivElement.prototype.getNodeBound = function (node) {
-        if (node.nodeType !== 1) {
-            node = node.parentNode;
-        }
-        if (node === this.element) {
-            var style = getComputedStyle(this.element);
-            return {
-                x: parseFloat(style.getPropertyValue('padding-left')),
-                y: parseFloat(style.getPropertyValue('padding-top')),
-                width: 0,
-                height: 0,
-            };
-        }
-        var ele = node;
-        var rect = ele.getBoundingClientRect();
-        return {
-            y: ele.offsetTop,
-            x: ele.offsetLeft,
-            width: rect.width,
-            height: rect.height
         };
     };
     DivElement.prototype.isEndNode = function (node, offset) {
@@ -5414,12 +5594,23 @@ var EditorContainer = /** @class */ (function () {
         }
         this.element.execute(block, range !== null && range !== void 0 ? range : this.selection);
     };
-    EditorContainer.prototype.use = function (module, range, data) {
+    EditorContainer.prototype.next = function (data, callback) {
+        if (typeof data === 'function') {
+            return {
+                callback: data
+            };
+        }
+        return {
+            data: data,
+            callback: callback
+        };
+    };
+    EditorContainer.prototype.use = function (module, range) {
         var instance = this.option.toModule(module);
         if (!instance || !instance.handler) {
             return;
         }
-        instance.handler(this, range !== null && range !== void 0 ? range : this.selection, data);
+        return instance.handler(this, range !== null && range !== void 0 ? range : this.selection);
     };
     EditorContainer.prototype.paste = function (data) {
         this.element.paste(data);
@@ -5559,11 +5750,7 @@ var CodeElement = /** @class */ (function () {
         get: function () {
             var sel = window.getSelection();
             var range = sel.getRangeAt(0);
-            return {
-                start: range.startOffset,
-                end: range.endOffset,
-                range: range.cloneRange()
-            };
+            return new EditorElementRange(range.cloneRange(), this.bodyPanel);
         },
         set: function (v) {
             var sel = window.getSelection();

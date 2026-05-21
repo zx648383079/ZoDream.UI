@@ -52,12 +52,21 @@ interface IEditorTool extends IEditorToolStatus {
     hotKey?: string;
 }
 
+type EditorModuleCallbackHandler = (data: any, editor: IEditorContainer, range?: IEditorRange) => void;
+
+interface IEditorModuleNextHandler {
+    data?: any,
+    callback: EditorModuleCallbackHandler
+}
+
+type EditorModuleHandler = (editor: IEditorContainer, range?: IEditorRange) => IEditorModuleNextHandler|void;
+
+
 interface IEditorModule extends IEditorTool {
     parent?: string;
     modal?: IEditorModal;
-    handler?: (editor: IEditorContainer, range?: IEditorRange, data?: any) => void;
+    handler?: EditorModuleHandler;
 }
-
 
 
 class EditorOptionManager {

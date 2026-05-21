@@ -47,6 +47,10 @@ class EditorSizeComponent implements IEditorSharedModal {
 
     public open(data: any, cb: EditorModalCallback) {
         this.element.addClass('modal-visible');
+        EditorHelper.modalInputData(this.element, {
+            height: data.height ?? '',
+            width: data.width ?? ''
+        });
         this.confirmFn = cb;
     }
 }

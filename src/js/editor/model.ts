@@ -21,9 +21,14 @@ interface IImageUploadEvent {
 }
 
 interface IEditorRange {
-    start: number;
-    end: number;
-    range?: Range;
+    get start(): number;
+    get end(): number;
+    get text(): string;
+    get range(): Range|undefined;
+    get offset(): IBound;
+    get properties(): any;
+
+    property(name: string): any;
 }
 type EditorModalCallback<T = any> = (data: T) => void;
 
